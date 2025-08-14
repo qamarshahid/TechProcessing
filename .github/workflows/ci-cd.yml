@@ -14,16 +14,6 @@ on:
       - 'docker-compose.yml'
       - '.env.example'
       - 'backend/.env.example'
-    paths-ignore:
-      - 'backend/test/**'
-      - '**/*.spec.ts'
-      - '**/*.test.ts'
-      - 'src/**'
-      - 'playwright.config.ts'
-      - 'vitest.config.ts'
-      - 'jest.config.*'
-      - 'jest.setup.js'
-      - '**/*.md'
   workflow_dispatch:
 
 concurrency:
