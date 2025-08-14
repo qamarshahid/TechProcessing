@@ -26,6 +26,7 @@ export default tseslint.config(
       globals: {
         ...globals.node,
       },
+      parser: tseslint.parser,
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
@@ -72,6 +73,8 @@ export default tseslint.config(
   },
   // Test files (backend & frontend)
   {
+    // Ensure TS parser is used for test files
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: [
       '**/*.test.{ts,tsx}',
       '**/*.spec.{ts,tsx}',
@@ -79,6 +82,9 @@ export default tseslint.config(
       'src/**/*.test.{ts,tsx}',
     ],
     languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      parser: tseslint.parser,
       globals: {
         ...globals.jest,
         ...globals.vitest,
