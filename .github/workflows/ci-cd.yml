@@ -4,11 +4,26 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'backend/**'
+      - 'backend/src/**'
+      - 'backend/package.json'
+      - 'backend/package-lock.json'
+      - 'backend/tsconfig*.json'
+      - 'backend/nest-cli.json'
       - 'Dockerfile'
       - '.github/workflows/ci-cd.yml'
       - 'docker-compose.yml'
       - '.env.example'
+      - 'backend/.env.example'
+    paths-ignore:
+      - 'backend/test/**'
+      - '**/*.spec.ts'
+      - '**/*.test.ts'
+      - 'src/**'
+      - 'playwright.config.ts'
+      - 'vitest.config.ts'
+      - 'jest.config.*'
+      - 'jest.setup.js'
+      - '**/*.md'
   workflow_dispatch:
 
 concurrency:
@@ -33,11 +48,15 @@ jobs:
           cache: 'npm'
           cache-dependency-path: backend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install repo root dev dependencies (for ESLint flat config)
+        working-directory: .
         run: npm ci
 
-      - name: Lint
-        run: npm run lint --if-present
+      - name: Install backend dependencies
+        run: npm ci
+
+      - name: Lint (ESLint 9 with root flat config)
+        run: npx eslint@9 --config ../eslint.config.js "{src,apps,libs,test}/**/*.ts"
 
       - name: Unit tests
         run: npm test -- --ci
