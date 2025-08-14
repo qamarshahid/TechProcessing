@@ -7,15 +7,19 @@ WORKDIR /app
 # Copy package files
 COPY backend/package*.json ./
 COPY backend/tsconfig*.json ./
+COPY backend/nest-cli.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install all dependencies (including dev) for building
+RUN npm ci
 
 # Copy source code
 COPY backend/src ./src
 
 # Build the application
 RUN npm run build
+
+# Prune to production dependencies only
+RUN npm prune --omit=dev && npm cache clean --force
 
 # Production stage
 FROM node:18-alpine AS production
@@ -24,19 +28,21 @@ FROM node:18-alpine AS production
 WORKDIR /app
 
 # Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nestjs -u 1001
+RUN addgroup -g 1001 -S nodejs \
+    && adduser -S nestjs -u 1001
 
-# Copy built application
+# Copy built application and production node_modules
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nestjs:nodejs /app/package*.json ./
+# Copy healthcheck script
+COPY --chown=nestjs:nodejs backend/healthcheck.js ./healthcheck.js
 
 # Switch to non-root user
 USER nestjs
 
-# Expose port
-EXPOSE 8081
+# Expose port 8080 (Cloud Run default)
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
