@@ -15,4 +15,4 @@ afterAll(async () => {
 
 // Mock external services for testing
 jest.mock('../payments/services/authorize-net.service');
-jest.mock('../common/services/email.service');
+// Removed mock for '../common/services/email.service' as it doesn't exist
