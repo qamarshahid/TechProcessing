@@ -2,19 +2,20 @@ name: CI/CD - Backend to Cloud Run
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
     paths:
-      - 'backend/src/**'
-      - 'backend/package.json'
-      - 'backend/package-lock.json'
-      - 'backend/tsconfig*.json'
-      - 'backend/nest-cli.json'
-      - 'Dockerfile'
-      - '.github/workflows/ci-cd.yml'
-      - 'docker-compose.yml'
-      - '.env.example'
-      - 'backend/.env.example'
-  workflow_dispatch:
+      - backend/src/**
+      - backend/package.json
+      - backend/package-lock.json
+      - backend/tsconfig*.json
+      - backend/nest-cli.json
+      - Dockerfile
+      - .github/workflows/ci-cd.yml
+      - docker-compose.yml
+      - .env.example
+      - backend/.env.example
+  workflow_dispatch: {}
 
 concurrency:
   group: cloud-run-${{ github.ref }}
