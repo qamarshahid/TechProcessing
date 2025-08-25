@@ -76,14 +76,23 @@ async function bootstrap() {
   }
 
   const port = configService.get('PORT', 8080);
-  await app.listen(port);
-
-  logger.log(`🚀 Application is running on: http://localhost:${port}`);
-  if (!isProd) {
-    logger.log(`📚 Swagger documentation: http://localhost:${port}/api/docs`);
+  
+  try {
+    await app.listen(port, '0.0.0.0');
+    
+    logger.log(`🚀 Application is running on: http://0.0.0.0:${port}`);
+    if (!isProd) {
+      logger.log(`📚 Swagger documentation: http://localhost:${port}/api/docs`);
+    }
+    logger.log(`🔒 Environment: ${configService.get('NODE_ENV', 'development')}`);
+    logger.log(`🏥 Health check: http://localhost:${port}/api/health`);
+  } catch (error) {
+    logger.error(`Failed to start application: ${error.message}`);
+    process.exit(1);
   }
-  logger.log(`🔒 Environment: ${configService.get('NODE_ENV', 'development')}`);
-  logger.log(`🏥 Health check: http://localhost:${port}/api/health`);
 }
 
-bootstrap();
+bootstrap().catch((error) => {
+  console.error('Bootstrap failed:', error);
+  process.exit(1);
+});

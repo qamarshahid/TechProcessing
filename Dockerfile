@@ -1,5 +1,5 @@
 # Multi-stage build for production
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -22,7 +22,7 @@ RUN npm run build
 RUN npm prune --omit=dev && npm cache clean --force
 
 # Production stage
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 # Create app directory
 WORKDIR /app
@@ -40,6 +40,10 @@ COPY --chown=nestjs:nodejs backend/healthcheck.js ./healthcheck.js
 
 # Switch to non-root user
 USER nestjs
+
+# Set environment variables for Cloud Run
+ENV NODE_ENV=production
+ENV PORT=8080
 
 # Expose port 8080 (Cloud Run default)
 EXPOSE 8080
