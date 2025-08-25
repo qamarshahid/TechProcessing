@@ -5,7 +5,7 @@ class ApiClient {
   private token: string | null = null;
 
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
+    this.baseURL = import.meta.env.VITE_API_URL || 'https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api';
     this.token = localStorage.getItem('auth_token');
   }
 
