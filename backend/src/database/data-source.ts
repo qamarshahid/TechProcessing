@@ -19,7 +19,7 @@ export const AppDataSource = new DataSource({
   port: Number(configService.get('DATABASE_PORT', 5432)),
   username: configService.get('DATABASE_USERNAME', 'postgres'),
   password: configService.get('DATABASE_PASSWORD', 'password'),
-  database: configService.get('DATABASE_NAME', 'techserve_pro'),
+  database: configService.get('DATABASE_NAME', 'techprocessing'),
   entities: [join(__dirname, '..', '..', '**', '*.entity.{ts,js}')],
   migrations: [join(__dirname, 'migrations', '*.{ts,js}')],
   synchronize: false, // Always false in production

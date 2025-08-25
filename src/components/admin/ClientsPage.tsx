@@ -246,8 +246,8 @@ export function ClientsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Client Management</h1>
-          <p className="text-sm text-gray-600">Manage client accounts, invoices, and portal access</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Client Management</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Manage client accounts, invoices, and portal access</p>
         </div>
         <div className="flex space-x-3">
           <button 
@@ -283,16 +283,16 @@ export function ClientsPage() {
       {/* Clients Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredClients.map((client) => (
-          <div key={client.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div key={client.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
                   <User className="h-6 w-6 text-white" />
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-lg font-semibold text-gray-900">{client.full_name || client.fullName}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{client.full_name || client.fullName}</h3>
                   {(client.company || client.companyName) && (
-                    <p className="text-sm text-gray-600">{client.company || client.companyName}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{client.company || client.companyName}</p>
                   )}
                 </div>
               </div>
@@ -311,29 +311,29 @@ export function ClientsPage() {
             </div>
             
             <div className="space-y-3">
-              <div className="flex items-center text-sm text-gray-600">
-                <Mail className="h-4 w-4 mr-2 text-gray-400" />
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                <Mail className="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500" />
                 {client.email}
               </div>
               {client.phone && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                  <Phone className="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500" />
                   {client.phone}
                 </div>
               )}
-              <div className="flex items-center text-sm text-gray-600">
-                <Calendar className="h-4 w-4 mr-2 text-gray-400" />
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                <Calendar className="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500" />
                 Joined {new Date(client.created_at || client.createdAt).toLocaleDateString()}
               </div>
               {client.lastLogin && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <UserCheck className="h-4 w-4 mr-2 text-gray-400" />
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                  <UserCheck className="h-4 w-4 mr-2 text-gray-400 dark:text-gray-500" />
                   Last login: {new Date(client.lastLogin).toLocaleDateString()}
                 </div>
               )}
             </div>
             
-            <div className="mt-6 pt-4 border-t border-gray-200">
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-slate-600">
               <div className="grid grid-cols-2 gap-2 mb-4">
                 <button 
                   onClick={() => showClientHistory(client)}
@@ -391,30 +391,30 @@ export function ClientsPage() {
       </div>
 
       {/* Stats Summary */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Client Overview</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{clients.length}</div>
-            <div className="text-sm text-gray-600">Total Clients</div>
-          </div>
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Client Overview</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">{clients.length}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Clients</div>
+            </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">
               {clients.filter(c => clientStatuses[c.id] ?? c.is_active ?? c.isActive).length}
             </div>
-            <div className="text-sm text-gray-600">Active Accounts</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">Active Accounts</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-yellow-600">
               {clients.filter(c => c.lastLogin && new Date(c.lastLogin) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}
             </div>
-            <div className="text-sm text-gray-600">Active This Month</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">Active This Month</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-purple-600">
               {clients.filter(c => !c.lastLogin).length}
             </div>
-            <div className="text-sm text-gray-600">Never Logged In</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">Never Logged In</div>
           </div>
         </div>
       </div>

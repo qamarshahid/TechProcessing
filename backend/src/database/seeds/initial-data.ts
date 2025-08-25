@@ -3,6 +3,9 @@ import * as bcrypt from 'bcryptjs';
 import { User } from '../../users/entities/user.entity';
 import { ServicePackage } from '../../invoices/entities/service-package.entity';
 import { UserRole } from '../../common/enums/user-role.enum';
+import { seedAgents } from './agent-seed';
+import { seedClosers } from './closer-seed';
+import { seedSales } from './sales-seed';
 
 export async function seedInitialData(dataSource: DataSource) {
   const userRepository = dataSource.getRepository(User);
@@ -92,4 +95,13 @@ export async function seedInitialData(dataSource: DataSource) {
     
     console.log('✅ Sample service packages created');
   }
+
+  // Seed agents
+  await seedAgents(dataSource);
+  
+  // Seed closers
+  await seedClosers(dataSource);
+  
+  // Seed sales
+  await seedSales(dataSource);
 }

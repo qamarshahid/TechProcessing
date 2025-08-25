@@ -13,7 +13,7 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { ClientDashboard } from './components/client/ClientDashboard';
 import { InvoicesPage as AdminInvoicesPage } from './components/admin/InvoicesPage';
 import { ServicesPage as AdminServicesPage } from './components/admin/ServicesPage';
-import { PaymentLinkPage as PaymentLinksPage } from './components/admin/PaymentLinksPage';
+import { PaymentLinksPage } from './components/admin/PaymentLinksPage';
 import { SubscriptionsPage } from './components/admin/SubscriptionsPage';
 import { RefundsPage } from './components/admin/RefundsPage';
 import { ClientsPage } from './components/admin/ClientsPage';
@@ -26,6 +26,11 @@ import { InvoicesPage as ClientInvoicesPage } from './components/client/Invoices
 import { ServicesPage as ClientServicesPage } from './components/client/ServicesPage';
 import { PaymentPage } from './components/client/PaymentPage';
 import { PaymentLinkPage } from './components/PaymentLinkPage';
+import { AgentDashboard } from './components/agent/AgentDashboard';
+import { AgentPerformancePage } from './components/agent/AgentPerformancePage';
+import AgentSalesPage from './components/admin/AgentSalesPage';
+import { CloserManagementPage } from './components/admin/CloserManagementPage';
+import { CloserAuditPage } from './components/admin/CloserAuditPage';
 
 function App() {
   return (
@@ -37,14 +42,18 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginForm />} />
-              <Route
-                path="/payment/:invoiceId"
-                element={
-                  <ProtectedRoute requiredRole="CLIENT">
-                    <PaymentPage />
-                  </ProtectedRoute>
-                }
-              />
+          <Route
+            path="/payment/:invoiceId"
+            element={
+              <ProtectedRoute requiredRole="CLIENT">
+                <PaymentPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment-link/:token"
+            element={<PaymentLinkPage />}
+          />
           <Route
             path="/dashboard"
             element={
@@ -195,6 +204,36 @@ function App() {
             }
           />
           <Route
+            path="/admin/agent-sales"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <Layout>
+                  <AgentSalesPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/closers"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <Layout>
+                  <CloserManagementPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/closer-audit"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <Layout>
+                  <CloserAuditPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/client"
             element={
               <ProtectedRoute requiredRole="CLIENT">
@@ -224,6 +263,26 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/agent"
+            element={
+              <ProtectedRoute requiredRole="AGENT">
+                <Layout>
+                  <AgentDashboard />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/agent/performance"
+            element={
+              <ProtectedRoute requiredRole="AGENT">
+                <Layout>
+                  <AgentPerformancePage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         </Router>
       </AuthProvider>
@@ -241,6 +300,8 @@ function DashboardRedirect() {
     return <Navigate to="/admin" replace />;
   } else if (user?.role === 'CLIENT') {
     return <Navigate to="/client" replace />;
+  } else if (user?.role === 'AGENT') {
+    return <Navigate to="/agent" replace />;
   }
   
   return <Navigate to="/login" replace />;
