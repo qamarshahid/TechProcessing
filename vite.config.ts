@@ -12,6 +12,9 @@ export default defineConfig({
     sourcemap: false,
     minify: 'esbuild',
     assetsInlineLimit: 0,
+    rollupOptions: {
+      input: 'src/main.tsx',
+    },
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
