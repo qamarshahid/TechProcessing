@@ -42,6 +42,17 @@ jobs:
       env:
         VITE_API_URL: https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api
         
+    - name: Check build output
+      run: |
+        echo "Build directory contents:"
+        ls -la dist/
+        echo ""
+        echo "HTML file contents:"
+        cat dist/index.html
+        echo ""
+        echo "Assets directory:"
+        ls -la dist/assets/ || echo "No assets directory found"
+        
     - name: Setup Pages
       uses: actions/configure-pages@v4
       
