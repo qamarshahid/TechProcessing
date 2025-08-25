@@ -50,27 +50,29 @@ jobs:
         echo "Assets directory:"
         ls -la dist/assets/ || echo "No assets directory found"
         echo ""
-        echo "Creating HTML file if missing..."
-        if [ ! -f dist/index.html ]; then
-          echo "HTML file missing, creating it..."
-          echo '<!doctype html>' > dist/index.html
-          echo '<html lang="en">' >> dist/index.html
-          echo '  <head>' >> dist/index.html
-          echo '    <meta charset="UTF-8" />' >> dist/index.html
-          echo '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />' >> dist/index.html
-          echo '    <title>Tech Processing LLC - IT Services Management Platform</title>' >> dist/index.html
-          echo '    <meta name="description" content="Professional IT services management platform for client projects, invoices, and secure communication." />' >> dist/index.html
-          echo '    <link rel="stylesheet" crossorigin href="/TechProcessing/assets/main-CfzDb_z9.css">' >> dist/index.html
-          echo '  </head>' >> dist/index.html
-          echo '  <body>' >> dist/index.html
-          echo '    <div id="root"></div>' >> dist/index.html
-          echo '    <script type="module" crossorigin src="/TechProcessing/assets/main-BKKuHKlc.js"></script>' >> dist/index.html
-          echo '  </body>' >> dist/index.html
-          echo '</html>' >> dist/index.html
-          echo "HTML file created successfully"
-        else
-          echo "HTML file exists"
-        fi
+        echo "Creating HTML file with correct asset references..."
+        # Get the actual asset filenames
+        JS_FILE=$(ls dist/assets/*.js | head -1 | xargs basename)
+        CSS_FILE=$(ls dist/assets/*.css | head -1 | xargs basename)
+        echo "Found JS file: $JS_FILE"
+        echo "Found CSS file: $CSS_FILE"
+        echo ""
+        # Create HTML file with correct asset references
+        echo '<!doctype html>' > dist/index.html
+        echo '<html lang="en">' >> dist/index.html
+        echo '  <head>' >> dist/index.html
+        echo '    <meta charset="UTF-8" />' >> dist/index.html
+        echo '    <meta name="viewport" content="width=device-width, initial-scale=1.0" />' >> dist/index.html
+        echo '    <title>Tech Processing LLC - IT Services Management Platform</title>' >> dist/index.html
+        echo '    <meta name="description" content="Professional IT services management platform for client projects, invoices, and secure communication." />' >> dist/index.html
+        echo "    <link rel=\"stylesheet\" crossorigin href=\"/TechProcessing/assets/$CSS_FILE\">" >> dist/index.html
+        echo '  </head>' >> dist/index.html
+        echo '  <body>' >> dist/index.html
+        echo '    <div id="root"></div>' >> dist/index.html
+        echo "    <script type=\"module\" crossorigin src=\"/TechProcessing/assets/$JS_FILE\"></script>" >> dist/index.html
+        echo '  </body>' >> dist/index.html
+        echo '</html>' >> dist/index.html
+        echo "HTML file created with correct asset references"
         echo ""
         echo "Final HTML file contents:"
         cat dist/index.html
