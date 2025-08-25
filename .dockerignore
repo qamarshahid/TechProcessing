@@ -1,0 +1,46 @@
+# Reduce Docker build context and exclude dev/test assets
+
+# Node modules and logs
+node_modules
+**/node_modules
+npm-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+# Git
+.git
+.gitignore
+
+# Local env files
+.env
+*.env
+backend/.env
+backend/.env.*
+
+# Frontend app (not needed for backend image)
+src/
+public/
+playwright.config.ts
+vitest.config.ts
+test-results/
+
+# Tests and coverage
+**/*.spec.ts
+**/*.test.ts
+coverage/
+backend/test/
+backend/src/**/__mocks__/
+backend/src/seeds/
+
+# Supabase/local tooling not required in image
+supabase/
+
+# Misc project files not needed in image
+README.md
+**/*.md
+.eslintrc*
+eslint.config.js
+babel.config.*
+
+# Docker compose (not needed in container filesystem)
+docker-compose.yml

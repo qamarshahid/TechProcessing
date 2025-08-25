@@ -1,0 +1,142 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: techprocessing-db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: techprocessing
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD not set}
+    ports:
+      - "127.0.0.1:5432:5432"     # bind to localhost only
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - techprocessing-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techprocessing-api
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-postgres}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD not set}
+      DATABASE_NAME: ${DATABASE_NAME:-techprocessing}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET not set}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      PORT: 8081
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      DATABASE_SSL: ${DATABASE_SSL:-"false"}
+      DATABASE_SSL_REJECT_UNAUTHORIZED: ${DATABASE_SSL_REJECT_UNAUTHORIZED:-"false"}
+    ports:
+      - "127.0.0.1:8081:8081"     # bind to localhost only
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - techprocessing-network
+    volumes:
+      - ./logs:/app/logs
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: techprocessing-redis
+    ports:
+      - "127.0.0.1:6379:6379"     # bind to localhost only
+    networks:
+      - techprocessing-network
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # --- Optional: Connect backend to Cloud SQL via local proxy instead of local Postgres ---
+  # Prefer env vars and .env instead of hardcoded secrets.
+  # Example local proxy command (outside compose):
+  # cloud-sql-proxy ${INSTANCE_CONNECTION_NAME} --address 127.0.0.1 --port 6543
+  # Then run a backend pointed at 127.0.0.1:6543 using env vars (no plaintext in compose).
+
+  # Cloud SQL Auth Proxy (requires INSTANCE_CONNECTION_NAME and a local key file path)
+  cloudsql:
+    image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.1
+    container_name: techprocessing-cloudsql
+    command: ["--port=6543", "${INSTANCE_CONNECTION_NAME}"]
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/key.json
+    volumes:
+      - ${GOOGLE_APPLICATION_CREDENTIALS_HOST_PATH:?GOOGLE_APPLICATION_CREDENTIALS_HOST_PATH not set}:/secrets/key.json:ro
+    networks:
+      - techprocessing-network
+    restart: unless-stopped
+
+  # Backend wired to Cloud SQL via proxy
+  backend-cloudsql:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techprocessing-api-cloudsql
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DATABASE_HOST: cloudsql
+      DATABASE_PORT: 6543
+      DATABASE_USERNAME: ${DATABASE_USERNAME:?DATABASE_USERNAME not set}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD not set}
+      DATABASE_NAME: ${DATABASE_NAME:-techprocessing}
+      DATABASE_SSL: ${DATABASE_SSL:-"false"}              # Connector secures transport
+      DATABASE_SSL_REJECT_UNAUTHORIZED: ${DATABASE_SSL_REJECT_UNAUTHORIZED:-"false"}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET not set}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      PORT: 8081
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+    ports:
+      - "127.0.0.1:8082:8081"      # avoid conflict with default backend; bind to localhost only
+    depends_on:
+      cloudsql:
+        condition: service_started
+    networks:
+      - techprocessing-network
+    volumes:
+      - ./logs:/app/logs
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  techprocessing-network:
+    driver: bridge
