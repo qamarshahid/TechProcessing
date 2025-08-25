@@ -30,8 +30,9 @@ async function bootstrap() {
   const corsEnv =
     configService.get<string>('CORS_ORIGINS') ||
     configService.get<string>('CORS_ORIGIN');
-  const defaultDevOrigins = 'http://localhost:5174,http://localhost:5173';
-  const origins = (corsEnv || (!isProd ? defaultDevOrigins : ''))
+  const defaultDevOrigins = 'http://localhost:5174,http://localhost:5173,https://qamarshahid.github.io';
+  const defaultProdOrigins = 'https://qamarshahid.github.io';
+  const origins = (corsEnv || (!isProd ? defaultDevOrigins : defaultProdOrigins))
     .split(',')
     .map((o) => o.trim())
     .filter((o) => !!o);
