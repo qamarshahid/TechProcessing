@@ -1,3 +1,5 @@
+import { Closer } from '../types';
+
 class ApiClient {
   private baseURL: string;
   private token: string | null = null;
@@ -8,11 +10,14 @@ class ApiClient {
   }
 
   setToken(token: string | null) {
+    console.log('🔧 Setting token in API client:', token ? 'token provided' : 'null');
     this.token = token;
     if (token) {
       localStorage.setItem('auth_token', token);
+      console.log('💾 Token saved to localStorage');
     } else {
       localStorage.removeItem('auth_token');
+      console.log('🗑️ Token removed from localStorage');
     }
   }
 
@@ -31,21 +36,29 @@ class ApiClient {
       ...options,
     };
 
+    console.log(`🌐 Making ${options.method || 'GET'} request to: ${url}`);
+    console.log('🔑 Token in request:', this.token ? 'present' : 'missing');
+
     try {
       const response = await fetch(url, config);
+      console.log(`📡 Response status: ${response.status}`);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.log('❌ API Error:', errorData);
         throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
-        return await response.json();
+        const data = await response.json();
+        console.log('✅ API Response data:', data);
+        return data;
       }
       
       return response as unknown as T;
     } catch (error) {
+      console.log('🚨 Request error:', error);
       if (error instanceof Error) {
         throw error;
       }
@@ -532,10 +545,25 @@ class ApiClient {
       
       console.log('Filtered client payments:', clientPayments);
       
+      // Get all subscriptions and filter for this client
+      const allSubscriptionsResponse = await this.getSubscriptions();
+      const allSubscriptions = allSubscriptionsResponse.subscriptions || [];
+      
+      console.log('All subscriptions from backend:', allSubscriptions);
+      
+      const clientSubscriptions = allSubscriptions.filter(subscription => 
+        subscription.client_id === clientId || 
+        subscription.clientId === clientId ||
+        subscription.client?.id === clientId
+      );
+      
+      console.log('Filtered client subscriptions:', clientSubscriptions);
+      
       console.log('Final client data:', {
         clientId,
         invoices: clientInvoices,
-        payments: clientPayments
+        payments: clientPayments,
+        subscriptions: clientSubscriptions
       });
       
       // Combine into transaction history
@@ -573,12 +601,31 @@ class ApiClient {
         });
       });
       
+      // Add subscriptions
+      clientSubscriptions.forEach(subscription => {
+        transactions.push({
+          id: subscription.id,
+          type: 'subscription',
+          description: subscription.description || `${subscription.frequency} Subscription`,
+          amount: parseFloat(subscription.amount || '0'),
+          status: subscription.status.toLowerCase(),
+          date: subscription.created_at || subscription.createdAt,
+          due_date: subscription.next_billing_date || subscription.nextBillingDate,
+          frequency: subscription.frequency,
+          start_date: subscription.start_date || subscription.startDate,
+          total_billed: parseFloat(subscription.total_billed || subscription.totalBilled || '0'),
+          service_package: subscription.servicePackage?.name || subscription.service_package?.name,
+          transaction_id: subscription.id,
+          subscription_id: subscription.id
+        });
+      });
+      
       // Sort by date (newest first)
       transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       
       console.log('Final transactions:', transactions);
       
-      return { transactions, invoices: clientInvoices, payments: clientPayments };
+      return { transactions, invoices: clientInvoices, payments: clientPayments, subscriptions: clientSubscriptions };
     } catch (error) {
       console.error('Error fetching client transaction history:', error);
       
@@ -588,6 +635,7 @@ class ApiClient {
         transactions: [], 
         invoices: [], 
         payments: [],
+        subscriptions: [],
         error: error.message 
       };
     }
@@ -751,12 +799,16 @@ class ApiClient {
   async getPaymentLinks() {
     try {
       console.log('Fetching payment links from API...');
-      const response = await this.request<any>('/payments/payment-links').catch(error => {
+      const response = await this.request<any>('/payment-links').catch(error => {
         console.error('API call failed, using fallback data:', error);
         throw error; // Re-throw to trigger catch block
       });
       console.log('Payment links API response:', response);
-      return response;
+      // Handle both array response and object with links property
+      if (Array.isArray(response)) {
+        return { links: response };
+      }
+      return { links: response.links || response };
     } catch (error) {
       console.error('Error fetching payment links:', error);
       // Return mock data as fallback
@@ -806,11 +858,11 @@ class ApiClient {
     description: string;
     amount: number;
     expiresAt: string;
-    allowPartialPayment: boolean;
-    sendEmail: boolean;
+    allowPartialPayment?: boolean;
+    metadata?: any;
   }) {
     try {
-      return this.request<{ link: any }>('/payments/payment-links', {
+      return this.request<{ link: any }>('/payment-links', {
         method: 'POST',
         body: JSON.stringify(linkData),
       });
@@ -855,9 +907,36 @@ class ApiClient {
     }
   }
 
+  async processPaymentLinkPayment(token: string, paymentData: any) {
+    try {
+      console.log('API: Processing payment for token:', token, paymentData);
+      const response = await this.request<any>(`/payment-links/token/${token}/process-payment`, {
+        method: 'POST',
+        body: JSON.stringify(paymentData),
+      });
+      console.log('API: Payment processing response:', response);
+      return response;
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      throw error;
+    }
+  }
+
+  async resendPaymentLinkEmail(linkId: string) {
+    try {
+      const response = await this.request<any>(`/payment-links/${linkId}/resend-email`, {
+        method: 'POST',
+      });
+      return response;
+    } catch (error) {
+      console.error('Error resending payment link email:', error);
+      throw error;
+    }
+  }
+
   async deletePaymentLink(linkId: string) {
     try {
-      return this.request<{ success: boolean }>(`/payments/payment-links/${linkId}`, {
+      return this.request<{ success: boolean }>(`/payment-links/${linkId}`, {
         method: 'DELETE',
       });
     } catch (error) {
@@ -871,12 +950,16 @@ class ApiClient {
   async getSubscriptions() {
     try {
       console.log('Fetching subscriptions from API...');
-      const response = await this.request<any>('/payments/subscriptions').catch(error => {
+      const response = await this.request<any>('/subscriptions').catch(error => {
         console.error('API call failed, using fallback data:', error);
         throw error; // Re-throw to trigger catch block
       });
       console.log('Subscriptions API response:', response);
-      return response;
+      // Handle both array response and object with subscriptions property
+      if (Array.isArray(response)) {
+        return { subscriptions: response };
+      }
+      return { subscriptions: response.subscriptions || response };
     } catch (error) {
       console.error('Error fetching subscriptions:', error);
       // Return mock data as fallback
@@ -913,7 +996,7 @@ class ApiClient {
 
   async updateSubscription(subscriptionId: string, subscriptionData: any) {
     try {
-      return this.request<{ subscription: any }>(`/payments/subscriptions/${subscriptionId}`, {
+      return this.request<{ subscription: any }>(`/subscriptions/${subscriptionId}`, {
         method: 'PATCH',
         body: JSON.stringify(subscriptionData),
       });
@@ -947,7 +1030,7 @@ class ApiClient {
       };
       delete backendData.serviceId;
       
-      return this.request<{ subscription: any }>('/payments/subscriptions', {
+      return this.request<{ subscription: any }>('/subscriptions', {
         method: 'POST',
         body: JSON.stringify(backendData),
       });
@@ -967,7 +1050,7 @@ class ApiClient {
 
   async updateSubscriptionStatus(subscriptionId: string, status: string) {
     try {
-      return this.request<{ subscription: any }>(`/payments/subscriptions/${subscriptionId}/status`, {
+      return this.request<{ subscription: any }>(`/subscriptions/${subscriptionId}/status`, {
         method: 'PATCH',
         body: JSON.stringify({ status }),
       });
@@ -986,7 +1069,7 @@ class ApiClient {
 
   async deleteSubscription(subscriptionId: string) {
     try {
-      return this.request<{ success: boolean }>(`/payments/subscriptions/${subscriptionId}`, {
+      return this.request<{ success: boolean }>(`/subscriptions/${subscriptionId}`, {
         method: 'DELETE',
       });
     } catch (error) {
@@ -1138,6 +1221,337 @@ class ApiClient {
 
   async getEntityAuditLogs(entityType: string, entityId: string) {
     return this.request<{ logs: any[] }>(`/audit/entity/${entityType}/${entityId}`);
+  }
+
+  // Agent methods
+  async createAgent(agentData: {
+    email: string;
+    password: string;
+    fullName: string;
+    agentCode: string;
+    salesPersonName: string;
+    closerName: string;
+    agentCommissionRate?: number;
+    closerCommissionRate?: number;
+    companyName?: string;
+    isActive?: boolean;
+  }) {
+    try {
+      return this.request<{ agent: any }>('/agents', {
+        method: 'POST',
+        body: JSON.stringify(agentData),
+      });
+    } catch (error) {
+      console.error('Error creating agent:', error);
+      throw error;
+    }
+  }
+
+  async getAgents() {
+    try {
+      const response = await this.request<any[]>('/agents');
+      return response;
+    } catch (error) {
+      console.error('Error fetching agents:', error);
+      return [];
+    }
+  }
+
+  async getAgentStats() {
+    try {
+      return this.request<any>('/agents/stats');
+    } catch (error) {
+      console.error('Error fetching agent stats:', error);
+      return {
+        totalAgents: 0,
+        activeAgents: 0,
+        totalSales: 0,
+        totalSalesValue: 0,
+        totalCommissions: 0,
+        totalPaidOut: 0,
+        pendingCommissions: 0,
+        agents: [],
+      };
+    }
+  }
+
+  async getOwnAgentProfile() {
+    try {
+      return this.request<any>('/agents/profile/me');
+    } catch (error) {
+      console.error('Error fetching own agent profile:', error);
+      throw error;
+    }
+  }
+
+  async createAgentSale(saleData: {
+    clientName: string;
+    clientEmail: string;
+    clientPhone?: string;
+    serviceName: string;
+    serviceDescription?: string;
+    saleAmount: number;
+    saleDate?: string;
+    paymentDate?: string;
+    saleStatus?: string;
+    notes?: string;
+    clientDetails?: any;
+    metadata?: any;
+  }) {
+    try {
+      return this.request<any>('/agents/sales', {
+        method: 'POST',
+        body: JSON.stringify(saleData),
+      });
+    } catch (error) {
+      console.error('Error creating agent sale:', error);
+      throw error;
+    }
+  }
+
+  async getAgentSales(agentId?: string) {
+    try {
+      const endpoint = agentId ? `/agents/sales?agentId=${agentId}` : '/agents/sales/me';
+      const response = await this.request<any[]>(endpoint);
+      return response;
+    } catch (error) {
+      console.error('Error fetching agent sales:', error);
+      return [];
+    }
+  }
+
+  async getAllAgentSales() {
+    try {
+      const response = await this.request<any[]>('/agents/sales/all');
+      return response;
+    } catch (error) {
+      console.error('Error fetching all agent sales:', error);
+      return [];
+    }
+  }
+
+  async getAgentSale(id: string) {
+    try {
+      return this.request<any>(`/agents/sales/${id}`);
+    } catch (error) {
+      console.error('Error fetching agent sale:', error);
+      throw error;
+    }
+  }
+
+  async updateSaleStatus(id: string, status: string) {
+    try {
+      return this.request<any>(`/agents/sales/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+    } catch (error) {
+      console.error('Error updating sale status:', error);
+      throw error;
+    }
+  }
+
+  async updateCommissionStatus(id: string, status: string) {
+    try {
+      return this.request<any>(`/agents/sales/${id}/commission-status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+    } catch (error) {
+      console.error('Error updating commission status:', error);
+      throw error;
+    }
+  }
+
+  async updateAgentSaleNotes(id: string, notes: string) {
+    try {
+      return this.request<any>(`/agents/sales/${id}/notes`, {
+        method: 'PATCH',
+        body: JSON.stringify({ notes }),
+      });
+    } catch (error) {
+      console.error('Error updating agent sale notes:', error);
+      throw error;
+    }
+  }
+
+  async resubmitAgentSale(resubmitData: any) {
+    try {
+      return this.request<any>('/agents/sales/resubmit', {
+        method: 'POST',
+        body: JSON.stringify(resubmitData),
+      });
+    } catch (error) {
+      console.error('Error resubmitting agent sale:', error);
+      throw error;
+    }
+  }
+
+  async updateAgentCommissionRates(agentId: string, agentCommissionRate: number, closerCommissionRate: number) {
+    try {
+      return this.request<any>(`/agents/${agentId}/commission-rates`, {
+        method: 'PATCH',
+        body: JSON.stringify({ agentCommissionRate, closerCommissionRate }),
+      });
+    } catch (error) {
+      console.error('Error updating agent commission rates:', error);
+      throw error;
+    }
+  }
+
+  async getAgentMonthlyStats() {
+    try {
+      return this.request<any>('/agents/monthly-stats');
+    } catch (error) {
+      console.error('Error fetching agent monthly stats:', error);
+      throw error;
+    }
+  }
+
+  // Closer methods
+  async getActiveClosers() {
+    try {
+      return this.request<Closer[]>('/agents/closers/active');
+    } catch (error) {
+      console.error('Error fetching active closers:', error);
+      throw error;
+    }
+  }
+
+  async getAllClosers() {
+    try {
+      return this.request<Closer[]>('/closers');
+    } catch (error) {
+      console.error('Error fetching all closers:', error);
+      throw error;
+    }
+  }
+
+  async getCloser(id: string) {
+    try {
+      return this.request<Closer>(`/closers/${id}`);
+    } catch (error) {
+      console.error('Error fetching closer:', error);
+      throw error;
+    }
+  }
+
+  async createCloser(closerData: any) {
+    try {
+      return this.request<Closer>('/closers', {
+        method: 'POST',
+        body: JSON.stringify(closerData),
+      });
+    } catch (error) {
+      console.error('Error creating closer:', error);
+      throw error;
+    }
+  }
+
+  async updateCloser(id: string, closerData: any) {
+    try {
+      return this.request<Closer>(`/closers/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(closerData),
+      });
+    } catch (error) {
+      console.error('Error updating closer:', error);
+      throw error;
+    }
+  }
+
+  async deleteCloser(id: string) {
+    try {
+      return this.request<void>(`/closers/${id}`, {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      console.error('Error deleting closer:', error);
+      throw error;
+    }
+  }
+
+  async getCloserStats(id: string) {
+    try {
+      console.log('Making request to:', `/closers/${id}/stats`);
+      const result = await this.request<any>(`/closers/${id}/stats`);
+      console.log('Closer stats response:', result);
+      return result;
+    } catch (error) {
+      console.error('Error fetching closer stats:', error);
+      console.error('Error response:', error.response);
+      throw error;
+    }
+  }
+
+  async getCloserMonthlyStats(id: string) {
+    try {
+      return this.request<any>(`/closers/${id}/monthly-stats`);
+    } catch (error) {
+      console.error('Error fetching closer monthly stats:', error);
+      throw error;
+    }
+  }
+
+  async getCloserSales(id: string) {
+    try {
+      return this.request<any>(`/closers/${id}/sales`);
+    } catch (error) {
+      console.error('Error fetching closer sales:', error);
+      throw error;
+    }
+  }
+
+  async getAllClosersStats() {
+    try {
+      return this.request<any>('/closers/stats');
+    } catch (error) {
+      console.error('Error fetching all closers stats:', error);
+      throw error;
+    }
+  }
+
+  async getFilteredCloserStats(filters: any) {
+    try {
+      const queryParams = new URLSearchParams();
+      
+      if (filters.startDate) queryParams.append('startDate', filters.startDate);
+      if (filters.endDate) queryParams.append('endDate', filters.endDate);
+      if (filters.month) queryParams.append('month', filters.month);
+      if (filters.minCommission) queryParams.append('minCommission', filters.minCommission.toString());
+      if (filters.maxCommission) queryParams.append('maxCommission', filters.maxCommission.toString());
+      
+      const queryString = queryParams.toString();
+      const url = queryString ? `/closers/stats/filtered?${queryString}` : '/closers/stats/filtered';
+      
+      return this.request<any>(url);
+    } catch (error) {
+      console.error('Error fetching filtered closer stats:', error);
+      throw error;
+    }
+  }
+
+  async getCloserAuditData(filters: any) {
+    try {
+      const queryParams = new URLSearchParams();
+      
+      if (filters.closerId) queryParams.append('closerId', filters.closerId);
+      if (filters.agentId) queryParams.append('agentId', filters.agentId);
+      if (filters.startDate) queryParams.append('startDate', filters.startDate);
+      if (filters.endDate) queryParams.append('endDate', filters.endDate);
+      if (filters.saleStatus) queryParams.append('saleStatus', filters.saleStatus);
+      if (filters.commissionStatus) queryParams.append('commissionStatus', filters.commissionStatus);
+      if (filters.minAmount) queryParams.append('minAmount', filters.minAmount.toString());
+      if (filters.maxAmount) queryParams.append('maxAmount', filters.maxAmount.toString());
+      
+      const queryString = queryParams.toString();
+      const url = queryString ? `/closers/audit?${queryString}` : '/closers/audit';
+      
+      return this.request<AgentSale[]>(url);
+    } catch (error) {
+      console.error('Error fetching closer audit data:', error);
+      throw error;
+    }
   }
 }
 

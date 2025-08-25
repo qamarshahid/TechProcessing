@@ -40,16 +40,18 @@ export class PaymentLinksController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Get all payment links (Admin only)' })
   @ApiResponse({ status: 200, description: 'Payment links retrieved successfully' })
-  findAll() {
-    return this.paymentLinksService.findAll();
+  async findAll() {
+    const links = await this.paymentLinksService.findAll();
+    return { links };
   }
 
   @Get('token/:token')
   @Public()
   @ApiOperation({ summary: 'Get payment link by token (Public)' })
   @ApiResponse({ status: 200, description: 'Payment link retrieved successfully' })
-  findByToken(@Param('token') token: string) {
-    return this.paymentLinksService.findByToken(token);
+  async findByToken(@Param('token') token: string) {
+    const paymentLink = await this.paymentLinksService.findByToken(token);
+    return { link: paymentLink };
   }
 
   @Get('client/:clientId')
@@ -88,6 +90,27 @@ export class PaymentLinksController {
     @CurrentUser() currentUser: User,
   ) {
     return this.paymentLinksService.updateStatus(id, status, currentUser);
+  }
+
+  @Post('token/:token/process-payment')
+  @Public()
+  @ApiOperation({ summary: 'Process payment for a payment link (Public)' })
+  @ApiResponse({ status: 200, description: 'Payment processed successfully' })
+  @ApiResponse({ status: 400, description: 'Payment processing failed' })
+  async processPayment(
+    @Param('token') token: string,
+    @Body() paymentRequest: any,
+  ) {
+    return this.paymentLinksService.processPayment(token, paymentRequest);
+  }
+
+  @Post(':id/resend-email')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Resend payment link email (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Email sent successfully' })
+  async resendEmail(@Param('id') id: string, @CurrentUser() currentUser: User) {
+    await this.paymentLinksService.resendEmail(id, currentUser);
+    return { message: 'Email sent successfully' };
   }
 
   @Delete(':id')

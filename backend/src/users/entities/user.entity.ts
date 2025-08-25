@@ -14,6 +14,7 @@ import { UserRole } from '../../common/enums/user-role.enum';
 import { Invoice } from '../../invoices/entities/invoice.entity';
 import { Payment } from '../../payments/entities/payment.entity';
 import { AuditLog } from '../../audit/entities/audit-log.entity';
+import { Agent } from './agent.entity';
 
 @Entity('users')
 export class User {
@@ -69,6 +70,9 @@ export class User {
 
   @OneToMany(() => AuditLog, (auditLog) => auditLog.user)
   auditLogs: AuditLog[];
+
+  @OneToMany(() => Agent, (agent) => agent.user)
+  agentProfiles: Agent[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
