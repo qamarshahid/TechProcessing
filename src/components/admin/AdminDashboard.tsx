@@ -198,12 +198,12 @@ export function AdminDashboard() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-sm text-gray-600">Welcome back to Tech Processing LLC</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Welcome back to Tech Processing LLC</p>
           </div>
         </div>
         
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
           <div className="flex items-center">
             <AlertCircle className="h-6 w-6 text-red-600 mr-3" />
             <div>
@@ -225,81 +225,81 @@ export function AdminDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-sm text-gray-600">Welcome back to Tech Processing LLC</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Welcome back to Tech Processing LLC</p>
         </div>
         <div className="flex items-center space-x-2">
           <Package className="h-8 w-8 text-blue-600" />
-          <span className="text-xl font-bold text-gray-900">Tech Processing LLC</span>
+          <span className="text-xl font-bold text-gray-900 dark:text-white">Tech Processing LLC</span>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-slate-700">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <Users className="h-8 w-8 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Clients</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalClients}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Clients</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalClients}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-slate-700">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <FileText className="h-8 w-8 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Invoices</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalInvoices}</p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Invoices</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalInvoices}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {stats.paidInvoices} paid, {stats.unpaidInvoices} unpaid
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-slate-700">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <DollarSign className="h-8 w-8 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Revenue</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 ${stats.totalRevenue.toFixed(2)}
               </p>
-              <p className="text-xs text-gray-500 mt-1">From paid invoices</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">From paid invoices</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-slate-700">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <RefreshCw className="h-8 w-8 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Active Subscriptions</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.activeSubscriptions}</p>
-              <p className="text-xs text-gray-500 mt-1">${stats.monthlyRecurringRevenue}/month MRR</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Active Subscriptions</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.activeSubscriptions}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">${stats.monthlyRecurringRevenue}/month MRR</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Recent Invoices */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-600">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Invoices</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Invoices</h2>
             <button 
               onClick={fetchDashboardData}
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+              className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
             >
               Refresh
             </button>
@@ -308,68 +308,68 @@ export function AdminDashboard() {
         
         {recentInvoices.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <FileText className="h-8 w-8 text-gray-400" />
+            <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mb-4">
+              <FileText className="h-8 w-8 text-gray-400 dark:text-gray-500" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Recent Invoices</h3>
-            <p className="text-gray-500 text-center">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Recent Invoices</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-center">
               Recent invoices will appear here once they are created.
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-600">
+              <thead className="bg-gray-50 dark:bg-slate-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Client
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Invoice #
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Description
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Date
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-600">
                 {recentInvoices.map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-gray-50">
+                  <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {invoice.client_name}
                         </div>
                         {invoice.client_company && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
                             {invoice.client_company}
                           </div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-xs font-mono bg-blue-50 text-blue-800 px-2 py-1 rounded border border-blue-200">
+                      <span className="text-xs font-mono bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 px-2 py-1 rounded border border-blue-200 dark:border-blue-700">
                         #{invoice.invoice_number || invoice.invoiceNumber || `INV-${invoice.id.slice(-8)}`}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {invoice.description}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
                         ${parseFloat(invoice.total || invoice.amount || '0').toFixed(2)}
                       </div>
                       {invoice.tax && parseFloat(invoice.tax) > 0 && (
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
                           Tax: ${parseFloat(invoice.tax).toFixed(2)}
                         </div>
                       )}
@@ -380,10 +380,10 @@ export function AdminDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-sm text-gray-900 dark:text-white">
                         {formatDate(invoice.due_date || invoice.dueDate)}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         Created: {formatDate(invoice.created_at || invoice.createdAt)}
                       </div>
                     </td>

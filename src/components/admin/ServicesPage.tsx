@@ -124,8 +124,8 @@ export function ServicesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Service Packages</h1>
-          <p className="text-sm text-gray-600">Manage your service offerings and pricing</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Service Packages</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Manage your service offerings and pricing</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}
@@ -150,14 +150,14 @@ export function ServicesPage() {
       {/* Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredServices.map((service) => (
-          <div key={service.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div key={service.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                   <Package className="h-6 w-6 text-blue-600" />
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{service.name}</h3>
                   <div className="flex items-center text-green-600">
                     <DollarSign className="h-4 w-4" />
                     <span className="font-bold">{service.price.toLocaleString()}</span>
@@ -182,13 +182,13 @@ export function ServicesPage() {
               </div>
             </div>
             
-            <p className="text-gray-600 mb-4">{service.description}</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">{service.description}</p>
             
             <div className="space-y-2">
-              <h4 className="font-medium text-gray-900">Features:</h4>
+              <h4 className="font-medium text-gray-900 dark:text-white">Features:</h4>
               <ul className="space-y-1">
                 {service.features.map((feature: string, index: number) => (
-                  <li key={index} className="flex items-center text-sm text-gray-600">
+                  <li key={index} className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
                     {feature}
                   </li>
@@ -196,7 +196,7 @@ export function ServicesPage() {
               </ul>
             </div>
             
-            <div className="mt-6 pt-4 border-t border-gray-200">
+            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-slate-600">
               <button 
                 onClick={() => createInvoiceFromService(service)}
                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"

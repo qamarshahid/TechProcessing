@@ -40,8 +40,9 @@ export class SubscriptionsController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Get all subscriptions (Admin only)' })
   @ApiResponse({ status: 200, description: 'Subscriptions retrieved successfully' })
-  findAll() {
-    return this.subscriptionsService.findAll();
+  async findAll() {
+    const subscriptions = await this.subscriptionsService.findAll();
+    return { subscriptions };
   }
 
   @Get('client/:clientId')

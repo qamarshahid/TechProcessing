@@ -1,249 +1,401 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { apiClient } from '../../lib/api';
 import { 
-  CreditCard, 
-  Shield, 
-  CheckCircle, 
-  AlertCircle, 
-  ArrowLeft, 
-  Clock,
-  User,
-  DollarSign,
+  Plus, 
+  Search, 
+  Filter, 
+  RefreshCw, 
+  Copy, 
+  ExternalLink,
+  Trash2,
+  Edit,
+  Eye,
   Calendar,
-  Lock,
-  ExternalLink
+  DollarSign,
+  User,
+  Link as LinkIcon,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Mail
 } from 'lucide-react';
+import { CreatePaymentLinkModal } from './CreatePaymentLinkModal';
 
-export function PaymentLinkPage() {
-  const { token } = useParams<{ token: string }>();
-  const navigate = useNavigate();
-  const [paymentLink, setPaymentLink] = useState<any>(null);
+interface PaymentLink {
+  id: string;
+  title: string;
+  description?: string;
+  amount: string;
+  clientId: string;
+  client?: {
+    id: string;
+    fullName: string;
+    email: string;
+  };
+  status: 'ACTIVE' | 'USED' | 'EXPIRED' | 'CANCELLED';
+  secureToken: string;
+  token?: string; // For backward compatibility
+  expires_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export function PaymentLinksPage() {
+  const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([]);
   const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [copiedLink, setCopiedLink] = useState<string | null>(null);
 
   useEffect(() => {
-    if (token) {
-      fetchPaymentLink();
-    }
-  }, [token]);
+    fetchPaymentLinks();
+  }, []);
 
-  const fetchPaymentLink = async () => {
+  const fetchPaymentLinks = async () => {
     try {
-      const response = await apiClient.getPaymentLinkByToken(token!);
-      const link = response.link;
-
-      if (!link) {
-        setError('Payment link not found or has expired');
-        return;
-      }
-
-      // Check if link is expired
-      if (new Date(link.expires_at) < new Date()) {
-        setError('This payment link has expired');
-        return;
-      }
-
-      // Check if link is already used
-      if (link.status === 'USED') {
-        setError('This payment link has already been used');
-        return;
-      }
-
-      // Check if link is cancelled
-      if (link.status === 'CANCELLED') {
-        setError('This payment link has been cancelled');
-        return;
-      }
-      
-      setError(''); // Clear any previous errors
-      setPaymentLink(link);
+      setLoading(true);
+      const response = await apiClient.getPaymentLinks();
+      const links = response.links || response;
+      setPaymentLinks(links);
+      setError('');
     } catch (error) {
-      setError('Payment links feature is currently unavailable. Please try again later.');
-      setPaymentLinks([]); // Set empty array to show empty state
+      console.error('Error fetching payment links:', error);
+      setError('Failed to load payment links');
+      setPaymentLinks([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const processPayment = async () => {
-    if (!paymentLink) return;
+  const handleDeletePaymentLink = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this payment link?')) return;
     
-    setProcessing(true);
-    setError('');
-
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // In a real implementation, this would process the payment through your backend
-      // For demo purposes, we'll simulate a successful payment
-      console.log('Processing payment for:', paymentLink);
-
-      setSuccess(true);
-    } catch (err: any) {
-      setError(err.message || 'Payment processing failed');
-    } finally {
-      setProcessing(false);
+      await apiClient.deletePaymentLink(id);
+      setPaymentLinks(prev => prev.filter(link => link.id !== id));
+    } catch (error) {
+      console.error('Error deleting payment link:', error);
+      alert('Failed to delete payment link');
     }
+  };
+
+  const handleResendEmail = async (id: string) => {
+    try {
+      await apiClient.resendPaymentLinkEmail(id);
+      alert('Email sent successfully');
+    } catch (error) {
+      console.error('Error resending email:', error);
+      alert('Failed to resend email');
+    }
+  };
+
+  const copyToClipboard = async (text: string, linkId: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedLink(linkId);
+      setTimeout(() => setCopiedLink(null), 2000);
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'ACTIVE':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+      case 'USED':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+      case 'EXPIRED':
+        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+      case 'CANCELLED':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'ACTIVE':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'USED':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'EXPIRED':
+        return <XCircle className="h-4 w-4" />;
+      case 'CANCELLED':
+        return <XCircle className="h-4 w-4" />;
+      default:
+        return <Clock className="h-4 w-4" />;
+    }
+  };
+
+  const filteredPaymentLinks = paymentLinks.filter(link => {
+    const matchesSearch = link.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         link.client?.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         link.amount.includes(searchTerm);
+    const matchesStatus = statusFilter === 'ALL' || link.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const stats = {
+    total: paymentLinks.length,
+    active: paymentLinks.filter(link => link.status === 'ACTIVE').length,
+    used: paymentLinks.filter(link => link.status === 'USED').length,
+    expired: paymentLinks.filter(link => link.status === 'EXPIRED').length,
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-navy-950 via-navy-900 to-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-navy-950 via-navy-900 to-slate-900 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 text-center">
-          <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-6" />
-          <h1 className="text-2xl font-bold text-white mb-4">Payment Link Error</h1>
-          <p className="text-white/80 mb-8">{error}</p>
-          <button
-            onClick={() => navigate('/')}
-            className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white py-3 px-6 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
-          >
-            Go to Homepage
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-navy-950 via-navy-900 to-slate-900 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 text-center">
-          <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-6" />
-          <h1 className="text-2xl font-bold text-white mb-4">Payment Successful!</h1>
-          <p className="text-white/80 mb-8">
-            Your payment of ${parseFloat(paymentLink?.amount || '0').toLocaleString()} has been processed successfully.
-          </p>
-          <button
-            onClick={() => navigate('/')}
-            className="w-full bg-gradient-to-r from-green-600 via-green-700 to-green-800 hover:from-green-500 hover:via-green-600 hover:to-green-700 text-white py-3 px-6 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
-          >
-            Continue
-          </button>
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-navy-950 via-navy-900 to-slate-900 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-md text-white rounded-full text-sm font-semibold mb-6 border border-white/20 shadow-lg">
-            <Shield className="h-4 w-4 mr-2" />
-            Secure Payment Portal
-          </div>
-          <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">Complete Your Payment</h1>
-          <p className="text-white/80">Secure payment processing via Tech Processing LLC</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Payment Links</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Create and manage payment links for clients</p>
         </div>
-
-        {/* Payment Details Card */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 mb-6">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <CreditCard className="h-8 w-8 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2">{paymentLink.title}</h2>
-            {paymentLink.description && (
-              <p className="text-white/80">{paymentLink.description}</p>
-            )}
-          </div>
-
-          {/* Payment Info */}
-          <div className="space-y-4 mb-8">
-            <div className="flex items-center justify-between p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/20">
-              <div className="flex items-center">
-                <User className="h-5 w-5 text-white/60 mr-3" />
-                <span className="text-white/80">Client</span>
-              </div>
-              <span className="font-semibold text-white">{paymentLink.client?.full_name}</span>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/20">
-              <div className="flex items-center">
-                <DollarSign className="h-5 w-5 text-white/60 mr-3" />
-                <span className="text-white/80">Amount</span>
-              </div>
-              <span className="font-bold text-2xl text-green-400">${parseFloat(paymentLink.amount).toLocaleString()}</span>
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/20">
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-white/60 mr-3" />
-                <span className="text-white/80">Expires</span>
-              </div>
-              <span className="font-semibold text-white">{new Date(paymentLink.expires_at).toLocaleDateString()}</span>
-            </div>
-          </div>
-
-          {/* Security Notice */}
-          <div className="bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 rounded-xl p-4 mb-8">
-            <div className="flex items-center">
-              <Lock className="h-5 w-5 text-blue-400 mr-3" />
-              <div>
-                <h3 className="text-sm font-medium text-blue-300">Secure Payment Processing</h3>
-                <p className="text-sm text-blue-200 mt-1">
-                  Your payment will be processed securely. We never store your card information.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Payment Button */}
+        <div className="flex items-center space-x-3">
           <button
-            onClick={processPayment}
-            disabled={processing}
-            className="w-full relative overflow-hidden bg-gradient-to-r from-green-600 via-green-700 to-green-800 hover:from-green-500 hover:via-green-600 hover:to-green-700 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center border border-green-500/30 group"
+            onClick={fetchPaymentLinks}
+            className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-slate-600 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-            {processing ? (
-              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            ) : (
-              <span className="relative flex items-center">
-                <CreditCard className="h-5 w-5 mr-3" />
-                Pay ${parseFloat(paymentLink.amount).toLocaleString()} Securely
-                <ExternalLink className="h-5 w-5 ml-3" />
-              </span>
-            )}
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
           </button>
-
-          {/* Payment Methods */}
-          <div className="text-center mt-6">
-            <p className="text-sm text-white/70 mb-3">We accept:</p>
-            <div className="flex justify-center space-x-4">
-              {['Visa', 'Mastercard', 'American Express', 'Discover'].map((card) => (
-                <div key={card} className="bg-white/10 backdrop-blur-sm px-3 py-2 rounded text-xs font-medium text-white/80 border border-white/20">
-                  {card}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center">
-          <p className="text-sm text-white/70">
-            Powered by{' '}
-            <span className="font-bold text-white">Tech Processing LLC</span>
-            {' • '}
-            <a href="mailto:support@techprocessing.com" className="text-blue-400 hover:text-blue-300 transition-colors">
-              Need help?
-            </a>
-          </p>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Payment Link
+          </button>
         </div>
       </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+              <LinkIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Links</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+              <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Active</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.active}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+              <CheckCircle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Used</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.used}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-red-100 dark:bg-red-900/20 rounded-lg">
+              <XCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Expired</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.expired}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <label htmlFor="search" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Search
+            </label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <input
+                type="text"
+                id="search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by title, client, or amount..."
+                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          <div className="sm:w-48">
+            <label htmlFor="status-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Status
+            </label>
+            <select
+              id="status-filter"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="ALL">All Status</option>
+              <option value="ACTIVE">Active</option>
+              <option value="USED">Used</option>
+              <option value="EXPIRED">Expired</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Results Summary */}
+      <div className="text-sm text-gray-600 dark:text-gray-300">
+        Showing {filteredPaymentLinks.length} of {paymentLinks.length} payment links
+      </div>
+
+      {/* Payment Links Grid */}
+      {filteredPaymentLinks.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredPaymentLinks.map((link) => (
+            <div key={link.id} className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{link.title}</h3>
+                  {link.description && (
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{link.description}</p>
+                  )}
+                  <div className="flex items-center">
+                    {getStatusIcon(link.status)}
+                    <span className={`ml-2 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(link.status)}`}>
+                      {link.status}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => copyToClipboard(`${window.location.origin}/payment-link/${link.secureToken || link.token}`, link.id)}
+                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    title="Copy link"
+                  >
+                    {copiedLink === link.id ? (
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </button>
+                  <a
+                    href={`/payment-link/${link.secureToken || link.token}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    title="View payment link"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                  <button
+                    onClick={() => handleResendEmail(link.id)}
+                    className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    title="Resend email"
+                  >
+                    <Mail className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeletePaymentLink(link.id)}
+                    className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    title="Delete payment link"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                    <User className="h-4 w-4 mr-2" />
+                    Client
+                  </div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    {link.client?.fullName || 'Unknown'}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                    <DollarSign className="h-4 w-4 mr-2" />
+                    Amount
+                  </div>
+                  <span className="text-lg font-bold text-gray-900 dark:text-white">
+                    ${parseFloat(link.amount).toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Expires
+                  </div>
+                  <span className="text-sm text-gray-900 dark:text-white">
+                    {new Date(link.expires_at).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-12 text-center">
+          <div className="w-12 h-12 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+            <LinkIcon className="h-6 w-6 text-gray-500 dark:text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No payment links found</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {searchTerm || statusFilter !== 'ALL' 
+              ? 'Try adjusting your search or filter criteria.'
+              : 'Get started by creating your first payment link.'
+            }
+          </p>
+          {!searchTerm && statusFilter === 'ALL' && (
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create Payment Link
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Create Payment Link Modal */}
+      {showCreateModal && (
+        <CreatePaymentLinkModal
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={(newLink) => {
+            setPaymentLinks(prev => [newLink, ...prev]);
+            setShowCreateModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }

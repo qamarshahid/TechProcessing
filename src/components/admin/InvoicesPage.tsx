@@ -209,8 +209,8 @@ export function InvoicesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Invoice Management</h1>
-          <p className="text-sm text-gray-600">Manage client invoices and payments</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Invoice Management</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Manage client invoices and payments</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}
@@ -222,7 +222,7 @@ export function InvoicesPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 dark:border-slate-600">
         <nav className="-mb-px flex space-x-8">
           {['ALL', 'PAID', 'UNPAID', 'OVERDUE'].map((status) => (
             <button
@@ -230,8 +230,8 @@ export function InvoicesPage() {
               onClick={() => setFilter(status)}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 filter === status
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-slate-500'
               }`}
             >
               {status}
@@ -254,55 +254,55 @@ export function InvoicesPage() {
       />
 
       {/* Invoices Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-600">
+            <thead className="bg-gray-50 dark:bg-slate-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Client
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Due Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-600">
               {filteredInvoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                     <div>
                       <div className="font-medium">
                         {invoice.client_name || invoice.client?.full_name || invoice.client?.fullName || 'Unknown Client'}
                       </div>
                       {invoice.client?.company && (
-                        <div className="text-xs text-gray-500">{invoice.client.company}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{invoice.client.company}</div>
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     <div>
                       <div className="font-medium">{invoice.description}</div>
-                      <div className="text-xs text-gray-500">ID: {invoice.id}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">ID: {invoice.id}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     <div>
                       <div className="font-semibold">${parseFloat(invoice.amount).toLocaleString()}</div>
                       {invoice.tax && parseFloat(invoice.tax) > 0 && (
-                        <div className="text-xs text-gray-500">Tax: ${parseFloat(invoice.tax).toFixed(2)}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Tax: ${parseFloat(invoice.tax).toFixed(2)}</div>
                       )}
                     </div>
                   </td>
@@ -315,7 +315,7 @@ export function InvoicesPage() {
                       {invoiceStatuses[invoice.id] || invoice.status}
                     </button>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     <div>
                       <div>
                         {invoice.due_date && !isNaN(new Date(invoice.due_date).getTime()) 
@@ -324,7 +324,7 @@ export function InvoicesPage() {
                         }
                       </div>
                       {invoice.created_at && (
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
                           Created: {new Date(invoice.created_at).toLocaleDateString()}
                         </div>
                       )}

@@ -18,6 +18,6 @@ import { AuditModule } from '../audit/audit.module';
   ],
   controllers: [PaymentsController],
   providers: [PaymentsService, AuthorizeNetService, HostedPaymentService],
-  exports: [PaymentsService],
+  exports: [PaymentsService, AuthorizeNetService],
 })
 export class PaymentsModule {}

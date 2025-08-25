@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { User } from '../users/entities/user.entity';
+import { Agent } from '../users/entities/agent.entity';
+import { AgentSale } from '../users/entities/agent-sale.entity';
+import { Closer } from '../users/entities/closer.entity';
 import { Invoice } from '../invoices/entities/invoice.entity';
 import { Payment } from '../payments/entities/payment.entity';
 import { AuditLog } from '../audit/entities/audit-log.entity';
@@ -26,7 +29,7 @@ import { PaymentLink } from '../payment-links/entities/payment-link.entity';
           username: config.get('DATABASE_USERNAME'),
           password: config.get('DATABASE_PASSWORD'),
           database: config.get('DATABASE_NAME'),
-          entities: [User, Invoice, Payment, AuditLog, ServicePackage, Subscription, PaymentLink],
+          entities: [User, Agent, AgentSale, Closer, Invoice, Payment, AuditLog, ServicePackage, Subscription, PaymentLink],
           synchronize: false,
           logging: false,
           ssl,
