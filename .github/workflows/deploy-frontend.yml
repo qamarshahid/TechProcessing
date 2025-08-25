@@ -22,6 +22,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       
+    - name: Check repository settings
+      run: |
+        echo "Repository: ${{ github.repository }}"
+        echo "Event: ${{ github.event_name }}"
+        echo "Branch: ${{ github.ref }}"
+        
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -38,7 +44,14 @@ jobs:
         
     - name: Setup Pages
       uses: actions/configure-pages@v4
-      
+      with:
+        enablement: true
+        
+    - name: Verify Pages setup
+      run: |
+        echo "GitHub Pages should now be enabled for this repository"
+        echo "If deployment fails, please manually enable GitHub Pages in repository settings"
+        
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
