@@ -863,10 +863,9 @@ export function LandingPage() {
                     className="group"
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.1, type: "spring", stiffness: 300 }}
                     viewport={{ once: true }}
                     whileHover={{ x: 12 }}
-                    transition={{ type: "spring", stiffness: 300 }}
                   >
                     <a href="#" className="flex items-center text-slate-300 hover:text-emerald-400 transition-all duration-300 group py-2 px-4 rounded-xl hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/20">
                       <div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full mr-4 group-hover:scale-150 transition-transform duration-300"></div>
@@ -903,10 +902,9 @@ export function LandingPage() {
                     className="group"
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.1, type: "spring", stiffness: 300 }}
                     viewport={{ once: true }}
                     whileHover={{ x: 12 }}
-                    transition={{ type: "spring", stiffness: 300 }}
                   >
                     <a href="#" className="flex items-center text-slate-300 hover:text-cyan-400 transition-all duration-300 group py-2 px-4 rounded-xl hover:bg-cyan-500/10 border border-transparent hover:border-cyan-500/20">
                       <div className="w-2 h-2 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full mr-4 group-hover:scale-150 transition-transform duration-300"></div>
