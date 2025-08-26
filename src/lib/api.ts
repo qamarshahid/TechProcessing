@@ -31,8 +31,8 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     // Add cache-busting parameter to force fresh requests
-    const cacheBuster = `?_t=${Date.now()}`;
-    const url = `${this.baseURL}${endpoint}${endpoint.includes('?') ? '&' : ''}${cacheBuster.substring(1)}`;
+    const cacheBuster = `_t=${Date.now()}`;
+    const url = `${this.baseURL}${endpoint}${endpoint.includes('?') ? '&' : '?'}${cacheBuster}`;
     
     const config: RequestInit = {
       headers: {
