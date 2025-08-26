@@ -37,8 +37,6 @@ class ApiClient {
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
         ...(this.token && { Authorization: `Bearer ${this.token}` }),
         ...options.headers,
       },
