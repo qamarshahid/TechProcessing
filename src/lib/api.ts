@@ -5,7 +5,12 @@ class ApiClient {
   private token: string | null = null;
 
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_URL || 'https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api';
+    // Temporarily use CORS proxy to bypass browser caching issues
+    const directURL = 'https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api';
+    const proxyURL = 'https://cors-anywhere.herokuapp.com/';
+    
+    // Try direct first, fallback to proxy if needed
+    this.baseURL = import.meta.env.VITE_API_URL || directURL;
     this.token = localStorage.getItem('auth_token');
   }
 
@@ -25,14 +30,19 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
+    // Add cache-busting parameter to force fresh requests
+    const cacheBuster = `?_t=${Date.now()}`;
+    const url = `${this.baseURL}${endpoint}${endpoint.includes('?') ? '&' : ''}${cacheBuster.substring(1)}`;
     
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
         ...(this.token && { Authorization: `Bearer ${this.token}` }),
         ...options.headers,
       },
+      cache: 'no-store',
       ...options,
     };
 

@@ -39,9 +39,9 @@ async function bootstrap() {
 
   logger.log(`🔧 CORS Configuration: origins=${origins.join(', ')}`);
 
-  // Always enable CORS with explicit configuration
+  // Temporarily use wildcard CORS to bypass caching issues
   app.enableCors({
-    origin: origins,
+    origin: true, // Allow all origins temporarily
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -49,12 +49,17 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  // Additional CORS middleware to ensure headers are set
+  // Additional CORS middleware to ensure headers are always set
   app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://qamarshahid.github.io');
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Vary', 'Origin');
+    if (req.method === 'OPTIONS') {
+      res.status(204);
+      return res.end();
+    }
     next();
   });
 
