@@ -37,14 +37,26 @@ async function bootstrap() {
     .map((o) => o.trim())
     .filter((o) => !!o);
 
-  if (origins.length > 0) {
-    app.enableCors({
-      origin: origins,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true,
-    });
-  }
+  logger.log(`🔧 CORS Configuration: origins=${origins.join(', ')}`);
+
+  // Always enable CORS with explicit configuration
+  app.enableCors({
+    origin: origins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
+
+  // Additional CORS middleware to ensure headers are set
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://qamarshahid.github.io');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+  });
 
   // Security headers
   app.use(helmet({ contentSecurityPolicy: isProd }));
