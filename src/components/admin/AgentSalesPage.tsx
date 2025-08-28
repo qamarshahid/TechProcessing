@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../lib/api';
 import { logger } from '../../lib/logger';
+import { useAuth } from '../../contexts/AuthContext';
 import AddAgentModal from './AddAgentModal';
 
 interface Agent {
@@ -22,6 +23,7 @@ interface AgentSale {
 }
 
 export default function AgentSalesPage() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'sales' | 'manage'>('sales');
   const [agentSales, setAgentSales] = useState<AgentSale[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -29,29 +31,47 @@ export default function AgentSalesPage() {
   const [error, setError] = useState<string | null>(null);
   const [showAddAgentModal, setShowAddAgentModal] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // Check if user has admin access
+  const isAdmin = user?.role === 'ADMIN';
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
+    
+    if (!isAdmin) {
+      setError('Access denied. You need admin privileges to view this page.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Fetch both agent sales and agents
+      // Fetch both agent sales and agents using admin endpoints
       const [salesResponse, agentsResponse] = await Promise.all([
-        apiClient.getAgentSales(),
-        apiClient.getAgents()
+        apiClient.getAllAgentSales(), // Use admin endpoint for all sales
+        apiClient.getAgents() // This should work for admins
       ]);
       
       setAgentSales(salesResponse || []);
       setAgents(agentsResponse || []);
     } catch (err) {
       logger.error('Failed to fetch agent data', err);
-      setError('Failed to load agent data. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      
+      if (errorMessage.includes('Forbidden')) {
+        setError('Access denied. You need admin privileges to view this page.');
+      } else {
+        setError('Failed to load agent data. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAdmin]);
+
+  useEffect(() => {
+    if (user) {
+      fetchData();
+    }
+  }, [user, fetchData]);
 
   const handleToggleAgentStatus = async (agentId: string, currentStatus: boolean) => {
     try {
