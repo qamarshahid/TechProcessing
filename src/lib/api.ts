@@ -1,4 +1,5 @@
 import { Closer } from '../types';
+import { logger } from './logger';
 
 class ApiClient {
   private baseURL: string;
@@ -21,14 +22,14 @@ class ApiClient {
   }
 
   setToken(token: string | null) {
-    console.log('🔧 Setting token in API client:', token ? 'token provided' : 'null');
+    logger.debug('Setting authentication token', { hasToken: !!token });
     this.token = token;
     if (token) {
       localStorage.setItem('auth_token', token);
-      console.log('💾 Token saved to localStorage');
+      logger.debug('Token saved to localStorage');
     } else {
       localStorage.removeItem('auth_token');
-      console.log('🗑️ Token removed from localStorage');
+      logger.debug('Token removed from localStorage');
     }
   }
 
@@ -50,29 +51,27 @@ class ApiClient {
       ...options,
     };
 
-    console.log(`🌐 Making ${options.method || 'GET'} request to: ${url}`);
-    console.log('🔑 Token in request:', this.token ? 'present' : 'missing');
+    logger.apiRequest(options.method || 'GET', url, !!this.token);
 
     try {
       const response = await fetch(url, config);
-      console.log(`📡 Response status: ${response.status}`);
+      logger.apiResponse(response.status);
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.log('❌ API Error:', errorData);
+        logger.error('API request failed', { status: response.status, message: errorData.message });
         throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         const data = await response.json();
-        console.log('✅ API Response data:', data);
         return data;
       }
       
       return response as unknown as T;
     } catch (error) {
-      console.log('🚨 Request error:', error);
+      logger.error('Network request failed', { error: error instanceof Error ? error.message : 'Unknown error' });
       if (error instanceof Error) {
         throw error;
       }
@@ -150,7 +149,7 @@ class ApiClient {
       }
       return { users: response.users || response };
     } catch (error) {
-      console.error('Error fetching users:', error);
+      logger.error('Error fetching users', { error: error instanceof Error ? error.message : 'Unknown error' });
       // Return mock data as fallback
       const mockUsers = [
         {
@@ -302,7 +301,7 @@ class ApiClient {
       }
       return { invoices: response.invoices || response };
     } catch (error) {
-      console.error('Error fetching invoices:', error);
+      logger.error('Error fetching invoices:', error);
       // Return all invoices for admin view as fallback
       const mockInvoices = this.generateAllClientInvoices();
       
@@ -451,7 +450,7 @@ class ApiClient {
       const response = await this.request<{ stats: any }>('/invoices/stats');
       return response;
     } catch (error) {
-      console.error('Error fetching invoice stats:', error);
+      logger.error('Error fetching invoice stats:', error);
       // Return mock stats as fallback
       return {
         stats: {
@@ -491,7 +490,7 @@ class ApiClient {
       const response = await this.request<{ invoices: any[] }>(`/invoices?clientId=${clientId}`);
       return response;
     } catch (error) {
-      console.error('Error fetching client invoices:', error);
+      logger.error('Error fetching client invoices:', error);
       // Return client-specific mock invoices
       const clientInvoices = this.generateInvoicesForClient(clientId, `Client ${clientId}`, `Company ${clientId}`);
       return { invoices: clientInvoices };
@@ -503,7 +502,7 @@ class ApiClient {
       const response = await this.request<{ payments: any[] }>(`/payments?clientId=${clientId}`);
       return response;
     } catch (error) {
-      console.error('Error fetching client payments:', error);
+      logger.error('Error fetching client payments:', error);
       // Return client-specific mock payments
       const clientPayments = this.generatePaymentsForClient(clientId, `Client ${clientId}`);
       return { payments: clientPayments };
@@ -512,14 +511,14 @@ class ApiClient {
 
   async getClientTransactionHistory(clientId: string) {
     try {
-      console.log('Fetching transaction history for client:', clientId);
+      logger.debug('Fetching transaction history for client:', clientId);
       
       // Get all invoices and filter for this client
       const allInvoicesResponse = await this.getInvoices();
       const allInvoices = allInvoicesResponse.invoices || [];
       
-      console.log('All invoices from backend:', allInvoices);
-      console.log('Looking for client ID:', clientId);
+      logger.debug('All invoices from backend:', allInvoices);
+      logger.debug('Looking for client ID:', clientId);
       
       // Filter invoices for this specific client
       const clientInvoices = allInvoices.filter(invoice => {
@@ -529,7 +528,7 @@ class ApiClient {
                        invoice.client?.id === clientId ||
                        (typeof invoice.client === 'string' && invoice.client === clientId);
         
-        console.log('Invoice match check:', {
+        logger.debug('Invoice match check:', {
           invoiceId: invoice.id,
           description: invoice.description,
           client_id: invoice.client_id,
@@ -542,13 +541,13 @@ class ApiClient {
         return matches;
       });
       
-      console.log('Filtered client invoices:', clientInvoices);
+      logger.debug('Filtered client invoices:', clientInvoices);
       
       // Get all payments and filter for this client
       const allPaymentsResponse = await this.getPayments();
       const allPayments = allPaymentsResponse.payments || [];
       
-      console.log('All payments from backend:', allPayments);
+      logger.debug('All payments from backend:', allPayments);
       
       const clientPayments = allPayments.filter(payment => 
         payment.client_id === clientId || 
@@ -557,13 +556,13 @@ class ApiClient {
         payment.userId === clientId
       );
       
-      console.log('Filtered client payments:', clientPayments);
+      logger.debug('Filtered client payments:', clientPayments);
       
       // Get all subscriptions and filter for this client
       const allSubscriptionsResponse = await this.getSubscriptions();
       const allSubscriptions = allSubscriptionsResponse.subscriptions || [];
       
-      console.log('All subscriptions from backend:', allSubscriptions);
+      logger.debug('All subscriptions from backend:', allSubscriptions);
       
       const clientSubscriptions = allSubscriptions.filter(subscription => 
         subscription.client_id === clientId || 
@@ -571,9 +570,9 @@ class ApiClient {
         subscription.client?.id === clientId
       );
       
-      console.log('Filtered client subscriptions:', clientSubscriptions);
+      logger.debug('Filtered client subscriptions:', clientSubscriptions);
       
-      console.log('Final client data:', {
+      logger.debug('Final client data:', {
         clientId,
         invoices: clientInvoices,
         payments: clientPayments,
@@ -637,14 +636,14 @@ class ApiClient {
       // Sort by date (newest first)
       transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       
-      console.log('Final transactions:', transactions);
+      logger.debug('Final transactions:', transactions);
       
       return { transactions, invoices: clientInvoices, payments: clientPayments, subscriptions: clientSubscriptions };
     } catch (error) {
-      console.error('Error fetching client transaction history:', error);
+      logger.error('Error fetching client transaction history:', error);
       
       // Return empty data on complete failure but log the error
-      console.error('Complete failure in getClientTransactionHistory:', error);
+      logger.error('Complete failure in getClientTransactionHistory:', error);
       return { 
         transactions: [], 
         invoices: [], 
@@ -685,7 +684,7 @@ class ApiClient {
       }
       return { payments: response.payments || response };
     } catch (error) {
-      console.error('Error fetching payments:', error);
+      logger.error('Error fetching payments:', error);
       // Return mock data as fallback
       return {
         payments: [
@@ -748,7 +747,7 @@ class ApiClient {
       }
       return { services: (response as any).services || response };
     } catch (error) {
-      console.error('Error fetching services:', error);
+      logger.error('Error fetching services:', error);
       // Return mock data as fallback
       return {
         services: [
@@ -812,19 +811,19 @@ class ApiClient {
   // Payment Link methods
   async getPaymentLinks() {
     try {
-      console.log('Fetching payment links from API...');
+      logger.debug('Fetching payment links from API...');
       const response = await this.request<any>('/payment-links').catch(error => {
-        console.error('API call failed, using fallback data:', error);
+        logger.error('API call failed, using fallback data:', error);
         throw error; // Re-throw to trigger catch block
       });
-      console.log('Payment links API response:', response);
+      logger.debug('Payment links API response:', response);
       // Handle both array response and object with links property
       if (Array.isArray(response)) {
         return { links: response };
       }
       return { links: response.links || response };
     } catch (error) {
-      console.error('Error fetching payment links:', error);
+      logger.error('Error fetching payment links:', error);
       // Return mock data as fallback
       return {
         links: [
@@ -881,7 +880,7 @@ class ApiClient {
         body: JSON.stringify(linkData),
       });
     } catch (error) {
-      console.error('Error creating payment link:', error);
+      logger.error('Error creating payment link:', error);
       // Return mock success for demo
       return { 
         link: { 
@@ -900,7 +899,7 @@ class ApiClient {
       const response = await this.request<{ link: any }>(`/payment-links/token/${token}`);
       return response;
     } catch (error) {
-      console.error('Error fetching payment link by token:', error);
+      logger.error('Error fetching payment link by token:', error);
       // Return mock payment link for demo
       const mockLink = {
         id: `link_${token}`,
@@ -923,15 +922,15 @@ class ApiClient {
 
   async processPaymentLinkPayment(token: string, paymentData: any) {
     try {
-      console.log('API: Processing payment for token:', token, paymentData);
+      logger.debug('API: Processing payment for token:', token, paymentData);
       const response = await this.request<any>(`/payment-links/token/${token}/process-payment`, {
         method: 'POST',
         body: JSON.stringify(paymentData),
       });
-      console.log('API: Payment processing response:', response);
+      logger.debug('API: Payment processing response:', response);
       return response;
     } catch (error) {
-      console.error('Error processing payment:', error);
+      logger.error('Error processing payment:', error);
       throw error;
     }
   }
@@ -943,7 +942,7 @@ class ApiClient {
       });
       return response;
     } catch (error) {
-      console.error('Error resending payment link email:', error);
+      logger.error('Error resending payment link email:', error);
       throw error;
     }
   }
@@ -954,7 +953,7 @@ class ApiClient {
         method: 'DELETE',
       });
     } catch (error) {
-      console.error('Error deleting payment link:', error);
+      logger.error('Error deleting payment link:', error);
       // Return mock success for demo
       return { success: true };
     }
@@ -963,19 +962,19 @@ class ApiClient {
   // Subscription methods
   async getSubscriptions() {
     try {
-      console.log('Fetching subscriptions from API...');
+      logger.debug('Fetching subscriptions from API...');
       const response = await this.request<any>('/subscriptions').catch(error => {
-        console.error('API call failed, using fallback data:', error);
+        logger.error('API call failed, using fallback data:', error);
         throw error; // Re-throw to trigger catch block
       });
-      console.log('Subscriptions API response:', response);
+      logger.debug('Subscriptions API response:', response);
       // Handle both array response and object with subscriptions property
       if (Array.isArray(response)) {
         return { subscriptions: response };
       }
       return { subscriptions: response.subscriptions || response };
     } catch (error) {
-      console.error('Error fetching subscriptions:', error);
+      logger.error('Error fetching subscriptions:', error);
       // Return mock data as fallback
       return {
         subscriptions: [
@@ -1015,7 +1014,7 @@ class ApiClient {
         body: JSON.stringify(subscriptionData),
       });
     } catch (error) {
-      console.error('Error updating subscription:', error);
+      logger.error('Error updating subscription:', error);
       // Return mock success for demo
       return { 
         subscription: { 
@@ -1049,7 +1048,7 @@ class ApiClient {
         body: JSON.stringify(backendData),
       });
     } catch (error) {
-      console.error('Error creating subscription:', error);
+      logger.error('Error creating subscription:', error);
       // Return mock success for demo
       return { 
         subscription: { 
@@ -1069,7 +1068,7 @@ class ApiClient {
         body: JSON.stringify({ status }),
       });
     } catch (error) {
-      console.error('Error updating subscription status:', error);
+      logger.error('Error updating subscription status:', error);
       // Return mock success for demo
       return { 
         subscription: { 
@@ -1087,7 +1086,7 @@ class ApiClient {
         method: 'DELETE',
       });
     } catch (error) {
-      console.error('Error deleting subscription:', error);
+      logger.error('Error deleting subscription:', error);
       // Return mock success for demo
       return { success: true };
     }
@@ -1103,7 +1102,7 @@ class ApiClient {
       }
       return { refunds: response.refunds || response || [] };
     } catch (error) {
-      console.error('Error fetching refunds:', error);
+      logger.error('Error fetching refunds:', error);
       // Return mock refunds data
       return {
         refunds: [
@@ -1136,7 +1135,7 @@ class ApiClient {
       });
       return response;
     } catch (error) {
-      console.error('Error processing refund:', error);
+      logger.error('Error processing refund:', error);
       // Return mock success for demo
       return {
         refund: {
@@ -1169,7 +1168,7 @@ class ApiClient {
       const response = await this.request<{ logs: any[]; total: number; page: number; limit: number }>(endpoint);
       return response;
     } catch (error) {
-      console.error('Error fetching audit logs:', error);
+      logger.error('Error fetching audit logs:', error);
       // Return mock audit logs as fallback
       return {
         logs: [
@@ -1256,7 +1255,7 @@ class ApiClient {
         body: JSON.stringify(agentData),
       });
     } catch (error) {
-      console.error('Error creating agent:', error);
+      logger.error('Error creating agent:', error);
       throw error;
     }
   }
@@ -1266,7 +1265,7 @@ class ApiClient {
       const response = await this.request<any[]>('/agents');
       return response;
     } catch (error) {
-      console.error('Error fetching agents:', error);
+      logger.error('Error fetching agents:', error);
       return [];
     }
   }
@@ -1275,7 +1274,7 @@ class ApiClient {
     try {
       return this.request<any>('/agents/stats');
     } catch (error) {
-      console.error('Error fetching agent stats:', error);
+      logger.error('Error fetching agent stats:', error);
       return {
         totalAgents: 0,
         activeAgents: 0,
@@ -1293,7 +1292,7 @@ class ApiClient {
     try {
       return this.request<any>('/agents/profile/me');
     } catch (error) {
-      console.error('Error fetching own agent profile:', error);
+      logger.error('Error fetching own agent profile:', error);
       throw error;
     }
   }
@@ -1318,7 +1317,7 @@ class ApiClient {
         body: JSON.stringify(saleData),
       });
     } catch (error) {
-      console.error('Error creating agent sale:', error);
+      logger.error('Error creating agent sale:', error);
       throw error;
     }
   }
@@ -1329,7 +1328,7 @@ class ApiClient {
       const response = await this.request<any[]>(endpoint);
       return response;
     } catch (error) {
-      console.error('Error fetching agent sales:', error);
+      logger.error('Error fetching agent sales:', error);
       return [];
     }
   }
@@ -1339,7 +1338,7 @@ class ApiClient {
       const response = await this.request<any[]>('/agents/sales/all');
       return response;
     } catch (error) {
-      console.error('Error fetching all agent sales:', error);
+      logger.error('Error fetching all agent sales:', error);
       return [];
     }
   }
@@ -1348,7 +1347,7 @@ class ApiClient {
     try {
       return this.request<any>(`/agents/sales/${id}`);
     } catch (error) {
-      console.error('Error fetching agent sale:', error);
+      logger.error('Error fetching agent sale:', error);
       throw error;
     }
   }
@@ -1360,7 +1359,7 @@ class ApiClient {
         body: JSON.stringify({ status }),
       });
     } catch (error) {
-      console.error('Error updating sale status:', error);
+      logger.error('Error updating sale status:', error);
       throw error;
     }
   }
@@ -1372,7 +1371,7 @@ class ApiClient {
         body: JSON.stringify({ status }),
       });
     } catch (error) {
-      console.error('Error updating commission status:', error);
+      logger.error('Error updating commission status:', error);
       throw error;
     }
   }
@@ -1384,7 +1383,7 @@ class ApiClient {
         body: JSON.stringify({ notes }),
       });
     } catch (error) {
-      console.error('Error updating agent sale notes:', error);
+      logger.error('Error updating agent sale notes:', error);
       throw error;
     }
   }
@@ -1396,7 +1395,7 @@ class ApiClient {
         body: JSON.stringify(resubmitData),
       });
     } catch (error) {
-      console.error('Error resubmitting agent sale:', error);
+      logger.error('Error resubmitting agent sale:', error);
       throw error;
     }
   }
@@ -1408,7 +1407,7 @@ class ApiClient {
         body: JSON.stringify({ agentCommissionRate, closerCommissionRate }),
       });
     } catch (error) {
-      console.error('Error updating agent commission rates:', error);
+      logger.error('Error updating agent commission rates:', error);
       throw error;
     }
   }
@@ -1417,7 +1416,7 @@ class ApiClient {
     try {
       return this.request<any>('/agents/monthly-stats');
     } catch (error) {
-      console.error('Error fetching agent monthly stats:', error);
+      logger.error('Error fetching agent monthly stats:', error);
       throw error;
     }
   }
@@ -1427,7 +1426,7 @@ class ApiClient {
     try {
       return this.request<Closer[]>('/agents/closers/active');
     } catch (error) {
-      console.error('Error fetching active closers:', error);
+      logger.error('Error fetching active closers:', error);
       throw error;
     }
   }
@@ -1436,7 +1435,7 @@ class ApiClient {
     try {
       return this.request<Closer[]>('/closers');
     } catch (error) {
-      console.error('Error fetching all closers:', error);
+      logger.error('Error fetching all closers:', error);
       throw error;
     }
   }
@@ -1445,7 +1444,7 @@ class ApiClient {
     try {
       return this.request<Closer>(`/closers/${id}`);
     } catch (error) {
-      console.error('Error fetching closer:', error);
+      logger.error('Error fetching closer:', error);
       throw error;
     }
   }
@@ -1457,7 +1456,7 @@ class ApiClient {
         body: JSON.stringify(closerData),
       });
     } catch (error) {
-      console.error('Error creating closer:', error);
+      logger.error('Error creating closer:', error);
       throw error;
     }
   }
@@ -1469,7 +1468,7 @@ class ApiClient {
         body: JSON.stringify(closerData),
       });
     } catch (error) {
-      console.error('Error updating closer:', error);
+      logger.error('Error updating closer:', error);
       throw error;
     }
   }
@@ -1480,20 +1479,20 @@ class ApiClient {
         method: 'DELETE',
       });
     } catch (error) {
-      console.error('Error deleting closer:', error);
+      logger.error('Error deleting closer:', error);
       throw error;
     }
   }
 
   async getCloserStats(id: string) {
     try {
-      console.log('Making request to:', `/closers/${id}/stats`);
+      logger.debug('Making request to:', `/closers/${id}/stats`);
       const result = await this.request<any>(`/closers/${id}/stats`);
-      console.log('Closer stats response:', result);
+      logger.debug('Closer stats response:', result);
       return result;
     } catch (error) {
-      console.error('Error fetching closer stats:', error);
-      console.error('Error response:', error.response);
+      logger.error('Error fetching closer stats:', error);
+      logger.error('Error response:', error.response);
       throw error;
     }
   }
@@ -1502,7 +1501,7 @@ class ApiClient {
     try {
       return this.request<any>(`/closers/${id}/monthly-stats`);
     } catch (error) {
-      console.error('Error fetching closer monthly stats:', error);
+      logger.error('Error fetching closer monthly stats:', error);
       throw error;
     }
   }
@@ -1511,7 +1510,7 @@ class ApiClient {
     try {
       return this.request<any>(`/closers/${id}/sales`);
     } catch (error) {
-      console.error('Error fetching closer sales:', error);
+      logger.error('Error fetching closer sales:', error);
       throw error;
     }
   }
@@ -1520,7 +1519,7 @@ class ApiClient {
     try {
       return this.request<any>('/closers/stats');
     } catch (error) {
-      console.error('Error fetching all closers stats:', error);
+      logger.error('Error fetching all closers stats:', error);
       throw error;
     }
   }
@@ -1540,7 +1539,7 @@ class ApiClient {
       
       return this.request<any>(url);
     } catch (error) {
-      console.error('Error fetching filtered closer stats:', error);
+      logger.error('Error fetching filtered closer stats:', error);
       throw error;
     }
   }
@@ -1563,7 +1562,7 @@ class ApiClient {
       
       return this.request<AgentSale[]>(url);
     } catch (error) {
-      console.error('Error fetching closer audit data:', error);
+      logger.error('Error fetching closer audit data:', error);
       throw error;
     }
   }

@@ -165,13 +165,25 @@ The backend will start on `http://localhost:8081`
 
 The frontend will start on `http://localhost:5173`
 
-## Default Admin Account
-- **Email**: admin@techprocessing.com
-- **Password**: admin123
+## 🔒 Authentication & Security
 
-## Default Client Account
+### Default Admin Account (Development Only)
+- **Email**: admin@techprocessing.com
+- **Password**: Configured via environment variables (default: admin123)
+
+### Default Client Account (Development Only)
 - **Email**: client@example.com
-- **Password**: password123
+- **Password**: Configured via environment variables (default: password123)
+
+> **Security Note**: In production, these credentials should be configured via environment variables (`ADMIN_EMAIL`, `ADMIN_PASSWORD`, `USER_EMAIL`, `USER_PASSWORD`). See `backend/.env.security-template` for the complete configuration template.
+
+## 🛡️ Security Features
+
+- **Secure Logging**: Sensitive data is automatically sanitized from logs
+- **Environment-based Configuration**: All secrets configurable via environment variables
+- **Production-safe Defaults**: Test accounts only available in development mode
+- **JWT Security**: Configurable secret keys and expiration times
+- **Data Sanitization**: API responses are logged safely without exposing sensitive fields
 
 ## API Endpoints
 

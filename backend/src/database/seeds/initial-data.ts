@@ -24,7 +24,7 @@ export async function seedInitialData(dataSource: DataSource) {
       role: UserRole.ADMIN,
     });
     await userRepository.save(admin);
-    console.log('✅ Default admin user created: admin@techprocessing.com / admin123');
+    console.log('✅ Default admin user created: admin@techprocessing.com / [REDACTED]');
   }
 
   // Create sample client user
@@ -40,7 +40,7 @@ export async function seedInitialData(dataSource: DataSource) {
       role: UserRole.CLIENT,
     });
     await userRepository.save(client);
-    console.log('✅ Sample client user created: client@example.com / password123');
+    console.log('✅ Sample client user created: client@example.com / [REDACTED]');
   }
 
   // Create sample service packages

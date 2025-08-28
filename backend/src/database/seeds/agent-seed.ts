@@ -49,6 +49,6 @@ export async function seedAgents(dataSource: DataSource) {
 
   console.log('✅ Agent seeded successfully!');
   console.log('📧 Email: agent1@techprocessing.com');
-  console.log('🔑 Password: agent123');
+  console.log('🔑 Password: [REDACTED - Check environment variables]');
   console.log('🆔 Agent Code: AG001');
 }
