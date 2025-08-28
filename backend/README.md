@@ -109,17 +109,26 @@ Once the server is running, visit:
 - **Swagger UI**: `http://localhost:8081/api/docs`
 - **API Base URL**: `http://localhost:8081/api`
 
-## 🔑 Default Accounts
+## 🔑 Authentication & Access
 
-### Admin Account
-- **Email**: `admin@techservepro.com`
-- **Password**: `admin123`
-- **Role**: ADMIN
+### Getting System Access
+- **Admin Access**: Contact the system administrator for credentials
+- **Client Access**: Client accounts are provisioned by administrators
 
-### Client Account  
-- **Email**: `client@example.com`
-- **Password**: `password123`
-- **Role**: CLIENT
+### Environment Configuration
+```bash
+# Configure in your .env file - Contact administrator for values
+ADMIN_EMAIL=contact-administrator
+ADMIN_PASSWORD=contact-administrator
+USER_EMAIL=contact-administrator
+USER_PASSWORD=contact-administrator
+```
+
+### Roles Available
+- **ADMIN**: Full system access and management
+- **CLIENT**: Client portal access only
+
+> **Security**: All credentials are managed by system administrators. Contact administration for access.
 
 ## 🛡️ Security Features
 

@@ -2,6 +2,10 @@
 
 A production-ready full-stack IT services management platform built with React frontend and NestJS backend.
 
+## 🔐 Security Notice
+
+**This is a secure production system. For access credentials or configuration details, please contact the system administrator.**
+
 ## Architecture
 
 ### Frontend
@@ -124,11 +128,11 @@ npm run docker:down
    DATABASE_HOST=localhost
    DATABASE_PORT=5432
    DATABASE_USERNAME=postgres
-   DATABASE_PASSWORD=password
+   DATABASE_PASSWORD=your-database-password
    DATABASE_NAME=techserve_pro
-   JWT_SECRET=your-secret-key
-   AUTHORIZENET_API_LOGIN_ID=your_api_login_id
-   AUTHORIZENET_TRANSACTION_KEY=your_transaction_key
+   JWT_SECRET=your-super-secure-jwt-secret-key-at-least-32-characters
+   AUTHORIZENET_API_LOGIN_ID=contact-administrator
+   AUTHORIZENET_TRANSACTION_KEY=contact-administrator
    ```
 
 4. Run database migrations:
@@ -165,17 +169,29 @@ The backend will start on `http://localhost:8081`
 
 The frontend will start on `http://localhost:5173`
 
-## 🔒 Authentication & Security
+## 🔒 Authentication & Access
 
-### Default Admin Account (Development Only)
-- **Email**: admin@techprocessing.com
-- **Password**: Configured via environment variables (default: admin123)
+### Getting Access
+- **Admin Access**: Please contact the system administrator for credentials
+- **Client Access**: Client accounts are provisioned by administrators
 
-### Default Client Account (Development Only)
-- **Email**: client@example.com
-- **Password**: Configured via environment variables (default: password123)
+> **Security Notice**: No default credentials are provided. All access must be granted through proper administrative channels.
 
-> **Security Note**: In production, these credentials should be configured via environment variables (`ADMIN_EMAIL`, `ADMIN_PASSWORD`, `USER_EMAIL`, `USER_PASSWORD`). See `backend/.env.security-template` for the complete configuration template.
+### Environment Configuration
+For deployment, configure these environment variables:
+```bash
+# Required in production
+JWT_SECRET=your-super-secure-jwt-secret-key-at-least-32-characters
+NODE_ENV=production
+
+# Authentication - Contact administrator for proper values
+ADMIN_EMAIL=your-admin-email
+ADMIN_PASSWORD=your-secure-password
+USER_EMAIL=your-user-email
+USER_PASSWORD=your-secure-password
+```
+
+See `.env.production.template` for the complete configuration template.
 
 ## 🛡️ Security Features
 

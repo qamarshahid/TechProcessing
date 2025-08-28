@@ -36,12 +36,12 @@
 ## Environment Variables Required:
 
 ```bash
-# REQUIRED in production
-JWT_SECRET=your-secure-secret-key
+# REQUIRED in production - Contact administrator
+JWT_SECRET=contact-administrator-for-secure-secret
 
-# OPTIONAL (with secure defaults)
-ADMIN_EMAIL=admin@yourdomain.com
-ADMIN_PASSWORD=your-secure-password
+# OPTIONAL - Contact administrator for credentials
+ADMIN_EMAIL=contact-administrator
+ADMIN_PASSWORD=contact-administrator
 LOG_LEVEL=error
 NODE_ENV=production
 ```
