@@ -9,7 +9,6 @@ import { UserRole } from '../../common/enums/user-role.enum';
 import { CreateAgentDto } from '../dto/create-agent.dto';
 import { CreateAgentSaleDto } from '../dto/create-agent-sale.dto';
 import { AuditService } from '../../audit/audit.service';
-import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AgentService {
@@ -677,5 +676,50 @@ export class AgentService {
         await this.agentSaleRepository.save(sale);
       }
     }
+  }
+
+  async updateAgentStatus(agentId: string, isActive: boolean, updatedBy: User): Promise<Agent> {
+    // Only admins can update agent status
+    if (updatedBy.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('Only admins can update agent status');
+    }
+
+    // Find the agent
+    const agent = await this.agentRepository.findOne({
+      where: { id: agentId },
+      relations: ['user']
+    });
+
+    if (!agent) {
+      throw new NotFoundException('Agent not found');
+    }
+
+    // Update the agent status
+    agent.isActive = isActive;
+    agent.updatedAt = new Date();
+
+    // Also update the user status if linked
+    if (agent.user) {
+      agent.user.isActive = isActive;
+      await this.userRepository.save(agent.user);
+    }
+
+    const updatedAgent = await this.agentRepository.save(agent);
+
+    // Log the audit event
+    await this.auditService.log({
+      action: 'AGENT_STATUS_UPDATED',
+      entityType: 'agent',
+      entityId: agentId,
+      user: updatedBy,
+      details: {
+        previousStatus: !isActive,
+        newStatus: isActive,
+        agentCode: agent.agentCode,
+        agentEmail: agent.user?.email
+      }
+    });
+
+    return updatedAgent;
   }
 }

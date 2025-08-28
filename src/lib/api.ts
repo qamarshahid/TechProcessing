@@ -1412,6 +1412,18 @@ class ApiClient {
     }
   }
 
+  async updateAgentStatus(agentId: string, isActive: boolean) {
+    try {
+      return this.request<any>(`/agents/${agentId}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ isActive }),
+      });
+    } catch (error) {
+      logger.error('Error updating agent status:', error);
+      throw error;
+    }
+  }
+
   async getAgentMonthlyStats() {
     try {
       return this.request<any>('/agents/monthly-stats');

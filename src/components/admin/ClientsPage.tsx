@@ -355,14 +355,14 @@ export function ClientsPage() {
                 <button 
                   onClick={() => editClient(client)}
                   className="flex-1 bg-blue-50 text-blue-700 py-2 px-2 rounded-lg hover:bg-blue-100 transition-colors text-sm flex items-center justify-center"
-                  title="Manage Client"
+                  title="Edit Client Profile"
                 >
                   <User className="h-4 w-4" />
                 </button>
                 <button 
                   onClick={() => sendLoginCredentials(client)}
                   className="flex-1 bg-purple-100 text-purple-700 py-2 px-2 rounded-lg hover:bg-purple-200 transition-colors text-sm flex items-center justify-center"
-                  title="Manage Portal Access"
+                  title="Set Portal Password"
                 >
                   <Shield className="h-4 w-4" />
                 </button>

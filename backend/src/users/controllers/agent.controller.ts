@@ -185,4 +185,16 @@ export class AgentController {
     );
   }
 
+  @Patch(':id/status')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Update agent status (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Agent status updated successfully' })
+  updateAgentStatus(
+    @Param('id') id: string,
+    @Body() body: { isActive: boolean },
+    @CurrentUser() currentUser: User,
+  ) {
+    return this.agentService.updateAgentStatus(id, body.isActive, currentUser);
+  }
+
 }
