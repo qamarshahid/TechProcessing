@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
+import { logger } from '../../lib/logger';
 import { Users, FileText, Package, DollarSign, AlertCircle, RefreshCw } from 'lucide-react';
 
 export function AdminDashboard() {
@@ -21,7 +22,6 @@ export function AdminDashboard() {
     
     // Listen for invoice changes to refresh dashboard
     const handleInvoiceChange = () => {
-      console.log('Invoice change detected, refreshing dashboard...');
       fetchDashboardData();
     };
     
@@ -38,16 +38,14 @@ export function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      console.log('Fetching dashboard data...');
-      
       // Fetch all required data
       const [clientsResponse, allInvoicesResponse, subscriptionsResponse] = await Promise.all([
         apiClient.getUsers({ role: 'CLIENT' }).catch(err => {
-          console.error('Error fetching clients:', err);
+          logger.error('Error fetching clients:', err);
           return { users: [] };
         }),
         apiClient.getInvoices().catch(err => {
-          console.error('Error fetching invoices:', err);
+          logger.error('Error fetching invoices:', err);
           return { invoices: [] };
         }),
         apiClient.getSubscriptions().catch(err => {
@@ -57,15 +55,9 @@ export function AdminDashboard() {
         })
       ]);
       
-      const allClients = clientsResponse.users.filter(u => u.role === 'CLIENT');
+      const allClients = clientsResponse.users.filter((u: any) => u.role === 'CLIENT');
       const allInvoices = allInvoicesResponse.invoices || [];
       const allSubscriptions = subscriptionsResponse.subscriptions || [];
-      
-      console.log('Dashboard data:', {
-        clients: allClients,
-        invoices: allInvoices,
-        subscriptions: allSubscriptions
-      });
       
       // Calculate stats from actual invoice data
       const totalInvoices = allInvoices.length;
@@ -97,16 +89,6 @@ export function AdminDashboard() {
             default: return sum + amount; // MONTHLY
           }
         }, 0);
-      
-      console.log('Calculated stats:', {
-        totalClients: allClients.length,
-        totalInvoices,
-        paidInvoices: paidInvoices.length,
-        unpaidInvoices: unpaidInvoices.length,
-        totalRevenue,
-        activeSubscriptions,
-        monthlyRecurringRevenue
-      });
       
       setStats({
         totalClients: allClients.length,

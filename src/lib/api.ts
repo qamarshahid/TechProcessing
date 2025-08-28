@@ -1,6 +1,16 @@
 import { Closer } from '../types';
 import { logger } from './logger';
 
+// Import User type for getProfile
+interface User {
+  id: string;
+  email: string;
+  fullName: string;
+  role: string;
+  companyName?: string;
+  isActive: boolean;
+}
+
 class ApiClient {
   private baseURL: string;
   private token: string | null = null;
@@ -117,14 +127,7 @@ class ApiClient {
   }
 
   async getProfile() {
-    return this.request<{
-      user: {
-        id: string;
-        email: string;
-        fullName: string;
-        role: string;
-      };
-    }>('/auth/profile');
+    return this.request<User>('/auth/profile');
   }
 
   async logout() {
