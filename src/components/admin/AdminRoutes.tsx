@@ -13,6 +13,7 @@ import { PaymentLinksPage } from './PaymentLinksPage';
 import { RefundsPage } from './RefundsPage';
 import { AuditLogsPage } from './AuditLogsPage';
 import { SystemSettingsPage } from './SystemSettingsPage';
+import { ClientCredentialsPage } from './ClientCredentialsPage';
 
 export function AdminRoutes() {
   return (
@@ -28,6 +29,7 @@ export function AdminRoutes() {
         
         {/* Client Management */}
         <Route path="clients" element={<ClientsPage />} />
+        <Route path="clients/:clientId" element={<ClientCredentialsPage />} />
         <Route path="invoices" element={<InvoicesPage />} />
         
         {/* Services & Products */}
