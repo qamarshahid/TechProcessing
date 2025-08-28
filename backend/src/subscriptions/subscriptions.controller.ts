@@ -46,10 +46,11 @@ export class SubscriptionsController {
   }
 
   @Get('client/:clientId')
+  @Roles(UserRole.ADMIN, UserRole.CLIENT, UserRole.AGENT)
   @ApiOperation({ summary: 'Get subscriptions for a specific client' })
   @ApiResponse({ status: 200, description: 'Client subscriptions retrieved successfully' })
-  findByClient(@Param('clientId') clientId: string) {
-    return this.subscriptionsService.findByClient(clientId);
+  findByClient(@Param('clientId') clientId: string, @CurrentUser() currentUser: User) {
+    return this.subscriptionsService.findByClient(clientId, currentUser);
   }
 
   @Get('stats')
@@ -61,10 +62,11 @@ export class SubscriptionsController {
   }
 
   @Get(':id')
+  @Roles(UserRole.ADMIN, UserRole.CLIENT, UserRole.AGENT)
   @ApiOperation({ summary: 'Get subscription by ID' })
   @ApiResponse({ status: 200, description: 'Subscription retrieved successfully' })
-  findOne(@Param('id') id: string) {
-    return this.subscriptionsService.findOne(id);
+  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
+    return this.subscriptionsService.findOne(id, currentUser);
   }
 
   @Patch(':id')

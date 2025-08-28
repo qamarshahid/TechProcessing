@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { logger } from '../../lib/logger';
 import { Agent } from '../../types';
 import { MonthlyCommissionChart } from './MonthlyCommissionChart';
 import { 
   TrendingUp, 
-  TrendingDown, 
   DollarSign, 
-  Calendar, 
   BarChart3,
   ArrowLeft,
   RefreshCw,
@@ -35,8 +34,8 @@ export function AgentPerformancePage() {
       setError('');
       const agentResponse = await apiClient.getOwnAgentProfile();
       setAgent(agentResponse);
-    } catch (err: any) {
-      console.error('Error fetching agent data:', err);
+    } catch (err: unknown) {
+      logger.error('Error fetching agent data:', err);
       setError('Failed to load agent data. Please try again.');
     } finally {
       setLoading(false);

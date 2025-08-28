@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subscription, SubscriptionStatus, SubscriptionFrequency } from './entities/subscription.entity';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { User } from '../users/entities/user.entity';
+import { UserRole } from '../common/enums/user-role.enum';
 import { AuditService } from '../audit/audit.service';
 
 @Injectable()
@@ -41,7 +42,7 @@ export class SubscriptionsService {
       user: createdBy,
     });
 
-    return this.findOne(savedSubscription.id);
+    return this.findOneInternal(savedSubscription.id);
   }
 
   async findAll(): Promise<Subscription[]> {
@@ -59,7 +60,25 @@ export class SubscriptionsService {
     }
   }
 
-  async findOne(id: string): Promise<Subscription> {
+  async findOne(id: string, currentUser?: User): Promise<Subscription> {
+    const subscription = await this.subscriptionsRepository.findOne({
+      where: { id },
+      relations: ['client', 'servicePackage'],
+    });
+
+    if (!subscription) {
+      throw new NotFoundException('Subscription not found');
+    }
+
+    // Access control: clients can only see their own subscriptions
+    if (currentUser && currentUser.role === UserRole.CLIENT && subscription.clientId !== currentUser.id) {
+      throw new ForbiddenException('Access denied: You can only view your own subscriptions');
+    }
+
+    return subscription;
+  }
+
+  private async findOneInternal(id: string): Promise<Subscription> {
     const subscription = await this.subscriptionsRepository.findOne({
       where: { id },
       relations: ['client', 'servicePackage'],
@@ -72,7 +91,12 @@ export class SubscriptionsService {
     return subscription;
   }
 
-  async findByClient(clientId: string): Promise<Subscription[]> {
+  async findByClient(clientId: string, currentUser?: User): Promise<Subscription[]> {
+    // Access control: clients can only see their own subscriptions
+    if (currentUser && currentUser.role === UserRole.CLIENT && currentUser.id !== clientId) {
+      throw new ForbiddenException('Access denied: You can only view your own subscriptions');
+    }
+
     return this.subscriptionsRepository.find({
       where: { clientId },
       relations: ['client', 'servicePackage'],
@@ -81,7 +105,7 @@ export class SubscriptionsService {
   }
 
   async update(id: string, updateSubscriptionDto: UpdateSubscriptionDto, updatedBy: User): Promise<Subscription> {
-    const subscription = await this.findOne(id);
+    const subscription = await this.findOneInternal(id);
 
     // If frequency changed, recalculate next billing date
     if (updateSubscriptionDto.frequency && updateSubscriptionDto.frequency !== subscription.frequency) {
@@ -103,11 +127,11 @@ export class SubscriptionsService {
       user: updatedBy,
     });
 
-    return this.findOne(updatedSubscription.id);
+    return this.findOneInternal(updatedSubscription.id);
   }
 
   async updateStatus(id: string, status: SubscriptionStatus, updatedBy: User): Promise<Subscription> {
-    const subscription = await this.findOne(id);
+    const subscription = await this.findOneInternal(id);
     
     const oldStatus = subscription.status;
     subscription.status = status;
@@ -123,11 +147,11 @@ export class SubscriptionsService {
       user: updatedBy,
     });
 
-    return this.findOne(updatedSubscription.id);
+    return this.findOneInternal(updatedSubscription.id);
   }
 
   async remove(id: string, deletedBy: User): Promise<void> {
-    const subscription = await this.findOne(id);
+    const subscription = await this.findOneInternal(id);
     
     // Soft delete by setting status to CANCELLED
     subscription.status = SubscriptionStatus.CANCELLED;
@@ -143,7 +167,11 @@ export class SubscriptionsService {
     });
   }
 
-  async getStats(): Promise<any> {
+  async getStats(): Promise<{
+    totalSubscriptions: number;
+    activeSubscriptions: number;
+    monthlyRecurringRevenue: number;
+  }> {
     const totalSubscriptions = await this.subscriptionsRepository.count();
     const activeSubscriptions = await this.subscriptionsRepository.count({
       where: { status: SubscriptionStatus.ACTIVE },

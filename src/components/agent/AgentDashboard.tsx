@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
-import { Agent, AgentSale, SaleStatus, CommissionStatus } from '../../types';
+import { logger } from '../../lib/logger';
+import { Agent, AgentSale, SaleStatus } from '../../types';
 import { AddSaleModal } from './AddSaleModal';
 import { ResubmitSaleModal } from './ResubmitSaleModal';
 import { 
@@ -27,13 +28,11 @@ export function AgentDashboard() {
   const [showResubmitModal, setShowResubmitModal] = useState(false);
   const [selectedSaleForResubmit, setSelectedSaleForResubmit] = useState<AgentSale | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      fetchAgentData();
+  const fetchAgentData = useCallback(async () => {
+    if (!user) {
+      return;
     }
-  }, [user]);
 
-  const fetchAgentData = async () => {
     try {
       setLoading(true);
       setError('');
@@ -46,13 +45,17 @@ export function AgentDashboard() {
 
       setAgent(agentResponse);
       setSales(salesResponse);
-    } catch (err: any) {
-      console.error('Error fetching agent data:', err);
+    } catch (err: unknown) {
+      logger.error('Error fetching agent data:', err);
       setError('Failed to load agent data. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    fetchAgentData();
+  }, [fetchAgentData]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

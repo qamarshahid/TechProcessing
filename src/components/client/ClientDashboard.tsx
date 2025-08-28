@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { logger } from '../../lib/logger';
 import { FileText, DollarSign, Clock, CheckCircle, Package } from 'lucide-react';
 
 export function ClientDashboard() {
@@ -16,48 +17,24 @@ export function ClientDashboard() {
   const [loading, setLoading] = useState(true);
   const [showSubscriptionsModal, setShowSubscriptionsModal] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      fetchClientData();
-      
-      // Listen for invoice changes to refresh client dashboard
-      const handleInvoiceChange = (event: any) => {
-        const { clientId: changedClientId } = event.detail || {};
-        // Only refresh if this client was affected
-        if (!changedClientId || changedClientId === user?.id) {
-          console.log('Invoice change detected for this client, refreshing dashboard...');
-          fetchClientData();
-        }
-      };
-      
-      window.addEventListener('invoiceDeleted', handleInvoiceChange);
-      window.addEventListener('invoiceCreated', handleInvoiceChange);
-      window.addEventListener('invoiceUpdated', handleInvoiceChange);
-      
-      return () => {
-        window.removeEventListener('invoiceDeleted', handleInvoiceChange);
-        window.removeEventListener('invoiceCreated', handleInvoiceChange);
-        window.removeEventListener('invoiceUpdated', handleInvoiceChange);
-      };
+  const fetchClientData = useCallback(async () => {
+    if (!user?.id) {
+      return;
     }
-  }, [user]);
 
-  const fetchClientData = async () => {
     try {
       // Fetch client-specific data including subscriptions
-      const historyResponse = await apiClient.getClientTransactionHistory(user?.id || '');
+      const historyResponse = await apiClient.getClientTransactionHistory(user.id);
       const userInvoices = historyResponse.invoices || [];
       
       // Fetch client subscriptions - only if user ID exists
       let userSubscriptions = [];
-      if (user?.id) {
-        try {
-          const subscriptionsResponse = await apiClient.getClientSubscriptions(user.id);
-          userSubscriptions = subscriptionsResponse.subscriptions || [];
-        } catch (error) {
-          console.error('Error fetching client subscriptions:', error);
-          userSubscriptions = [];
-        }
+      try {
+        const subscriptionsResponse = await apiClient.getClientSubscriptions(user.id);
+        userSubscriptions = subscriptionsResponse.subscriptions || [];
+      } catch (error) {
+        logger.error('Error fetching client subscriptions:', error);
+        userSubscriptions = [];
       }
 
       // Calculate stats
@@ -82,7 +59,7 @@ export function ClientDashboard() {
       setRecentInvoices(userInvoices.slice(0, 5));
       setActiveSubscriptions(userSubscriptions.filter((sub: any) => sub.status === 'ACTIVE' || sub.status === 'PAUSED'));
     } catch (error) {
-      console.error('Error fetching client data:', error);
+      logger.error('Error fetching client data:', error);
       // Set empty stats on error
       setStats({
         totalInvoices: 0,
@@ -95,7 +72,32 @@ export function ClientDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (user) {
+      fetchClientData();
+      
+      // Listen for invoice changes to refresh client dashboard
+      const handleInvoiceChange = (event: any) => {
+        const { clientId: changedClientId } = event.detail || {};
+        // Only refresh if this client was affected
+        if (!changedClientId || changedClientId === user?.id) {
+          fetchClientData();
+        }
+      };
+      
+      window.addEventListener('invoiceDeleted', handleInvoiceChange);
+      window.addEventListener('invoiceCreated', handleInvoiceChange);
+      window.addEventListener('invoiceUpdated', handleInvoiceChange);
+      
+      return () => {
+        window.removeEventListener('invoiceDeleted', handleInvoiceChange);
+        window.removeEventListener('invoiceCreated', handleInvoiceChange);
+        window.removeEventListener('invoiceUpdated', handleInvoiceChange);
+      };
+    }
+  }, [user, fetchClientData]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -122,7 +124,7 @@ export function ClientDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome, {user?.full_name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome, {user?.fullName}</h1>
           <p className="text-sm text-gray-600">Manage your projects and invoices</p>
         </div>
         <div className="flex items-center space-x-2">
