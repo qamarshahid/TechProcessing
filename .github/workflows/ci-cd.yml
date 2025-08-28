@@ -219,4 +219,24 @@ jobs:
 
       - name: Trigger migrations job execution
         run: |
+          echo "🗄️ Running database migrations..."
           gcloud run jobs execute ${{ env.JOB_NAME }} --region ${{ env.REGION }} --wait
+          echo "✅ Database migrations completed successfully!"
+
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "🎉 Backend deployment completed successfully!"
+          echo "🌐 Service: ${{ env.SERVICE }}"
+          echo "📍 Region: ${{ env.REGION }}"
+          echo "🐳 Image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}"
+          echo "📦 Build completed for commit: ${{ github.sha }}"
+          echo "🚀 Deployment completed at $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+
+      - name: Notify deployment failure
+        if: failure()
+        run: |
+          echo "❌ Backend deployment failed!"
+          echo "🔍 Please check the logs above for details."
+          echo "📋 Failed at commit: ${{ github.sha }}"
+          echo "⏰ Failed at $(date -u +"%Y-%m-%d %H:%M:%S UTC")"

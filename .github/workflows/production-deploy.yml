@@ -1,0 +1,288 @@
+name: 🚀 Production Deployment
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      deploy_frontend:
+        description: 'Deploy Frontend'
+        required: true
+        default: true
+        type: boolean
+      deploy_backend:
+        description: 'Deploy Backend'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '20'
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_REGION: ${{ secrets.GCP_REGION }}
+
+jobs:
+  detect-changes:
+    name: 🔍 Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      frontend-changed: ${{ steps.changes.outputs.frontend }}
+      backend-changed: ${{ steps.changes.outputs.backend }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect file changes
+        id: changes
+        run: |
+          # Check if this is a manual trigger
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "frontend=${{ github.event.inputs.deploy_frontend || 'true' }}" >> $GITHUB_OUTPUT
+            echo "backend=${{ github.event.inputs.deploy_backend || 'true' }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # For push events, detect changes
+          if git diff --name-only HEAD~1 HEAD | grep -E "^(src/|public/|index\.html|package\.json|package-lock\.json|vite\.config\.ts|tailwind\.config\.js|postcss\.config\.js)"; then
+            echo "frontend=true" >> $GITHUB_OUTPUT
+            echo "Frontend changes detected"
+          else
+            echo "frontend=false" >> $GITHUB_OUTPUT
+            echo "No frontend changes detected"
+          fi
+          
+          if git diff --name-only HEAD~1 HEAD | grep -E "^(backend/|Dockerfile|docker-compose\.yml|\.env\.example)"; then
+            echo "backend=true" >> $GITHUB_OUTPUT
+            echo "Backend changes detected"
+          else
+            echo "backend=false" >> $GITHUB_OUTPUT
+            echo "No backend changes detected"
+          fi
+
+  deploy-backend:
+    name: 🏗️ Deploy Backend to GCP
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend-changed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      REGION: ${{ secrets.GCP_REGION }}
+      REPOSITORY: ${{ secrets.ARTIFACT_REPO }}
+      IMAGE: ${{ secrets.IMAGE_NAME || 'techprocessing-api' }}
+      SERVICE: ${{ secrets.CLOUD_RUN_SERVICE }}
+    outputs:
+      backend-url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install and test backend
+        working-directory: backend
+        run: |
+          npm ci
+          npm test -- --ci
+        env:
+          CI: true
+
+      - name: Set up gcloud auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Configure gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push image
+        run: |
+          IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+          docker build -t $IMAGE_URI .
+          docker push $IMAGE_URI
+          echo "✅ Image built and pushed: $IMAGE_URI"
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        run: |
+          IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
+          
+          gcloud run deploy ${{ env.SERVICE }} \
+            --region ${{ env.REGION }} \
+            --image $IMAGE_URI \
+            --platform managed \
+            --allow-unauthenticated \
+            --port 8080 \
+            --max-instances=4 \
+            --cpu=1 \
+            --memory=512Mi \
+            --timeout=60s \
+            --set-env-vars NODE_ENV=production,PORT=8080 \
+            --format="value(status.url)"
+            
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE }} --region ${{ env.REGION }} --format="value(status.url)")
+          echo "url=$SERVICE_URL" >> $GITHUB_OUTPUT
+          echo "✅ Backend deployed to: $SERVICE_URL"
+
+      - name: Run database migrations
+        run: |
+          JOB_NAME="${{ secrets.MIGRATIONS_JOB_NAME || 'techprocessing-migrations' }}"
+          IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
+          
+          # Create or update migration job
+          if gcloud run jobs describe $JOB_NAME --region ${{ env.REGION }} >/dev/null 2>&1; then
+            gcloud run jobs update $JOB_NAME \
+              --image $IMAGE_URI \
+              --region ${{ env.REGION }} \
+              --task-timeout=10m \
+              --memory=512Mi \
+              --cpu=1 \
+              --set-env-vars NODE_ENV=production,PORT=8080 \
+              --command "npm" \
+              --args "run","migration:run:prod"
+          else
+            gcloud run jobs create $JOB_NAME \
+              --image $IMAGE_URI \
+              --region ${{ env.REGION }} \
+              --task-timeout=10m \
+              --memory=512Mi \
+              --cpu=1 \
+              --set-env-vars NODE_ENV=production,PORT=8080 \
+              --command "npm" \
+              --args "run","migration:run:prod"
+          fi
+          
+          # Execute migrations
+          echo "🗄️ Running database migrations..."
+          gcloud run jobs execute $JOB_NAME --region ${{ env.REGION }} --wait
+          echo "✅ Database migrations completed!"
+
+  deploy-frontend:
+    name: 🎨 Deploy Frontend to GitHub Pages
+    needs: [detect-changes, deploy-backend]
+    if: always() && needs.detect-changes.outputs.frontend-changed == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create production environment
+        run: |
+          # Use backend URL from deployment or fallback
+          BACKEND_URL="${{ needs.deploy-backend.outputs.backend-url }}"
+          if [ -z "$BACKEND_URL" ]; then
+            BACKEND_URL="${{ secrets.VITE_API_URL }}"
+          fi
+          if [ -z "$BACKEND_URL" ]; then
+            BACKEND_URL="https://techprocessing-backend-320817886283.northamerica-northeast2.run.app"
+          fi
+          
+          echo "VITE_API_URL=$BACKEND_URL/api" > .env.production
+          echo "VITE_APP_NAME=TechProcessing" >> .env.production
+          echo "VITE_ENVIRONMENT=production" >> .env.production
+          echo "✅ Frontend configured with API URL: $BACKEND_URL/api"
+
+      - name: Build frontend
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  notify-success:
+    name: 🎉 Deployment Success
+    needs: [detect-changes, deploy-backend, deploy-frontend]
+    if: always() && !failure() && !cancelled()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deployment summary
+        run: |
+          echo "🎉 Production deployment completed successfully!"
+          echo ""
+          echo "📊 Deployment Summary:"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          
+          if [ "${{ needs.detect-changes.outputs.backend-changed }}" = "true" ]; then
+            echo "🏗️  Backend: ✅ Deployed to Google Cloud Run"
+            echo "   🌐 URL: ${{ needs.deploy-backend.outputs.backend-url }}"
+          else
+            echo "🏗️  Backend: ⏭️ No changes detected"
+          fi
+          
+          if [ "${{ needs.detect-changes.outputs.frontend-changed }}" = "true" ]; then
+            echo "🎨 Frontend: ✅ Deployed to GitHub Pages"
+            echo "   🌐 URL: ${{ needs.deploy-frontend.outputs.page_url }}"
+          else
+            echo "🎨 Frontend: ⏭️ No changes detected"
+          fi
+          
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Commit: ${{ github.sha }}"
+          echo "🕐 Completed: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+
+  notify-failure:
+    name: ❌ Deployment Failed
+    needs: [detect-changes, deploy-backend, deploy-frontend]
+    if: always() && (failure() || cancelled())
+    runs-on: ubuntu-latest
+    steps:
+      - name: Failure summary
+        run: |
+          echo "❌ Production deployment failed!"
+          echo ""
+          echo "📊 Deployment Status:"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🏗️  Backend: ${{ needs.deploy-backend.result }}"
+          echo "🎨 Frontend: ${{ needs.deploy-frontend.result }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Failed commit: ${{ github.sha }}"
+          echo "🕐 Failed at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo ""
+          echo "🔍 Please check the job logs above for detailed error information."

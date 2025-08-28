@@ -3,19 +3,33 @@ name: Deploy Frontend to GitHub Pages
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+      - 'tailwind.config.js'
+      - 'postcss.config.js'
   workflow_dispatch:
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
   build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     
     steps:
@@ -27,20 +41,34 @@ jobs:
         echo "Repository: ${{ github.repository }}"
         echo "Event: ${{ github.event_name }}"
         echo "Branch: ${{ github.ref }}"
+        echo "Commit: ${{ github.sha }}"
         
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
         cache: 'npm'
-        
+
     - name: Install dependencies
       run: npm ci
-      
+
+    - name: Create production environment file
+      run: |
+        # Use secrets or fallback to known production URL
+        API_URL="${{ secrets.VITE_API_URL }}"
+        if [ -z "$API_URL" ]; then
+          API_URL="https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api"
+        fi
+        echo "VITE_API_URL=$API_URL" > .env.production
+        echo "VITE_APP_NAME=TechProcessing" >> .env.production
+        echo "VITE_ENVIRONMENT=production" >> .env.production
+        echo "Production environment variables set"
+        echo "Using API URL: $API_URL"
+        
     - name: Build frontend
       run: npm run build
       env:
-        VITE_API_URL: https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api
+        NODE_ENV: production
         
     - name: Check build output
       run: |
@@ -97,3 +125,19 @@ jobs:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
+
+    - name: Notify deployment success
+      if: success()
+      run: |
+        echo "✅ Frontend successfully deployed to GitHub Pages!"
+        echo "🌐 Site URL: ${{ steps.deployment.outputs.page_url }}"
+        echo "📦 Build completed for commit: ${{ github.sha }}"
+        echo "🚀 Deployment completed at $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+
+    - name: Notify deployment failure
+      if: failure()
+      run: |
+        echo "❌ Frontend deployment failed!"
+        echo "🔍 Please check the logs above for details."
+        echo "📋 Failed at commit: ${{ github.sha }}"
+        echo "⏰ Failed at $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
