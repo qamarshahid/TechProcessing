@@ -1,0 +1,200 @@
+name: 🏗️ Backend Only Deployment
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: backend-deployment-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  deploy-backend:
+    name: 🏗️ Deploy Backend to GCP Cloud Run
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      REGION: ${{ secrets.GCP_REGION }}
+      REPOSITORY: ${{ secrets.ARTIFACT_REPO }}
+      IMAGE: ${{ secrets.IMAGE_NAME || 'techprocessing-api' }}
+      SERVICE: ${{ secrets.CLOUD_RUN_SERVICE }}
+    outputs:
+      backend-url: ${{ steps.deploy.outputs.url }}
+      deployment-status: ${{ steps.check-secrets.outputs.status }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check required secrets
+        id: check-secrets
+        run: |
+          echo "🔍 Checking GCP configuration..."
+          
+          missing_secrets=()
+          
+          if [[ -z "${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}" ]]; then
+            missing_secrets+=("GCP_WORKLOAD_IDENTITY_PROVIDER")
+          fi
+          
+          if [[ -z "${{ secrets.GCP_SERVICE_ACCOUNT }}" ]]; then
+            missing_secrets+=("GCP_SERVICE_ACCOUNT")
+          fi
+          
+          if [[ -z "${{ secrets.GCP_PROJECT_ID }}" ]]; then
+            missing_secrets+=("GCP_PROJECT_ID")
+          fi
+          
+          if [[ -z "${{ secrets.GCP_REGION }}" ]]; then
+            missing_secrets+=("GCP_REGION")
+          fi
+          
+          if [[ -z "${{ secrets.ARTIFACT_REPO }}" ]]; then
+            missing_secrets+=("ARTIFACT_REPO")
+          fi
+          
+          if [[ -z "${{ secrets.CLOUD_RUN_SERVICE }}" ]]; then
+            missing_secrets+=("CLOUD_RUN_SERVICE")
+          fi
+          
+          if [ ${#missing_secrets[@]} -ne 0 ]; then
+            echo "status=failed" >> $GITHUB_OUTPUT
+            echo "❌ Backend deployment failed: Missing required GCP secrets"
+            echo ""
+            echo "📋 Missing secrets:"
+            for secret in "${missing_secrets[@]}"; do
+              echo "  - $secret"
+            done
+            echo ""
+            echo "📖 Setup instructions:"
+            echo "1. Go to repository Settings → Secrets and variables → Actions"
+            echo "2. Add the missing secrets listed above"
+            echo "3. See DEPLOYMENT.md for detailed setup instructions"
+            echo "4. Re-run this workflow after configuration"
+            exit 1
+          fi
+          
+          echo "status=success" >> $GITHUB_OUTPUT
+          echo "✅ All required GCP secrets are configured"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install and test backend
+        working-directory: backend
+        run: |
+          npm ci
+          npm test -- --ci
+        env:
+          CI: true
+
+      - name: Set up gcloud auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Configure gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push image
+        run: |
+          IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+          
+          echo "🔨 Building Docker image..."
+          docker build -t $IMAGE_URI .
+          
+          echo "📦 Pushing image to Artifact Registry..."
+          docker push $IMAGE_URI
+          
+          echo "✅ Image built and pushed: $IMAGE_URI"
+
+      - name: Deploy to Cloud Run
+        id: deploy
+        run: |
+          IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
+          
+          echo "🚀 Deploying to Cloud Run..."
+          
+          gcloud run deploy ${{ env.SERVICE }} \
+            --region ${{ env.REGION }} \
+            --image $IMAGE_URI \
+            --platform managed \
+            --allow-unauthenticated \
+            --port 8080 \
+            --max-instances=4 \
+            --cpu=1 \
+            --memory=512Mi \
+            --timeout=60s \
+            --set-env-vars NODE_ENV=production,PORT=8080 \
+            --format="value(status.url)"
+            
+          SERVICE_URL=$(gcloud run services describe ${{ env.SERVICE }} --region ${{ env.REGION }} --format="value(status.url)")
+          echo "url=$SERVICE_URL" >> $GITHUB_OUTPUT
+          echo "✅ Backend deployed to: $SERVICE_URL"
+
+      - name: Run database migrations
+        run: |
+          JOB_NAME="${{ secrets.MIGRATIONS_JOB_NAME || 'techprocessing-migrations' }}"
+          IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
+          
+          echo "🗄️ Setting up database migrations..."
+          
+          # Create or update migration job
+          if gcloud run jobs describe $JOB_NAME --region ${{ env.REGION }} >/dev/null 2>&1; then
+            echo "Updating existing migration job..."
+            gcloud run jobs update $JOB_NAME \
+              --image $IMAGE_URI \
+              --region ${{ env.REGION }} \
+              --task-timeout=10m \
+              --memory=512Mi \
+              --cpu=1 \
+              --set-env-vars NODE_ENV=production,PORT=8080 \
+              --command "npm" \
+              --args "run","migration:run:prod"
+          else
+            echo "Creating new migration job..."
+            gcloud run jobs create $JOB_NAME \
+              --image $IMAGE_URI \
+              --region ${{ env.REGION }} \
+              --task-timeout=10m \
+              --memory=512Mi \
+              --cpu=1 \
+              --set-env-vars NODE_ENV=production,PORT=8080 \
+              --command "npm" \
+              --args "run","migration:run:prod"
+          fi
+          
+          # Execute migrations
+          echo "🗄️ Running database migrations..."
+          gcloud run jobs execute $JOB_NAME --region ${{ env.REGION }} --wait
+          echo "✅ Database migrations completed!"
+
+      - name: Deployment success
+        run: |
+          echo "🎉 Backend deployment completed successfully!"
+          echo ""
+          echo "📊 Deployment Summary:"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🏗️  Backend: ✅ Deployed to Google Cloud Run"
+          echo "   🌐 URL: ${{ steps.deploy.outputs.url }}"
+          echo "   🗄️  Database: ✅ Migrations completed"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Commit: ${{ github.sha }}"
+          echo "🕐 Completed: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo ""
+          echo "ℹ️  Frontend deployment runs separately via frontend-only-deploy.yml"
