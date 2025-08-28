@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
-import { Users, FileText, Package, DollarSign, TrendingUp, Clock, AlertCircle, RefreshCw } from 'lucide-react';
+import { Users, FileText, Package, DollarSign, AlertCircle, RefreshCw } from 'lucide-react';
 
 export function AdminDashboard() {
   const [stats, setStats] = useState({

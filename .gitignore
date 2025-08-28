@@ -141,3 +141,12 @@ $RECYCLE.BIN/
 
 # Linux
 *~
+
+# Test and debug files (contain sensitive data)
+check-admin-direct.cjs
+check-admin-users.js
+create-admin-via-api.js
+create-working-user.js
+debug-dashboard.js
+test-all-logins.js
+test-login-frontend.js

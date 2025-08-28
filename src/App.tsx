@@ -6,17 +6,20 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LandingPage } from './components/LandingPage';
 import { LoginForm } from './components/LoginForm';
-import { AdminDashboard } from './components/admin/AdminDashboard';
+import { AdminRoutes } from './components/admin/AdminRoutes';
 import { AgentDashboard } from './components/agent/AgentDashboard';
 import { ClientDashboard } from './components/client/ClientDashboard';
 
 function App() {
+  // Determine base path for Router - use /TechProcessing in production, / in development
+  const basename = import.meta.env.PROD ? '/TechProcessing' : '';
+  
   return (
     <ErrorBoundary>
       <ThemeProvider>
         <NotificationProvider>
           <AuthProvider>
-            <Router>
+            <Router basename={basename}>
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<LandingPage />} />
@@ -31,7 +34,7 @@ function App() {
                 
                 <Route path="/admin/*" element={
                   <ProtectedRoute requiredRole="ADMIN">
-                    <AdminDashboard />
+                    <AdminRoutes />
                   </ProtectedRoute>
                 } />
                 
