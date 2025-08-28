@@ -62,8 +62,8 @@ jobs:
           fi
           
           if [ ${#missing_secrets[@]} -ne 0 ]; then
-            echo "status=failed" >> $GITHUB_OUTPUT
-            echo "❌ Backend deployment failed: Missing required GCP secrets"
+            echo "status=skipped" >> $GITHUB_OUTPUT
+            echo "⏭️ Backend deployment skipped: Missing required GCP secrets"
             echo ""
             echo "📋 Missing secrets:"
             for secret in "${missing_secrets[@]}"; do
@@ -75,13 +75,19 @@ jobs:
             echo "2. Add the missing secrets listed above"
             echo "3. See DEPLOYMENT.md for detailed setup instructions"
             echo "4. Re-run this workflow after configuration"
-            exit 1
+            echo ""
+            echo "ℹ️  Frontend deployment will continue independently"
+            echo "⏭️  Skipping backend deployment until secrets are configured"
+            # Don't exit with error code, just skip the deployment
+            # This workflow step will report as successful, but backend won't deploy
+            exit 0
           fi
           
           echo "status=success" >> $GITHUB_OUTPUT
           echo "✅ All required GCP secrets are configured"
 
       - name: Set up Node.js
+        if: steps.check-secrets.outputs.status != 'skipped'
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -89,6 +95,7 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Install and test backend
+        if: steps.check-secrets.outputs.status != 'skipped'
         working-directory: backend
         run: |
           npm ci
@@ -97,20 +104,24 @@ jobs:
           CI: true
 
       - name: Set up gcloud auth
+        if: steps.check-secrets.outputs.status != 'skipped'
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Configure gcloud
+        if: steps.check-secrets.outputs.status != 'skipped'
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
 
       - name: Configure Docker for Artifact Registry
+        if: steps.check-secrets.outputs.status != 'skipped'
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
       - name: Build and push image
+        if: steps.check-secrets.outputs.status != 'skipped'
         run: |
           IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
@@ -124,6 +135,7 @@ jobs:
           echo "✅ Image built and pushed: $IMAGE_URI"
 
       - name: Deploy to Cloud Run
+        if: steps.check-secrets.outputs.status != 'skipped'
         id: deploy
         run: |
           IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
@@ -148,6 +160,7 @@ jobs:
           echo "✅ Backend deployed to: $SERVICE_URL"
 
       - name: Run database migrations
+        if: steps.check-secrets.outputs.status != 'skipped'
         run: |
           JOB_NAME="${{ secrets.MIGRATIONS_JOB_NAME || 'techprocessing-migrations' }}"
           IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
@@ -185,6 +198,7 @@ jobs:
           echo "✅ Database migrations completed!"
 
       - name: Deployment success
+        if: steps.check-secrets.outputs.status != 'skipped'
         run: |
           echo "🎉 Backend deployment completed successfully!"
           echo ""
@@ -198,3 +212,19 @@ jobs:
           echo "🕐 Completed: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
           echo ""
           echo "ℹ️  Frontend deployment runs separately via frontend-only-deploy.yml"
+
+      - name: Deployment skipped
+        if: steps.check-secrets.outputs.status == 'skipped'
+        run: |
+          echo "⏭️ Backend deployment was skipped due to missing GCP configuration"
+          echo ""
+          echo "📊 Deployment Summary:"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🏗️  Backend: ⏭️ Skipped (missing GCP secrets)"
+          echo "   📖 See DEPLOYMENT.md for setup instructions"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Commit: ${{ github.sha }}"
+          echo "🕐 Completed: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo ""
+          echo "ℹ️  Configure GCP secrets to enable backend deployment"
+          echo "📋 Frontend deployment runs independently and will succeed"
