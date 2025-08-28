@@ -31,8 +31,12 @@ import { PaymentLink } from '../payment-links/entities/payment-link.entity';
           database: config.get('DATABASE_NAME'),
           entities: [User, Agent, AgentSale, Closer, Invoice, Payment, AuditLog, ServicePackage, Subscription, PaymentLink],
           synchronize: false,
-          logging: false,
+          logging: ['error'],
           ssl,
+          connectTimeoutMS: 60000,
+          extra: {
+            connectionLimit: 1,
+          },
         };
       },
     }),

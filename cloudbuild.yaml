@@ -1,11 +1,11 @@
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/techprocessing:$COMMIT_SHA', '.']
+    args: ['build', '-t', 'gcr.io/techprocessing/techprocessing:latest', '.']
   
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/techprocessing:$COMMIT_SHA']
+    args: ['push', 'gcr.io/techprocessing/techprocessing:latest']
   
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -15,7 +15,7 @@ steps:
       - 'deploy'
       - 'techprocessing'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/techprocessing:$COMMIT_SHA'
+      - 'gcr.io/techprocessing/techprocessing:latest'
       - '--region'
       - 'northamerica-northeast2'
       - '--platform'
@@ -32,7 +32,7 @@ steps:
       - '--timeout'
       - '60s'
       - '--set-env-vars'
-      - 'NODE_ENV=production,PORT=8080'
+      - 'NODE_ENV=production,CORS_ORIGIN=https://qamarshahid.github.io,CORS_ORIGINS=https://qamarshahid.github.io,SKIP_DB=true'
 
 images:
-  - 'gcr.io/$PROJECT_ID/techprocessing:$COMMIT_SHA'
+  - 'gcr.io/techprocessing/techprocessing:latest'

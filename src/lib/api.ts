@@ -5,11 +5,17 @@ class ApiClient {
   private token: string | null = null;
 
   constructor() {
-    // Temporarily use CORS proxy to bypass browser caching issues
+    // Use the deployed backend URL
     const directURL = 'https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api';
-    const proxyURL = 'https://cors-anywhere.herokuapp.com/';
-    
-    // Try direct first, fallback to proxy if needed
+
+    // Try different CORS proxy services
+    // Option 1: CORS Anywhere (requires visiting demo page first)
+    // const corsProxyURL = 'https://cors-anywhere.herokuapp.com/' + directURL;
+
+    // Option 2: All Origins CORS proxy
+    // const corsProxyURL = 'https://api.allorigins.win/get?url=' + encodeURIComponent(directURL);
+
+    // Option 3: Use direct URL and handle CORS in environment variables
     this.baseURL = import.meta.env.VITE_API_URL || directURL;
     this.token = localStorage.getItem('auth_token');
   }

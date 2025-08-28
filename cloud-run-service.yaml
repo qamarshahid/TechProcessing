@@ -1,0 +1,73 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: techprocessing-backend
+  labels:
+    cloud.googleapis.com/location: northamerica-northeast2
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: "10"
+        run.googleapis.com/ingress: all
+        run.googleapis.com/ingress-status: all
+        run.googleapis.com/cloudsql-instances: "techprocessing:northamerica-northeast2:techprocessing-db"
+    spec:
+      containers:
+      - image: gcr.io/techprocessing/techprocessing:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: CORS_ORIGIN
+          value: "https://qamarshahid.github.io"
+        - name: CORS_ORIGINS
+          value: "https://qamarshahid.github.io,http://localhost:5173,http://localhost:5174"
+        - name: DATABASE_HOST
+          value: "/cloudsql/techprocessing:northamerica-northeast2:techprocessing-db"
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_NAME
+          value: "techprocessing"
+        - name: DATABASE_USERNAME
+          value: "techprocessing-user"
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "db-password"
+              key: "1"
+        - name: DATABASE_SSL
+          value: "false"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: "jwt-secret"
+              key: "1"
+        - name: JWT_EXPIRES_IN
+          value: "24h"
+        - name: DEPLOYMENT_VERSION
+          value: "v2"
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: "1"
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 10
+          failureThreshold: 40
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+      timeoutSeconds: 900
+  traffic:
+  - percent: 100
+    latestRevision: true

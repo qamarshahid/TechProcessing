@@ -43,13 +43,13 @@ USER nestjs
 
 # Set environment variables for Cloud Run
 ENV NODE_ENV=production
-ENV PORT=8080
+# Note: PORT is automatically set by Cloud Run, do not override it
 
 # Expose port 8080 (Cloud Run default)
 EXPOSE 8080
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD node healthcheck.js
 
 # Start the application

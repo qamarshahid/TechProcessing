@@ -5,7 +5,12 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/TechProcessing/',
+  base: '/TechProcessing/', // Restored for GitHub Pages deployment
+  server: {
+    hmr: {
+      overlay: false
+    }
+  },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -18,8 +23,5 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
-  },
-  define: {
-    'process.env.NODE_ENV': '"production"',
   },
 });

@@ -5,6 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { CorsMiddleware } from './common/middleware/cors.middleware';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 
@@ -38,30 +39,13 @@ async function bootstrap() {
     .filter((o) => !!o);
 
   logger.log(`🔧 CORS Configuration: origins=${origins.join(', ')}`);
+  logger.log(`🔧 Environment: ${isProd ? 'production' : 'development'}`);
 
-  // Temporarily use wildcard CORS to bypass caching issues
-  app.enableCors({
-    origin: true, // Allow all origins temporarily
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
-    credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  });
+  // Apply custom CORS middleware FIRST - before any other middleware
+  const corsMiddleware = new CorsMiddleware();
+  app.use(corsMiddleware.use.bind(corsMiddleware));
 
-  // Additional CORS middleware to ensure headers are always set
-  app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cache-Control, Pragma');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Vary', 'Origin');
-    if (req.method === 'OPTIONS') {
-      res.status(204);
-      return res.end();
-    }
-    next();
-  });
+  logger.log('✅ Custom CORS middleware applied for GitHub Pages and localhost development');
 
   // Security headers
   app.use(helmet({ contentSecurityPolicy: isProd }));
@@ -93,11 +77,11 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
   }
 
-  const port = configService.get('PORT', 8080);
-  
+  const port = process.env.PORT || 8080;
+
   try {
     await app.listen(port, '0.0.0.0');
-    
+
     logger.log(`🚀 Application is running on: http://0.0.0.0:${port}`);
     if (!isProd) {
       logger.log(`📚 Swagger documentation: http://localhost:${port}/api/docs`);
