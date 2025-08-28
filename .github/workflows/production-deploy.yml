@@ -86,11 +86,32 @@ jobs:
       SERVICE: ${{ secrets.CLOUD_RUN_SERVICE }}
     outputs:
       backend-url: ${{ steps.deploy.outputs.url }}
+      skip-reason: ${{ steps.check-secrets.outputs.skip-reason }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check required secrets
+        id: check-secrets
+        run: |
+          if [[ -z "${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}" || -z "${{ secrets.GCP_SERVICE_ACCOUNT }}" || -z "${{ secrets.GCP_PROJECT_ID }}" ]]; then
+            echo "skip-reason=Missing required GCP secrets. Configure GCP_WORKLOAD_IDENTITY_PROVIDER, GCP_SERVICE_ACCOUNT, and GCP_PROJECT_ID in repository secrets." >> $GITHUB_OUTPUT
+            echo "⚠️ Backend deployment skipped: Missing GCP configuration"
+            echo "📋 Required secrets:"
+            echo "  - GCP_WORKLOAD_IDENTITY_PROVIDER"
+            echo "  - GCP_SERVICE_ACCOUNT" 
+            echo "  - GCP_PROJECT_ID"
+            echo "  - GCP_REGION"
+            echo "  - ARTIFACT_REPO"
+            echo "  - CLOUD_RUN_SERVICE"
+            echo ""
+            echo "📖 See DEPLOYMENT.md for setup instructions"
+            exit 0
+          fi
+          echo "✅ All required secrets are configured"
+
       - name: Set up Node.js
+        if: steps.check-secrets.outputs.skip-reason == ''
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -98,6 +119,7 @@ jobs:
           cache-dependency-path: backend/package-lock.json
 
       - name: Install and test backend
+        if: steps.check-secrets.outputs.skip-reason == ''
         working-directory: backend
         run: |
           npm ci
@@ -106,20 +128,24 @@ jobs:
           CI: true
 
       - name: Set up gcloud auth
+        if: steps.check-secrets.outputs.skip-reason == ''
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
       - name: Configure gcloud
+        if: steps.check-secrets.outputs.skip-reason == ''
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
 
       - name: Configure Docker for Artifact Registry
+        if: steps.check-secrets.outputs.skip-reason == ''
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
       - name: Build and push image
+        if: steps.check-secrets.outputs.skip-reason == ''
         run: |
           IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
@@ -128,6 +154,7 @@ jobs:
           echo "✅ Image built and pushed: $IMAGE_URI"
 
       - name: Deploy to Cloud Run
+        if: steps.check-secrets.outputs.skip-reason == ''
         id: deploy
         run: |
           IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
@@ -150,6 +177,7 @@ jobs:
           echo "✅ Backend deployed to: $SERVICE_URL"
 
       - name: Run database migrations
+        if: steps.check-secrets.outputs.skip-reason == ''
         run: |
           JOB_NAME="${{ secrets.MIGRATIONS_JOB_NAME || 'techprocessing-migrations' }}"
           IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE }}:${{ github.sha }}
@@ -244,21 +272,27 @@ jobs:
     steps:
       - name: Deployment summary
         run: |
-          echo "🎉 Production deployment completed successfully!"
+          echo "🎉 Production deployment completed!"
           echo ""
           echo "📊 Deployment Summary:"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           
           if [ "${{ needs.detect-changes.outputs.backend-changed }}" = "true" ]; then
-            echo "🏗️  Backend: ✅ Deployed to Google Cloud Run"
-            echo "   🌐 URL: ${{ needs.deploy-backend.outputs.backend-url }}"
+            if [ -n "${{ needs.deploy-backend.outputs.skip-reason }}" ]; then
+              echo "🏗️  Backend: ⏭️ ${{ needs.deploy-backend.outputs.skip-reason }}"
+            elif [ -n "${{ needs.deploy-backend.outputs.backend-url }}" ]; then
+              echo "🏗️  Backend: ✅ Deployed to Google Cloud Run"
+              echo "   🌐 URL: ${{ needs.deploy-backend.outputs.backend-url }}"
+            else
+              echo "🏗️  Backend: ❓ Status unknown"
+            fi
           else
             echo "🏗️  Backend: ⏭️ No changes detected"
           fi
           
           if [ "${{ needs.detect-changes.outputs.frontend-changed }}" = "true" ]; then
             echo "🎨 Frontend: ✅ Deployed to GitHub Pages"
-            echo "   🌐 URL: ${{ needs.deploy-frontend.outputs.page_url }}"
+            echo "   🌐 URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
           else
             echo "🎨 Frontend: ⏭️ No changes detected"
           fi

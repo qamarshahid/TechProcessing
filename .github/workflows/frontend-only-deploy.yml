@@ -1,0 +1,91 @@
+name: 🚀 Frontend Only Deployment
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+      - 'tailwind.config.js'
+      - 'postcss.config.js'
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy-frontend:
+    name: 🎨 Deploy Frontend to GitHub Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create production environment
+        run: |
+          # Use fallback API URL for frontend-only deployment
+          API_URL="${{ secrets.VITE_API_URL }}"
+          if [ -z "$API_URL" ]; then
+            API_URL="https://techprocessing-backend-320817886283.northamerica-northeast2.run.app"
+          fi
+          
+          echo "VITE_API_URL=$API_URL/api" > .env.production
+          echo "VITE_APP_NAME=TechProcessing" >> .env.production
+          echo "VITE_ENVIRONMENT=production" >> .env.production
+          echo "✅ Frontend configured with API URL: $API_URL/api"
+
+      - name: Build frontend
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Deployment success
+        run: |
+          echo "🎉 Frontend deployment completed successfully!"
+          echo ""
+          echo "📊 Deployment Summary:"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🎨 Frontend: ✅ Deployed to GitHub Pages"
+          echo "   🌐 URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Commit: ${{ github.sha }}"
+          echo "🕐 Completed: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo ""
+          echo "ℹ️  Backend deployment requires GCP configuration."
+          echo "📖 See DEPLOYMENT.md for backend setup instructions."
