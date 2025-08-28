@@ -51,7 +51,7 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
       
       // Get comprehensive client data including subscriptions
       const historyResponse = await apiClient.getClientTransactionHistory(clientId);
-      const subscriptionsResponse = await apiClient.getSubscriptions();
+      const subscriptionsResponse = await apiClient.getClientSubscriptions(clientId);
       
       console.log('History response:', historyResponse);
       
@@ -62,9 +62,8 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
       
       setTransactions(historyResponse.transactions || []);
       
-      // Get client subscriptions
-      const allSubscriptions = subscriptionsResponse.subscriptions || [];
-      const clientSubscriptions = allSubscriptions.filter(sub => sub.client_id === clientId);
+      // Get client subscriptions directly from the client-specific endpoint
+      const clientSubscriptions = subscriptionsResponse.subscriptions || [];
       
       // Calculate stats from the client's specific data including subscriptions
       const clientInvoices = historyResponse.invoices || [];
