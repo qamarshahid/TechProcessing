@@ -32,7 +32,7 @@ steps:
       - '--timeout'
       - '60s'
       - '--set-env-vars'
-      - 'NODE_ENV=production,CORS_ORIGIN=https://qamarshahid.github.io,CORS_ORIGINS=https://qamarshahid.github.io,SKIP_DB=true'
+      - 'NODE_ENV=production,CORS_ORIGIN=https://qamarshahid.github.io,CORS_ORIGINS=https://qamarshahid.github.io'
 
 images:
   - 'gcr.io/techprocessing/techprocessing:latest'
