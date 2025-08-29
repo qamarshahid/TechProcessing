@@ -126,13 +126,6 @@ export class AgentController {
     return this.agentService.findSaleById(id, currentUser);
   }
 
-  @Get('sales')
-  @ApiOperation({ summary: 'Get sales for agent' })
-  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
-  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findSales(agentId, currentUser);
-  }
-
   @Patch('sales/:id/status')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Update sale status (Admin only)' })
@@ -208,6 +201,13 @@ export class AgentController {
     @CurrentUser() currentUser: User,
   ) {
     return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
+  }
+
+  @Get('sales')
+  @ApiOperation({ summary: 'Get sales for agent' })
+  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
+  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
+    return this.agentService.findSales(agentId, currentUser);
   }
 
 }
