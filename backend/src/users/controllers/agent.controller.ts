@@ -157,6 +157,35 @@ export class AgentController {
     return this.agentService.updateSaleNotes(id, notes, currentUser);
   }
 
+
+
+  @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Delete agent (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Agent deleted successfully' })
+  deleteAgent(
+    @Param('id') id: string,
+    @Body() body: { hardDelete?: boolean },
+    @CurrentUser() currentUser: User,
+  ) {
+    console.log('DELETE agent route hit:', { id, body, currentUserId: currentUser.id });
+    return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
+  }
+
+  @Get('sales')
+  @ApiOperation({ summary: 'Get sales for agent' })
+  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
+  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
+    return this.agentService.findSales(agentId, currentUser);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get agent by ID' })
+  @ApiResponse({ status: 200, description: 'Agent retrieved successfully' })
+  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
+    return this.agentService.findOne(id, currentUser);
+  }
+
   @Patch(':id/commission-rates')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Update agent commission rates (Admin only)' })
@@ -184,33 +213,6 @@ export class AgentController {
     @CurrentUser() currentUser: User,
   ) {
     return this.agentService.updateAgentStatus(id, body.isActive, currentUser);
-  }
-
-  @Delete(':id')
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Delete agent (Admin only)' })
-  @ApiResponse({ status: 200, description: 'Agent deleted successfully' })
-  deleteAgent(
-    @Param('id') id: string,
-    @Body() body: { hardDelete?: boolean },
-    @CurrentUser() currentUser: User,
-  ) {
-    console.log('DELETE agent route hit:', { id, body, currentUserId: currentUser.id });
-    return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
-  }
-
-  @Get('sales')
-  @ApiOperation({ summary: 'Get sales for agent' })
-  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
-  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findSales(agentId, currentUser);
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Get agent by ID' })
-  @ApiResponse({ status: 200, description: 'Agent retrieved successfully' })
-  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findOne(id, currentUser);
   }
 
 }
