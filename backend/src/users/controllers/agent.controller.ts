@@ -119,18 +119,18 @@ export class AgentController {
     return this.agentService.findSales(agent.id, currentUser);
   }
 
-  @Get('sales')
-  @ApiOperation({ summary: 'Get sales for agent' })
-  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
-  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findSales(agentId, currentUser);
-  }
-
   @Get('sales/:id')
   @ApiOperation({ summary: 'Get sale by ID' })
   @ApiResponse({ status: 200, description: 'Sale retrieved successfully' })
   getSale(@Param('id') id: string, @CurrentUser() currentUser: User) {
     return this.agentService.findSaleById(id, currentUser);
+  }
+
+  @Get('sales')
+  @ApiOperation({ summary: 'Get sales for agent' })
+  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
+  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
+    return this.agentService.findSales(agentId, currentUser);
   }
 
   @Patch('sales/:id/status')
