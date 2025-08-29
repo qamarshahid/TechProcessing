@@ -145,6 +145,13 @@ export class AgentController {
     return this.agentService.updateCommissionStatus(id, status, currentUser);
   }
 
+  @Get('sales')
+  @ApiOperation({ summary: 'Get sales for agent' })
+  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
+  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
+    return this.agentService.findSales(agentId, currentUser);
+  }
+
   @Patch('sales/:id/notes')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Update sale notes (Admin only)' })
@@ -155,15 +162,6 @@ export class AgentController {
     @CurrentUser() currentUser: User,
   ) {
     return this.agentService.updateSaleNotes(id, notes, currentUser);
-  }
-
-
-
-  @Get('sales')
-  @ApiOperation({ summary: 'Get sales for agent' })
-  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
-  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findSales(agentId, currentUser);
   }
 
   @Get(':id')
