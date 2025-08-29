@@ -64,12 +64,7 @@ export class AgentController {
     return this.agentService.getAgentMonthlyStats(agent.id);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get agent by ID' })
-  @ApiResponse({ status: 200, description: 'Agent retrieved successfully' })
-  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findOne(id, currentUser);
-  }
+
 
   @Get('profile/me')
   @Roles(UserRole.AGENT)
@@ -208,6 +203,13 @@ export class AgentController {
   @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
   getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
     return this.agentService.findSales(agentId, currentUser);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get agent by ID' })
+  @ApiResponse({ status: 200, description: 'Agent retrieved successfully' })
+  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
+    return this.agentService.findOne(id, currentUser);
   }
 
 }
