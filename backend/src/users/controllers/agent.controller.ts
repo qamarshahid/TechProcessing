@@ -159,6 +159,13 @@ export class AgentController {
 
 
 
+  @Get('sales')
+  @ApiOperation({ summary: 'Get sales for agent' })
+  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
+  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
+    return this.agentService.findSales(agentId, currentUser);
+  }
+
   @Delete(':id')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete agent (Admin only)' })
@@ -170,13 +177,6 @@ export class AgentController {
   ) {
     console.log('DELETE agent route hit:', { id, body, currentUserId: currentUser.id });
     return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
-  }
-
-  @Get('sales')
-  @ApiOperation({ summary: 'Get sales for agent' })
-  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
-  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findSales(agentId, currentUser);
   }
 
   @Get(':id')
