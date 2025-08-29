@@ -195,6 +195,7 @@ export class AgentController {
     @Body() body: { hardDelete?: boolean },
     @CurrentUser() currentUser: User,
   ) {
+    console.log('DELETE agent route hit:', { id, body, currentUserId: currentUser.id });
     return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
   }
 
