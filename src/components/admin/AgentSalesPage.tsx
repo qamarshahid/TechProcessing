@@ -141,6 +141,14 @@ export default function AgentSalesPage() {
     
     setIsDeleting(true);
     try {
+      // Debug: Log the agent data to see what ID is being used
+      logger.info('Deleting agent:', {
+        agentId: agentToDelete.id,
+        userId: agentToDelete.userId,
+        userFullName: agentToDelete.user?.fullName,
+        hardDelete
+      });
+      
       // Use the proper agent delete endpoint with hardDelete parameter
       await apiClient.deleteAgent(agentToDelete.id, hardDelete);
       
