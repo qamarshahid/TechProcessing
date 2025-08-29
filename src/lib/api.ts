@@ -1399,7 +1399,7 @@ class ApiClient {
     try {
       return this.request<{ success: boolean }>(`/agents/${agentId}`, {
         method: 'DELETE',
-        body: { hardDelete },
+        body: JSON.stringify({ hardDelete }),
       });
     } catch (error) {
       logger.error('Error deleting agent:', error);
