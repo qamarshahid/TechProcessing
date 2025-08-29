@@ -25,15 +25,15 @@ export class CorsMiddleware implements NestMiddleware {
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cache-Control, Pragma');
       res.setHeader('Access-Control-Allow-Credentials', 'true');
 
-      console.log(`🔓 CORS allowed for origin: ${origin}`);
+      // CORS allowed - no logging for security
     } else if (!origin) {
       // Allow requests without origin (curl, postman, etc.)
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cache-Control, Pragma');
-      console.log('🔓 Allowing request without origin');
+      // No logging for security
     } else {
-      console.log(`❌ CORS blocked for origin: ${origin}`);
+      // CORS blocked - no logging for security
       // Even for blocked origins, we need to handle preflight properly
       if (req.method === 'OPTIONS') {
         res.status(403);
@@ -43,7 +43,7 @@ export class CorsMiddleware implements NestMiddleware {
 
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
-      console.log(`🔄 Handling OPTIONS preflight request for origin: ${origin}`);
+      // No logging for security
       res.status(204);
       return res.end();
     }

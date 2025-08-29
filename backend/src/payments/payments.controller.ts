@@ -104,4 +104,12 @@ export class PaymentsController {
   ) {
     return this.paymentsService.updateStatus(id, status, currentUser);
   }
+
+  @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Delete payment (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Payment deleted successfully' })
+  remove(@Param('id') id: string, @CurrentUser() currentUser: User) {
+    return this.paymentsService.remove(id, currentUser);
+  }
 }

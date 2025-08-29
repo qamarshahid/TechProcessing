@@ -82,7 +82,7 @@ export function AddInvoiceModal({ isOpen, onClose, onInvoiceAdded, preSelectedCl
     try {
       const response = await apiClient.createUser({
         email: newClientData.email,
-        password: 'temp123', // Temporary password
+        password: '', // Password will be generated securely
         fullName: newClientData.fullName,
         role: 'CLIENT',
       });

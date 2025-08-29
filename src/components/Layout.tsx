@@ -71,6 +71,7 @@ export function Layout({ children }: LayoutProps) {
       icon: Package,
       items: [
         { path: '/admin/services', label: 'Service Packages', icon: Package },
+        { path: '/admin/service-requests', label: 'Service Requests', icon: ShoppingBag },
         { path: '/admin/subscriptions', label: 'Subscriptions', icon: RotateCcw },
       ]
     },

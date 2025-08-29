@@ -2,14 +2,37 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../lib/api';
 import { logger } from '../../lib/logger';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNotifications } from '../common/NotificationSystem';
+import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 import AddAgentModal from './AddAgentModal';
 
 interface Agent {
   id: string;
-  username: string;
-  email: string;
+  userId: string;
+  agentCode: string;
+  salesPersonName: string;
+  closerName: string;
+  agentCommissionRate: number;
+  closerCommissionRate: number;
+  totalEarnings: number;
+  totalPaidOut: number;
+  pendingCommission: number;
+  totalSales: number;
+  totalSalesValue: number;
   isActive: boolean;
+  metadata?: any;
   createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    email: string;
+    fullName: string;
+    role: string;
+    companyName?: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 interface AgentSale {
@@ -24,12 +47,18 @@ interface AgentSale {
 
 export default function AgentSalesPage() {
   const { user } = useAuth();
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [activeTab, setActiveTab] = useState<'sales' | 'manage'>('sales');
   const [agentSales, setAgentSales] = useState<AgentSale[]>([]);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddAgentModal, setShowAddAgentModal] = useState(false);
+  
+  // Confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Check if user has admin access
   const isAdmin = user?.role === 'ADMIN';
@@ -53,14 +82,17 @@ export default function AgentSalesPage() {
       
       setAgentSales(salesResponse || []);
       setAgents(agentsResponse || []);
+      showSuccess('Agent Data Loaded', `Successfully loaded ${salesResponse?.length || 0} sales and ${agentsResponse?.length || 0} agents.`);
     } catch (err) {
       logger.error('Failed to fetch agent data', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       
       if (errorMessage.includes('Forbidden')) {
         setError('Access denied. You need admin privileges to view this page.');
+        showError('Access Denied', 'You need admin privileges to view this page.');
       } else {
         setError('Failed to load agent data. Please try again.');
+        showError('Failed to Load Data', 'Failed to load agent data. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -85,15 +117,51 @@ export default function AgentSalesPage() {
       ));
       
       logger.info(`Agent status updated successfully`, { agentId, newStatus: !currentStatus });
+      showSuccess('Agent Status Updated', `Agent status has been ${!currentStatus ? 'activated' : 'deactivated'} successfully.`);
     } catch (err) {
       logger.error('Failed to update agent status', err);
       setError('Failed to update agent status. Please try again.');
+      showError('Update Failed', 'Failed to update agent status. Please try again.');
     }
   };
 
   const handleAgentAdded = () => {
     setShowAddAgentModal(false);
     fetchData(); // Refresh the agents list
+    showSuccess('Agent Added', 'New agent has been added successfully.');
+  };
+
+  const handleDeleteClick = (agent: Agent) => {
+    setAgentToDelete(agent);
+    setShowDeleteModal(true);
+  };
+
+  const deleteAgent = async (hardDelete: boolean) => {
+    if (!agentToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      // Use the proper agent delete endpoint with hardDelete parameter
+      await apiClient.deleteAgent(agentToDelete.id, hardDelete);
+      
+      // Immediately remove from local state for instant UI feedback
+      setAgents(prev => prev.filter(agent => agent.id !== agentToDelete.id));
+      
+      const agentName = agentToDelete.user?.fullName || 'Agent';
+      const actionType = hardDelete ? 'permanently deleted' : 'deactivated';
+      showSuccess('Agent Action Completed', `${agentName} has been ${actionType} successfully.`);
+      
+      // Also refresh data to ensure consistency
+      fetchData();
+    } catch (error: any) {
+      logger.error('Error deleting agent:', error);
+      const actionType = hardDelete ? 'permanently delete' : 'deactivate';
+      showError('Action Failed', `Failed to ${actionType} agent. Please try again.`);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setAgentToDelete(null);
+    }
   };
 
   if (loading) {
@@ -315,40 +383,51 @@ export default function AgentSalesPage() {
                       </td>
                     </tr>
                   ) : (
-                    agents.map((agent) => (
-                      <tr key={agent.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                          {agent.username}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                          {agent.email}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            agent.isActive
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                              : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                          }`}>
-                            {agent.isActive ? 'Active' : 'Disabled'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                          {new Date(agent.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={() => handleToggleAgentStatus(agent.id, agent.isActive)}
-                            className={`inline-flex items-center px-3 py-1 rounded-md text-sm font-medium transition-colors ${
-                              agent.isActive
-                                ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30'
-                                : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30'
-                            }`}
-                          >
-                            {agent.isActive ? 'Disable' : 'Enable'}
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                    agents.map((agent) => {
+                      return (
+                        <tr key={agent.id}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                            {agent.user.fullName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {agent.user.email}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              agent.user.isActive
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                                : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                            }`}>
+                              {agent.user.isActive ? 'Active' : 'Disabled'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {new Date(agent.user.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => handleToggleAgentStatus(agent.user.id, agent.user.isActive)}
+                                className={`inline-flex items-center px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                                  agent.user.isActive
+                                    ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30'
+                                    : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30'
+                                }`}
+                              >
+                                {agent.user.isActive ? 'Disable' : 'Enable'}
+                              </button>
+                              <button
+                                onClick={() => handleDeleteClick(agent)}
+                                className="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30 transition-colors"
+                                title="Delete Agent"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -363,6 +442,21 @@ export default function AgentSalesPage() {
             onSuccess={handleAgentAdded}
           />
         )}
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setAgentToDelete(null);
+          }}
+          onConfirm={deleteAgent}
+          title="Delete Agent"
+          message={`Are you sure you want to delete ${agentToDelete?.user?.fullName || 'this agent'}?`}
+          entityName={agentToDelete?.user?.fullName || 'Agent'}
+          entityType="agent"
+          isLoading={isDeleting}
+        />
       </div>
     </div>
   );

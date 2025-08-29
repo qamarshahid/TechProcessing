@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
+import { useNotifications } from '../common/NotificationSystem';
+import { ConfirmationModal } from '../common/ConfirmationModal';
 import { Closer } from '../../types';
 import { 
   Plus, 
@@ -29,6 +31,7 @@ interface CloserStats {
 }
 
 export function CloserManagementPage() {
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [closers, setClosers] = useState<Closer[]>([]);
   const [closerStats, setCloserStats] = useState<CloserStats[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +43,10 @@ export function CloserManagementPage() {
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedCloser, setSelectedCloser] = useState<Closer | null>(null);
+  
+  // Confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   // Advanced filtering
   const [dateRange, setDateRange] = useState({
@@ -62,9 +69,11 @@ export function CloserManagementPage() {
       setLoading(true);
       const data = await apiClient.getAllClosers();
       setClosers(data);
+      showSuccess('Closers Loaded', `Successfully loaded ${data?.length || 0} closers.`);
     } catch (err: any) {
       console.error('Error fetching closers:', err);
       setError('Failed to load closers');
+      showError('Failed to Load Closers', 'Unable to load closers. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -74,8 +83,10 @@ export function CloserManagementPage() {
     try {
       const data = await apiClient.getAllClosersStats();
       setCloserStats(data);
+      showSuccess('Closer Stats Loaded', 'Closer statistics loaded successfully.');
     } catch (err: any) {
       console.error('Error fetching closer stats:', err);
+      showWarning('Stats Unavailable', 'Unable to load closer statistics. Some data may be incomplete.');
     }
   };
 
@@ -104,18 +115,27 @@ export function CloserManagementPage() {
     }
   };
 
-  const handleDeleteCloser = async (closerId: string) => {
-    if (!window.confirm('Are you sure you want to delete this closer?')) {
-      return;
-    }
+  const handleDeleteClick = (closer: Closer) => {
+    setSelectedCloser(closer);
+    setShowDeleteModal(true);
+  };
 
+  const handleDeleteCloser = async () => {
+    if (!selectedCloser) return;
+    
+    setIsDeleting(true);
     try {
-      await apiClient.deleteCloser(closerId);
+      await apiClient.deleteCloser(selectedCloser.id);
       await fetchClosers();
       await fetchCloserStats();
+      showSuccess('Closer Deleted', `Closer "${selectedCloser.closerName}" has been deleted successfully.`);
     } catch (err: any) {
       console.error('Error deleting closer:', err);
-      alert('Failed to delete closer: ' + err.message);
+      showError('Delete Failed', `Failed to delete closer: ${err.message}`);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setSelectedCloser(null);
     }
   };
 
@@ -488,7 +508,7 @@ export function CloserManagementPage() {
                             <Edit className="h-4 w-4" />
                           </button>
                           <button
-                            onClick={() => handleDeleteCloser(closer.id)}
+                            onClick={() => handleDeleteClick(closer)}
                             className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                             title="Delete"
                           >
@@ -538,6 +558,22 @@ export function CloserManagementPage() {
             }}
           />
         )}
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setSelectedCloser(null);
+          }}
+          onConfirm={handleDeleteCloser}
+          title="Delete Closer"
+          message={`Are you sure you want to delete the closer "${selectedCloser?.closerName}"? This action cannot be undone and will permanently remove the closer from the system.`}
+          confirmText="Delete Closer"
+          cancelText="Cancel"
+          type="danger"
+          isLoading={isDeleting}
+        />
       </div>
     </div>
   );

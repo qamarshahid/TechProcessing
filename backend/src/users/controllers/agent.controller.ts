@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   Patch,
+  Delete,
   UseGuards,
   Query,
 } from '@nestjs/common';
@@ -195,6 +196,18 @@ export class AgentController {
     @CurrentUser() currentUser: User,
   ) {
     return this.agentService.updateAgentStatus(id, body.isActive, currentUser);
+  }
+
+  @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Delete agent (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Agent deleted successfully' })
+  deleteAgent(
+    @Param('id') id: string,
+    @Body() body: { hardDelete?: boolean },
+    @CurrentUser() currentUser: User,
+  ) {
+    return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
   }
 
 }

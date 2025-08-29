@@ -9,6 +9,8 @@ import { ClientTransactionHistory } from './ClientTransactionHistory';
 import { AddInvoiceModal } from './AddInvoiceModal';
 import { EditClientModal } from './EditClientModal';
 import { ClientCredentialsModal } from './ClientCredentialsModal';
+import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
+import { logger } from '../../lib/logger';
 
 export function ClientsPage() {
   const navigate = useNavigate();
@@ -44,13 +46,18 @@ export function ClientsPage() {
 
   // Client statuses state
   const [clientStatuses, setClientStatuses] = useState<{[key: string]: boolean}>({});
+  
+  // Delete confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchClients();
     
     // Listen for invoice changes to refresh client data
     const handleInvoiceChange = () => {
-      console.log('Invoice change detected, refreshing clients...');
+      logger.info('Invoice change detected, refreshing clients');
       fetchClients();
     };
     
@@ -72,9 +79,12 @@ export function ClientsPage() {
   const fetchClients = async () => {
     try {
       const response = await apiClient.getUsers({ role: 'CLIENT' });
-      setClients(response.users.filter(user => user.role === 'CLIENT'));
+      // Double-check to ensure only CLIENT role users are shown
+      const actualClients = response.users.filter(user => user.role === 'CLIENT');
+      setClients(actualClients);
+      logger.info(`Fetched ${actualClients.length} clients with CLIENT role`);
     } catch (error) {
-      console.error('Error fetching clients:', error);
+      logger.error('Error fetching clients:', error);
     } finally {
       setLoading(false);
     }
@@ -130,7 +140,7 @@ export function ClientsPage() {
       const response = await apiClient.createUser({
         fullName: formData.fullName,
         email: formData.email,
-        password: formData.password || 'TempPass123!', // Generate secure temp password
+        password: formData.password || '', // Password will be generated securely
         role: 'CLIENT',
         companyName: formData.company,
         address: formData.address ? {
@@ -152,7 +162,7 @@ export function ClientsPage() {
       showSuccess('Client created successfully', 'New client account has been created');
       fetchClients();
     } catch (err: any) {
-      console.error('Error creating client:', err);
+      logger.error('Error creating client:', err);
       setFormError(err.message || 'Failed to create client');
       showError('Failed to create client', err.message);
     } finally {
@@ -181,16 +191,29 @@ export function ClientsPage() {
     navigate(`/admin/clients/${client.id}`);
   };
 
-  const deleteClient = async (client: any) => {
-    if (window.confirm(`Are you sure you want to delete ${client.full_name || client.fullName}? This will also delete all their invoices and transaction history.`)) {
-      try {
-        await apiClient.deleteUser(client.id);
-        showSuccess('Client deleted successfully');
-        fetchClients();
-      } catch (error) {
-        console.error('Error deleting client:', error);
-        showError('Failed to delete client', 'Please try again.');
-      }
+  const handleDeleteClick = (client: any) => {
+    setClientToDelete(client);
+    setShowDeleteModal(true);
+  };
+
+  const deleteClient = async (hardDelete: boolean) => {
+    if (!clientToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      await apiClient.deleteUser(clientToDelete.id, hardDelete);
+      const clientName = clientToDelete.full_name || clientToDelete.fullName;
+      const actionType = hardDelete ? 'permanently deleted' : 'deactivated';
+      showSuccess('Client Action Completed', `${clientName} has been ${actionType} successfully.`);
+      fetchClients();
+    } catch (error: any) {
+      logger.error('Error deleting client:', error);
+      const actionType = hardDelete ? 'permanently delete' : 'deactivate';
+      showError('Action Failed', `Failed to ${actionType} client. Please try again.`);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setClientToDelete(null);
     }
   };
 
@@ -206,7 +229,7 @@ export function ClientsPage() {
       showSuccess(`Client ${newStatus ? 'activated' : 'deactivated'} successfully`);
       fetchClients();
     } catch (error) {
-      console.error('Error updating client status:', error);
+      logger.error('Error updating client status:', error);
       showError('Failed to update client status');
       // Still update UI even if API call fails (for demo purposes)
       const currentStatus = clientStatuses[client.id] ?? client.is_active ?? client.isActive;
@@ -378,7 +401,7 @@ export function ClientsPage() {
                   {(clientStatuses[client.id] ?? client.is_active ?? client.isActive) ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                 </button>
                 <button 
-                  onClick={() => deleteClient(client)}
+                  onClick={() => handleDeleteClick(client)}
                   className="flex-1 bg-red-100 text-red-700 py-2 px-2 rounded-lg hover:bg-red-200 transition-colors text-sm flex items-center justify-center"
                   title="Delete Client"
                 >
@@ -673,6 +696,21 @@ export function ClientsPage() {
           clientName={selectedClient.full_name || selectedClient.fullName}
         />
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setClientToDelete(null);
+        }}
+        onConfirm={deleteClient}
+        title="Delete Client"
+        message={`Are you sure you want to delete ${clientToDelete?.full_name || clientToDelete?.fullName}?`}
+        entityName={clientToDelete?.full_name || clientToDelete?.fullName || 'Client'}
+        entityType="client"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

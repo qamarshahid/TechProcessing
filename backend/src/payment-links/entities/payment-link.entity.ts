@@ -8,6 +8,7 @@ import {
   JoinColumn,
   BeforeInsert,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { User } from '../../users/entities/user.entity';
 import { Payment } from '../../payments/entities/payment.entity';
 
@@ -40,6 +41,7 @@ export class PaymentLink {
   amount: number;
 
   @Column({ name: 'secure_token', unique: true })
+  @Exclude()
   secureToken: string;
 
   @Column({
@@ -66,6 +68,7 @@ export class PaymentLink {
   paymentId: string;
 
   @Column({ type: 'json', nullable: true })
+  @Exclude()
   metadata: any;
 
   @CreateDateColumn({ name: 'created_at' })

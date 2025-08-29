@@ -85,11 +85,21 @@ export class AgentService {
     if (currentUser.role === UserRole.ADMIN) {
       return this.agentRepository.find({
         relations: ['user'],
+        where: {
+          user: {
+            isActive: true // Only return active agents
+          }
+        },
         order: { createdAt: 'DESC' },
       });
     } else if (currentUser.role === UserRole.AGENT) {
       return this.agentRepository.find({
-        where: { userId: currentUser.id },
+        where: { 
+          userId: currentUser.id,
+          user: {
+            isActive: true // Only return active agents
+          }
+        },
         relations: ['user'],
       });
     }
@@ -112,6 +122,59 @@ export class AgentService {
     }
 
     return agent;
+  }
+
+  async deleteAgent(agentId: string, hardDelete: boolean, deletedBy: User): Promise<void> {
+    // Only admins can delete agents
+    if (deletedBy.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('Only admins can delete agents');
+    }
+
+    // Find the agent
+    const agent = await this.findOne(agentId);
+    if (!agent) {
+      throw new NotFoundException('Agent not found');
+    }
+
+    if (hardDelete) {
+      // Hard delete - permanently remove all data
+      // Delete agent sales first (if any)
+      await this.agentSaleRepository.delete({ agentId: agent.id });
+
+      // Delete the agent profile
+      await this.agentRepository.remove(agent);
+
+      // Delete the user account
+      const user = await this.userRepository.findOne({ where: { id: agent.userId } });
+      if (user) {
+        await this.userRepository.remove(user);
+      }
+
+      // Audit log
+      await this.auditService.log({
+        action: 'AGENT_HARD_DELETED',
+        entityType: 'Agent',
+        entityId: agent.id,
+        details: { agentCode: agent.agentCode, email: agent.user.email, hardDelete: true },
+        user: deletedBy,
+      });
+    } else {
+      // Soft delete - deactivate the user account
+      const user = await this.userRepository.findOne({ where: { id: agent.userId } });
+      if (user) {
+        user.isActive = false;
+        await this.userRepository.save(user);
+      }
+
+      // Audit log
+      await this.auditService.log({
+        action: 'AGENT_SOFT_DELETED',
+        entityType: 'Agent',
+        entityId: agent.id,
+        details: { agentCode: agent.agentCode, email: agent.user.email, hardDelete: false },
+        user: deletedBy,
+      });
+    }
   }
 
   async findByUserId(userId: string, currentUser: User): Promise<Agent> {

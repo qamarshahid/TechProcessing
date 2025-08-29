@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
+import { useNotifications } from '../common/NotificationSystem';
 import { RotateCcw, Plus, DollarSign, Calendar, User, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { ProcessRefundModal } from './ProcessRefundModal';
 
 export function RefundsPage() {
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [refunds, setRefunds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showRefundModal, setShowRefundModal] = useState(false);
@@ -16,8 +18,10 @@ export function RefundsPage() {
     try {
       const response = await apiClient.getRefunds();
       setRefunds(response.refunds);
+      showSuccess('Refunds Loaded', `Successfully loaded ${response.refunds?.length || 0} refund records.`);
     } catch (error) {
       console.error('Error fetching refunds:', error);
+      showError('Failed to Load Refunds', 'Unable to load refund records. Please try again later.');
     } finally {
       setLoading(false);
     }

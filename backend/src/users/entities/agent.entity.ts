@@ -8,6 +8,7 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { User } from './user.entity';
 import { AgentSale } from './agent-sale.entity';
 
@@ -57,6 +58,7 @@ export class Agent {
   isActive: boolean;
 
   @Column({ type: 'jsonb', nullable: true })
+  @Exclude()
   metadata: any;
 
   @OneToMany(() => AgentSale, (sale) => sale.agent)

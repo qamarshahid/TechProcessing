@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
+import { useNotifications } from '../common/NotificationSystem';
+import { ConfirmationModal } from '../common/ConfirmationModal';
 import { Package, Plus, Edit, Trash2, DollarSign, CheckCircle } from 'lucide-react';
 import { SearchFilters } from './SearchFilters';
 import { AddServiceModal } from './AddServiceModal';
@@ -7,6 +9,7 @@ import { EditServiceModal } from './EditServiceModal';
 import { AddInvoiceModal } from './AddInvoiceModal';
 
 export function ServicesPage() {
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [services, setServices] = useState<any[]>([]);
   const [filteredServices, setFilteredServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +24,11 @@ export function ServicesPage() {
     client: '',
     amount: '',
   });
+  
+  // Confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchServices();
@@ -34,8 +42,10 @@ export function ServicesPage() {
     try {
       const response = await apiClient.getServices();
       setServices(response.services);
+      showSuccess('Services Loaded', `Successfully loaded ${response.services?.length || 0} services.`);
     } catch (error) {
       console.error('Error fetching services:', error);
+      showError('Failed to Load Services', 'Unable to load services. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -95,15 +105,26 @@ export function ServicesPage() {
     setShowEditModal(true);
   };
 
-  const deleteService = async (service: any) => {
-    if (window.confirm(`Are you sure you want to delete "${service.name}"?`)) {
-      try {
-        await apiClient.deleteService(service.id);
-        fetchServices();
-      } catch (error) {
-        console.error('Error deleting service:', error);
-        alert('Failed to delete service');
-      }
+  const handleDeleteClick = (service: any) => {
+    setServiceToDelete(service);
+    setShowDeleteModal(true);
+  };
+
+  const deleteService = async () => {
+    if (!serviceToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      await apiClient.deleteService(serviceToDelete.id);
+      showSuccess('Service Deleted', `Service "${serviceToDelete.name}" has been deleted successfully.`);
+      fetchServices();
+    } catch (error) {
+      console.error('Error deleting service:', error);
+      showError('Delete Failed', 'Failed to delete service. Please try again.');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setServiceToDelete(null);
     }
   };
 
@@ -173,7 +194,7 @@ export function ServicesPage() {
                   <Edit className="h-4 w-4" />
                 </button>
                 <button 
-                  onClick={() => deleteService(service)}
+                  onClick={() => handleDeleteClick(service)}
                   className="text-red-600 hover:text-red-900 p-1 hover:bg-red-50 rounded"
                   title="Delete Service"
                 >
@@ -240,6 +261,22 @@ export function ServicesPage() {
           setSelectedService(null);
         }}
         preSelectedService={selectedService}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setServiceToDelete(null);
+        }}
+        onConfirm={deleteService}
+        title="Delete Service"
+        message={`Are you sure you want to delete the service "${serviceToDelete?.name}"? This action cannot be undone and will permanently remove the service from the system.`}
+        confirmText="Delete Service"
+        cancelText="Cancel"
+        type="danger"
+        isLoading={isDeleting}
       />
     </div>
   );

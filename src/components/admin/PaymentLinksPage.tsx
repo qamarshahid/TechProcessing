@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
+import { useNotifications } from '../common/NotificationSystem';
+import { ConfirmationModal } from '../common/ConfirmationModal';
 import { 
   Plus, 
   Search, 
@@ -41,6 +43,7 @@ interface PaymentLink {
 }
 
 export function PaymentLinksPage() {
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [paymentLinks, setPaymentLinks] = useState<PaymentLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -48,6 +51,11 @@ export function PaymentLinksPage() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
+  
+  // Confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [linkToDelete, setLinkToDelete] = useState<PaymentLink | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchPaymentLinks();
@@ -60,34 +68,47 @@ export function PaymentLinksPage() {
       const links = response.links || response;
       setPaymentLinks(links);
       setError('');
+      showSuccess('Payment Links Loaded', `Successfully loaded ${links?.length || 0} payment links.`);
     } catch (error) {
       console.error('Error fetching payment links:', error);
       setError('Failed to load payment links');
+      showError('Failed to Load Payment Links', 'Unable to load payment links. Please try again later.');
       setPaymentLinks([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeletePaymentLink = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this payment link?')) return;
+  const handleDeleteClick = (link: PaymentLink) => {
+    setLinkToDelete(link);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeletePaymentLink = async () => {
+    if (!linkToDelete) return;
     
+    setIsDeleting(true);
     try {
-      await apiClient.deletePaymentLink(id);
-      setPaymentLinks(prev => prev.filter(link => link.id !== id));
+      await apiClient.deletePaymentLink(linkToDelete.id);
+      setPaymentLinks(prev => prev.filter(link => link.id !== linkToDelete.id));
+      showSuccess('Payment Link Deleted', 'Payment link has been deleted successfully.');
     } catch (error) {
       console.error('Error deleting payment link:', error);
-      alert('Failed to delete payment link');
+      showError('Delete Failed', 'Failed to delete payment link. Please try again.');
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setLinkToDelete(null);
     }
   };
 
   const handleResendEmail = async (id: string) => {
     try {
       await apiClient.resendPaymentLinkEmail(id);
-      alert('Email sent successfully');
+      showSuccess('Email Sent', 'Payment link email has been sent successfully.');
     } catch (error) {
       console.error('Error resending email:', error);
-      alert('Failed to resend email');
+      showError('Email Failed', 'Failed to resend payment link email. Please try again.');
     }
   };
 
@@ -96,8 +117,10 @@ export function PaymentLinksPage() {
       await navigator.clipboard.writeText(text);
       setCopiedLink(linkId);
       setTimeout(() => setCopiedLink(null), 2000);
+      showSuccess('Link Copied', 'Payment link has been copied to clipboard.');
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
+      showError('Copy Failed', 'Failed to copy payment link to clipboard.');
     }
   };
 
@@ -319,7 +342,7 @@ export function PaymentLinksPage() {
                     <Mail className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDeletePaymentLink(link.id)}
+                    onClick={() => handleDeleteClick(link)}
                     className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                     title="Delete payment link"
                   >
@@ -396,6 +419,22 @@ export function PaymentLinksPage() {
           }}
         />
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setLinkToDelete(null);
+        }}
+        onConfirm={handleDeletePaymentLink}
+        title="Delete Payment Link"
+        message={`Are you sure you want to delete this payment link for ${linkToDelete?.client?.fullName || 'Unknown Client'}? This action cannot be undone and will permanently remove the payment link from the system.`}
+        confirmText="Delete Payment Link"
+        cancelText="Cancel"
+        type="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

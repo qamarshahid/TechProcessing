@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { logger } from '../../lib/logger';
+import { useNotifications } from '../common/NotificationSystem';
 import { Agent, AgentSale, SaleStatus } from '../../types';
 import { AddSaleModal } from './AddSaleModal';
 import { ResubmitSaleModal } from './ResubmitSaleModal';
@@ -20,6 +21,7 @@ import {
 
 export function AgentDashboard() {
   const { user } = useAuth();
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [agent, setAgent] = useState<Agent | null>(null);
   const [sales, setSales] = useState<AgentSale[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,9 +47,11 @@ export function AgentDashboard() {
 
       setAgent(agentResponse);
       setSales(salesResponse);
+      showSuccess('Agent Dashboard Loaded', 'Agent data loaded successfully.');
     } catch (err: unknown) {
       logger.error('Error fetching agent data:', err);
       setError('Failed to load agent data. Please try again.');
+      showError('Agent Dashboard Error', 'Failed to load agent data. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -92,6 +96,7 @@ export function AgentDashboard() {
   const handleSaleAdded = () => {
     setShowAddSaleModal(false);
     fetchAgentData(); // Refresh the data
+    showSuccess('Sale Added', 'Sale has been submitted successfully and is pending approval.');
   };
 
   const handleResubmitSale = (sale: AgentSale) => {

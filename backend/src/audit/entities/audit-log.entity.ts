@@ -6,6 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { User } from '../../users/entities/user.entity';
 
 @Entity('audit_logs')
@@ -23,12 +24,15 @@ export class AuditLog {
   entityId: string;
 
   @Column({ type: 'json', nullable: true })
+  @Exclude()
   details: any;
 
   @Column({ name: 'ip_address', nullable: true })
+  @Exclude()
   ipAddress: string;
 
   @Column({ name: 'user_agent', nullable: true })
+  @Exclude()
   userAgent: string;
 
   @ManyToOne(() => User, (user) => user.auditLogs, { nullable: true })

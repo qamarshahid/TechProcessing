@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity('service_packages')
 export class ServicePackage {
@@ -21,6 +22,7 @@ export class ServicePackage {
   price: number;
 
   @Column({ type: 'json' })
+  @Exclude()
   features: string[];
 
   @Column({ name: 'is_active', default: true })

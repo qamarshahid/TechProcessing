@@ -7,8 +7,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { LandingPage } from './components/LandingPage';
 import { LoginForm } from './components/LoginForm';
 import { AdminRoutes } from './components/admin/AdminRoutes';
-import { AgentDashboard } from './components/agent/AgentDashboard';
-import { ClientDashboard } from './components/client/ClientDashboard';
+import { AgentRoutes } from './components/agent/AgentRoutes';
+import { ClientRoutes } from './components/client/ClientRoutes';
 
 function App() {
   // Determine base path for Router - use /TechProcessing in production, / in development
@@ -40,13 +40,13 @@ function App() {
                 
                 <Route path="/agent/*" element={
                   <ProtectedRoute requiredRole="AGENT">
-                    <AgentDashboard />
+                    <AgentRoutes />
                   </ProtectedRoute>
                 } />
                 
                 <Route path="/client/*" element={
                   <ProtectedRoute requiredRole="CLIENT">
-                    <ClientDashboard />
+                    <ClientRoutes />
                   </ProtectedRoute>
                 } />
                 

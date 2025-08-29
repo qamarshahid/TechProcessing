@@ -7,6 +7,7 @@ import { CloserAuditPage } from './CloserAuditPage';
 import { ClientsPage } from './ClientsPage';
 import { InvoicesPage } from './InvoicesPage';
 import { ServicesPage } from './ServicesPage';
+import { ServiceRequestsPage } from './ServiceRequestsPage';
 import { SubscriptionsPage } from './SubscriptionsPage';
 import { PaymentHistoryPage } from './PaymentHistoryPage';
 import { PaymentLinksPage } from './PaymentLinksPage';
@@ -34,6 +35,7 @@ export function AdminRoutes() {
         
         {/* Services & Products */}
         <Route path="services" element={<ServicesPage />} />
+        <Route path="service-requests" element={<ServiceRequestsPage />} />
         <Route path="subscriptions" element={<SubscriptionsPage />} />
         
         {/* Payment Management */}

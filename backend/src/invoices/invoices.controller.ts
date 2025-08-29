@@ -90,7 +90,12 @@ export class InvoicesController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete invoice (Admin only)' })
   @ApiResponse({ status: 200, description: 'Invoice deleted successfully' })
-  remove(@Param('id') id: string, @CurrentUser() currentUser: User) {
-    return this.invoicesService.remove(id, currentUser);
+  remove(
+    @Param('id') id: string, 
+    @CurrentUser() currentUser: User,
+    @Query('deletePayments') deletePayments?: string
+  ) {
+    const shouldDeletePayments = deletePayments === 'true';
+    return this.invoicesService.remove(id, currentUser, shouldDeletePayments);
   }
 }

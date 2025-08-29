@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { logger } from '../../lib/logger';
+import { useNotifications } from '../common/NotificationSystem';
 import { Agent } from '../../types';
 import { MonthlyCommissionChart } from './MonthlyCommissionChart';
 import { 
@@ -18,6 +19,7 @@ import { Link } from 'react-router-dom';
 
 export function AgentPerformancePage() {
   const { user } = useAuth();
+  const { showSuccess, showError } = useNotifications();
   const [agent, setAgent] = useState<Agent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -34,9 +36,11 @@ export function AgentPerformancePage() {
       setError('');
       const agentResponse = await apiClient.getOwnAgentProfile();
       setAgent(agentResponse);
+      showSuccess('Performance Data Loaded', 'Agent performance data loaded successfully.');
     } catch (err: unknown) {
       logger.error('Error fetching agent data:', err);
       setError('Failed to load agent data. Please try again.');
+      showError('Performance Data Error', 'Failed to load agent performance data. Please try again.');
     } finally {
       setLoading(false);
     }

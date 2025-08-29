@@ -38,7 +38,7 @@ async function bootstrap() {
     .map((o) => o.trim())
     .filter((o) => !!o);
 
-  logger.log(`🔧 CORS Configuration: origins=${origins.join(', ')}`);
+  logger.log(`🔧 CORS Configuration: ${origins.length} origins configured`);
   logger.log(`🔧 Environment: ${isProd ? 'production' : 'development'}`);
 
   // Apply custom CORS middleware FIRST - before any other middleware

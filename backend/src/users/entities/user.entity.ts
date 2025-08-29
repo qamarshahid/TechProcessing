@@ -42,6 +42,7 @@ export class User {
   companyName: string;
 
   @Column({ type: 'json', nullable: true })
+  @Exclude()
   address: {
     street?: string;
     city?: string;
@@ -51,6 +52,7 @@ export class User {
   };
 
   @Column({ name: 'communication_details', type: 'json', nullable: true })
+  @Exclude()
   communicationDetails: Array<{
     type: 'PHONE' | 'EMAIL' | 'FAX';
     subType: 'WORK' | 'HOME';

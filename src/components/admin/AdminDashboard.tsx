@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
 import { logger } from '../../lib/logger';
+import { useNotifications } from '../common/NotificationSystem';
 import { Users, FileText, Package, DollarSign, AlertCircle, RefreshCw } from 'lucide-react';
 
 export function AdminDashboard() {
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [stats, setStats] = useState({
     totalClients: 0,
     totalInvoices: 0,
@@ -42,14 +44,17 @@ export function AdminDashboard() {
       const [clientsResponse, allInvoicesResponse, subscriptionsResponse] = await Promise.all([
         apiClient.getUsers({ role: 'CLIENT' }).catch(err => {
           logger.error('Error fetching clients:', err);
+          showWarning('Clients Unavailable', 'Unable to load client information. Some data may be incomplete.');
           return { users: [] };
         }),
         apiClient.getInvoices().catch(err => {
           logger.error('Error fetching invoices:', err);
+          showWarning('Invoices Unavailable', 'Unable to load invoice information. Some data may be incomplete.');
           return { invoices: [] };
         }),
         apiClient.getSubscriptions().catch(err => {
           console.error('Error fetching subscriptions:', err);
+          showWarning('Subscriptions Unavailable', 'Unable to load subscription information. Some data may be incomplete.');
           // Return empty subscriptions on error to prevent dashboard crash
           return { subscriptions: [], error: 'Subscriptions unavailable' };
         })
@@ -126,9 +131,11 @@ export function AdminDashboard() {
       
       setRecentInvoices(recentInvoicesWithClients);
       setError('');
+      showSuccess('Dashboard Loaded', 'Admin dashboard data loaded successfully.');
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       setError('Failed to load dashboard data');
+      showError('Dashboard Error', 'Failed to load dashboard data. Please try again.');
     } finally {
       setLoading(false);
     }

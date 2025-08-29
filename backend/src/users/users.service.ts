@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { Agent } from './entities/agent.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRole } from '../common/enums/user-role.enum';
@@ -12,6 +13,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Agent)
+    private agentRepository: Repository<Agent>,
     private auditService: AuditService,
   ) {}
 
@@ -53,6 +56,11 @@ export class UsersService {
     
     if (role) {
       query.where('user.role = :role', { role });
+    }
+
+    // Include agent profiles for AGENT role
+    if (role === UserRole.AGENT) {
+      query.leftJoinAndSelect('user.agentProfiles', 'agentProfiles');
     }
 
     return query.getMany();
@@ -111,21 +119,35 @@ export class UsersService {
     return updatedUser;
   }
 
-  async remove(id: string, deletedBy?: User): Promise<void> {
+  async remove(id: string, hardDelete: boolean = false, deletedBy?: User): Promise<void> {
     const user = await this.findOne(id);
     
-    // Soft delete by deactivating
-    user.isActive = false;
-    await this.usersRepository.save(user);
+    if (hardDelete) {
+      // Hard delete - permanently remove the user
+      await this.usersRepository.remove(user);
 
-    // Audit log
-    await this.auditService.log({
-      action: 'USER_DELETED',
-      entityType: 'User',
-      entityId: user.id,
-      details: { email: user.email },
-      user: deletedBy,
-    });
+      // Audit log
+      await this.auditService.log({
+        action: 'USER_HARD_DELETED',
+        entityType: 'User',
+        entityId: user.id,
+        details: { email: user.email, hardDelete: true },
+        user: deletedBy,
+      });
+    } else {
+      // Soft delete by deactivating
+      user.isActive = false;
+      await this.usersRepository.save(user);
+
+      // Audit log
+      await this.auditService.log({
+        action: 'USER_SOFT_DELETED',
+        entityType: 'User',
+        entityId: user.id,
+        details: { email: user.email, hardDelete: false },
+        user: deletedBy,
+      });
+    }
   }
 
   async updateLastLogin(id: string): Promise<void> {
@@ -180,5 +202,59 @@ export class UsersService {
     });
 
     return updatedUser;
+  }
+
+  async createAgent(agentData: {
+    email: string;
+    password: string;
+    fullName: string;
+    agentCode: string;
+    salesPersonName: string;
+    closerName: string;
+    agentCommissionRate?: number;
+    closerCommissionRate?: number;
+    companyName?: string;
+    isActive?: boolean;
+  }, createdBy?: User): Promise<User> {
+    // First create the user
+    const user = this.usersRepository.create({
+      email: agentData.email,
+      password: agentData.password,
+      fullName: agentData.fullName,
+      role: UserRole.AGENT,
+      companyName: agentData.companyName,
+      isActive: agentData.isActive ?? true,
+    });
+    
+    const savedUser = await this.usersRepository.save(user);
+
+    // Then create the agent profile
+    const agent = this.agentRepository.create({
+      userId: savedUser.id,
+      agentCode: agentData.agentCode,
+      salesPersonName: agentData.salesPersonName,
+      closerName: agentData.closerName,
+      agentCommissionRate: agentData.agentCommissionRate || 6.00,
+      closerCommissionRate: agentData.closerCommissionRate || 10.00,
+      isActive: agentData.isActive ?? true,
+    });
+
+    await this.agentRepository.save(agent);
+
+    // Audit log
+    await this.auditService.log({
+      action: 'AGENT_CREATED',
+      entityType: 'User',
+      entityId: savedUser.id,
+      details: { 
+        email: savedUser.email, 
+        agentCode: agentData.agentCode,
+        salesPersonName: agentData.salesPersonName,
+        closerName: agentData.closerName,
+      },
+      user: createdBy,
+    });
+
+    return savedUser;
   }
 }

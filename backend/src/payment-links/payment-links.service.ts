@@ -38,11 +38,8 @@ export class PaymentLinksService {
   ) {}
 
   async create(createPaymentLinkDto: CreatePaymentLinkDto, createdBy: User): Promise<PaymentLink> {
-    console.log('Creating payment link with DTO:', createPaymentLinkDto);
     const paymentLink = this.paymentLinksRepository.create(createPaymentLinkDto);
-    console.log('Created payment link entity:', paymentLink);
     const savedPaymentLink = await this.paymentLinksRepository.save(paymentLink);
-    console.log('Saved payment link:', savedPaymentLink);
 
     // Audit log
     await this.auditService.log({
@@ -253,13 +250,7 @@ export class PaymentLinksService {
       
       // In a real implementation, you would use a proper email service like SendGrid, Mailgun, etc.
       // For demo purposes, we'll just log the email details
-      console.log('=== PAYMENT LINK EMAIL ===');
-      console.log(`To: ${paymentLink.client.email}`);
-      console.log(`Subject: Payment Request - ${paymentLink.title}`);
-      console.log(`Amount: $${paymentLink.amount}`);
-      console.log(`Payment Link: ${paymentUrl}`);
-      console.log(`Expires: ${paymentLink.expiresAt.toLocaleDateString()}`);
-      console.log('==========================');
+          // Email logging removed for security
 
       // TODO: Integrate with email service (SendGrid, Mailgun, etc.)
       // Example with SendGrid:

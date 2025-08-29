@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNotifications } from '../common/NotificationSystem';
 import { logger } from '../../lib/logger';
-import { FileText, DollarSign, Clock, CheckCircle, Package } from 'lucide-react';
+import { FileText, DollarSign, Clock, CheckCircle, Package, AlertCircle, RefreshCw, XCircle, Eye } from 'lucide-react';
 
 export function ClientDashboard() {
   const { user } = useAuth();
+  const { showError, showSuccess, showWarning } = useNotifications();
+  
   const [stats, setStats] = useState({
     totalInvoices: 0,
     totalAmount: 0,
@@ -14,13 +17,18 @@ export function ClientDashboard() {
   });
   const [recentInvoices, setRecentInvoices] = useState<any[]>([]);
   const [activeSubscriptions, setActiveSubscriptions] = useState<any[]>([]);
+  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showSubscriptionsModal, setShowSubscriptionsModal] = useState(false);
 
   const fetchClientData = useCallback(async () => {
     if (!user?.id) {
       return;
     }
+
+    setLoading(true);
+    setError(null);
 
     try {
       // Fetch client-specific data including subscriptions
@@ -32,16 +40,28 @@ export function ClientDashboard() {
       try {
         const subscriptionsResponse = await apiClient.getClientSubscriptions(user.id);
         userSubscriptions = subscriptionsResponse.subscriptions || [];
-      } catch (error) {
-        logger.error('Error fetching client subscriptions:', error);
+      } catch (subscriptionError) {
+        logger.error('Error fetching client subscriptions:', subscriptionError);
+        showWarning('Subscription Data Unavailable', 'Unable to load subscription information. Some data may be incomplete.');
         userSubscriptions = [];
       }
 
+      // Fetch client service requests
+      let userServiceRequests = [];
+      try {
+        const requestsResponse = await apiClient.getClientServiceRequests(user.id);
+        userServiceRequests = requestsResponse.serviceRequests || [];
+      } catch (requestError) {
+        logger.error('Error fetching client service requests:', requestError);
+        showWarning('Service Requests Unavailable', 'Unable to load service request information. Some data may be incomplete.');
+        userServiceRequests = [];
+      }
+
       // Calculate stats
-      const totalAmount = userInvoices.reduce((sum: number, inv: any) => sum + parseFloat(inv.amount), 0);
+      const totalAmount = userInvoices.reduce((sum: number, inv: any) => sum + parseFloat(inv.amount || '0'), 0);
       const paidAmount = userInvoices
         .filter((inv: any) => inv.status === 'PAID')
-        .reduce((sum: number, inv: any) => sum + parseFloat(inv.amount), 0);
+        .reduce((sum: number, inv: any) => sum + parseFloat(inv.amount || '0'), 0);
       const unpaidCount = userInvoices.filter((inv: any) => inv.status === 'UNPAID').length;
       
       // Add subscription revenue to paid amount
@@ -58,8 +78,15 @@ export function ClientDashboard() {
 
       setRecentInvoices(userInvoices.slice(0, 5));
       setActiveSubscriptions(userSubscriptions.filter((sub: any) => sub.status === 'ACTIVE' || sub.status === 'PAUSED'));
+      setServiceRequests(userServiceRequests);
+      
+      showSuccess('Dashboard Updated', 'Your dashboard data has been refreshed successfully.');
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       logger.error('Error fetching client data:', error);
+      setError(errorMessage);
+      showError('Failed to Load Data', 'Unable to load your dashboard data. Please try again later.');
+      
       // Set empty stats on error
       setStats({
         totalInvoices: 0,
@@ -69,10 +96,11 @@ export function ClientDashboard() {
       });
       setRecentInvoices([]);
       setActiveSubscriptions([]);
+      setServiceRequests([]);
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  }, [user?.id, showError, showSuccess, showWarning]);
 
   useEffect(() => {
     if (user) {
@@ -102,138 +130,199 @@ export function ClientDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PAID':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-800';
       case 'UNPAID':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800';
       case 'OVERDUE':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700';
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 dark:border-emerald-400 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show message if no user data
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No User Data</h2>
+          <p className="text-gray-600 dark:text-gray-400">Please log in to view your dashboard.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="h-8 w-8 text-red-500 dark:text-red-400" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Error Loading Dashboard</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
+          <button
+            onClick={() => fetchClientData()}
+            className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
+      {/* Header with refresh button */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome, {user?.fullName}</h1>
-          <p className="text-sm text-gray-600">Manage your projects and invoices</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome, {user?.fullName}</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Manage your projects and invoices</p>
         </div>
-        <div className="flex items-center space-x-2">
-          <Package className="h-8 w-8 text-blue-600" />
-          <span className="text-xl font-bold text-gray-900">Tech Processing LLC</span>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => fetchClientData()}
+            disabled={loading}
+            className="inline-flex items-center px-3 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+          <div className="flex items-center space-x-2">
+            <Package className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+            <span className="text-xl font-bold text-gray-900 dark:text-white">Tech Processing LLC</span>
+          </div>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <FileText className="h-8 w-8 text-blue-600" />
+              <FileText className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Invoices</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalInvoices}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Invoices</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalInvoices}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <DollarSign className="h-8 w-8 text-gray-600" />
+              <DollarSign className="h-8 w-8 text-gray-600 dark:text-gray-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Amount</p>
-              <p className="text-2xl font-bold text-gray-900">${stats.totalAmount.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Amount</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">${stats.totalAmount.toLocaleString()}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Paid Amount</p>
-              <p className="text-2xl font-bold text-gray-900">${stats.paidAmount.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Paid Amount</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">${stats.paidAmount.toLocaleString()}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <Clock className="h-8 w-8 text-yellow-600" />
+              <Clock className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Unpaid Invoices</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.unpaidCount}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Unpaid Invoices</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.unpaidCount}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Recent Invoices */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Invoices</h2>
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Invoices</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Description
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Due Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Payment Method
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {recentInvoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {invoice.description}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ${parseFloat(invoice.amount).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(invoice.status)}`}>
-                      {invoice.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(invoice.due_date).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {invoice.payment_method || 'Not specified'}
-                  </td>
+          {recentInvoices.length > 0 ? (
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+              <thead className="bg-gray-50 dark:bg-slate-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Description
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Due Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Payment Method
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
+                {recentInvoices.map((invoice) => (
+                  <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                      {invoice.description}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      ${parseFloat(invoice.amount || '0').toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(invoice.status)}`}>
+                        {invoice.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {new Date(invoice.due_date).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {invoice.payment_method || 'Not specified'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="px-6 py-8 text-center">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Invoices Yet</h3>
+              <p className="text-gray-500 dark:text-gray-400">You don't have any invoices at the moment.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -439,6 +528,151 @@ export function ClientDashboard() {
           </div>
         </div>
       )}
+
+      {/* Service Requests */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Service Requests</h2>
+        </div>
+        <div className="p-6">
+          {serviceRequests.length > 0 ? (
+            <div className="space-y-4">
+              {serviceRequests.slice(0, 3).map((request) => (
+                <div key={request.id} className="border border-gray-200 dark:border-slate-600 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                                             <div className="flex items-center gap-3 mb-2">
+                         <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                           {request.isCustomQuote ? 'Custom Quote Request' : (request.service?.name || 'Service Request')}
+                         </h3>
+                         <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(request.status)}`}>
+                           {request.status === 'PENDING' && <Clock className="h-3 w-3 mr-1" />}
+                           {request.status === 'REVIEWING' && <Eye className="h-3 w-3 mr-1" />}
+                           {request.status === 'QUOTE_READY' && <DollarSign className="h-3 w-3 mr-1" />}
+                           {request.status === 'APPROVED' && <CheckCircle className="h-3 w-3 mr-1" />}
+                           {request.status === 'REJECTED' && <XCircle className="h-3 w-3 mr-1" />}
+                           {request.status === 'IN_PROGRESS' && <Package className="h-3 w-3 mr-1" />}
+                           {request.status === 'REVIEW' && <Eye className="h-3 w-3 mr-1" />}
+                           {request.status === 'COMPLETED' && <CheckCircle className="h-3 w-3 mr-1" />}
+                           {request.status}
+                         </span>
+                         {request.isCustomQuote && (
+                           <span className="inline-flex items-center px-1 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-400 border border-purple-200 dark:border-purple-800">
+                             CUSTOM
+                           </span>
+                         )}
+                       </div>
+                      
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+                        {request.description}
+                      </p>
+                      
+                                             <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                         <span>{new Date(request.createdAt).toLocaleDateString()}</span>
+                         {request.budget && (
+                           <span>Budget: ${request.budget.toLocaleString()}</span>
+                         )}
+                         {request.quoteAmount && (
+                           <span>Quote: ${request.quoteAmount.toLocaleString()}</span>
+                         )}
+                         {request.timeline && (
+                           <span>Timeline: {request.timeline}</span>
+                         )}
+                       </div>
+                      
+                                             {/* Delivery Information */}
+                       {(request.expectedStartDate || request.expectedDeliveryDate) && (
+                         <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                           <div className="text-xs text-blue-800 dark:text-blue-200">
+                             {request.expectedStartDate && (
+                               <div><strong>Expected Start:</strong> {new Date(request.expectedStartDate).toLocaleDateString()}</div>
+                             )}
+                             {request.expectedDeliveryDate && (
+                               <div><strong>Expected Delivery:</strong> {new Date(request.expectedDeliveryDate).toLocaleDateString()}</div>
+                             )}
+                             {request.actualStartDate && (
+                               <div><strong>Actual Start:</strong> {new Date(request.actualStartDate).toLocaleDateString()}</div>
+                             )}
+                             {request.actualDeliveryDate && (
+                               <div><strong>Actual Delivery:</strong> {new Date(request.actualDeliveryDate).toLocaleDateString()}</div>
+                             )}
+                           </div>
+                         </div>
+                       )}
+
+                       {/* Payment Information */}
+                       {(request.quoteAmount || request.paymentTerms) && (
+                         <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                           <div className="text-xs text-green-800 dark:text-green-200">
+                             {request.quoteAmount && (
+                               <div><strong>Quote Amount:</strong> ${request.quoteAmount.toLocaleString()}</div>
+                             )}
+                             {request.paymentTerms && (
+                               <div><strong>Payment Terms:</strong> {request.paymentTerms}</div>
+                             )}
+                           </div>
+                         </div>
+                       )}
+
+                       {/* Invoice Information for Approved Requests */}
+                       {request.status === 'APPROVED' && request.quoteAmount && (
+                         <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                           <div className="flex items-start">
+                             <div className="flex-shrink-0">
+                               <DollarSign className="h-4 w-4 text-blue-500 dark:text-blue-400 mt-0.5" />
+                             </div>
+                             <div className="ml-2">
+                               <div className="text-xs text-blue-800 dark:text-blue-200">
+                                 <strong>Invoice Generated:</strong> An invoice for ${request.quoteAmount.toLocaleString()} has been automatically generated.
+                               </div>
+                               <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                                 Please check your invoices section and make payment to start the work.
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       )}
+
+                       {request.adminNotes && (
+                         <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+                           <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                             <strong>Admin Response:</strong> {request.adminNotes}
+                           </p>
+                         </div>
+                       )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {serviceRequests.length > 3 && (
+                <div className="text-center pt-2">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Showing 3 of {serviceRequests.length} requests
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Package className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Service Requests</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-4">
+                You haven't submitted any service requests yet.
+              </p>
+              <a
+                href="/client/services"
+                className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors"
+              >
+                <Package className="h-4 w-4 mr-2" />
+                Browse Services
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
+import { useNotifications } from '../common/NotificationSystem';
 import { Shield, Search, Filter, Calendar, User, Activity, Eye, Download } from 'lucide-react';
 
 export function AuditLogsPage() {
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,8 +41,10 @@ export function AuditLogsPage() {
         ...prev,
         total: response.total,
       }));
+      showSuccess('Audit Logs Loaded', `Successfully loaded ${response.logs?.length || 0} audit log entries.`);
     } catch (error) {
       console.error('Error fetching audit logs:', error);
+      showError('Failed to Load Audit Logs', 'Unable to load audit logs. Please try again later.');
     } finally {
       setLoading(false);
     }

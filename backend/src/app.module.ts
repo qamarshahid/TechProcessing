@@ -8,6 +8,8 @@ import { InvoicesModule } from './invoices/invoices.module';
 import { PaymentsModule } from './payments/payments.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { PaymentLinksModule } from './payment-links/payment-links.module';
+import { ServiceRequestsModule } from './service-requests/service-requests.module';
+import { ServicePackagesModule } from './service-packages/service-packages.module';
 import { HealthModule } from './health/health.module';
 import { DatabaseModule } from './database/database.module';
 
@@ -29,7 +31,7 @@ const validationSchema = Joi.object({
   DATABASE_PASSWORD: skipDb ? Joi.string().allow('').optional() : Joi.string().allow('').required(),
   DATABASE_SSL: Joi.boolean().truthy('true').falsy('false').default(false),
   DATABASE_SSL_REJECT_UNAUTHORIZED: Joi.boolean().truthy('true').falsy('false').default(false),
-  JWT_SECRET: Joi.string().min(32).default('testsecret012345678901234567890123'),
+        JWT_SECRET: Joi.string().min(32).required(),
   JWT_EXPIRES_IN: Joi.string().default('24h'),
   CORS_ORIGIN: Joi.string().default('*'),
   RATE_LIMIT_TTL: Joi.number().default(60),
@@ -71,6 +73,8 @@ if (skipDb) {
     PaymentsModule,
     SubscriptionsModule,
     PaymentLinksModule,
+    ServicePackagesModule,
+    ServiceRequestsModule,
   ];
 }
 

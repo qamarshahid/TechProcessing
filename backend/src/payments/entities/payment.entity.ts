@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { User } from '../../users/entities/user.entity';
 import { Invoice } from '../../invoices/entities/invoice.entity';
 import { PaymentMethod } from '../../common/enums/payment-method.enum';
@@ -51,6 +52,7 @@ export class Payment {
   transactionId: string;
 
   @Column({ name: 'gateway_response', type: 'json', nullable: true })
+  @Exclude()
   gatewayResponse: any;
 
   @Column({ name: 'processed_at', nullable: true })

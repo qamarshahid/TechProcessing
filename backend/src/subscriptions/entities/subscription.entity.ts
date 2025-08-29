@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { User } from '../../users/entities/user.entity';
 import { ServicePackage } from '../../invoices/entities/service-package.entity';
 
@@ -71,6 +72,7 @@ export class Subscription {
   totalBilled: number;
 
   @Column({ type: 'json', nullable: true })
+  @Exclude()
   metadata: any;
 
   @CreateDateColumn({ name: 'created_at' })

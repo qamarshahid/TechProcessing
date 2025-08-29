@@ -80,8 +80,12 @@ export class UsersController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete user (Admin only)' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
-  remove(@Param('id') id: string, @CurrentUser() currentUser: User) {
-    return this.usersService.remove(id, currentUser);
+  remove(
+    @Param('id') id: string, 
+    @Body() body: { hardDelete?: boolean },
+    @CurrentUser() currentUser: User
+  ) {
+    return this.usersService.remove(id, body.hardDelete ?? false, currentUser);
   }
 
   @Patch(':id/credentials')

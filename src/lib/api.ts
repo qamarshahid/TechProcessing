@@ -222,9 +222,10 @@ class ApiClient {
     });
   }
 
-  async deleteUser(userId: string) {
+  async deleteUser(userId: string, hardDelete: boolean = false) {
     return this.request<{ success: boolean }>(`/users/${userId}`, {
       method: 'DELETE',
+      body: JSON.stringify({ hardDelete }),
     });
   }
 
@@ -301,6 +302,10 @@ class ApiClient {
       // Handle both array response and object with invoices property
       if (Array.isArray(response)) {
         return { invoices: response };
+      }
+      // If response is an empty array, return it as invoices array
+      if (response && typeof response === 'object' && Object.keys(response).length === 0) {
+        return { invoices: [] };
       }
       return { invoices: response.invoices || response };
     } catch (error) {
@@ -442,8 +447,9 @@ class ApiClient {
     });
   }
 
-  async deleteInvoice(invoiceId: string) {
-    return this.request<{ success: boolean }>(`/invoices/${invoiceId}`, {
+  async deleteInvoice(invoiceId: string, deletePayments: boolean = false) {
+    const queryParams = deletePayments ? '?deletePayments=true' : '';
+    return this.request<{ success: boolean }>(`/invoices/${invoiceId}${queryParams}`, {
       method: 'DELETE',
     });
   }
@@ -575,12 +581,7 @@ class ApiClient {
       
       logger.debug('Filtered client subscriptions:', clientSubscriptions);
       
-      logger.debug('Final client data:', {
-        clientId,
-        invoices: clientInvoices,
-        payments: clientPayments,
-        subscriptions: clientSubscriptions
-      });
+      logger.debug('Client data processed');
       
       // Combine into transaction history
       const transactions = [];
@@ -811,6 +812,111 @@ class ApiClient {
     });
   }
 
+  // Service Request methods
+  async createServiceRequest(requestData: {
+    serviceId: string;
+    clientId: string;
+    description: string;
+    budget?: number;
+    timeline?: string;
+    additionalRequirements?: string;
+  }) {
+    // Handle custom quote requests
+    const isCustomQuote = requestData.serviceId === 'custom';
+    const requestPayload = {
+      ...requestData,
+      serviceId: isCustomQuote ? null : requestData.serviceId,
+      isCustomQuote: isCustomQuote,
+      requestType: isCustomQuote ? 'CUSTOM_QUOTE' : 'SERVICE_REQUEST'
+    };
+    
+    return this.request<{ serviceRequest: any }>('/service-requests', {
+      method: 'POST',
+      body: JSON.stringify(requestPayload),
+    });
+  }
+
+  async getServiceRequests(filters?: {
+    status?: string;
+    clientId?: string;
+    serviceId?: string;
+  }) {
+    const queryParams = new URLSearchParams();
+    if (filters?.status) queryParams.append('status', filters.status);
+    if (filters?.clientId) queryParams.append('clientId', filters.clientId);
+    if (filters?.serviceId) queryParams.append('serviceId', filters.serviceId);
+    
+    const endpoint = `/service-requests${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    return this.request<{ serviceRequests: any[] }>(endpoint);
+  }
+
+  async updateServiceRequest(requestId: string, updateData: {
+    status?: string;
+    adminNotes?: string;
+    estimatedCost?: number;
+    estimatedTimeline?: string;
+    expectedStartDate?: string;
+    expectedDeliveryDate?: string;
+    actualStartDate?: string;
+    actualDeliveryDate?: string;
+    quoteAmount?: number;
+    paymentTerms?: string;
+  }) {
+    return this.request<{ serviceRequest: any }>(`/service-requests/${requestId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updateData),
+    });
+  }
+
+  async getClientServiceRequests(clientId: string) {
+    return this.request<{ serviceRequests: any[] }>(`/service-requests/client/${clientId}`);
+  }
+
+  // Price Adjustment methods
+  async createPriceAdjustment(requestId: string, adjustmentData: {
+    previousAmount: number;
+    newAmount: number;
+    reason: string;
+  }) {
+    return this.request<{ priceAdjustment: any }>(`/service-requests/${requestId}/price-adjustments`, {
+      method: 'POST',
+      body: JSON.stringify(adjustmentData),
+    });
+  }
+
+  async updatePriceAdjustmentStatus(adjustmentId: string, status: 'APPROVED' | 'REJECTED', clientNotes?: string) {
+    return this.request<{ priceAdjustment: any }>(`/price-adjustments/${adjustmentId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, clientNotes }),
+    });
+  }
+
+  // File Attachment methods
+  async uploadAttachment(requestId: string, file: File, category: string, description?: string) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('category', category);
+    if (description) formData.append('description', description);
+
+    return this.request<{ attachment: any }>(`/service-requests/${requestId}/attachments`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        // Don't set Content-Type for FormData, let browser set it
+      },
+    });
+  }
+
+  async deleteAttachment(attachmentId: string) {
+    return this.request<{ success: boolean }>(`/attachments/${attachmentId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getAttachments(requestId: string) {
+    return this.request<{ attachments: any[] }>(`/service-requests/${requestId}/attachments`);
+  }
+
   // Payment Link methods
   async getPaymentLinks() {
     try {
@@ -819,7 +925,7 @@ class ApiClient {
         logger.error('API call failed, using fallback data:', error);
         throw error; // Re-throw to trigger catch block
       });
-      logger.debug('Payment links API response:', response);
+      logger.debug('Payment links API response received');
       // Handle both array response and object with links property
       if (Array.isArray(response)) {
         return { links: response };
@@ -864,8 +970,22 @@ class ApiClient {
   }
 
   async getClientSubscriptions(clientId: string) {
-    const response = await this.request<{ subscriptions: any[] }>(`/subscriptions/client/${clientId}`);
-    return response;
+    try {
+      const response = await this.request<any>(`/subscriptions/client/${clientId}`);
+      
+      // Handle empty array response
+      if (Array.isArray(response)) {
+        return { subscriptions: response };
+      }
+      // If response is an empty object, return empty subscriptions array
+      if (response && typeof response === 'object' && Object.keys(response).length === 0) {
+        return { subscriptions: [] };
+      }
+      return { subscriptions: response.subscriptions || response };
+    } catch (error) {
+      console.error('API: Error getting client subscriptions:', error);
+      throw error;
+    }
   }
 
   async createPaymentLink(linkData: {
@@ -925,12 +1045,12 @@ class ApiClient {
 
   async processPaymentLinkPayment(token: string, paymentData: any) {
     try {
-      logger.debug('API: Processing payment for token:', token, paymentData);
+      logger.debug('API: Processing payment for token');
       const response = await this.request<any>(`/payment-links/token/${token}/process-payment`, {
         method: 'POST',
         body: JSON.stringify(paymentData),
       });
-      logger.debug('API: Payment processing response:', response);
+      logger.debug('API: Payment processing response received');
       return response;
     } catch (error) {
       logger.error('Error processing payment:', error);
@@ -970,7 +1090,7 @@ class ApiClient {
         logger.error('API call failed, using fallback data:', error);
         throw error; // Re-throw to trigger catch block
       });
-      logger.debug('Subscriptions API response:', response);
+      logger.debug('Subscriptions API response received');
       // Handle both array response and object with subscriptions property
       if (Array.isArray(response)) {
         return { subscriptions: response };
@@ -1253,6 +1373,7 @@ class ApiClient {
     isActive?: boolean;
   }) {
     try {
+      // Use the agents endpoint which properly creates both User and Agent records
       return this.request<{ agent: any }>('/agents', {
         method: 'POST',
         body: JSON.stringify(agentData),
@@ -1265,11 +1386,24 @@ class ApiClient {
 
   async getAgents() {
     try {
+      // Use the agents endpoint which returns agents with user data
       const response = await this.request<any[]>('/agents');
       return response;
     } catch (error) {
       logger.error('Error fetching agents:', error);
       return [];
+    }
+  }
+
+  async deleteAgent(agentId: string, hardDelete: boolean = false) {
+    try {
+      return this.request<{ success: boolean }>(`/agents/${agentId}`, {
+        method: 'DELETE',
+        body: { hardDelete },
+      });
+    } catch (error) {
+      logger.error('Error deleting agent:', error);
+      throw error;
     }
   }
 
@@ -1338,8 +1472,9 @@ class ApiClient {
 
   async getAllAgentSales() {
     try {
-      const response = await this.request<any[]>('/agents/sales/all');
-      return response;
+      // For now, return empty array since agent sales endpoint doesn't exist
+      // TODO: Implement agent sales functionality in backend
+      return [];
     } catch (error) {
       logger.error('Error fetching all agent sales:', error);
       return [];
@@ -1417,7 +1552,8 @@ class ApiClient {
 
   async updateAgentStatus(agentId: string, isActive: boolean) {
     try {
-      return this.request<any>(`/agents/${agentId}/status`, {
+      // Use the users endpoint to update agent status
+      return this.request<any>(`/users/${agentId}`, {
         method: 'PATCH',
         body: JSON.stringify({ isActive }),
       });
@@ -1503,11 +1639,11 @@ class ApiClient {
     try {
       logger.debug('Making request to:', `/closers/${id}/stats`);
       const result = await this.request<any>(`/closers/${id}/stats`);
-      logger.debug('Closer stats response:', result);
+      logger.debug('Closer stats response received');
       return result;
     } catch (error) {
       logger.error('Error fetching closer stats:', error);
-      logger.error('Error response:', error.response);
+      logger.error('Error response received');
       throw error;
     }
   }

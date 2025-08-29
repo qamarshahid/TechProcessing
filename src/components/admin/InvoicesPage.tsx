@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
-import { Plus, Eye, Edit, Trash2, Download, CreditCard } from 'lucide-react';
+import { useNotifications } from '../common/NotificationSystem';
+import { ConfirmationModal } from '../common/ConfirmationModal';
+import { Plus, Eye, Edit, Trash2, Download, CreditCard, X, AlertTriangle } from 'lucide-react';
 import { AddInvoiceModal } from './AddInvoiceModal';
 import { SearchFilters } from './SearchFilters';
 import { ChargeClientModal } from './ChargeClientModal';
 
 export function InvoicesPage() {
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [invoices, setInvoices] = useState<any[]>([]);
   const [filteredInvoices, setFilteredInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +24,18 @@ export function InvoicesPage() {
     amount: '',
   });
   const [invoiceStatuses, setInvoiceStatuses] = useState<{[key: string]: string}>({});
+  
+  // Confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [invoiceToDelete, setInvoiceToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deletePayments, setDeletePayments] = useState(false);
+  
+  // Status change modal state
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [invoiceToUpdate, setInvoiceToUpdate] = useState<any>(null);
+  const [newStatus, setNewStatus] = useState('');
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   useEffect(() => {
     fetchInvoices();
@@ -36,8 +51,10 @@ export function InvoicesPage() {
         status: filter === 'ALL' ? undefined : filter 
       });
       setInvoices(response.invoices || []);
+      showSuccess('Invoices Loaded', `Successfully loaded ${response.invoices?.length || 0} invoices.`);
     } catch (error) {
       console.error('Error fetching invoices:', error);
+      showError('Failed to Load Invoices', 'Unable to load invoices. Please try again later.');
       // Set empty array if fetch fails
       setInvoices([]);
     } finally {
@@ -126,29 +143,50 @@ export function InvoicesPage() {
     // setShowEditModal(true);
   };
 
-  const deleteInvoice = async (invoice: any) => {
-    if (window.confirm(`Are you sure you want to delete invoice for ${invoice.client_name}?`)) {
-      try {
-        await apiClient.deleteInvoice(invoice.id);
-        // Remove from local state immediately
-        setInvoices(prev => prev.filter(inv => inv.id !== invoice.id));
-        setFilteredInvoices(prev => prev.filter(inv => inv.id !== invoice.id));
-        setInvoiceStatuses(prev => {
-          const newStatuses = { ...prev };
-          delete newStatuses[invoice.id];
-          return newStatuses;
-        });
-        // Dispatch a custom event to notify other components
-        window.dispatchEvent(new Event('invoices-updated'));
-        alert('Invoice deleted successfully!');
-        fetchInvoices();
-      } catch (error) {
-        console.error('Error deleting invoice:', error);
-        setInvoices(prev => prev.filter(inv => inv.id !== invoice.id));
-        setFilteredInvoices(prev => prev.filter(inv => inv.id !== invoice.id));
-        window.dispatchEvent(new Event('invoices-updated'));
-        alert('Invoice deleted successfully!');
+  const handleDeleteClick = (invoice: any) => {
+    setInvoiceToDelete(invoice);
+    setShowDeleteModal(true);
+  };
+
+  const deleteInvoice = async () => {
+    if (!invoiceToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      await apiClient.deleteInvoice(invoiceToDelete.id, deletePayments);
+      // Remove from local state immediately
+      setInvoices(prev => prev.filter(inv => inv.id !== invoiceToDelete.id));
+      setFilteredInvoices(prev => prev.filter(inv => inv.id !== invoiceToDelete.id));
+      setInvoiceStatuses(prev => {
+        const newStatuses = { ...prev };
+        delete newStatuses[invoiceToDelete.id];
+        return newStatuses;
+      });
+      // Dispatch a custom event to notify other components
+      window.dispatchEvent(new Event('invoices-updated'));
+      
+      const message = deletePayments 
+        ? `Invoice and associated payments for ${invoiceToDelete.client_name} have been deleted successfully.`
+        : `Invoice for ${invoiceToDelete.client_name} has been deleted successfully.`;
+      
+      showSuccess('Invoice Deleted', message);
+      fetchInvoices();
+    } catch (error: any) {
+      console.error('Error deleting invoice:', error);
+      
+      // Handle specific error messages from the backend
+      if (error.message && error.message.includes('associated payments')) {
+        showError('Cannot Delete Invoice', 'This invoice has associated payments and cannot be deleted. Please delete the payments first or check the "Delete Associated Payments" option.');
+      } else if (error.message && error.message.includes('paid invoice')) {
+        showError('Cannot Delete Invoice', 'Paid invoices cannot be deleted.');
+      } else {
+        showError('Delete Failed', 'Failed to delete invoice. Please try again.');
       }
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setInvoiceToDelete(null);
+      setDeletePayments(false);
     }
   };
 
@@ -157,30 +195,40 @@ export function InvoicesPage() {
     setShowChargeModal(true);
   };
 
-  const changeInvoiceStatus = async (invoice: any) => {
+  const handleStatusChangeClick = (invoice: any) => {
     const currentStatus = invoiceStatuses[invoice.id] || invoice.status;
-    const statusOptions = ['PAID', 'UNPAID', 'OVERDUE', 'CANCELLED'];
-    const newStatus = prompt(`Current status: ${currentStatus}\nEnter new status (${statusOptions.join(', ')}):`, currentStatus);
+    setInvoiceToUpdate(invoice);
+    setNewStatus(currentStatus);
+    setShowStatusModal(true);
+  };
+
+  const changeInvoiceStatus = async () => {
+    if (!invoiceToUpdate || !newStatus) return;
     
-    if (newStatus && statusOptions.includes(newStatus.toUpperCase())) {
-      try {
-        await apiClient.updateInvoiceStatus(invoice.id, newStatus.toUpperCase());
-        // Update local state
-        setInvoiceStatuses(prev => ({
-          ...prev,
-          [invoice.id]: newStatus.toUpperCase()
-        }));
-        alert('Invoice status updated successfully!');
-        fetchInvoices();
-      } catch (error) {
-        console.error('Error updating invoice status:', error);
-        // Still update UI even if API call fails (for demo purposes)
-        setInvoiceStatuses(prev => ({
-          ...prev,
-          [invoice.id]: newStatus.toUpperCase()
-        }));
-        alert('Invoice status updated successfully!');
-      }
+    const statusOptions = ['PAID', 'UNPAID', 'OVERDUE', 'CANCELLED'];
+    if (!statusOptions.includes(newStatus.toUpperCase())) {
+      showError('Invalid Status', 'Please select a valid status from the dropdown.');
+      return;
+    }
+    
+    setIsUpdatingStatus(true);
+    try {
+      await apiClient.updateInvoiceStatus(invoiceToUpdate.id, newStatus.toUpperCase());
+      // Update local state
+      setInvoiceStatuses(prev => ({
+        ...prev,
+        [invoiceToUpdate.id]: newStatus.toUpperCase()
+      }));
+      showSuccess('Status Updated', `Invoice status has been updated to ${newStatus.toUpperCase()} successfully.`);
+      fetchInvoices();
+    } catch (error) {
+      console.error('Error updating invoice status:', error);
+      showError('Update Failed', 'Failed to update invoice status. Please try again.');
+    } finally {
+      setIsUpdatingStatus(false);
+      setShowStatusModal(false);
+      setInvoiceToUpdate(null);
+      setNewStatus('');
     }
   };
 
@@ -308,7 +356,7 @@ export function InvoicesPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button 
-                      onClick={() => changeInvoiceStatus(invoice)}
+                      onClick={() => handleStatusChangeClick(invoice)}
                       className={`px-2 py-1 text-xs font-medium rounded-full hover:opacity-80 transition-opacity ${getStatusColor(invoiceStatuses[invoice.id] || invoice.status)}`}
                       title="Click to change status"
                     >
@@ -354,7 +402,7 @@ export function InvoicesPage() {
                         <Edit className="h-4 w-4" />
                       </button>
                       <button 
-                        onClick={() => deleteInvoice(invoice)}
+                        onClick={() => handleDeleteClick(invoice)}
                         className="text-red-600 hover:text-red-900"
                         title="Delete Invoice"
                       >
@@ -407,6 +455,213 @@ export function InvoicesPage() {
         }}
         preSelectedInvoice={selectedInvoice}
         />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && invoiceToDelete && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+              onClick={() => !isDeleting && setShowDeleteModal(false)}
+            />
+            
+            {/* Modal */}
+            <div className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl transition-all">
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Trash2 className="h-6 w-6 text-red-500" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Delete Invoice
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => !isDeleting && setShowDeleteModal(false)}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    disabled={isDeleting}
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="px-6 py-4">
+                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+                  Are you sure you want to delete the invoice for <span className="font-semibold text-gray-900 dark:text-white">{invoiceToDelete.client_name}</span>? This action cannot be undone and will permanently remove the invoice from the system.
+                </p>
+                
+                {/* Payment Deletion Option */}
+                <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                        Associated Payments
+                      </h4>
+                      <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                        This invoice may have associated payments. Check the option below to delete them as well.
+                      </p>
+                      <div className="mt-3">
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={deletePayments}
+                            onChange={(e) => setDeletePayments(e.target.checked)}
+                            disabled={isDeleting}
+                            className="h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
+                          />
+                          <span className="ml-2 text-sm text-yellow-800 dark:text-yellow-200">
+                            Delete associated payments as well
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  disabled={isDeleting}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={deleteInvoice}
+                  disabled={isDeleting}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                >
+                  {isDeleting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Deleting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4" />
+                      <span>Delete Invoice</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Status Change Modal */}
+      {showStatusModal && invoiceToUpdate && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+              onClick={() => !isUpdatingStatus && setShowStatusModal(false)}
+            />
+            
+            {/* Modal */}
+            <div className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl transition-all">
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 dark:text-blue-400 text-sm font-semibold">!</span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Update Invoice Status
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => !isUpdatingStatus && setShowStatusModal(false)}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    disabled={isUpdatingStatus}
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="px-6 py-4">
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                    Update the status for invoice <span className="font-semibold text-gray-900 dark:text-white">#{invoiceToUpdate.id}</span> 
+                    for client <span className="font-semibold text-gray-900 dark:text-white">{invoiceToUpdate.client_name}</span>.
+                  </p>
+                  
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Current Status
+                    </label>
+                    <div className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(invoiceStatuses[invoiceToUpdate.id] || invoiceToUpdate.status)}`}>
+                      {invoiceStatuses[invoiceToUpdate.id] || invoiceToUpdate.status}
+                    </div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      New Status *
+                    </label>
+                    <select
+                      value={newStatus}
+                      onChange={(e) => setNewStatus(e.target.value)}
+                      disabled={isUpdatingStatus}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <option value="">Select a status...</option>
+                      <option value="PAID">PAID</option>
+                      <option value="UNPAID">UNPAID</option>
+                      <option value="OVERDUE">OVERDUE</option>
+                      <option value="CANCELLED">CANCELLED</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700 flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowStatusModal(false)}
+                  disabled={isUpdatingStatus}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={changeInvoiceStatus}
+                  disabled={isUpdatingStatus || !newStatus}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                >
+                  {isUpdatingStatus ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Updating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Update Status</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

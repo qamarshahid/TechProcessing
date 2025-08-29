@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { Agent } from './agent.entity';
 import { User } from './user.entity';
 import { Closer } from './closer.entity';
@@ -111,9 +112,11 @@ export class AgentSale {
   notes: string;
 
   @Column({ type: 'jsonb', nullable: true, name: 'client_details' })
+  @Exclude()
   clientDetails: any;
 
   @Column({ type: 'jsonb', nullable: true, name: 'metadata' })
+  @Exclude()
   metadata: any;
 
   @Column({ type: 'uuid', nullable: true, name: 'original_sale_id' })
@@ -124,6 +127,7 @@ export class AgentSale {
   originalSale: AgentSale;
 
   @Column({ type: 'jsonb', nullable: true, name: 'changes_made' })
+  @Exclude()
   changesMade: any;
 
   @Column({ type: 'int', default: 0, name: 'resubmission_count' })

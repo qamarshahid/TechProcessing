@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { useNotifications } from './common/NotificationSystem';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Eye,
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 
 export function LoginForm() {
+  const { showSuccess, showError } = useNotifications();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showRegister, setShowRegister] = useState(false);
@@ -40,20 +42,26 @@ export function LoginForm() {
       if (showRegister) {
         if (!fullName.trim()) {
           setError('Full name is required');
+          showError('Registration Error', 'Full name is required');
           setLoading(false);
           return;
         }
         await signUp(email, password, fullName, 'CLIENT');
+        showSuccess('Registration Successful', 'Account created successfully! Welcome to Tech Processing.');
       } else {
         await signIn(email, password);
+        showSuccess('Login Successful', 'Welcome back!');
       }
       navigate('/dashboard');
     } catch (err: any) {
       // Enhanced error handling for login/register
       if (err instanceof Error && err.message) {
         setError(err.message);
+        showError(showRegister ? 'Registration Failed' : 'Login Failed', err.message);
       } else {
-        setError(showRegister ? 'Registration failed. Please try again.' : 'Invalid email or password');
+        const errorMessage = showRegister ? 'Registration failed. Please try again.' : 'Invalid email or password';
+        setError(errorMessage);
+        showError(showRegister ? 'Registration Failed' : 'Login Failed', errorMessage);
       }
     } finally {
       setLoading(false);

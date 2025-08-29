@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, fullName: string, role: 'ADMIN' | 'CLIENT') => {
+  const signUp = async (email: string, password: string, fullName: string, role: 'ADMIN' | 'CLIENT' | 'AGENT') => {
     try {
       const response = await apiClient.register(email, password, fullName, role);
       apiClient.setToken(response.access_token);

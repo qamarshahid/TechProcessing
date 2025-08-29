@@ -358,8 +358,6 @@ export class CloserService {
   }
 
   async getCloserSales(closerId: string): Promise<AgentSale[]> {
-    console.log('Fetching sales for closer:', closerId);
-    
     const sales = await this.agentSaleRepository
       .createQueryBuilder('sale')
       .leftJoinAndSelect('sale.agent', 'agent')
@@ -369,15 +367,6 @@ export class CloserService {
       .orderBy('sale.saleDate', 'DESC')
       .addOrderBy('sale.createdAt', 'DESC')
       .getMany();
-
-    console.log('Found sales for closer:', sales.length);
-    console.log('Sales data:', sales.map(sale => ({
-      id: sale.id,
-      closerId: sale.closerId,
-      closerName: sale.closerName,
-      clientName: sale.clientName,
-      saleAmount: sale.saleAmount
-    })));
 
     return sales;
   }

@@ -8,6 +8,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { User } from '../../users/entities/user.entity';
 import { Payment } from '../../payments/entities/payment.entity';
 import { ServicePackage } from './service-package.entity';
@@ -52,6 +53,7 @@ export class Invoice {
   description: string;
 
   @Column({ type: 'json', nullable: true })
+  @Exclude()
   lineItems: any[];
 
   @Column({ name: 'due_date' })

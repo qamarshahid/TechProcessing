@@ -286,6 +286,37 @@ export class PaymentsService {
     return this.paymentsRepository.save(payment);
   }
 
+  async remove(id: string, deletedBy: User): Promise<void> {
+    const payment = await this.findOne(id);
+    
+    // Check if payment is completed - we might want to prevent deletion of completed payments
+    if (payment.status === PaymentStatus.COMPLETED) {
+      throw new BadRequestException('Cannot delete a completed payment');
+    }
+
+    await this.paymentsRepository.remove(payment);
+
+    // Audit log
+    await this.auditService.log({
+      action: 'PAYMENT_DELETED',
+      entityType: 'Payment',
+      entityId: payment.id,
+      details: { amount: payment.amount, method: payment.method },
+      user: deletedBy,
+    });
+  }
+
+  async removeByInvoiceId(invoiceId: string, deletedBy: User): Promise<void> {
+    const payments = await this.paymentsRepository.find({
+      where: { invoiceId },
+      relations: ['invoice'],
+    });
+
+    for (const payment of payments) {
+      await this.remove(payment.id, deletedBy);
+    }
+  }
+
   async getStats(): Promise<any> {
     const totalPayments = await this.paymentsRepository.count();
     

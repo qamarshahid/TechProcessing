@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
+import { useNotifications } from '../common/NotificationSystem';
+import { ConfirmationModal } from '../common/ConfirmationModal';
 import { RefreshCw, Plus, Edit, Trash2, DollarSign, Calendar, User, Pause, Play, Save, X, Package, FileText } from 'lucide-react';
 import { CreateSubscriptionModal } from './CreateSubscriptionModal';
 
 export function SubscriptionsPage() {
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [filteredSubscriptions, setFilteredSubscriptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +24,11 @@ export function SubscriptionsPage() {
   });
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState('');
+  
+  // Confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [subscriptionToDelete, setSubscriptionToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchSubscriptions();
@@ -86,8 +94,10 @@ export function SubscriptionsPage() {
       const response = await apiClient.getSubscriptions();
       console.log('Subscriptions response:', response);
       setSubscriptions(response.subscriptions || []);
+      showSuccess('Subscriptions Loaded', `Successfully loaded ${response.subscriptions?.length || 0} subscriptions.`);
     } catch (error) {
       console.error('Error fetching subscriptions:', error);
+      showError('Failed to Load Subscriptions', 'Unable to load subscriptions. Please try again later.');
       setSubscriptions([]);
     } finally {
       setLoading(false);
@@ -106,26 +116,36 @@ export function SubscriptionsPage() {
     }
   };
 
-  const cancelSubscription = async (subscriptionId: string, currentStatus: string) => {
-    const actionText = currentStatus === 'ACTIVE' ? 'cancel' : 'permanently delete';
-    const confirmText = currentStatus === 'ACTIVE' 
-      ? 'Are you sure you want to cancel this subscription? It will be moved to cancelled status but kept for records.' 
-      : 'Are you sure you want to permanently delete this subscription? This action cannot be undone.';
+  const handleDeleteClick = (subscription: any) => {
+    setSubscriptionToDelete(subscription);
+    setShowDeleteModal(true);
+  };
+
+  const cancelSubscription = async () => {
+    if (!subscriptionToDelete) return;
     
-    if (window.confirm(confirmText)) {
-      try {
-        if (currentStatus === 'ACTIVE' || currentStatus === 'PAUSED') {
-          // Cancel the subscription (set status to CANCELLED)
-          await apiClient.updateSubscriptionStatus(subscriptionId, 'CANCELLED');
-        } else {
-          // Actually delete the subscription if it's already cancelled
-          await apiClient.deleteSubscription(subscriptionId);
-        }
-        await fetchSubscriptions();
-      } catch (error) {
-        console.error(`Error ${actionText}ing subscription:`, error);
-        alert(`Failed to ${actionText} subscription. Please try again.`);
+    const currentStatus = subscriptionToDelete.status;
+    const actionText = currentStatus === 'ACTIVE' ? 'cancel' : 'permanently delete';
+    
+    setIsDeleting(true);
+    try {
+      if (currentStatus === 'ACTIVE' || currentStatus === 'PAUSED') {
+        // Cancel the subscription (set status to CANCELLED)
+        await apiClient.updateSubscriptionStatus(subscriptionToDelete.id, 'CANCELLED');
+        showSuccess('Subscription Cancelled', 'Subscription has been cancelled successfully.');
+      } else {
+        // Actually delete the subscription if it's already cancelled
+        await apiClient.deleteSubscription(subscriptionToDelete.id);
+        showSuccess('Subscription Deleted', 'Subscription has been permanently deleted.');
       }
+      await fetchSubscriptions();
+    } catch (error) {
+      console.error(`Error ${actionText}ing subscription:`, error);
+      showError('Operation Failed', `Failed to ${actionText} subscription. Please try again.`);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setSubscriptionToDelete(null);
     }
   };
 
@@ -392,7 +412,7 @@ export function SubscriptionsPage() {
                 <Edit className="h-4 w-4" />
               </button>
               <button
-                onClick={() => cancelSubscription(subscription.id, subscription.status)}
+                                  onClick={() => handleDeleteClick(subscription)}
                 className={`px-3 py-2 rounded-lg transition-colors ${
                   subscription.status === 'CANCELLED' 
                     ? 'text-red-600 hover:text-red-800 hover:bg-red-50' 
@@ -594,6 +614,26 @@ export function SubscriptionsPage() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setSubscriptionToDelete(null);
+        }}
+        onConfirm={cancelSubscription}
+        title={subscriptionToDelete?.status === 'CANCELLED' ? 'Delete Subscription' : 'Cancel Subscription'}
+        message={
+          subscriptionToDelete?.status === 'CANCELLED' 
+            ? `Are you sure you want to permanently delete the subscription for ${subscriptionToDelete?.client?.fullName || 'Unknown Client'}? This action cannot be undone and will permanently remove the subscription from the system.`
+            : `Are you sure you want to cancel the subscription for ${subscriptionToDelete?.client?.fullName || 'Unknown Client'}? It will be moved to cancelled status but kept for records.`
+        }
+        confirmText={subscriptionToDelete?.status === 'CANCELLED' ? 'Delete Subscription' : 'Cancel Subscription'}
+        cancelText="Cancel"
+        type={subscriptionToDelete?.status === 'CANCELLED' ? 'danger' : 'warning'}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

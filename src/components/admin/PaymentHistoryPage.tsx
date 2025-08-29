@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
+import { useNotifications } from '../common/NotificationSystem';
 import { CreditCard, Download, Eye, DollarSign, Calendar, User, CheckCircle, Clock, AlertCircle, XCircle } from 'lucide-react';
 import { SearchFilters } from './SearchFilters';
 
 export function PaymentHistoryPage() {
+  const { showSuccess, showError, showWarning } = useNotifications();
   const [payments, setPayments] = useState<any[]>([]);
   const [filteredPayments, setFilteredPayments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,8 +36,10 @@ export function PaymentHistoryPage() {
       const response = await apiClient.getPayments();
       setPayments(response.payments);
       calculateStats(response.payments);
+      showSuccess('Payment History Loaded', `Successfully loaded ${response.payments?.length || 0} payment records.`);
     } catch (error) {
       console.error('Error fetching payments:', error);
+      showError('Failed to Load Payment History', 'Unable to load payment history. Please try again later.');
     } finally {
       setLoading(false);
     }

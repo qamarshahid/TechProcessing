@@ -8,6 +8,7 @@ import { InvoiceStatus } from '../common/enums/invoice-status.enum';
 import { UserRole } from '../common/enums/user-role.enum';
 import { User } from '../users/entities/user.entity';
 import { AuditService } from '../audit/audit.service';
+import { PaymentsService } from '../payments/payments.service';
 
 @Injectable()
 export class InvoicesService {
@@ -15,11 +16,12 @@ export class InvoicesService {
     @InjectRepository(Invoice)
     private invoicesRepository: Repository<Invoice>,
     private auditService: AuditService,
+    private paymentsService: PaymentsService,
   ) {}
 
   async create(createInvoiceDto: CreateInvoiceDto, createdBy: User): Promise<Invoice> {
     // Debug log for clientId
-    console.log('Creating invoice for clientId:', createInvoiceDto.clientId);
+    // Invoice creation logging removed for security
 
     // Generate invoice number
     const invoiceNumber = await this.generateInvoiceNumber();
@@ -149,11 +151,21 @@ export class InvoicesService {
     return this.findOne(updatedInvoice.id);
   }
 
-  async remove(id: string, deletedBy: User): Promise<void> {
+  async remove(id: string, deletedBy: User, deletePayments: boolean = false): Promise<void> {
     const invoice = await this.findOne(id);
     
     if (invoice.status === InvoiceStatus.PAID) {
       throw new BadRequestException('Cannot delete a paid invoice');
+    }
+
+    // Check if invoice has associated payments
+    if (invoice.payments && invoice.payments.length > 0) {
+      if (deletePayments) {
+        // Delete associated payments first
+        await this.paymentsService.removeByInvoiceId(id, deletedBy);
+      } else {
+        throw new BadRequestException('Cannot delete invoice with associated payments. Please delete the payments first or set deletePayments to true.');
+      }
     }
 
     await this.invoicesRepository.remove(invoice);
@@ -163,7 +175,7 @@ export class InvoicesService {
       action: 'INVOICE_DELETED',
       entityType: 'Invoice',
       entityId: invoice.id,
-      details: { invoiceNumber: invoice.invoiceNumber },
+      details: { invoiceNumber: invoice.invoiceNumber, deletePayments },
       user: deletedBy,
     });
   }

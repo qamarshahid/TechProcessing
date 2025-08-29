@@ -21,7 +21,7 @@ export async function seedAgents(dataSource: DataSource) {
   }
 
   // Create agent user
-  const hashedPassword = await bcrypt.hash('agent123', 12);
+      const hashedPassword = await bcrypt.hash(process.env.AGENT_DEFAULT_PASSWORD || 'ChangeMe123!', 12);
   
   const agentUser = userRepository.create({
     email: 'agent1@techprocessing.com',
