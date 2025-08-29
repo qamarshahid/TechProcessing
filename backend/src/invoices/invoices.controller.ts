@@ -92,10 +92,8 @@ export class InvoicesController {
   @ApiResponse({ status: 200, description: 'Invoice deleted successfully' })
   remove(
     @Param('id') id: string, 
-    @CurrentUser() currentUser: User,
-    @Query('deletePayments') deletePayments?: string
+    @CurrentUser() currentUser: User
   ) {
-    const shouldDeletePayments = deletePayments === 'true';
-    return this.invoicesService.remove(id, currentUser, shouldDeletePayments);
+    return this.invoicesService.remove(id, currentUser);
   }
 }

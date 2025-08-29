@@ -43,11 +43,11 @@ spec:
           valueFrom:
             secretKeyRef:
               name: "jwt-secret"
-              key: "1"
+              key: "latest" # Use latest version for automatic secret rotation
         - name: JWT_EXPIRES_IN
           value: "24h"
         - name: DEPLOYMENT_VERSION
-          value: "v4"
+          value: "v5"
         resources:
           limits:
             memory: 512Mi

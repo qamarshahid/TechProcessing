@@ -22,7 +22,7 @@ gcloud run services replace cloud-run-service.yaml \
 
 echo "🔐 Setting IAM permissions..."
 # Allow unauthenticated access
-gcloud run services set-iam-policy-binding ${SERVICE_NAME} \
+gcloud run services add-iam-policy-binding ${SERVICE_NAME} \
   --region=${REGION} \
   --member="allUsers" \
   --role="roles/run.invoker"
