@@ -164,13 +164,6 @@ export class AgentController {
     return this.agentService.updateSaleNotes(id, notes, currentUser);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get agent by ID' })
-  @ApiResponse({ status: 200, description: 'Agent retrieved successfully' })
-  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findOne(id, currentUser);
-  }
-
   @Delete(':id')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete agent (Admin only)' })
@@ -182,6 +175,13 @@ export class AgentController {
   ) {
     console.log('DELETE agent route hit:', { id, body, currentUserId: currentUser.id });
     return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get agent by ID' })
+  @ApiResponse({ status: 200, description: 'Agent retrieved successfully' })
+  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
+    return this.agentService.findOne(id, currentUser);
   }
 
   @Patch(':id/commission-rates')
