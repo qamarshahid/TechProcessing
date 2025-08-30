@@ -1373,8 +1373,8 @@ class ApiClient {
     isActive?: boolean;
   }) {
     try {
-      // Use the users service createAgent method which handles both user and agent creation
-      return this.request<{ agent: any }>('/users/create-agent', {
+      // Use the existing working agent creation endpoint
+      return this.request<{ agent: any }>('/agents', {
         method: 'POST',
         body: JSON.stringify(agentData),
       });

@@ -33,6 +33,14 @@ export class AgentController {
     private readonly closerService: CloserService,
   ) {}
 
+  @Post()
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Create a new agent (Admin only)' })
+  @ApiResponse({ status: 201, description: 'Agent created successfully' })
+  create(@Body() createAgentDto: CreateAgentDto, @CurrentUser() currentUser: User) {
+    return this.agentService.createAgent(createAgentDto, currentUser);
+  }
+
   @Get('stats')
   @ApiOperation({ summary: 'Get agent statistics' })
   @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })
