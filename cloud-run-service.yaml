@@ -47,7 +47,7 @@ spec:
         - name: JWT_EXPIRES_IN
           value: "24h"
         - name: DEPLOYMENT_VERSION
-          value: "v5"
+          value: "v6"
         resources:
           limits:
             memory: 512Mi
