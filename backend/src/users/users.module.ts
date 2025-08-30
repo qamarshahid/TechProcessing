@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { AgentController } from './controllers/agent.controller';
+import { AgentManagementController } from './controllers/agent-management.controller';
 import { CloserController } from './controllers/closer.controller';
 import { User } from './entities/user.entity';
 import { Agent } from './entities/agent.entity';
@@ -14,7 +15,7 @@ import { AuditModule } from '../audit/audit.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Agent, AgentSale, Closer]), AuditModule],
-  controllers: [UsersController, AgentController, CloserController],
+  controllers: [UsersController, AgentController, AgentManagementController, CloserController],
   providers: [UsersService, AgentService, CloserService],
   exports: [UsersService, AgentService, CloserService],
 })

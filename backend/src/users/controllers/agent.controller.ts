@@ -33,33 +33,6 @@ export class AgentController {
     private readonly closerService: CloserService,
   ) {}
 
-  @Post()
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Create a new agent (Admin only)' })
-  @ApiResponse({ status: 201, description: 'Agent created successfully' })
-  create(@Body() createAgentDto: CreateAgentDto, @CurrentUser() currentUser: User) {
-    return this.agentService.createAgent(createAgentDto, currentUser);
-  }
-
-  @Get()
-  @ApiOperation({ summary: 'Get all agents (Admin) or own profile (Agent)' })
-  @ApiResponse({ status: 200, description: 'Agents retrieved successfully' })
-  findAll(@CurrentUser() currentUser: User) {
-    return this.agentService.findAll(currentUser);
-  }
-
-  @Delete(':id')
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Delete agent (Admin only)' })
-  @ApiResponse({ status: 200, description: 'Agent deleted successfully' })
-  remove(
-    @Param('id') id: string, 
-    @Body() body: { hardDelete?: boolean },
-    @CurrentUser() currentUser: User
-  ) {
-    return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
-  }
-
   @Get('stats')
   @ApiOperation({ summary: 'Get agent statistics' })
   @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })
@@ -77,14 +50,6 @@ export class AgentController {
   }
 
 
-
-  @Get('profile/me')
-  @Roles(UserRole.AGENT)
-  @ApiOperation({ summary: 'Get own agent profile (Agent only)' })
-  @ApiResponse({ status: 200, description: 'Profile retrieved successfully' })
-  getOwnProfile(@CurrentUser() currentUser: User) {
-    return this.agentService.findByUserId(currentUser.id, currentUser);
-  }
 
   @Get('closers/active')
   @ApiOperation({ summary: 'Get active closers for dropdown' })
@@ -169,40 +134,6 @@ export class AgentController {
     return this.agentService.updateSaleNotes(id, notes, currentUser);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get agent by ID' })
-  @ApiResponse({ status: 200, description: 'Agent retrieved successfully' })
-  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findOne(id, currentUser);
-  }
 
-  @Patch(':id/commission-rates')
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Update agent commission rates (Admin only)' })
-  @ApiResponse({ status: 200, description: 'Commission rates updated successfully' })
-  updateCommissionRates(
-    @Param('id') id: string,
-    @Body() body: { agentCommissionRate: number; closerCommissionRate: number },
-    @CurrentUser() currentUser: User,
-  ) {
-    return this.agentService.updateAgentCommissionRates(
-      id, 
-      body.agentCommissionRate, 
-      body.closerCommissionRate, 
-      currentUser
-    );
-  }
-
-  @Patch(':id/status')
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Update agent status (Admin only)' })
-  @ApiResponse({ status: 200, description: 'Agent status updated successfully' })
-  updateAgentStatus(
-    @Param('id') id: string,
-    @Body() body: { isActive: boolean },
-    @CurrentUser() currentUser: User,
-  ) {
-    return this.agentService.updateAgentStatus(id, body.isActive, currentUser);
-  }
 
 }

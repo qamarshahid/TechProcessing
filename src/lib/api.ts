@@ -1373,8 +1373,8 @@ class ApiClient {
     isActive?: boolean;
   }) {
     try {
-      // Use the agents endpoint which properly creates both User and Agent records
-      return this.request<{ agent: any }>('/agents', {
+      // Use the agent-management endpoint for admin operations
+      return this.request<{ agent: any }>('/agent-management', {
         method: 'POST',
         body: JSON.stringify(agentData),
       });
@@ -1386,8 +1386,8 @@ class ApiClient {
 
   async getAgents() {
     try {
-      // Use the agents endpoint which returns agents with user data
-      const response = await this.request<any[]>('/agents');
+      // Use the agent-management endpoint for admin operations
+      const response = await this.request<any[]>('/agent-management');
       return response;
     } catch (error) {
       logger.error('Error fetching agents:', error);
@@ -1397,7 +1397,7 @@ class ApiClient {
 
   async deleteAgent(agentId: string, hardDelete: boolean = false) {
     try {
-      return this.request<{ success: boolean }>(`/agents/${agentId}`, {
+      return this.request<{ success: boolean }>(`/agent-management/${agentId}`, {
         method: 'DELETE',
         body: JSON.stringify({ hardDelete }),
       });
