@@ -40,6 +40,25 @@ export class AgentController {
     return this.agentService.getAgentStats(currentUser);
   }
 
+  @Post('remove/:id')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Remove agent (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Agent removed successfully' })
+  removeAgent(
+    @Param('id') id: string, 
+    @Body() body: { hardDelete?: boolean },
+    @CurrentUser() currentUser: User
+  ) {
+    return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get agent by ID' })
+  @ApiResponse({ status: 200, description: 'Agent retrieved successfully' })
+  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
+    return this.agentService.findOne(id, currentUser);
+  }
+
   @Get('monthly-stats')
   @Roles(UserRole.AGENT)
   @ApiOperation({ summary: 'Get agent monthly commission stats (Agent only)' })
