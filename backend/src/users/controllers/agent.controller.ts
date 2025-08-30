@@ -48,14 +48,14 @@ export class AgentController {
     return this.agentService.findAll(currentUser);
   }
 
-  @Post('delete/:id')
+  @Delete(':id')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete agent (Admin only)' })
   @ApiResponse({ status: 200, description: 'Agent deleted successfully' })
-  deleteAgent(
-    @Param('id') id: string,
+  remove(
+    @Param('id') id: string, 
     @Body() body: { hardDelete?: boolean },
-    @CurrentUser() currentUser: User,
+    @CurrentUser() currentUser: User
   ) {
     return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
   }
