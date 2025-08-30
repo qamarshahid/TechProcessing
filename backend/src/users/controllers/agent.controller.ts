@@ -48,6 +48,18 @@ export class AgentController {
     return this.agentService.findAll(currentUser);
   }
 
+  @Delete('delete/:id')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Delete agent (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Agent deleted successfully' })
+  deleteAgent(
+    @Param('id') id: string,
+    @Body() body: { hardDelete?: boolean },
+    @CurrentUser() currentUser: User,
+  ) {
+    return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
+  }
+
   @Get('stats')
   @ApiOperation({ summary: 'Get agent statistics' })
   @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })
@@ -155,18 +167,6 @@ export class AgentController {
     @CurrentUser() currentUser: User,
   ) {
     return this.agentService.updateSaleNotes(id, notes, currentUser);
-  }
-
-  @Delete(':id')
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Delete agent (Admin only)' })
-  @ApiResponse({ status: 200, description: 'Agent deleted successfully' })
-  deleteAgent(
-    @Param('id') id: string,
-    @Body() body: { hardDelete?: boolean },
-    @CurrentUser() currentUser: User,
-  ) {
-    return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
   }
 
   @Get(':id')

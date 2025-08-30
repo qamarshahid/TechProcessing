@@ -1397,7 +1397,7 @@ class ApiClient {
 
   async deleteAgent(agentId: string, hardDelete: boolean = false) {
     try {
-      return this.request<{ success: boolean }>(`/agents/${agentId}`, {
+      return this.request<{ success: boolean }>(`/agents/delete/${agentId}`, {
         method: 'DELETE',
         body: JSON.stringify({ hardDelete }),
       });
