@@ -1373,8 +1373,8 @@ class ApiClient {
     isActive?: boolean;
   }) {
     try {
-      // Use the agent-management endpoint for admin operations
-      return this.request<{ agent: any }>('/agent-management', {
+      // Use the users service createAgent method which handles both user and agent creation
+      return this.request<{ agent: any }>('/users/create-agent', {
         method: 'POST',
         body: JSON.stringify(agentData),
       });
@@ -1386,9 +1386,9 @@ class ApiClient {
 
   async getAgents() {
     try {
-      // Use the agent-management endpoint for admin operations
-      const response = await this.request<any[]>('/agent-management');
-      return response;
+      // Use the users endpoint with AGENT role filter to ensure proper separation
+      const response = await this.request<any>('/users?role=AGENT');
+      return response.users || [];
     } catch (error) {
       logger.error('Error fetching agents:', error);
       return [];
@@ -1397,8 +1397,10 @@ class ApiClient {
 
   async deleteAgent(agentId: string, hardDelete: boolean = false) {
     try {
-      return this.request<{ success: boolean }>(`/agents/remove/${agentId}`, {
-        method: 'POST',
+      // Use the working users endpoint for agent deletion
+      // The users service handles both users and agents correctly
+      return this.request<{ success: boolean }>(`/users/${agentId}`, {
+        method: 'DELETE',
         body: JSON.stringify({ hardDelete }),
       });
     } catch (error) {

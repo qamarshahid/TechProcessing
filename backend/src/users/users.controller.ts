@@ -35,6 +35,14 @@ export class UsersController {
     return this.usersService.create(createUserDto, currentUser);
   }
 
+  @Post('create-agent')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Create a new agent (Admin only)' })
+  @ApiResponse({ status: 201, description: 'Agent created successfully' })
+  createAgent(@Body() agentData: any, @CurrentUser() currentUser: User) {
+    return this.usersService.createAgent(agentData, currentUser);
+  }
+
   @Get()
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Get all users (Admin only)' })

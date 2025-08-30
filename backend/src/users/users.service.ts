@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { Agent } from './entities/agent.entity';
+import { AgentSale } from './entities/agent-sale.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRole } from '../common/enums/user-role.enum';
@@ -15,6 +16,8 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @InjectRepository(Agent)
     private agentRepository: Repository<Agent>,
+    @InjectRepository(AgentSale)
+    private agentSaleRepository: Repository<AgentSale>,
     private auditService: AuditService,
   ) {}
 
