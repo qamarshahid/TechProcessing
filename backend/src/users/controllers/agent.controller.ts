@@ -145,13 +145,6 @@ export class AgentController {
     return this.agentService.updateCommissionStatus(id, status, currentUser);
   }
 
-  @Get('sales')
-  @ApiOperation({ summary: 'Get sales for agent' })
-  @ApiResponse({ status: 200, description: 'Sales retrieved successfully' })
-  getSales(@Query('agentId') agentId: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findSales(agentId, currentUser);
-  }
-
   @Patch('sales/:id/notes')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Update sale notes (Admin only)' })
@@ -173,7 +166,6 @@ export class AgentController {
     @Body() body: { hardDelete?: boolean },
     @CurrentUser() currentUser: User,
   ) {
-    console.log('DELETE agent route hit:', { id, body, currentUserId: currentUser.id });
     return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
   }
 
