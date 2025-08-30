@@ -1386,9 +1386,50 @@ class ApiClient {
 
   async getAgents() {
     try {
-      // Use the users endpoint with AGENT role filter to ensure proper separation
-      const response = await this.request<any>('/users?role=AGENT');
-      return response.users || [];
+      // Fetch users with AGENT role, then normalize into Agent[] shape expected by UI
+      const { users } = await this.getUsers({ role: 'AGENT' });
+
+      const agents = (users || []).map((user: any) => {
+        const profile = Array.isArray(user.agentProfiles) && user.agentProfiles.length > 0
+          ? user.agentProfiles[0]
+          : null;
+
+        if (!profile) {
+          return null;
+        }
+
+        return {
+          // Use the USER id for row id so actions like delete/toggle target the user endpoints
+          id: user.id,
+          userId: user.id,
+          agentCode: profile.agentCode,
+          salesPersonName: profile.salesPersonName,
+          closerName: profile.closerName,
+          agentCommissionRate: Number(profile.agentCommissionRate ?? 0),
+          closerCommissionRate: Number(profile.closerCommissionRate ?? 0),
+          totalEarnings: Number(profile.totalEarnings ?? 0),
+          totalPaidOut: Number(profile.totalPaidOut ?? 0),
+          pendingCommission: Number(profile.pendingCommission ?? 0),
+          totalSales: Number(profile.totalSales ?? 0),
+          totalSalesValue: Number(profile.totalSalesValue ?? 0),
+          isActive: Boolean(user.isActive),
+          metadata: profile.metadata ?? null,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          user: {
+            id: user.id,
+            email: user.email,
+            fullName: user.fullName,
+            role: user.role,
+            companyName: user.companyName,
+            isActive: Boolean(user.isActive),
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+          },
+        };
+      }).filter(Boolean);
+
+      return agents;
     } catch (error) {
       logger.error('Error fetching agents:', error);
       return [];
