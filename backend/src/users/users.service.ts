@@ -143,7 +143,7 @@ export class UsersService {
     
     if (hardDelete) {
       // Hard delete - permanently remove the user
-      await this.usersRepository.remove(user);
+      await this.usersRepository.delete(userDetails.id);
 
       // Audit log (use stored ID since user.id becomes null after remove)
       await this.auditService.log({

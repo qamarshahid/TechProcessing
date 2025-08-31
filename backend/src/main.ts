@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Logger } from '@nestjs/common';
+import { ValidationPipe, Logger, ClassSerializerInterceptor } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
@@ -54,7 +55,11 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // Global interceptors and filters
-  app.useGlobalInterceptors(new LoggingInterceptor());
+  app.useGlobalInterceptors(
+    new LoggingInterceptor(),
+    // Ensure @Exclude() and serialization rules are applied globally
+    new ClassSerializerInterceptor(app.get(Reflector)),
+  );
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Swagger documentation (disabled in production)
