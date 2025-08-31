@@ -76,8 +76,8 @@ export default function AgentSalesPage() {
     try {
       // Fetch both agent sales and agents using admin endpoints
       const [salesResponse, agentsResponse] = await Promise.all([
-        apiClient.getAllAgentSales(), // Use admin endpoint for all sales
-        apiClient.getAgents() // This should work for admins
+        apiClient.getAllAgentSales(),
+        apiClient.getAgents() // returns both active and inactive agents now
       ]);
       
       setAgentSales(salesResponse || []);

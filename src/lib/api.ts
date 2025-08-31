@@ -1390,8 +1390,8 @@ class ApiClient {
 
   async getAgents() {
     try {
-      // Fetch users with AGENT role, then normalize into Agent[] shape expected by UI
-      const { users } = await this.getUsers({ role: 'AGENT' });
+      // Fetch AGENT users including inactive so disabled agents remain listed
+      const { users } = await this.getUsers({ role: 'AGENT', includeInactive: true });
 
       const agents = (users || []).map((user: any) => {
         const profile = Array.isArray(user.agentProfiles) && user.agentProfiles.length > 0
