@@ -84,6 +84,12 @@ export function ClientsPage() {
       // Double-check to ensure only CLIENT role users are shown
       const actualClients = response.users.filter(user => user.role === 'CLIENT');
       setClients(actualClients);
+      // Sync local status map with server truth to avoid stale overrides
+      const statusMap: Record<string, boolean> = {};
+      actualClients.forEach((u: any) => {
+        statusMap[u.id] = (u.is_active ?? u.isActive) as boolean;
+      });
+      setClientStatuses(statusMap);
       logger.info(`Fetched ${actualClients.length} clients with CLIENT role`);
     } catch (error) {
       logger.error('Error fetching clients:', error);
@@ -214,6 +220,17 @@ export function ClientsPage() {
       const clientName = clientToDelete.full_name || clientToDelete.fullName;
       const actionType = hardDelete ? 'permanently deleted' : 'deactivated';
       showSuccess('Client Action Completed', `${clientName} has been ${actionType} successfully.`);
+      // Immediate UI feedback: on soft delete, mark status inactive locally
+      if (!hardDelete) {
+        setClientStatuses(prev => ({
+          ...prev,
+          [clientToDelete.id]: false,
+        }));
+      }
+      // On hard delete, optimistically remove from local list
+      if (hardDelete) {
+        setClients(prev => prev.filter(c => c.id !== clientToDelete.id));
+      }
       fetchClients();
     } catch (error: any) {
       logger.error('Error deleting client:', error);
