@@ -34,6 +34,9 @@ export class ServiceRequest {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ type: 'varchar', unique: true, nullable: true, name: 'request_number' })
+  requestNumber: string;
+
   @Column({ type: 'uuid', nullable: true, name: 'service_id' })
   serviceId: string;
 

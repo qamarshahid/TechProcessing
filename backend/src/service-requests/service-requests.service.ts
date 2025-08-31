@@ -68,11 +68,19 @@ export class ServiceRequestsService {
   async create(createServiceRequestDto: CreateServiceRequestDto, clientId: string): Promise<ServiceRequest> {
     await this.assumeClientSession(clientId);
     
+    // Generate sequential request number
+    const requestNumber = await this.generateRequestNumber();
+    
     try {
       // Try TypeORM method first
       const serviceRequest = this.serviceRequestRepository.create({
         ...createServiceRequestDto,
         clientId,
+        requestNumber,
+        // Clean up empty strings to null for UUID fields
+        serviceId: createServiceRequestDto.serviceId && createServiceRequestDto.serviceId !== '' ? createServiceRequestDto.serviceId : null,
+        timeline: createServiceRequestDto.timeline && createServiceRequestDto.timeline !== '' ? createServiceRequestDto.timeline : null,
+        additionalRequirements: createServiceRequestDto.additionalRequirements && createServiceRequestDto.additionalRequirements !== '' ? createServiceRequestDto.additionalRequirements : null,
         // Ensure sane defaults
         status: ServiceRequestStatus.PENDING,
         requestType: createServiceRequestDto.requestType ?? (createServiceRequestDto.isCustomQuote ? RequestType.CUSTOM_QUOTE : RequestType.SERVICE_REQUEST),
@@ -85,14 +93,14 @@ export class ServiceRequestsService {
       // If metadata issue, fallback to raw SQL
       if (message.includes('No metadata') || message.includes('ServiceRequest')) {
         console.log('Using raw SQL fallback due to metadata issue');
-        return await this.createWithRawSQL(createServiceRequestDto, clientId);
+        return await this.createWithRawSQL(createServiceRequestDto, clientId, requestNumber);
       }
       
       throw new BadRequestException(`Service request creation failed: ${message}`);
     }
   }
 
-  private async createWithRawSQL(createServiceRequestDto: CreateServiceRequestDto, clientId: string): Promise<ServiceRequest> {
+  private async createWithRawSQL(createServiceRequestDto: CreateServiceRequestDto, clientId: string, requestNumber: string): Promise<ServiceRequest> {
     const status = ServiceRequestStatus.PENDING;
     const isCustom = Boolean(createServiceRequestDto.isCustomQuote);
     const requestType = createServiceRequestDto.requestType ?? (isCustom ? RequestType.CUSTOM_QUOTE : RequestType.SERVICE_REQUEST);
@@ -100,19 +108,20 @@ export class ServiceRequestsService {
     const result = await this.serviceRequestRepository.query(
       `INSERT INTO service_requests (
         service_id, client_id, description, budget, timeline, additional_requirements,
-        status, is_custom_quote, request_type
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+        status, is_custom_quote, request_type, request_number
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
       RETURNING *`,
       [
-        createServiceRequestDto.serviceId ?? null,
+        createServiceRequestDto.serviceId && createServiceRequestDto.serviceId !== '' ? createServiceRequestDto.serviceId : null,
         clientId,
         createServiceRequestDto.description,
         createServiceRequestDto.budget ?? null,
-        createServiceRequestDto.timeline ?? null,
-        createServiceRequestDto.additionalRequirements ?? null,
+        createServiceRequestDto.timeline && createServiceRequestDto.timeline !== '' ? createServiceRequestDto.timeline : null,
+        createServiceRequestDto.additionalRequirements && createServiceRequestDto.additionalRequirements !== '' ? createServiceRequestDto.additionalRequirements : null,
         status,
         isCustom,
         requestType,
+        requestNumber,
       ],
     );
     return result?.[0] as ServiceRequest;
@@ -336,6 +345,21 @@ export class ServiceRequestsService {
     } catch (error) {
       console.error('Error generating invoice for service request:', error);
       throw new BadRequestException('Failed to generate invoice for service request');
+    }
+  }
+
+  private async generateRequestNumber(): Promise<string> {
+    try {
+      // Get the count of existing service requests
+      const count = await this.serviceRequestRepository.count();
+      const nextNumber = count + 1;
+      
+      // Format as 01, 02, 03, etc.
+      return nextNumber.toString().padStart(2, '0');
+    } catch (error) {
+      // Fallback to timestamp-based number if count fails
+      const timestamp = Date.now().toString().slice(-4);
+      return timestamp.padStart(2, '0');
     }
   }
 }
