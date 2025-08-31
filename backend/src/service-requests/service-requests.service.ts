@@ -48,21 +48,26 @@ export class ServiceRequestsService {
   }
 
   private async getRelations(): Promise<(keyof ServiceRequest | string)[]> {
-    if (this.optionalRelationsAvailable === null) {
-      try {
-        const result = await this.serviceRequestRepository.query(
-          `select to_regclass('public.price_adjustments') as pa, to_regclass('public.file_attachments') as fa`
-        );
-        const row = Array.isArray(result) ? result[0] : {};
-        this.optionalRelationsAvailable = Boolean(row?.pa) && Boolean(row?.fa);
-      } catch (_err) {
-        this.optionalRelationsAvailable = false;
+    try {
+      if (this.optionalRelationsAvailable === null) {
+        try {
+          const result = await this.serviceRequestRepository.query(
+            `select to_regclass('public.price_adjustments') as pa, to_regclass('public.file_attachments') as fa`
+          );
+          const row = Array.isArray(result) ? result[0] : {};
+          this.optionalRelationsAvailable = Boolean(row?.pa) && Boolean(row?.fa);
+        } catch (_err) {
+          this.optionalRelationsAvailable = false;
+        }
       }
+      
+      return this.optionalRelationsAvailable
+        ? ['client', 'service', 'priceAdjustments', 'attachments']
+        : ['client', 'service'];
+    } catch (error) {
+      // If even this fails, return empty array for raw SQL fallback
+      return [];
     }
-
-    return this.optionalRelationsAvailable
-      ? ['client', 'service', 'priceAdjustments', 'attachments']
-      : ['client', 'service'];
   }
 
   async create(createServiceRequestDto: CreateServiceRequestDto, clientId: string): Promise<ServiceRequest> {
@@ -140,7 +145,7 @@ export class ServiceRequestsService {
       const message = err?.message || '';
       
       // If metadata issue, fallback to raw SQL
-      if (message.includes('No metadata') || message.includes('ServiceRequest')) {
+      if (message.includes('No metadata') || message.includes('ServiceRequest') || message.includes('EntityMetadataNotFoundError')) {
         console.log('Using raw SQL fallback for findAll due to metadata issue');
         return await this.findAllWithRawSQL();
       }
@@ -176,17 +181,30 @@ export class ServiceRequestsService {
 
   async findOne(id: string): Promise<ServiceRequest> {
     await this.assumeAdminSession();
-    const relations = await this.getRelations();
-    const serviceRequest = await this.serviceRequestRepository.findOne({
-      where: { id },
-      relations,
-    });
+    
+    try {
+      const relations = await this.getRelations();
+      const serviceRequest = await this.serviceRequestRepository.findOne({
+        where: { id },
+        relations,
+      });
 
-    if (!serviceRequest) {
-      throw new NotFoundException(`Service request with ID ${id} not found`);
+      if (!serviceRequest) {
+        throw new NotFoundException(`Service request with ID ${id} not found`);
+      }
+
+      return serviceRequest;
+    } catch (err: any) {
+      const message = err?.message || '';
+      
+      // If metadata issue, fallback to raw SQL
+      if (message.includes('No metadata') || message.includes('ServiceRequest') || message.includes('EntityMetadataNotFoundError')) {
+        console.log('Using raw SQL fallback for findOne due to metadata issue');
+        return await this.findOneWithRawSQL(id);
+      }
+      
+      throw err;
     }
-
-    return serviceRequest;
   }
 
   async update(id: string, updateServiceRequestDto: UpdateServiceRequestDto): Promise<ServiceRequest> {
@@ -402,5 +420,18 @@ export class ServiceRequestsService {
       [clientId]
     );
     return result as ServiceRequest[];
+  }
+
+  private async findOneWithRawSQL(id: string): Promise<ServiceRequest> {
+    const result = await this.serviceRequestRepository.query(
+      `SELECT * FROM service_requests WHERE id = $1`,
+      [id]
+    );
+    
+    if (!result || result.length === 0) {
+      throw new NotFoundException(`Service request with ID ${id} not found`);
+    }
+    
+    return result[0] as ServiceRequest;
   }
 }
