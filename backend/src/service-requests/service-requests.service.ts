@@ -24,6 +24,26 @@ export class ServiceRequestsService {
     private invoicesService: InvoicesService,
   ) {}
 
+  private optionalRelationsAvailable: boolean | null = null;
+
+  private async getRelations(): Promise<(keyof ServiceRequest | string)[]> {
+    if (this.optionalRelationsAvailable === null) {
+      try {
+        const result = await this.serviceRequestRepository.query(
+          `select to_regclass('public.price_adjustments') as pa, to_regclass('public.file_attachments') as fa`
+        );
+        const row = Array.isArray(result) ? result[0] : {};
+        this.optionalRelationsAvailable = Boolean(row?.pa) && Boolean(row?.fa);
+      } catch (_err) {
+        this.optionalRelationsAvailable = false;
+      }
+    }
+
+    return this.optionalRelationsAvailable
+      ? ['client', 'service', 'priceAdjustments', 'attachments']
+      : ['client', 'service'];
+  }
+
   async create(createServiceRequestDto: CreateServiceRequestDto, clientId: string): Promise<ServiceRequest> {
     const serviceRequest = this.serviceRequestRepository.create({
       ...createServiceRequestDto,
@@ -33,24 +53,29 @@ export class ServiceRequestsService {
   }
 
   async findAll(): Promise<ServiceRequest[]> {
+    const relations = await this.getRelations();
     return this.serviceRequestRepository.find({
-      relations: ['client', 'service', 'priceAdjustments', 'attachments'],
+      relations,
       order: { createdAt: 'DESC' },
     });
   }
 
   async findByClient(clientId: string): Promise<ServiceRequest[]> {
+    const relations = await this.getRelations();
+    // client relation is redundant here; service + optional children are useful
+    const uniqueRelations = Array.from(new Set(relations.filter(r => r !== 'client')));
     return this.serviceRequestRepository.find({
       where: { clientId },
-      relations: ['service', 'priceAdjustments', 'attachments'],
+      relations: uniqueRelations,
       order: { createdAt: 'DESC' },
     });
   }
 
   async findOne(id: string): Promise<ServiceRequest> {
+    const relations = await this.getRelations();
     const serviceRequest = await this.serviceRequestRepository.findOne({
       where: { id },
-      relations: ['client', 'service', 'priceAdjustments', 'attachments'],
+      relations,
     });
 
     if (!serviceRequest) {
