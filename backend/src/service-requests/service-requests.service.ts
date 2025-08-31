@@ -129,23 +129,49 @@ export class ServiceRequestsService {
 
   async findAll(): Promise<ServiceRequest[]> {
     await this.assumeAdminSession();
-    const relations = await this.getRelations();
-    return this.serviceRequestRepository.find({
-      relations,
-      order: { createdAt: 'DESC' },
-    });
+    
+    try {
+      const relations = await this.getRelations();
+      return this.serviceRequestRepository.find({
+        relations,
+        order: { createdAt: 'DESC' },
+      });
+    } catch (err: any) {
+      const message = err?.message || '';
+      
+      // If metadata issue, fallback to raw SQL
+      if (message.includes('No metadata') || message.includes('ServiceRequest')) {
+        console.log('Using raw SQL fallback for findAll due to metadata issue');
+        return await this.findAllWithRawSQL();
+      }
+      
+      throw err;
+    }
   }
 
   async findByClient(clientId: string): Promise<ServiceRequest[]> {
     await this.assumeClientSession(clientId);
-    const relations = await this.getRelations();
-    // client relation is redundant here; service + optional children are useful
-    const uniqueRelations = Array.from(new Set(relations.filter(r => r !== 'client')));
-    return this.serviceRequestRepository.find({
-      where: { clientId },
-      relations: uniqueRelations,
-      order: { createdAt: 'DESC' },
-    });
+    
+    try {
+      const relations = await this.getRelations();
+      // client relation is redundant here; service + optional children are useful
+      const uniqueRelations = Array.from(new Set(relations.filter(r => r !== 'client')));
+      return this.serviceRequestRepository.find({
+        where: { clientId },
+        relations: uniqueRelations,
+        order: { createdAt: 'DESC' },
+      });
+    } catch (err: any) {
+      const message = err?.message || '';
+      
+      // If metadata issue, fallback to raw SQL
+      if (message.includes('No metadata') || message.includes('ServiceRequest')) {
+        console.log('Using raw SQL fallback for findByClient due to metadata issue');
+        return await this.findByClientWithRawSQL(clientId);
+      }
+      
+      throw err;
+    }
   }
 
   async findOne(id: string): Promise<ServiceRequest> {
@@ -361,5 +387,20 @@ export class ServiceRequestsService {
       const timestamp = Date.now().toString().slice(-4);
       return timestamp.padStart(2, '0');
     }
+  }
+
+  private async findAllWithRawSQL(): Promise<ServiceRequest[]> {
+    const result = await this.serviceRequestRepository.query(
+      `SELECT * FROM service_requests ORDER BY created_at DESC`
+    );
+    return result as ServiceRequest[];
+  }
+
+  private async findByClientWithRawSQL(clientId: string): Promise<ServiceRequest[]> {
+    const result = await this.serviceRequestRepository.query(
+      `SELECT * FROM service_requests WHERE client_id = $1 ORDER BY created_at DESC`,
+      [clientId]
+    );
+    return result as ServiceRequest[];
   }
 }
