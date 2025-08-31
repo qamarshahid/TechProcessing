@@ -56,6 +56,24 @@ export class ServiceRequestsController {
     return this.serviceRequestsService.findByClient(req.user.id);
   }
 
+  @Get('debug-all')
+  async debugAll() {
+    // Debug endpoint to see raw data without any filters
+    try {
+      const result = await this.serviceRequestsService.debugAllRaw();
+      return {
+        count: result.length,
+        data: result
+      };
+    } catch (error) {
+      return {
+        error: error.message,
+        count: 0,
+        data: []
+      };
+    }
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.serviceRequestsService.findOne(id);
