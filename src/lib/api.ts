@@ -223,7 +223,8 @@ class ApiClient {
   }
 
   async deleteUser(userId: string, hardDelete: boolean = false) {
-    return this.request<{ success: boolean }>(`/users/${userId}`, {
+    const qs = hardDelete ? '?hardDelete=true' : '';
+    return this.request<{ success: boolean }>(`/users/${userId}${qs}`, {
       method: 'DELETE',
       body: JSON.stringify({ hardDelete }),
     });
@@ -1438,9 +1439,10 @@ class ApiClient {
 
   async deleteAgent(agentId: string, hardDelete: boolean = false) {
     try {
+      const qs = hardDelete ? '?hardDelete=true' : '';
       // Use the working users endpoint for agent deletion
       // The users service handles both users and agents correctly
-      return this.request<{ success: boolean }>(`/users/${agentId}`, {
+      return this.request<{ success: boolean }>(`/users/${agentId}${qs}`, {
         method: 'DELETE',
         body: JSON.stringify({ hardDelete }),
       });
