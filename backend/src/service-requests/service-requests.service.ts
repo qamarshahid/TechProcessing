@@ -67,7 +67,9 @@ export class ServiceRequestsService {
 
   async create(createServiceRequestDto: CreateServiceRequestDto, clientId: string): Promise<ServiceRequest> {
     await this.assumeClientSession(clientId);
+    
     try {
+      // Try TypeORM method first
       const serviceRequest = this.serviceRequestRepository.create({
         ...createServiceRequestDto,
         clientId,
@@ -78,10 +80,42 @@ export class ServiceRequestsService {
       const saved = await this.serviceRequestRepository.save(serviceRequest);
       return Array.isArray(saved) ? saved[0] : saved;
     } catch (err: any) {
-      // Surface DB error details to help debugging
       const message = err?.detail || err?.message || 'Failed to create service request';
+      
+      // If metadata issue, fallback to raw SQL
+      if (message.includes('No metadata') || message.includes('ServiceRequest')) {
+        console.log('Using raw SQL fallback due to metadata issue');
+        return await this.createWithRawSQL(createServiceRequestDto, clientId);
+      }
+      
       throw new BadRequestException(`Service request creation failed: ${message}`);
     }
+  }
+
+  private async createWithRawSQL(createServiceRequestDto: CreateServiceRequestDto, clientId: string): Promise<ServiceRequest> {
+    const status = ServiceRequestStatus.PENDING;
+    const isCustom = Boolean(createServiceRequestDto.isCustomQuote);
+    const requestType = createServiceRequestDto.requestType ?? (isCustom ? RequestType.CUSTOM_QUOTE : RequestType.SERVICE_REQUEST);
+
+    const result = await this.serviceRequestRepository.query(
+      `INSERT INTO service_requests (
+        service_id, client_id, description, budget, timeline, additional_requirements,
+        status, is_custom_quote, request_type
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+      RETURNING *`,
+      [
+        createServiceRequestDto.serviceId ?? null,
+        clientId,
+        createServiceRequestDto.description,
+        createServiceRequestDto.budget ?? null,
+        createServiceRequestDto.timeline ?? null,
+        createServiceRequestDto.additionalRequirements ?? null,
+        status,
+        isCustom,
+        requestType,
+      ],
+    );
+    return result?.[0] as ServiceRequest;
   }
 
   async findAll(): Promise<ServiceRequest[]> {
