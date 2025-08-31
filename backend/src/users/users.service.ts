@@ -135,16 +135,22 @@ export class UsersService {
   async remove(id: string, hardDelete: boolean = false, deletedBy?: User): Promise<void> {
     const user = await this.findOne(id);
     
+    // Store user details before deletion for audit log
+    const userDetails = {
+      id: user.id,
+      email: user.email,
+    };
+    
     if (hardDelete) {
       // Hard delete - permanently remove the user
       await this.usersRepository.remove(user);
 
-      // Audit log
+      // Audit log (use stored ID since user.id becomes null after remove)
       await this.auditService.log({
         action: 'USER_HARD_DELETED',
         entityType: 'User',
-        entityId: user.id,
-        details: { email: user.email, hardDelete: true },
+        entityId: userDetails.id,
+        details: { email: userDetails.email, hardDelete: true },
         user: deletedBy,
       });
     } else {
