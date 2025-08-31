@@ -47,8 +47,9 @@ export class UsersController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Get all users (Admin only)' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
-  findAll(@Query('role') role?: UserRole) {
-    return this.usersService.findAll(role);
+  findAll(@Query('role') role?: UserRole, @Query('includeInactive') includeInactive?: string) {
+    const includeInactiveBool = includeInactive === 'true';
+    return this.usersService.findAll(role, includeInactiveBool);
   }
 
   @Get('me')

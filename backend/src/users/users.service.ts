@@ -54,11 +54,21 @@ export class UsersService {
     return savedUser;
   }
 
-  async findAll(role?: UserRole): Promise<User[]> {
+  async findAll(role?: UserRole, includeInactive: boolean = false): Promise<User[]> {
     const query = this.usersRepository.createQueryBuilder('user');
     
+    // Filter by role if specified
     if (role) {
       query.where('user.role = :role', { role });
+    }
+
+    // By default, only return active users (exclude soft-deleted)
+    if (!includeInactive) {
+      if (role) {
+        query.andWhere('user.isActive = :isActive', { isActive: true });
+      } else {
+        query.where('user.isActive = :isActive', { isActive: true });
+      }
     }
 
     // Include agent profiles for AGENT role
