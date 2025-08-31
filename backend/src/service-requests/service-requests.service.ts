@@ -26,6 +26,27 @@ export class ServiceRequestsService {
 
   private optionalRelationsAvailable: boolean | null = null;
 
+  private async assumeAdminSession(): Promise<void> {
+    try {
+      await this.serviceRequestRepository.query(
+        "select set_config('app.current_user_role', 'ADMIN', true)"
+      );
+    } catch (_) {
+      // ignore if GUCs are not used in this DB
+    }
+  }
+
+  private async assumeClientSession(clientId: string): Promise<void> {
+    try {
+      await this.serviceRequestRepository.query(
+        "select set_config('app.current_user_role', 'CLIENT', true), set_config('app.current_user_id', $1, true)",
+        [clientId]
+      );
+    } catch (_) {
+      // ignore if GUCs are not used in this DB
+    }
+  }
+
   private async getRelations(): Promise<(keyof ServiceRequest | string)[]> {
     if (this.optionalRelationsAvailable === null) {
       try {
@@ -53,6 +74,7 @@ export class ServiceRequestsService {
   }
 
   async findAll(): Promise<ServiceRequest[]> {
+    await this.assumeAdminSession();
     const relations = await this.getRelations();
     return this.serviceRequestRepository.find({
       relations,
@@ -61,6 +83,7 @@ export class ServiceRequestsService {
   }
 
   async findByClient(clientId: string): Promise<ServiceRequest[]> {
+    await this.assumeClientSession(clientId);
     const relations = await this.getRelations();
     // client relation is redundant here; service + optional children are useful
     const uniqueRelations = Array.from(new Set(relations.filter(r => r !== 'client')));
@@ -72,6 +95,7 @@ export class ServiceRequestsService {
   }
 
   async findOne(id: string): Promise<ServiceRequest> {
+    await this.assumeAdminSession();
     const relations = await this.getRelations();
     const serviceRequest = await this.serviceRequestRepository.findOne({
       where: { id },
