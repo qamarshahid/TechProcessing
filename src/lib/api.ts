@@ -16,8 +16,8 @@ class ApiClient {
   private token: string | null = null;
 
   constructor() {
-    // Use the deployed backend URL
-    const directURL = 'https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api';
+    // Use the deployed backend URL (primary Cloud Run service)
+    const directURL = 'https://techprocessing-320817886283.northamerica-northeast2.run.app/api';
 
     // Try different CORS proxy services
     // Option 1: CORS Anywhere (requires visiting demo page first)
