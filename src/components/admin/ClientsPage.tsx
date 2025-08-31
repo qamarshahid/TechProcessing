@@ -79,7 +79,8 @@ export function ClientsPage() {
 
   const fetchClients = async () => {
     try {
-      const response = await apiClient.getUsers({ role: 'CLIENT' });
+      // Fetch clients including inactive so soft-deleted users remain listed
+      const response = await apiClient.getUsers({ role: 'CLIENT', includeInactive: true });
       // Double-check to ensure only CLIENT role users are shown
       const actualClients = response.users.filter(user => user.role === 'CLIENT');
       setClients(actualClients);
@@ -112,9 +113,10 @@ export function ClientsPage() {
     // Status filter
     if (filters.status) {
       const isActive = filters.status === 'ACTIVE';
-      filtered = filtered.filter(client => 
-        (clientStatuses[client.id] ?? client.is_active ?? client.isActive) === isActive
-      );
+      filtered = filtered.filter(client => {
+        const current = clientStatuses[client.id] ?? client.is_active ?? client.isActive;
+        return current === isActive;
+      });
     }
 
     setFilteredClients(filtered);

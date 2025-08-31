@@ -136,11 +136,14 @@ class ApiClient {
   }
 
   // User methods
-  async getUsers(params?: { role?: string }) {
+  async getUsers(params?: { role?: string; includeInactive?: boolean }) {
     try {
       const queryParams = new URLSearchParams();
       if (params?.role) {
         queryParams.append('role', params.role);
+      }
+      if (params?.includeInactive) {
+        queryParams.append('includeInactive', 'true');
       }
       
       const endpoint = `/users${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
