@@ -66,11 +66,22 @@ export class ServiceRequestsService {
   }
 
   async create(createServiceRequestDto: CreateServiceRequestDto, clientId: string): Promise<ServiceRequest> {
-    const serviceRequest = this.serviceRequestRepository.create({
-      ...createServiceRequestDto,
-      clientId,
-    });
-    return this.serviceRequestRepository.save(serviceRequest);
+    await this.assumeClientSession(clientId);
+    try {
+      const serviceRequest = this.serviceRequestRepository.create({
+        ...createServiceRequestDto,
+        clientId,
+        // Ensure sane defaults
+        status: ServiceRequestStatus.PENDING,
+        requestType: createServiceRequestDto.requestType ?? (createServiceRequestDto.isCustomQuote ? 'CUSTOM_QUOTE' : 'SERVICE_REQUEST'),
+      } as any);
+      const saved = await this.serviceRequestRepository.save(serviceRequest as any);
+      return saved as ServiceRequest;
+    } catch (err: any) {
+      // Surface DB error details to help debugging
+      const message = err?.detail || err?.message || 'Failed to create service request';
+      throw new BadRequestException(message);
+    }
   }
 
   async findAll(): Promise<ServiceRequest[]> {
