@@ -28,7 +28,8 @@ export class ServiceRequestsController {
   @Post()
   @Roles(UserRole.CLIENT)
   create(@Body() createServiceRequestDto: CreateServiceRequestDto, @Request() req) {
-    return this.serviceRequestsService.create(createServiceRequestDto, req.user.id);
+    // Ignore body.clientId and trust authenticated user id
+    return this.serviceRequestsService.create({ ...createServiceRequestDto }, req.user.id);
   }
 
   @Get()

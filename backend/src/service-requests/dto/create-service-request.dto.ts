@@ -2,6 +2,11 @@ import { IsString, IsOptional, IsNumber, IsBoolean, IsEnum, IsUUID } from 'class
 import { ServiceRequestStatus, RequestType } from '../entities/service-request.entity';
 
 export class CreateServiceRequestDto {
+  // Accept but ignore clientId from the body; server will use authenticated user
+  @IsOptional()
+  @IsUUID()
+  clientId?: string;
+
   @IsOptional()
   @IsUUID()
   serviceId?: string;
