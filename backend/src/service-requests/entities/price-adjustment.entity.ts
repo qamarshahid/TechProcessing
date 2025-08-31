@@ -37,7 +37,7 @@ export class PriceAdjustment {
   adjustedBy: string;
 
   @Column({
-    type: 'enum',
+    type: 'varchar',
     enum: PriceAdjustmentStatus,
     default: PriceAdjustmentStatus.PENDING_APPROVAL,
   })

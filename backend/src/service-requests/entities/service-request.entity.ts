@@ -53,7 +53,7 @@ export class ServiceRequest {
   additionalRequirements: string;
 
   @Column({
-    type: 'enum',
+    type: 'varchar',
     enum: ServiceRequestStatus,
     default: ServiceRequestStatus.PENDING,
   })

@@ -46,7 +46,7 @@ export class FileAttachment {
   description: string;
 
   @Column({
-    type: 'enum',
+    type: 'varchar',
     enum: FileCategory,
     default: FileCategory.OTHER,
   })
