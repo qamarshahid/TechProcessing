@@ -76,7 +76,7 @@ export class ServiceRequestsService {
         requestType: createServiceRequestDto.requestType ?? (createServiceRequestDto.isCustomQuote ? RequestType.CUSTOM_QUOTE : RequestType.SERVICE_REQUEST),
       } as any);
       const saved = await this.serviceRequestRepository.save(serviceRequest);
-      return saved as ServiceRequest;
+      return Array.isArray(saved) ? saved[0] : saved;
     } catch (err: any) {
       // Surface DB error details to help debugging
       const message = err?.detail || err?.message || 'Failed to create service request';
