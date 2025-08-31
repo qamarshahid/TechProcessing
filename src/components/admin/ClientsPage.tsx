@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../common/NotificationSystem';
 import { apiClient } from '../../lib/api';
-import { Users, UserPlus, Edit3, Trash2, Mail, Calendar, CreditCard, User, X, Check, Phone, Building, MapPin, FileText, Shield, Send, UserCheck, Eye, Activity, Receipt, Pause, Play } from 'lucide-react';
+import { Users, UserPlus, Edit3, Trash2, Mail, Calendar, CreditCard, User, X, Check, Phone, Building, MapPin, FileText, Shield, Send, UserCheck, Eye, Activity, Receipt, Pause, Play, RefreshCcw } from 'lucide-react';
 import { SearchFilters } from './SearchFilters';
 import { ChargeClientModal } from './ChargeClientModal';
 import { ClientTransactionHistory } from './ClientTransactionHistory';
@@ -43,6 +43,7 @@ export function ClientsPage() {
   });
   const [formError, setFormError] = useState('');
   const [creatingClient, setCreatingClient] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Client statuses state
   const [clientStatuses, setClientStatuses] = useState<{[key: string]: boolean}>({});
@@ -87,7 +88,13 @@ export function ClientsPage() {
       logger.error('Error fetching clients:', error);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchClients();
   };
 
   const filterClients = () => {
@@ -273,6 +280,23 @@ export function ClientsPage() {
           <p className="text-sm text-gray-600 dark:text-gray-300">Manage client accounts, invoices, and portal access</p>
         </div>
         <div className="flex space-x-3">
+          <button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="inline-flex items-center px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+          >
+            {isRefreshing ? (
+              <>
+                <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+                Refreshing
+              </>
+            ) : (
+              <>
+                <RefreshCcw className="h-4 w-4 mr-2" />
+                Refresh
+              </>
+            )}
+          </button>
           <button 
             onClick={() => setShowChargeModal(true)}
             className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
