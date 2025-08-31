@@ -134,36 +134,58 @@ export class UsersService {
 
   async remove(id: string, hardDelete: boolean = false, deletedBy?: User): Promise<void> {
     const user = await this.findOne(id);
-    
+
     // Store user details before deletion for audit log
     const userDetails = {
       id: user.id,
       email: user.email,
+      role: user.role,
     };
-    
+
     if (hardDelete) {
-      // Hard delete - permanently remove the user
-      await this.usersRepository.delete(userDetails.id);
+      // Hard delete - remove agent graph (agent + sales) then the user in a single transaction
+      await this.usersRepository.manager.transaction(async (em) => {
+        const agentRepo = em.getRepository(Agent);
+        const agentSaleRepo = em.getRepository(AgentSale);
+        const userRepo = em.getRepository(User);
+
+        const agent = await agentRepo.findOne({ where: { userId: userDetails.id } });
+        if (agent) {
+          // Remove all sales tied to this agent, then the agent record (removes agent_code as well)
+          await agentSaleRepo.delete({ agentId: agent.id });
+          await agentRepo.delete({ id: agent.id });
+        }
+
+        // Finally remove the user
+        await userRepo.delete(userDetails.id);
+      });
 
       // Audit log (use stored ID since user.id becomes null after remove)
       await this.auditService.log({
         action: 'USER_HARD_DELETED',
         entityType: 'User',
         entityId: userDetails.id,
-        details: { email: userDetails.email, hardDelete: true },
+        details: { email: userDetails.email, role: userDetails.role, hardDelete: true },
         user: deletedBy,
       });
     } else {
-      // Soft delete by deactivating
+      // Soft delete by deactivating the user (and agent profile if exists)
       user.isActive = false;
       await this.usersRepository.save(user);
+
+      // If this user has an agent profile, also mark it inactive for consistency
+      const agent = await this.agentRepository.findOne({ where: { userId: user.id } });
+      if (agent) {
+        agent.isActive = false;
+        await this.agentRepository.save(agent);
+      }
 
       // Audit log
       await this.auditService.log({
         action: 'USER_SOFT_DELETED',
         entityType: 'User',
         entityId: user.id,
-        details: { email: user.email, hardDelete: false },
+        details: { email: user.email, role: user.role, hardDelete: false },
         user: deletedBy,
       });
     }
