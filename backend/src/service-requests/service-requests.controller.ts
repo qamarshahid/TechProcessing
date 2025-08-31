@@ -34,8 +34,14 @@ export class ServiceRequestsController {
 
   @Get()
   @Roles(UserRole.ADMIN)
-  findAll() {
-    return this.serviceRequestsService.findAll();
+  async findAll() {
+    // Direct raw SQL fallback to bypass metadata issues
+    try {
+      return await this.serviceRequestsService.findAll();
+    } catch (error) {
+      // Force raw SQL if any error
+      return await this.serviceRequestsService.findAllRaw();
+    }
   }
 
   @Get('client/:clientId')

@@ -414,6 +414,12 @@ export class ServiceRequestsService {
     return result as ServiceRequest[];
   }
 
+  async findAllRaw(): Promise<ServiceRequest[]> {
+    // Public method for controller to use as direct fallback
+    await this.assumeAdminSession();
+    return await this.findAllWithRawSQL();
+  }
+
   private async findByClientWithRawSQL(clientId: string): Promise<ServiceRequest[]> {
     const result = await this.serviceRequestRepository.query(
       `SELECT * FROM service_requests WHERE client_id = $1 ORDER BY created_at DESC`,
