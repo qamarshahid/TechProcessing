@@ -90,11 +90,18 @@ export class UsersController {
   @ApiOperation({ summary: 'Delete user (Admin only)' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
   remove(
-    @Param('id') id: string, 
-    @Body() body: { hardDelete?: boolean },
-    @CurrentUser() currentUser: User
+    @Param('id') id: string,
+    @Body() body: { hardDelete?: boolean | string } = {},
+    @Query('hardDelete') hardQuery: string = undefined,
+    @CurrentUser() currentUser: User,
   ) {
-    return this.usersService.remove(id, body.hardDelete ?? false, currentUser);
+    const hardFromBody =
+      typeof body?.hardDelete === 'string'
+        ? body?.hardDelete === 'true' || body?.hardDelete === '1'
+        : Boolean(body?.hardDelete);
+    const hardFromQuery = hardQuery === 'true' || hardQuery === '1';
+    const hardDelete = hardFromBody || hardFromQuery;
+    return this.usersService.remove(id, hardDelete, currentUser);
   }
 
   @Patch(':id/credentials')
