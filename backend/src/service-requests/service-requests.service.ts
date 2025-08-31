@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ServiceRequest, ServiceRequestStatus } from './entities/service-request.entity';
+import { ServiceRequest, ServiceRequestStatus, RequestType } from './entities/service-request.entity';
 import { PriceAdjustment, PriceAdjustmentStatus } from './entities/price-adjustment.entity';
 import { FileAttachment } from './entities/file-attachment.entity';
 import { CreateServiceRequestDto } from './dto/create-service-request.dto';
@@ -73,10 +73,10 @@ export class ServiceRequestsService {
         clientId,
         // Ensure sane defaults
         status: ServiceRequestStatus.PENDING,
-        requestType: createServiceRequestDto.requestType ?? (createServiceRequestDto.isCustomQuote ? 'CUSTOM_QUOTE' : 'SERVICE_REQUEST'),
-      });
+        requestType: createServiceRequestDto.requestType ?? (createServiceRequestDto.isCustomQuote ? RequestType.CUSTOM_QUOTE : RequestType.SERVICE_REQUEST),
+      } as any);
       const saved = await this.serviceRequestRepository.save(serviceRequest);
-      return saved;
+      return saved as ServiceRequest;
     } catch (err: any) {
       // Surface DB error details to help debugging
       const message = err?.detail || err?.message || 'Failed to create service request';
