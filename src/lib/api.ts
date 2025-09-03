@@ -137,6 +137,11 @@ class ApiClient {
       return { users: response };
     }
     return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
   }
 
   async createUser(userData: any) {
@@ -177,6 +182,11 @@ class ApiClient {
   // Agent Management (Admin only)
   async getAgents() {
     const response = await this.request('/agent-management');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
     // Ensure we always return an array
     if (Array.isArray(response)) {
       return response;
@@ -313,6 +323,11 @@ class ApiClient {
       return response.agent;
     }
     return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
   }
 
   async getAgentSales() {
@@ -367,10 +382,20 @@ class ApiClient {
       return response;
     }
     return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
   }
 
   async getAllAgentSales() {
     const response = await this.request('/agents/sales/all');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
     // Ensure we always return an array
     if (Array.isArray(response)) {
       return response;
@@ -576,6 +601,11 @@ class ApiClient {
       return { services: response };
     }
     return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
   }
 
   async createService(serviceData: any) {
@@ -659,10 +689,20 @@ class ApiClient {
       return { serviceRequests: response };
     }
     return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
   }
 
   async getClientServiceRequests(clientId: string) {
     const response = await this.request(`/service-requests/my-requests`);
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
     // Ensure we always return an object with serviceRequests array
     if (Array.isArray(response)) {
       return { serviceRequests: response };
@@ -825,10 +865,20 @@ class ApiClient {
       return { invoices: response };
     }
     return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
   }
 
   async getClientInvoices(clientId: string) {
     const response = await this.request(`/invoices?clientId=${clientId}`);
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
     // Ensure we always return an object with invoices array
     if (Array.isArray(response)) {
       return { invoices: response };
@@ -971,6 +1021,11 @@ class ApiClient {
       return { payments: response };
     }
     return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
   }
 
   async createHostedPaymentToken(paymentData: any) {
@@ -1004,6 +1059,11 @@ class ApiClient {
   // Payment Links (Admin only)
   async getPaymentLinks() {
     const response = await this.request('/payment-links');
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
     // Ensure we always return an object with links array
     if (Array.isArray(response)) {
       return { links: response };
@@ -1145,6 +1205,11 @@ class ApiClient {
   // Subscriptions
   async getSubscriptions() {
     const response = await this.request('/subscriptions');
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
     // Ensure we always return an object with subscriptions array
     if (Array.isArray(response)) {
       return { subscriptions: response };

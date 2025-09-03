@@ -1,368 +1,719 @@
-import React, { useState, useRef } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useNotifications } from '../common/NotificationSystem';
-import { apiClient } from '../../lib/api';
-import { logger } from '../../lib/logger';
-import { X, Send, AlertCircle, Upload, Paperclip, File } from 'lucide-react';
+class ApiClient {
+  private baseURL: string;
+  private token: string | null = null;
 
-interface ServiceRequestModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  service: {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-  };
-  onRequestSubmitted?: () => void;
-}
+  constructor() {
+    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
+  }
 
-export function ServiceRequestModal({ 
-  isOpen, 
-  onClose, 
-  service, 
-  onRequestSubmitted 
-}: ServiceRequestModalProps) {
-  const { user } = useAuth();
-  const { showError, showSuccess } = useNotifications();
-  
-  const [formData, setFormData] = useState({
-    description: '',
-    budget: '',
-    timeline: '',
-    additionalRequirements: ''
-  });
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    
-    if (!formData.description.trim()) {
-      newErrors.description = 'Project description is required';
+  setToken(token: string | null) {
+    this.token = token;
+    if (token) {
+      localStorage.setItem('auth_token', token);
+    } else {
+      localStorage.removeItem('auth_token');
     }
-    
-    if (formData.budget && parseFloat(formData.budget) <= 0) {
-      newErrors.budget = 'Budget must be greater than 0';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  private async request(endpoint: string, options: RequestInit = {}) {
+    const url = `${this.baseURL}${endpoint}`;
     
-    if (!validateForm()) {
-      return;
-    }
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
 
-    if (!user?.id) {
-      showError('Authentication Error', 'Please log in to submit a service request.');
-      return;
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
     }
-
-    setLoading(true);
 
     try {
-      const requestData = {
-        serviceId: service.id,
-        clientId: user.id,
-        description: formData.description.trim(),
-        budget: formData.budget ? parseFloat(formData.budget) : undefined,
-        timeline: formData.timeline.trim() || undefined,
-        additionalRequirements: formData.additionalRequirements.trim() || undefined,
-      };
-
-      await apiClient.createServiceRequest(requestData);
-      
-      showSuccess(
-        'Request Submitted', 
-        `Your request for "${service.name}" has been submitted successfully. We'll review it and get back to you soon.`
-      );
-      
-      // Reset form
-      setFormData({
-        description: '',
-        budget: '',
-        timeline: '',
-        additionalRequirements: ''
+      const response = await fetch(url, {
+        ...options,
+        headers,
       });
-      setErrors({});
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return await response.json();
+      }
       
-      onRequestSubmitted?.();
-      onClose();
+      return await response.text();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to submit request';
-      logger.error('Error submitting service request:', error);
-      showError('Request Failed', errorMessage);
-    } finally {
-      setLoading(false);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error occurred');
     }
-  };
+  }
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+  // Authentication
+  async login(email: string, password: string) {
+    const response = await this.request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    this.setToken(response.access_token);
+    return response;
+  }
+
+  async register(email: string, password: string, fullName: string, role: string) {
+    const response = await this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, fullName, role }),
+    });
+    this.setToken(response.access_token);
+    return response;
+  }
+
+  async logout() {
+    this.setToken(null);
+  }
+
+  async getProfile() {
+    return this.request('/auth/profile');
+  }
+
+  // Users Management (Admin only)
+  async getUsers(params?: { role?: string; includeInactive?: boolean }) {
+    const searchParams = new URLSearchParams();
+    if (params?.role) searchParams.append('role', params.role);
+    if (params?.includeInactive) searchParams.append('includeInactive', 'true');
+    
+    const query = searchParams.toString();
+    const response = await this.request(`/users${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
     }
-  };
+    return { users: response?.users || [] };
+  }
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setSelectedFiles(prev => [...prev, ...files]);
-  };
+  async createUser(userData: any) {
+    return this.request('/users', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
 
-  const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-  };
+  async updateUser(userId: string, userData: any) {
+    return this.request(`/users/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(userData),
+    });
+  }
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+  async deleteUser(userId: string, hardDelete: boolean = false) {
+    return this.request(`/users/${userId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ hardDelete }),
+    });
+  }
 
-  if (!isOpen) return null;
+  async updateClient(clientId: string, clientData: any) {
+    return this.request(`/users/${clientId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(clientData),
+    });
+  }
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Request Service
-            </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {service.name}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-          >
-            <X className="h-6 w-6" />
-          </button>
-        </div>
+  async updateClientCredentials(clientId: string, credentialsData: any) {
+    return this.request(`/users/${clientId}/credentials`, {
+      method: 'PATCH',
+      body: JSON.stringify(credentialsData),
+    });
+  }
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Service Info */}
-          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg p-6 border border-emerald-200 dark:border-emerald-800 shadow-sm">
-            <h3 className="font-medium text-emerald-900 dark:text-emerald-100 mb-2">
-              {service.id === 'custom' ? 'Custom Solution Request' : 'Service Details'}
-            </h3>
-            <p className="text-sm text-emerald-700 dark:text-emerald-300">
-              {service.description}
-            </p>
-            {service.id !== 'custom' && (
-              <p className="text-sm font-medium text-emerald-800 dark:text-emerald-200 mt-2">
-                Starting at ${service.price?.toLocaleString() || '0'}
-              </p>
-            )}
-            {service.id === 'custom' && (
-              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
-                <div className="flex items-center">
-                  <Target className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" />
-                  <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                    Custom pricing will be provided based on your specific requirements
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
+  // Agent Management (Admin only)
+  async getAgents() {
+    const response = await this.request('/agent-management');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+  }
 
-          {/* Project Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {service.id === 'custom' ? 'Project Requirements *' : 'Project Description *'}
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white ${
-                errors.description ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-slate-600'
-              }`}
-              rows={service.id === 'custom' ? 6 : 4}
-              placeholder={service.id === 'custom' 
-                ? "Please provide detailed information about your project:\n\n• What type of solution do you need?\n• What are your main goals and objectives?\n• What features or functionality do you require?\n• Do you have any specific technology preferences?\n• What is your target timeline?\n• Any integration requirements?\n\nThe more details you provide, the more accurate our custom quote will be."
-                : "Describe your project requirements, goals, and any specific features you need..."
-              }
-            />
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
-                <AlertCircle className="h-4 w-4 mr-1" />
-                {errors.description}
-              </p>
-            )}
-          </div>
+  async createAgent(agentData: any) {
+    return this.request('/agent-management', {
+      method: 'POST',
+      body: JSON.stringify(agentData),
+    });
+  }
 
-          {/* Budget */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {service.id === 'custom' ? 'Budget Range (Optional)' : 'Budget (Optional)'}
-            </label>
-            {service.id === 'custom' && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                Providing a budget range helps us tailor our proposal to your needs
-              </p>
-            )}
-            <div className="relative">
-              <span className="absolute left-3 top-2 text-gray-500 dark:text-gray-400">$</span>
-              <input
-                type="number"
-                value={formData.budget}
-                onChange={(e) => handleInputChange('budget', e.target.value)}
-                className={`w-full pl-8 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white ${
-                  errors.budget ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-slate-600'
-                }`}
-                placeholder={service.id === 'custom' ? "e.g., 5000 (for $5,000-$10,000 range)" : "0.00"}
-                min="0"
-                step="0.01"
-              />
-            </div>
-            {service.id === 'custom' && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Enter the lower end of your budget range (e.g., 5000 for $5,000-$10,000)
-              </p>
-            )}
-            {errors.budget && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
-                <AlertCircle className="h-4 w-4 mr-1" />
-                {errors.budget}
-              </p>
-            )}
-          </div>
+  async deleteAgent(agentId: string, hardDelete: boolean = false) {
+    return this.request(`/agent-management/${agentId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ hardDelete }),
+    });
+  }
 
-          {/* Timeline */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {service.id === 'custom' ? 'Project Timeline (Optional)' : 'Preferred Timeline (Optional)'}
-            </label>
-            <select
-              value={formData.timeline}
-              onChange={(e) => handleInputChange('timeline', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
-            >
-              <option value="">Select timeline</option>
-              <option value="ASAP">ASAP (Rush project)</option>
-              <option value="1-2 weeks">1-2 weeks</option>
-              <option value="1 month">1 month</option>
-              <option value="2-3 months">2-3 months</option>
-              <option value="3-6 months">3-6 months</option>
-              <option value="6+ months">6+ months</option>
-              <option value="No specific timeline">No specific timeline</option>
-            </select>
-          </div>
+  async updateAgentStatus(agentId: string, isActive: boolean) {
+    return this.request(`/agent-management/${agentId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    });
+  }
 
-                           {/* Additional Requirements */}
-                 <div>
-                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                     {service.id === 'custom' ? 'Additional Details (Optional)' : 'Additional Requirements (Optional)'}
-                   </label>
-                   <textarea
-                     value={formData.additionalRequirements}
-                     onChange={(e) => handleInputChange('additionalRequirements', e.target.value)}
-                     className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
-                     rows={3}
-                     placeholder={service.id === 'custom' 
-                       ? "Any additional details, preferences, technologies, integrations, or specific requirements that would help us provide a more accurate quote..."
-                       : "Any additional requirements, preferences, or questions..."
-                     }
-                   />
-                 </div>
+  async updateAgentCommissionRates(agentId: string, agentRate: number, closerRate: number) {
+    return this.request(`/agent-management/${agentId}/commission-rates`, {
+      method: 'PATCH',
+      body: JSON.stringify({ 
+        agentCommissionRate: agentRate, 
+        closerCommissionRate: closerRate 
+      }),
+    });
+  }
 
-                 {/* File Attachments */}
-                 <div>
-                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                     Attach Files (Optional)
-                   </label>
-                   <div className="space-y-3">
-                     <div className="flex items-center space-x-3">
-                       <input
-                         ref={fileInputRef}
-                         type="file"
-                         onChange={handleFileSelect}
-                         className="hidden"
-                         multiple
-                         accept="image/*,.pdf,.doc,.docx,.txt,.zip,.rar"
-                       />
-                       <button
-                         type="button"
-                         onClick={() => fileInputRef.current?.click()}
-                         className="inline-flex items-center px-3 py-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
-                       >
-                         <Upload className="h-4 w-4 mr-2" />
-                         Choose Files
-                       </button>
-                       <span className="text-sm text-gray-500 dark:text-gray-400">
-                         Upload requirements, references, or mockups
-                       </span>
-                     </div>
-                     
-                     {selectedFiles.length > 0 && (
-                       <div className="space-y-2">
-                         <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                           Selected Files ({selectedFiles.length}):
-                         </div>
-                         {selectedFiles.map((file, index) => (
-                           <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-slate-700 rounded border">
-                             <div className="flex items-center space-x-2">
-                               <File className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                               <span className="text-sm text-gray-700 dark:text-gray-300">{file.name}</span>
-                               <span className="text-xs text-gray-500 dark:text-gray-400">
-                                 ({formatFileSize(file.size)})
-                               </span>
-                             </div>
-                             <button
-                               type="button"
-                               onClick={() => removeFile(index)}
-                               className="text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
-                             >
-                               <X className="h-4 w-4" />
-                             </button>
-                           </div>
-                         ))}
-                       </div>
-                     )}
-                   </div>
-                 </div>
+  // Agent Sales (Agent & Admin)
+  async getOwnAgentProfile() {
+    const response = await this.request('/agents/stats');
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+  }
 
-          {/* Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-slate-700">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Submitting...
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4 mr-2" />
-                  {service.id === 'custom' ? 'Submit Quote Request' : 'Submit Request'}
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+  async getAgentSales() {
+    const response = await this.request('/agents/sales/me');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+  }
+
+  async getAllAgentSales() {
+    const response = await this.request('/agents/sales/all');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+  }
+
+  async createAgentSale(saleData: any) {
+    return this.request('/agents/sales', {
+      method: 'POST',
+      body: JSON.stringify(saleData),
+    });
+  }
+
+  async resubmitAgentSale(resubmitData: any) {
+    return this.request('/agents/sales/resubmit', {
+      method: 'POST',
+      body: JSON.stringify(resubmitData),
+    });
+  }
+
+  async updateSaleStatus(saleId: string, status: string) {
+    return this.request(`/agents/sales/${saleId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async updateCommissionStatus(saleId: string, status: string) {
+    return this.request(`/agents/sales/${saleId}/commission-status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async updateSaleNotes(saleId: string, notes: string) {
+    return this.request(`/agents/sales/${saleId}/notes`, {
+      method: 'PATCH',
+      body: JSON.stringify({ notes }),
+    });
+  }
+
+  async getAgentMonthlyStats() {
+    return this.request('/agents/monthly-stats');
+  }
+
+  // Closer Management (Admin only)
+  async getAllClosers() {
+    return this.request('/closers');
+  }
+
+  async getActiveClosers() {
+    return this.request('/agents/closers/active');
+  }
+
+  async createCloser(closerData: any) {
+    return this.request('/closers', {
+      method: 'POST',
+      body: JSON.stringify(closerData),
+    });
+  }
+
+  async updateCloser(closerId: string, closerData: any) {
+    return this.request(`/closers/${closerId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(closerData),
+    });
+  }
+
+  async deleteCloser(closerId: string) {
+    return this.request(`/closers/${closerId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getCloserStats(closerId: string) {
+    return this.request(`/closers/${closerId}/stats`);
+  }
+
+  async getCloserSales(closerId: string) {
+    return this.request(`/closers/${closerId}/sales`);
+  }
+
+  async getAllClosersStats() {
+    return this.request('/closers/stats');
+  }
+
+  async getFilteredCloserStats(filters: any) {
+    const searchParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) searchParams.append(key, String(value));
+    });
+    
+    const query = searchParams.toString();
+    return this.request(`/closers/stats/filtered${query ? `?${query}` : ''}`);
+  }
+
+  async getCloserAuditData(filters: any) {
+    const searchParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) searchParams.append(key, String(value));
+    });
+    
+    const query = searchParams.toString();
+    return this.request(`/closers/audit${query ? `?${query}` : ''}`);
+  }
+
+  // Service Packages
+  async getServices() {
+    const response = await this.request('/service-packages');
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+  }
+
+  async createService(serviceData: any) {
+    return this.request('/service-packages', {
+      method: 'POST',
+      body: JSON.stringify(serviceData),
+    });
+  }
+
+  async updateService(serviceId: string, serviceData: any) {
+    return this.request(`/service-packages/${serviceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(serviceData),
+    });
+  }
+
+  async deleteService(serviceId: string) {
+    return this.request(`/service-packages/${serviceId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Service Requests (Client & Admin)
+  async getServiceRequests(filters?: any) {
+    const searchParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) searchParams.append(key, String(value));
+      });
+    }
+    
+    const query = searchParams.toString();
+    const response = await this.request(`/service-requests${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+  }
+
+  async getClientServiceRequests(clientId: string) {
+    const response = await this.request(`/service-requests/my-requests`);
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+  }
+
+  async createServiceRequest(requestData: any) {
+    return this.request('/service-requests', {
+      method: 'POST',
+      body: JSON.stringify(requestData),
+    });
+  }
+
+  async updateServiceRequest(requestId: string, updateData: any) {
+    return this.request(`/service-requests/${requestId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updateData),
+    });
+  }
+
+  async createPriceAdjustment(requestId: string, adjustmentData: any) {
+    return this.request(`/service-requests/${requestId}/price-adjustments`, {
+      method: 'POST',
+      body: JSON.stringify(adjustmentData),
+    });
+  }
+
+  async updatePriceAdjustmentStatus(adjustmentId: string, statusData: any) {
+    return this.request(`/service-requests/price-adjustments/${adjustmentId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify(statusData),
+    });
+  }
+
+  async uploadAttachment(requestId: string, file: File, category: string, description?: string) {
+    // In a real implementation, this would upload to cloud storage
+    // For demo purposes, we'll simulate the upload
+    const attachmentData = {
+      fileName: file.name,
+      fileUrl: URL.createObjectURL(file),
+      fileSize: file.size,
+      fileType: file.type,
+      category,
+      description,
+    };
+
+    return this.request(`/service-requests/${requestId}/attachments`, {
+      method: 'POST',
+      body: JSON.stringify(attachmentData),
+    });
+  }
+
+  async deleteAttachment(attachmentId: string) {
+    return this.request(`/service-requests/attachments/${attachmentId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Invoices
+  async getInvoices(params?: { status?: string; clientId?: string }) {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.append('status', params.status);
+    if (params?.clientId) searchParams.append('clientId', params.clientId);
+    
+    const query = searchParams.toString();
+    const response = await this.request(`/invoices${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+  }
+
+  async getClientInvoices(clientId: string) {
+    const response = await this.request(`/invoices?clientId=${clientId}`);
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+  }
+
+  async createInvoice(invoiceData: any) {
+    return this.request('/invoices', {
+      method: 'POST',
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async updateInvoice(invoiceId: string, invoiceData: any) {
+    return this.request(`/invoices/${invoiceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async updateInvoiceStatus(invoiceId: string, status: string) {
+    return this.request(`/invoices/${invoiceId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async deleteInvoice(invoiceId: string, deletePayments: boolean = false) {
+    return this.request(`/invoices/${invoiceId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ deletePayments }),
+    });
+  }
+
+  async generateInvoicePDF(invoiceId: string) {
+    // Simulate PDF generation
+    return {
+      success: true,
+      pdfUrl: '#',
+      filename: `invoice-${invoiceId}.pdf`
+    };
+  }
+
+  // Payments
+  async getPayments() {
+    const response = await this.request('/payments');
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+  }
+
+  async createHostedPaymentToken(paymentData: any) {
+    return this.request('/payments/hosted-token', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async processPayment(paymentData: any) {
+    return this.request('/payments', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async getCompletedPayments() {
+    return this.request('/payments?status=COMPLETED');
+  }
+
+  async processRefund(refundData: any) {
+    // Simulate refund processing
+    return { success: true, refundId: 'ref_' + Date.now() };
+  }
+
+  async getRefunds() {
+    // Simulate refunds data
+    return { refunds: [] };
+  }
+
+  // Payment Links (Admin only)
+  async getPaymentLinks() {
+    const response = await this.request('/payment-links');
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+  }
+
+  async createPaymentLink(linkData: any) {
+    return this.request('/payment-links', {
+      method: 'POST',
+      body: JSON.stringify(linkData),
+    });
+  }
+
+  async getPaymentLinkByToken(token: string) {
+    return this.request(`/payment-links/token/${token}`);
+  }
+
+  async processPaymentLinkPayment(token: string, paymentData: any) {
+    return this.request(`/payment-links/token/${token}/process-payment`, {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async deletePaymentLink(linkId: string) {
+    return this.request(`/payment-links/${linkId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async resendPaymentLinkEmail(linkId: string) {
+    return this.request(`/payment-links/${linkId}/resend-email`, {
+      method: 'POST',
+    });
+  }
+
+  async sendPaymentLinkEmail(emailData: any) {
+    // Simulate email sending
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ success: true, messageId: 'email_' + Date.now() });
+      }, 1000);
+    });
+  }
+
+  async sendPaymentLinkSMS(smsData: any) {
+    // Simulate SMS sending
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ success: true, messageId: 'sms_' + Date.now() });
+      }, 1000);
+    });
+  }
+
+  // Enhanced Card Charging
+  async chargeCard(paymentData: any) {
+    return this.request('/payments/charge-card', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async processDirectPayment(paymentData: any) {
+    return this.request('/payments/direct', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async savePaymentMethod(clientId: string, cardData: any) {
+    return this.request(`/payments/save-method/${clientId}`, {
+      method: 'POST',
+      body: JSON.stringify(cardData),
+    });
+  }
+
+  async getClientPaymentMethods(clientId: string) {
+    return this.request(`/payments/methods/${clientId}`);
+  }
+
+  async chargeStoredCard(clientId: string, paymentMethodId: string, amount: number, description?: string) {
+    return this.request('/payments/charge-stored', {
+      method: 'POST',
+      body: JSON.stringify({
+        clientId,
+        paymentMethodId,
+        amount,
+        description,
+      }),
+    });
+  }
+
+  // Subscriptions
+  async getSubscriptions() {
+    const response = await this.request('/subscriptions');
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+  }
+
+  async getClientSubscriptions(clientId: string) {
+    return this.request(`/subscriptions/client/${clientId}`);
+  }
+
+  async createSubscription(subscriptionData: any) {
+    return this.request('/subscriptions', {
+      method: 'POST',
+      body: JSON.stringify(subscriptionData),
+    });
+  }
+
+  async updateSubscription(subscriptionId: string, subscriptionData: any) {
+    return this.request(`/subscriptions/${subscriptionId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(subscriptionData),
+    });
+  }
+
+  async updateSubscriptionStatus(subscriptionId: string, status: string) {
+    return this.request(`/subscriptions/${subscriptionId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async deleteSubscription(subscriptionId: string) {
+    return this.request(`/subscriptions/${subscriptionId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Client Transaction History
+  async getClientTransactionHistory(clientId: string) {
+    try {
+      const [invoicesResponse, paymentsResponse] = await Promise.all([
+        this.getInvoices({ clientId }),
+        this.getPayments()
+      ]);
+
+      const clientInvoices = invoicesResponse.invoices || [];
+      const allPayments = paymentsResponse.payments || [];
+      const clientPayments = allPayments.filter(payment => 
+        clientInvoices.some(invoice => invoice.id === payment.invoice_id)
+      );
+
+      // Combine invoices and payments into transaction history
+      const transactions = [
+        ...clientInvoices.map(invoice => ({
+          id: invoice.id,
+          type: 'invoice',
+          description: invoice.description,
+          amount: parseFloat(invoice.amount || invoice.total || '0'),
+          status: invoice.status.toLowerCase(),
+          date: invoice.created_at || invoice.createdAt,
+          invoice_number: invoice.invoice_number || invoice.invoiceNumber,
+          payment_method: invoice.payment_method,
+        })),
+        ...clientPayments.map(payment => ({
+          id: payment.id,
+          type: 'payment',
+          description: `Payment for ${payment.invoice?.description || 'Invoice'}`,
+          amount: parseFloat(payment.amount || '0'),
+          status: payment.status.toLowerCase(),
+          date: payment.created_at || payment.createdAt,
+          payment_method: payment.method,
+          transaction_id: payment.transaction_id,
+        }))
+      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      return {
+        transactions,
+        invoices: clientInvoices,
+        payments: clientPayments,
+      };
+    } catch (error) {
+      console.error('Error fetching client transaction history:', error);
+      return {
+        transactions: [],
+        invoices: [],
+        payments: [],
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  // Audit Logs (Admin only)
+  async getAuditLogs(params?: any) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value) searchParams.append(key, String(value));
+      });
+    }
+    
+    const query = searchParams.toString();
+    return this.request(`/audit${query ? `?${query}` : ''}`);
+  }
+
+  // Clients helper method
+  async getClients() {
+    return this.getUsers({ role: 'CLIENT' });
+  }
 }
+
+export const apiClient = new ApiClient();
