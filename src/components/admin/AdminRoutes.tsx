@@ -12,6 +12,7 @@ import { SubscriptionsPage } from './SubscriptionsPage';
 import { PaymentHistoryPage } from './PaymentHistoryPage';
 import { PaymentLinksPage } from './PaymentLinksPage';
 import { RefundsPage } from './RefundsPage';
+import { PaymentProcessingPage } from './PaymentProcessingPage';
 import { AuditLogsPage } from './AuditLogsPage';
 import { SystemSettingsPage } from './SystemSettingsPage';
 import { ClientCredentialsPage } from './ClientCredentialsPage';
@@ -41,6 +42,7 @@ export function AdminRoutes() {
         {/* Payment Management */}
         <Route path="payments" element={<PaymentHistoryPage />} />
         <Route path="payment-links" element={<PaymentLinksPage />} />
+        <Route path="payment-processing" element={<PaymentProcessingPage />} />
         <Route path="refunds" element={<RefundsPage />} />
         
         {/* System */}
