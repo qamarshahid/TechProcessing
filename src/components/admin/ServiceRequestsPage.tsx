@@ -1,1369 +1,551 @@
-class ApiClient {
-  private baseURL: string;
-  private token: string | null = null;
+import React, { useState, useEffect } from 'react';
+import { useNotifications } from '../common/NotificationSystem';
+import { apiClient } from '../../lib/api';
+import { logger } from '../../lib/logger';
+import { PriceAdjustmentModal } from './PriceAdjustmentModal';
+import { FileAttachmentModal } from '../common/FileAttachmentModal';
+import { 
+  Package, 
+  Plus, 
+  Edit, 
+  Eye, 
+  DollarSign, 
+  Calendar, 
+  User, 
+  FileText,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  XCircle,
+  RefreshCw,
+  Search,
+  Filter,
+  Paperclip,
+  TrendingUp,
+  Target,
+  Award
+} from 'lucide-react';
 
-  constructor() {
-    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
-  }
+export function ServiceRequestsPage() {
+  const { showSuccess, showError, showWarning } = useNotifications();
+  
+  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
+  const [filteredRequests, setFilteredRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [typeFilter, setTypeFilter] = useState('ALL');
+  
+  // Modal states
+  const [showPriceModal, setShowPriceModal] = useState(false);
+  const [showAttachmentModal, setShowAttachmentModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [editingRequest, setEditingRequest] = useState<any>(null);
+  const [editForm, setEditForm] = useState({
+    status: '',
+    adminNotes: '',
+    estimatedCost: '',
+    estimatedTimeline: '',
+    quoteAmount: '',
+    paymentTerms: '',
+  });
 
-  setToken(token: string | null) {
-    this.token = token;
-    if (token) {
-      localStorage.setItem('auth_token', token);
-    } else {
-      localStorage.removeItem('auth_token');
-    }
-  }
+  useEffect(() => {
+    fetchServiceRequests();
+  }, []);
 
-  private async request(endpoint: string, options: RequestInit = {}) {
-    const url = `${this.baseURL}${endpoint}`;
-    
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    };
+  useEffect(() => {
+    filterRequests();
+  }, [serviceRequests, searchTerm, statusFilter, typeFilter]);
 
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
-    }
-
+  const fetchServiceRequests = async () => {
     try {
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        return await response.json();
-      }
+      setLoading(true);
+      setError('');
       
-      return await response.text();
+      const response = await apiClient.getServiceRequests();
+      const requests = response?.serviceRequests || [];
+      
+      setServiceRequests(Array.isArray(requests) ? requests : []);
+      showSuccess('Service Requests Loaded', `Successfully loaded ${requests.length} service requests.`);
     } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error('Network error occurred');
-    }
-  }
-
-  // Authentication
-  async login(email: string, password: string) {
-    const response = await this.request('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
-    this.setToken(response.access_token);
-    return response;
-  }
-
-  async register(email: string, password: string, fullName: string, role: string) {
-    const response = await this.request('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, fullName, role }),
-    });
-    this.setToken(response.access_token);
-    return response;
-  }
-
-  async logout() {
-    this.setToken(null);
-  }
-
-  async getProfile() {
-    return this.request('/auth/profile');
-  }
-
-  // Users Management (Admin only)
-  async getUsers(params?: { role?: string; includeInactive?: boolean }) {
-    const searchParams = new URLSearchParams();
-    if (params?.role) searchParams.append('role', params.role);
-    if (params?.includeInactive) searchParams.append('includeInactive', 'true');
-    
-    const query = searchParams.toString();
-    const response = await this.request(`/users${query ? `?${query}` : ''}`);
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-  }
-
-  async createUser(userData: any) {
-    return this.request('/users', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
-  }
-
-  async updateUser(userId: string, userData: any) {
-    return this.request(`/users/${userId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(userData),
-    });
-  }
-
-  async deleteUser(userId: string, hardDelete: boolean = false) {
-    return this.request(`/users/${userId}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ hardDelete }),
-    });
-  }
-
-  async updateClient(clientId: string, clientData: any) {
-    return this.request(`/users/${clientId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(clientData),
-    });
-  }
-
-  async updateClientCredentials(clientId: string, credentialsData: any) {
-    return this.request(`/users/${clientId}/credentials`, {
-      method: 'PATCH',
-      body: JSON.stringify(credentialsData),
-    });
-  }
-
-  // Agent Management (Admin only)
-  async getAgents() {
-    const response = await this.request('/agent-management');
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-  }
-
-  async createAgent(agentData: any) {
-    return this.request('/agent-management', {
-      method: 'POST',
-      body: JSON.stringify(agentData),
-    });
-  }
-
-  async deleteAgent(agentId: string, hardDelete: boolean = false) {
-    return this.request(`/agent-management/${agentId}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ hardDelete }),
-    });
-  }
-
-  async updateAgentStatus(agentId: string, isActive: boolean) {
-    return this.request(`/agent-management/${agentId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ isActive }),
-    });
-  }
-
-  async updateAgentCommissionRates(agentId: string, agentRate: number, closerRate: number) {
-    return this.request(`/agent-management/${agentId}/commission-rates`, {
-      method: 'PATCH',
-      body: JSON.stringify({ 
-        agentCommissionRate: agentRate, 
-        closerCommissionRate: closerRate 
-      }),
-    });
-  }
-
-  // Agent Sales (Agent & Admin)
-  async getOwnAgentProfile() {
-    const response = await this.request('/agents/stats');
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-  }
-
-  async getAgentSales() {
-    const response = await this.request('/agents/sales/me');
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-  }
-
-  async getAllAgentSales() {
-    const response = await this.request('/agents/sales/all');
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-  }
-
-  async createAgentSale(saleData: any) {
-    return this.request('/agents/sales', {
-      method: 'POST',
-      body: JSON.stringify(saleData),
-    });
-  }
-
-  async resubmitAgentSale(resubmitData: any) {
-    return this.request('/agents/sales/resubmit', {
-      method: 'POST',
-      body: JSON.stringify(resubmitData),
-    });
-  }
-
-  async updateSaleStatus(saleId: string, status: string) {
-    return this.request(`/agents/sales/${saleId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async updateCommissionStatus(saleId: string, status: string) {
-    return this.request(`/agents/sales/${saleId}/commission-status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async updateSaleNotes(saleId: string, notes: string) {
-    return this.request(`/agents/sales/${saleId}/notes`, {
-      method: 'PATCH',
-      body: JSON.stringify({ notes }),
-    });
-  }
-
-  async getAgentMonthlyStats() {
-    return this.request('/agents/monthly-stats');
-  }
-
-  // Closer Management (Admin only)
-  async getAllClosers() {
-    return this.request('/closers');
-  }
-
-  async getActiveClosers() {
-    return this.request('/agents/closers/active');
-  }
-
-  async createCloser(closerData: any) {
-    return this.request('/closers', {
-      method: 'POST',
-      body: JSON.stringify(closerData),
-    });
-  }
-
-  async updateCloser(closerId: string, closerData: any) {
-    return this.request(`/closers/${closerId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(closerData),
-    });
-  }
-
-  async deleteCloser(closerId: string) {
-    return this.request(`/closers/${closerId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async getCloserStats(closerId: string) {
-    return this.request(`/closers/${closerId}/stats`);
-  }
-
-  async getCloserSales(closerId: string) {
-    return this.request(`/closers/${closerId}/sales`);
-  }
-
-  async getAllClosersStats() {
-    return this.request('/closers/stats');
-  }
-
-  async getFilteredCloserStats(filters: any) {
-    const searchParams = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) searchParams.append(key, String(value));
-    });
-    
-    const query = searchParams.toString();
-    return this.request(`/closers/stats/filtered${query ? `?${query}` : ''}`);
-  }
-
-  async getCloserAuditData(filters: any) {
-    const searchParams = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) searchParams.append(key, String(value));
-    });
-    
-    const query = searchParams.toString();
-    return this.request(`/closers/audit${query ? `?${query}` : ''}`);
-  }
-
-  // Service Packages
-  async getServices() {
-    const response = await this.request('/service-packages');
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-  }
-
-  async createService(serviceData: any) {
-    return this.request('/service-packages', {
-      method: 'POST',
-      body: JSON.stringify(serviceData),
-    });
-  }
-
-  async updateService(serviceId: string, serviceData: any) {
-    return this.request(`/service-packages/${serviceId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(serviceData),
-    });
-  }
-
-  async deleteService(serviceId: string) {
-    return this.request(`/service-packages/${serviceId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Service Requests (Client & Admin)
-  async getServiceRequests(filters?: any) {
-    const searchParams = new URLSearchParams();
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) searchParams.append(key, String(value));
-      });
-    }
-    
-    const query = searchParams.toString();
-    const response = await this.request(`/service-requests${query ? `?${query}` : ''}`);
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-  }
-
-  async getClientServiceRequests(clientId: string) {
-    const response = await this.request(`/service-requests/my-requests`);
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-  }
-
-  async createServiceRequest(requestData: any) {
-    return this.request('/service-requests', {
-      method: 'POST',
-      body: JSON.stringify(requestData),
-    });
-  }
-
-  async updateServiceRequest(requestId: string, updateData: any) {
-    return this.request(`/service-requests/${requestId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(updateData),
-    });
-  }
-
-  async createPriceAdjustment(requestId: string, adjustmentData: any) {
-    return this.request(`/service-requests/${requestId}/price-adjustments`, {
-      method: 'POST',
-      body: JSON.stringify(adjustmentData),
-    });
-  }
-
-  async updatePriceAdjustmentStatus(adjustmentId: string, statusData: any) {
-    return this.request(`/service-requests/price-adjustments/${adjustmentId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify(statusData),
-    });
-  }
-
-  async uploadAttachment(requestId: string, file: File, category: string, description?: string) {
-    // In a real implementation, this would upload to cloud storage
-    // For demo purposes, we'll simulate the upload
-    const attachmentData = {
-      fileName: file.name,
-      fileUrl: URL.createObjectURL(file),
-      fileSize: file.size,
-      fileType: file.type,
-      category,
-      description,
-    };
-
-    return this.request(`/service-requests/${requestId}/attachments`, {
-      method: 'POST',
-      body: JSON.stringify(attachmentData),
-    });
-  }
-
-  async deleteAttachment(attachmentId: string) {
-    return this.request(`/service-requests/attachments/${attachmentId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Invoices
-  async getInvoices(params?: { status?: string; clientId?: string }) {
-    const searchParams = new URLSearchParams();
-    if (params?.status) searchParams.append('status', params.status);
-    if (params?.clientId) searchParams.append('clientId', params.clientId);
-    
-    const query = searchParams.toString();
-    const response = await this.request(`/invoices${query ? `?${query}` : ''}`);
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-  }
-
-  async getClientInvoices(clientId: string) {
-    const response = await this.request(`/invoices?clientId=${clientId}`);
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-  }
-
-  async createInvoice(invoiceData: any) {
-    return this.request('/invoices', {
-      method: 'POST',
-      body: JSON.stringify(invoiceData),
-    });
-  }
-
-  async updateInvoice(invoiceId: string, invoiceData: any) {
-    return this.request(`/invoices/${invoiceId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(invoiceData),
-    });
-  }
-
-  async updateInvoiceStatus(invoiceId: string, status: string) {
-    return this.request(`/invoices/${invoiceId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async deleteInvoice(invoiceId: string, deletePayments: boolean = false) {
-    return this.request(`/invoices/${invoiceId}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ deletePayments }),
-    });
-  }
-
-  async generateInvoicePDF(invoiceId: string) {
-    // Simulate PDF generation
-    return {
-      success: true,
-      pdfUrl: '#',
-      filename: `invoice-${invoiceId}.pdf`
-    };
-  }
-
-  // Payments
-  async getPayments() {
-    const response = await this.request('/payments');
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-  }
-
-  async createHostedPaymentToken(paymentData: any) {
-    return this.request('/payments/hosted-token', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async processPayment(paymentData: any) {
-    return this.request('/payments', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async getCompletedPayments() {
-    return this.request('/payments?status=COMPLETED');
-  }
-
-  async processRefund(refundData: any) {
-    // Simulate refund processing
-    return { success: true, refundId: 'ref_' + Date.now() };
-  }
-
-  async getRefunds() {
-    // Simulate refunds data
-    return { refunds: [] };
-  }
-
-  // Payment Links (Admin only)
-  async getPaymentLinks() {
-    const response = await this.request('/payment-links');
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-  }
-
-  async createPaymentLink(linkData: any) {
-    return this.request('/payment-links', {
-      method: 'POST',
-      body: JSON.stringify(linkData),
-    });
-  }
-
-  async getPaymentLinkByToken(token: string) {
-    return this.request(`/payment-links/token/${token}`);
-  }
-
-  async processPaymentLinkPayment(token: string, paymentData: any) {
-    return this.request(`/payment-links/token/${token}/process-payment`, {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async deletePaymentLink(linkId: string) {
-    return this.request(`/payment-links/${linkId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async resendPaymentLinkEmail(linkId: string) {
-    return this.request(`/payment-links/${linkId}/resend-email`, {
-      method: 'POST',
-    });
-  }
-
-  async sendPaymentLinkEmail(emailData: any) {
-    // Simulate email sending
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ success: true, messageId: 'email_' + Date.now() });
-      }, 1000);
-    });
-  }
-
-  async sendPaymentLinkSMS(smsData: any) {
-    // Simulate SMS sending
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ success: true, messageId: 'sms_' + Date.now() });
-      }, 1000);
-    });
-  }
-
-  // Enhanced Card Charging
-  async chargeCard(paymentData: any) {
-    return this.request('/payments/charge-card', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async processDirectPayment(paymentData: any) {
-    return this.request('/payments/direct', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async savePaymentMethod(clientId: string, cardData: any) {
-    return this.request(`/payments/save-method/${clientId}`, {
-      method: 'POST',
-      body: JSON.stringify(cardData),
-    });
-  }
-
-  async getClientPaymentMethods(clientId: string) {
-    return this.request(`/payments/methods/${clientId}`);
-  }
-
-  async chargeStoredCard(clientId: string, paymentMethodId: string, amount: number, description?: string) {
-    return this.request('/payments/charge-stored', {
-      method: 'POST',
-      body: JSON.stringify({
-        clientId,
-        paymentMethodId,
-        amount,
-        description,
-      }),
-    });
-  }
-
-  // Subscriptions
-  async getSubscriptions() {
-    const response = await this.request('/subscriptions');
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-  }
-
-  async getClientSubscriptions(clientId: string) {
-    return this.request(`/subscriptions/client/${clientId}`);
-  }
-
-  async createSubscription(subscriptionData: any) {
-    return this.request('/subscriptions', {
-      method: 'POST',
-      body: JSON.stringify(subscriptionData),
-    });
-  }
-
-  async updateSubscription(subscriptionId: string, subscriptionData: any) {
-    return this.request(`/subscriptions/${subscriptionId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(subscriptionData),
-    });
-  }
-
-  async updateSubscriptionStatus(subscriptionId: string, status: string) {
-    return this.request(`/subscriptions/${subscriptionId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async deleteSubscription(subscriptionId: string) {
-    return this.request(`/subscriptions/${subscriptionId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Client Transaction History
-  async getClientTransactionHistory(clientId: string) {
-    try {
-      const [invoicesResponse, paymentsResponse] = await Promise.all([
-        this.getInvoices({ clientId }),
-        this.getPayments()
-      ]);
-
-      const clientInvoices = invoicesResponse.invoices || [];
-      const allPayments = paymentsResponse.payments || [];
-      const clientPayments = allPayments.filter(payment => 
-        clientInvoices.some(invoice => invoice.id === payment.invoice_id)
+      logger.error('Error fetching service requests:', error);
+      setError('Failed to load service requests. Please try again.');
+      showError('Failed to Load Service Requests', 'Unable to load service requests. Please try again later.');
+      setServiceRequests([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterRequests = () => {
+    let filtered = [...serviceRequests];
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(request =>
+        request.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.id?.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
 
-      // Combine invoices and payments into transaction history
-      const transactions = [
-        ...clientInvoices.map(invoice => ({
-          id: invoice.id,
-          type: 'invoice',
-          description: invoice.description,
-          amount: parseFloat(invoice.amount || invoice.total || '0'),
-          status: invoice.status.toLowerCase(),
-          date: invoice.created_at || invoice.createdAt,
-          invoice_number: invoice.invoice_number || invoice.invoiceNumber,
-          payment_method: invoice.payment_method,
-        })),
-        ...clientPayments.map(payment => ({
-          id: payment.id,
-          type: 'payment',
-          description: `Payment for ${payment.invoice?.description || 'Invoice'}`,
-          amount: parseFloat(payment.amount || '0'),
-          status: payment.status.toLowerCase(),
-          date: payment.created_at || payment.createdAt,
-          payment_method: payment.method,
-          transaction_id: payment.transaction_id,
-        }))
-      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // Status filter
+    if (statusFilter !== 'ALL') {
+      filtered = filtered.filter(request => request.status === statusFilter);
+    }
 
-      return {
-        transactions,
-        invoices: clientInvoices,
-        payments: clientPayments,
-      };
+    // Type filter
+    if (typeFilter !== 'ALL') {
+      filtered = filtered.filter(request => request.request_type === typeFilter);
+    }
+
+    setFilteredRequests(filtered);
+  };
+
+  const handleUpdateRequest = async (requestId: string, updateData: any) => {
+    try {
+      await apiClient.updateServiceRequest(requestId, updateData);
+      await fetchServiceRequests();
+      showSuccess('Request Updated', 'Service request has been updated successfully.');
     } catch (error) {
-      console.error('Error fetching client transaction history:', error);
-      return {
-        transactions: [],
-        invoices: [],
-        payments: [],
-        error: error instanceof Error ? error.message : 'Unknown error'
+      logger.error('Error updating service request:', error);
+      showError('Update Failed', 'Failed to update service request. Please try again.');
+    }
+  };
+
+  const openEditModal = (request: any) => {
+    setEditingRequest(request);
+    setEditForm({
+      status: request.status || '',
+      adminNotes: request.admin_notes || '',
+      estimatedCost: request.estimated_cost?.toString() || '',
+      estimatedTimeline: request.estimated_timeline || '',
+      quoteAmount: request.quote_amount?.toString() || '',
+      paymentTerms: request.payment_terms || '',
+    });
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingRequest) return;
+
+    try {
+      const updateData = {
+        status: editForm.status,
+        adminNotes: editForm.adminNotes,
+        estimatedCost: editForm.estimatedCost ? parseFloat(editForm.estimatedCost) : undefined,
+        estimatedTimeline: editForm.estimatedTimeline || undefined,
+        quoteAmount: editForm.quoteAmount ? parseFloat(editForm.quoteAmount) : undefined,
+        paymentTerms: editForm.paymentTerms || undefined,
       };
+
+      await handleUpdateRequest(editingRequest.id, updateData);
+      setEditingRequest(null);
+    } catch (error) {
+      logger.error('Error updating request:', error);
     }
+  };
+
+  const openPriceAdjustment = (request: any) => {
+    setSelectedRequest(request);
+    setShowPriceModal(true);
+  };
+
+  const openAttachments = (request: any) => {
+    setSelectedRequest(request);
+    setShowAttachmentModal(true);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+      case 'REVIEWING':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+      case 'QUOTE_READY':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
+      case 'APPROVED':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+      case 'REJECTED':
+        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+      case 'IN_PROGRESS':
+        return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400';
+      case 'COMPLETED':
+        return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return <Clock className="h-4 w-4" />;
+      case 'REVIEWING':
+        return <Eye className="h-4 w-4" />;
+      case 'QUOTE_READY':
+        return <FileText className="h-4 w-4" />;
+      case 'APPROVED':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'REJECTED':
+        return <XCircle className="h-4 w-4" />;
+      case 'IN_PROGRESS':
+        return <TrendingUp className="h-4 w-4" />;
+      case 'COMPLETED':
+        return <Award className="h-4 w-4" />;
+      default:
+        return <Clock className="h-4 w-4" />;
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'SERVICE_REQUEST':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+      case 'CUSTOM_QUOTE':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
   }
 
-  // Audit Logs (Admin only)
-  async getAuditLogs(params?: any) {
-    const searchParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value) searchParams.append(key, String(value));
-      });
-    }
-    
-    const query = searchParams.toString();
-    return this.request(`/audit${query ? `?${query}` : ''}`);
-  }
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Service Requests</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Manage client service requests and custom quotes</p>
+        </div>
+        <button
+          onClick={fetchServiceRequests}
+          disabled={loading}
+          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
+      </div>
 
-  // Clients helper method
-  async getClients() {
-    return this.getUsers({ role: 'CLIENT' });
-  }
+      {/* Error Banner */}
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-center">
+            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mr-2" />
+            <p className="text-red-800 dark:text-red-200">{error}</p>
+            <button
+              onClick={fetchServiceRequests}
+              className="ml-auto px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Search and Filters */}
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search requests by description, client, or ID..."
+                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="ALL">All Status</option>
+              <option value="PENDING">Pending</option>
+              <option value="REVIEWING">Reviewing</option>
+              <option value="QUOTE_READY">Quote Ready</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="ALL">All Types</option>
+              <option value="SERVICE_REQUEST">Service Request</option>
+              <option value="CUSTOM_QUOTE">Custom Quote</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Service Requests Table */}
+      {filteredRequests.length > 0 ? (
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-600">
+              <thead className="bg-gray-50 dark:bg-slate-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Request
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Client
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Budget
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Quote
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-600">
+                {filteredRequests.map((request) => (
+                  <tr key={request.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          {request.description?.substring(0, 60)}...
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          #{request.request_number || request.id?.substring(0, 8)}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {request.created_at ? new Date(request.created_at).toLocaleDateString() : 'Recent'}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mr-3">
+                          <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div className="text-sm text-gray-900 dark:text-white">
+                          {request.client_name || 'Unknown Client'}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(request.request_type || 'SERVICE_REQUEST')}`}>
+                        {request.request_type === 'CUSTOM_QUOTE' ? 'Custom Quote' : 'Service Request'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {request.budget ? `$${parseFloat(request.budget).toLocaleString()}` : 'Not specified'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        {getStatusIcon(request.status)}
+                        <span className={`ml-2 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(request.status)}`}>
+                          {request.status}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {request.quote_amount ? (
+                        <div>
+                          <div className="font-semibold">${parseFloat(request.quote_amount).toLocaleString()}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">Quote ready</div>
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 dark:text-gray-500">No quote</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => openEditModal(request)}
+                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                          title="Edit Request"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => openPriceAdjustment(request)}
+                          className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                          title="Price Adjustment"
+                        >
+                          <DollarSign className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => openAttachments(request)}
+                          className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
+                          title="File Attachments"
+                        >
+                          <Paperclip className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-12 text-center">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Package className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Service Requests Found</h3>
+          <p className="text-gray-500 dark:text-gray-400">
+            {searchTerm || statusFilter !== 'ALL' || typeFilter !== 'ALL'
+              ? 'Try adjusting your search or filter criteria.'
+              : 'Service requests from clients will appear here.'
+            }
+          </p>
+        </div>
+      )}
+
+      {/* Edit Request Modal */}
+      {editingRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Edit Service Request
+              </h2>
+              <button
+                onClick={() => setEditingRequest(null)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Status
+                  </label>
+                  <select
+                    value={editForm.status}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                  >
+                    <option value="PENDING">Pending</option>
+                    <option value="REVIEWING">Reviewing</option>
+                    <option value="QUOTE_READY">Quote Ready</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="REJECTED">Rejected</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Quote Amount
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                    <input
+                      type="number"
+                      value={editForm.quoteAmount}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, quoteAmount: e.target.value }))}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Admin Notes
+                </label>
+                <textarea
+                  value={editForm.adminNotes}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, adminNotes: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                  rows={3}
+                  placeholder="Internal notes about this request..."
+                />
+              </div>
+
+              <div className="flex items-center justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setEditingRequest(null)}
+                  className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Update Request
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Price Adjustment Modal */}
+      {showPriceModal && selectedRequest && (
+        <PriceAdjustmentModal
+          isOpen={showPriceModal}
+          onClose={() => {
+            setShowPriceModal(false);
+            setSelectedRequest(null);
+          }}
+          requestId={selectedRequest.id}
+          currentAmount={selectedRequest.quote_amount || selectedRequest.budget || 0}
+          onAdjustmentCreated={() => {
+            fetchServiceRequests();
+            setShowPriceModal(false);
+            setSelectedRequest(null);
+          }}
+        />
+      )}
+
+      {/* File Attachment Modal */}
+      {showAttachmentModal && selectedRequest && (
+        <FileAttachmentModal
+          isOpen={showAttachmentModal}
+          onClose={() => {
+            setShowAttachmentModal(false);
+            setSelectedRequest(null);
+          }}
+          requestId={selectedRequest.id}
+          attachments={selectedRequest.attachments || []}
+          onAttachmentsUpdated={() => {
+            fetchServiceRequests();
+          }}
+        />
+      )}
+    </div>
+  );
 }
-
-export const apiClient = new ApiClient();
