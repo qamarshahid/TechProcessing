@@ -1,803 +1,1304 @@
-import { useState, useEffect, useCallback } from 'react';
-import { apiClient } from '../../lib/api';
-import { useAuth } from '../../contexts/AuthContext';
-import { useNotifications } from '../common/NotificationSystem';
-import { logger } from '../../lib/logger';
-import { FileText, DollarSign, Clock, CheckCircle, Package, AlertCircle, RefreshCw, XCircle, Eye, UserCheck } from 'lucide-react';
+class ApiClient {
+  private baseURL: string;
+  private token: string | null = null;
 
-export function ClientDashboard() {
-  const { user } = useAuth();
-  const { showError, showSuccess, showWarning } = useNotifications();
-  
-  const [stats, setStats] = useState({
-    totalInvoices: 0,
-    totalAmount: 0,
-    paidAmount: 0,
-    unpaidCount: 0,
-  });
-  const [recentInvoices, setRecentInvoices] = useState<any[]>([]);
-  const [activeSubscriptions, setActiveSubscriptions] = useState<any[]>([]);
-  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [showSubscriptionsModal, setShowSubscriptionsModal] = useState(false);
+  constructor() {
+    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
+  }
 
-  const fetchClientData = useCallback(async () => {
-    if (!user?.id) {
-      return;
+  setToken(token: string | null) {
+    this.token = token;
+    if (token) {
+      localStorage.setItem('auth_token', token);
+    } else {
+      localStorage.removeItem('auth_token');
     }
+  }
 
-    setLoading(true);
-    setError(null);
+  private async request(endpoint: string, options: RequestInit = {}) {
+    const url = `${this.baseURL}${endpoint}`;
+    
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
 
     try {
-      // Fetch client-specific data including subscriptions
-      const historyResponse = await apiClient.getClientTransactionHistory(user.id);
-      const userInvoices = historyResponse.invoices || [];
-      
-      // Fetch client subscriptions - only if user ID exists
-      let userSubscriptions = [];
-      try {
-        const subscriptionsResponse = await apiClient.getClientSubscriptions(user.id);
-        userSubscriptions = subscriptionsResponse.subscriptions || [];
-      } catch (subscriptionError) {
-        logger.error('Error fetching client subscriptions:', subscriptionError);
-        showWarning('Subscription Data Unavailable', 'Unable to load subscription information. Some data may be incomplete.');
-        userSubscriptions = [];
-      }
-
-      // Fetch client service requests
-      let userServiceRequests = [];
-      try {
-        const requestsResponse = await apiClient.getClientServiceRequests(user.id);
-        userServiceRequests = requestsResponse.serviceRequests || [];
-      } catch (requestError) {
-        logger.error('Error fetching client service requests:', requestError);
-        showWarning('Service Requests Unavailable', 'Unable to load service request information. Some data may be incomplete.');
-        userServiceRequests = [];
-      }
-
-      // Calculate stats
-      const totalAmount = userInvoices.reduce((sum: number, inv: any) => sum + parseFloat(inv.amount || '0'), 0);
-      const paidAmount = userInvoices
-        .filter((inv: any) => inv.status === 'PAID')
-        .reduce((sum: number, inv: any) => sum + parseFloat(inv.amount || '0'), 0);
-      const unpaidCount = userInvoices.filter((inv: any) => inv.status === 'UNPAID').length;
-      
-      // Add subscription revenue to paid amount
-      const subscriptionRevenue = userSubscriptions
-        .filter((sub: any) => sub.status === 'ACTIVE')
-        .reduce((sum: number, sub: any) => sum + parseFloat(sub.totalBilled || '0'), 0);
-
-      setStats({
-        totalInvoices: userInvoices.length,
-        totalAmount,
-        paidAmount: paidAmount + subscriptionRevenue,
-        unpaidCount,
+      const response = await fetch(url, {
+        ...options,
+        headers,
       });
 
-      setRecentInvoices(userInvoices.slice(0, 5));
-      setActiveSubscriptions(userSubscriptions.filter((sub: any) => sub.status === 'ACTIVE' || sub.status === 'PAUSED'));
-      setServiceRequests(userServiceRequests);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return await response.json();
+      }
       
-      showSuccess('Dashboard Updated', 'Your dashboard data has been refreshed successfully.');
+      return await response.text();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      logger.error('Error fetching client data:', error);
-      setError(errorMessage);
-      showError('Failed to Load Data', 'Unable to load your dashboard data. Please try again later.');
-      
-      // Set empty stats on error
-      setStats({
-        totalInvoices: 0,
-        totalAmount: 0,
-        paidAmount: 0,
-        unpaidCount: 0,
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error occurred');
+    }
+  }
+
+  // Authentication
+  async login(email: string, password: string) {
+    const response = await this.request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    this.setToken(response.access_token);
+    return response;
+  }
+
+  async register(email: string, password: string, fullName: string, role: string) {
+    const response = await this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, fullName, role }),
+    });
+    this.setToken(response.access_token);
+    return response;
+  }
+
+  async logout() {
+    this.setToken(null);
+  }
+
+  async getProfile() {
+    return this.request('/auth/profile');
+  }
+
+  // Users Management (Admin only)
+  async getUsers(params?: { role?: string; includeInactive?: boolean }) {
+    const searchParams = new URLSearchParams();
+    if (params?.role) searchParams.append('role', params.role);
+    if (params?.includeInactive) searchParams.append('includeInactive', 'true');
+    
+    const query = searchParams.toString();
+    const response = await this.request(`/users${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+  }
+
+  async createUser(userData: any) {
+    return this.request('/users', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async updateUser(userId: string, userData: any) {
+    return this.request(`/users/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async deleteUser(userId: string, hardDelete: boolean = false) {
+    return this.request(`/users/${userId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ hardDelete }),
+    });
+  }
+
+  async updateClient(clientId: string, clientData: any) {
+    return this.request(`/users/${clientId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(clientData),
+    });
+  }
+
+  async updateClientCredentials(clientId: string, credentialsData: any) {
+    return this.request(`/users/${clientId}/credentials`, {
+      method: 'PATCH',
+      body: JSON.stringify(credentialsData),
+    });
+  }
+
+  // Agent Management (Admin only)
+  async getAgents() {
+    const response = await this.request('/agent-management');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+  }
+
+  async createAgent(agentData: any) {
+    return this.request('/agent-management', {
+      method: 'POST',
+      body: JSON.stringify(agentData),
+    });
+  }
+
+  async deleteAgent(agentId: string, hardDelete: boolean = false) {
+    return this.request(`/agent-management/${agentId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ hardDelete }),
+    });
+  }
+
+  async updateAgentStatus(agentId: string, isActive: boolean) {
+    return this.request(`/agent-management/${agentId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    });
+  }
+
+  async updateAgentCommissionRates(agentId: string, agentRate: number, closerRate: number) {
+    return this.request(`/agent-management/${agentId}/commission-rates`, {
+      method: 'PATCH',
+      body: JSON.stringify({ 
+        agentCommissionRate: agentRate, 
+        closerCommissionRate: closerRate 
+      }),
+    });
+  }
+
+  // Agent Sales (Agent & Admin)
+  async getOwnAgentProfile() {
+    const response = await this.request('/agents/stats');
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+  }
+
+  async getAgentSales() {
+    const response = await this.request('/agents/sales/me');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+  }
+
+  async getAllAgentSales() {
+    const response = await this.request('/agents/sales/all');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+  }
+
+  async createAgentSale(saleData: any) {
+    return this.request('/agents/sales', {
+      method: 'POST',
+      body: JSON.stringify(saleData),
+    });
+  }
+
+  async resubmitAgentSale(resubmitData: any) {
+    return this.request('/agents/sales/resubmit', {
+      method: 'POST',
+      body: JSON.stringify(resubmitData),
+    });
+  }
+
+  async updateSaleStatus(saleId: string, status: string) {
+    return this.request(`/agents/sales/${saleId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async updateCommissionStatus(saleId: string, status: string) {
+    return this.request(`/agents/sales/${saleId}/commission-status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async updateSaleNotes(saleId: string, notes: string) {
+    return this.request(`/agents/sales/${saleId}/notes`, {
+      method: 'PATCH',
+      body: JSON.stringify({ notes }),
+    });
+  }
+
+  async getAgentMonthlyStats() {
+    return this.request('/agents/monthly-stats');
+  }
+
+  // Closer Management (Admin only)
+  async getAllClosers() {
+    return this.request('/closers');
+  }
+
+  async getActiveClosers() {
+    return this.request('/agents/closers/active');
+  }
+
+  async createCloser(closerData: any) {
+    return this.request('/closers', {
+      method: 'POST',
+      body: JSON.stringify(closerData),
+    });
+  }
+
+  async updateCloser(closerId: string, closerData: any) {
+    return this.request(`/closers/${closerId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(closerData),
+    });
+  }
+
+  async deleteCloser(closerId: string) {
+    return this.request(`/closers/${closerId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getCloserStats(closerId: string) {
+    return this.request(`/closers/${closerId}/stats`);
+  }
+
+  async getCloserSales(closerId: string) {
+    return this.request(`/closers/${closerId}/sales`);
+  }
+
+  async getAllClosersStats() {
+    return this.request('/closers/stats');
+  }
+
+  async getFilteredCloserStats(filters: any) {
+    const searchParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) searchParams.append(key, String(value));
+    });
+    
+    const query = searchParams.toString();
+    return this.request(`/closers/stats/filtered${query ? `?${query}` : ''}`);
+  }
+
+  async getCloserAuditData(filters: any) {
+    const searchParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) searchParams.append(key, String(value));
+    });
+    
+    const query = searchParams.toString();
+    return this.request(`/closers/audit${query ? `?${query}` : ''}`);
+  }
+
+  // Service Packages
+  async getServices() {
+    const response = await this.request('/service-packages');
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+  }
+
+  async createService(serviceData: any) {
+    return this.request('/service-packages', {
+      method: 'POST',
+      body: JSON.stringify(serviceData),
+    });
+  }
+
+  async updateService(serviceId: string, serviceData: any) {
+    return this.request(`/service-packages/${serviceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(serviceData),
+    });
+  }
+
+  async deleteService(serviceId: string) {
+    return this.request(`/service-packages/${serviceId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Service Requests (Client & Admin)
+  async getServiceRequests(filters?: any) {
+    const searchParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) searchParams.append(key, String(value));
       });
-      setRecentInvoices([]);
-      setActiveSubscriptions([]);
-      setServiceRequests([]);
-    } finally {
-      setLoading(false);
     }
-  }, [user?.id, showError, showSuccess, showWarning]);
+    
+    const query = searchParams.toString();
+    const response = await this.request(`/service-requests${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+  }
 
-  useEffect(() => {
-    if (user) {
-      fetchClientData();
-      
-      // Listen for invoice changes to refresh client dashboard
-      const handleInvoiceChange = (event: any) => {
-        const { clientId: changedClientId } = event.detail || {};
-        // Only refresh if this client was affected
-        if (!changedClientId || changedClientId === user?.id) {
-          fetchClientData();
-        }
+  async getClientServiceRequests(clientId: string) {
+    const response = await this.request(`/service-requests/my-requests`);
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+  }
+
+  async createServiceRequest(requestData: any) {
+    return this.request('/service-requests', {
+      method: 'POST',
+      body: JSON.stringify(requestData),
+    });
+  }
+
+  async updateServiceRequest(requestId: string, updateData: any) {
+    return this.request(`/service-requests/${requestId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updateData),
+    });
+  }
+
+  async createPriceAdjustment(requestId: string, adjustmentData: any) {
+    return this.request(`/service-requests/${requestId}/price-adjustments`, {
+      method: 'POST',
+      body: JSON.stringify(adjustmentData),
+    });
+  }
+
+  async updatePriceAdjustmentStatus(adjustmentId: string, statusData: any) {
+    return this.request(`/service-requests/price-adjustments/${adjustmentId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify(statusData),
+    });
+  }
+
+  async uploadAttachment(requestId: string, file: File, category: string, description?: string) {
+    // In a real implementation, this would upload to cloud storage
+    // For demo purposes, we'll simulate the upload
+    const attachmentData = {
+      fileName: file.name,
+      fileUrl: URL.createObjectURL(file),
+      fileSize: file.size,
+      fileType: file.type,
+      category,
+      description,
+    };
+
+    return this.request(`/service-requests/${requestId}/attachments`, {
+      method: 'POST',
+      body: JSON.stringify(attachmentData),
+    });
+  }
+
+  async deleteAttachment(attachmentId: string) {
+    return this.request(`/service-requests/attachments/${attachmentId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Invoices
+  async getInvoices(params?: { status?: string; clientId?: string }) {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.append('status', params.status);
+    if (params?.clientId) searchParams.append('clientId', params.clientId);
+    
+    const query = searchParams.toString();
+    const response = await this.request(`/invoices${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+  }
+
+  async getClientInvoices(clientId: string) {
+    const response = await this.request(`/invoices?clientId=${clientId}`);
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+  }
+
+  async createInvoice(invoiceData: any) {
+    return this.request('/invoices', {
+      method: 'POST',
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async updateInvoice(invoiceId: string, invoiceData: any) {
+    return this.request(`/invoices/${invoiceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async updateInvoiceStatus(invoiceId: string, status: string) {
+    return this.request(`/invoices/${invoiceId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async deleteInvoice(invoiceId: string, deletePayments: boolean = false) {
+    return this.request(`/invoices/${invoiceId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ deletePayments }),
+    });
+  }
+
+  async generateInvoicePDF(invoiceId: string) {
+    // Simulate PDF generation
+    return {
+      success: true,
+      pdfUrl: '#',
+      filename: `invoice-${invoiceId}.pdf`
+    };
+  }
+
+  // Payments
+  async getPayments() {
+    const response = await this.request('/payments');
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+  }
+
+  async createHostedPaymentToken(paymentData: any) {
+    return this.request('/payments/hosted-token', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async processPayment(paymentData: any) {
+    return this.request('/payments', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async getCompletedPayments() {
+    return this.request('/payments?status=COMPLETED');
+  }
+
+  async processRefund(refundData: any) {
+    // Simulate refund processing
+    return { success: true, refundId: 'ref_' + Date.now() };
+  }
+
+  async getRefunds() {
+    // Simulate refunds data
+    return { refunds: [] };
+  }
+
+  // Payment Links (Admin only)
+  async getPaymentLinks() {
+    const response = await this.request('/payment-links');
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+  }
+
+  async createPaymentLink(linkData: any) {
+    return this.request('/payment-links', {
+      method: 'POST',
+      body: JSON.stringify(linkData),
+    });
+  }
+
+  async getPaymentLinkByToken(token: string) {
+    return this.request(`/payment-links/token/${token}`);
+  }
+
+  async processPaymentLinkPayment(token: string, paymentData: any) {
+    return this.request(`/payment-links/token/${token}/process-payment`, {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async deletePaymentLink(linkId: string) {
+    return this.request(`/payment-links/${linkId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async resendPaymentLinkEmail(linkId: string) {
+    return this.request(`/payment-links/${linkId}/resend-email`, {
+      method: 'POST',
+    });
+  }
+
+  async sendPaymentLinkEmail(emailData: any) {
+    // Simulate email sending
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ success: true, messageId: 'email_' + Date.now() });
+      }, 1000);
+    });
+  }
+
+  async sendPaymentLinkSMS(smsData: any) {
+    // Simulate SMS sending
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ success: true, messageId: 'sms_' + Date.now() });
+      }, 1000);
+    });
+  }
+
+  // Enhanced Card Charging
+  async chargeCard(paymentData: any) {
+    return this.request('/payments/charge-card', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async processDirectPayment(paymentData: any) {
+    return this.request('/payments/direct', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async savePaymentMethod(clientId: string, cardData: any) {
+    return this.request(`/payments/save-method/${clientId}`, {
+      method: 'POST',
+      body: JSON.stringify(cardData),
+    });
+  }
+
+  async getClientPaymentMethods(clientId: string) {
+    return this.request(`/payments/methods/${clientId}`);
+  }
+
+  async chargeStoredCard(clientId: string, paymentMethodId: string, amount: number, description?: string) {
+    return this.request('/payments/charge-stored', {
+      method: 'POST',
+      body: JSON.stringify({
+        clientId,
+        paymentMethodId,
+        amount,
+        description,
+      }),
+    });
+  }
+
+  // Subscriptions
+  async getSubscriptions() {
+    const response = await this.request('/subscriptions');
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+  }
+
+  async getClientSubscriptions(clientId: string) {
+    return this.request(`/subscriptions/client/${clientId}`);
+  }
+
+  async createSubscription(subscriptionData: any) {
+    return this.request('/subscriptions', {
+      method: 'POST',
+      body: JSON.stringify(subscriptionData),
+    });
+  }
+
+  async updateSubscription(subscriptionId: string, subscriptionData: any) {
+    return this.request(`/subscriptions/${subscriptionId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(subscriptionData),
+    });
+  }
+
+  async updateSubscriptionStatus(subscriptionId: string, status: string) {
+    return this.request(`/subscriptions/${subscriptionId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async deleteSubscription(subscriptionId: string) {
+    return this.request(`/subscriptions/${subscriptionId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Client Transaction History
+  async getClientTransactionHistory(clientId: string) {
+    try {
+      const [invoicesResponse, paymentsResponse] = await Promise.all([
+        this.getInvoices({ clientId }),
+        this.getPayments()
+      ]);
+
+      const clientInvoices = invoicesResponse.invoices || [];
+      const allPayments = paymentsResponse.payments || [];
+      const clientPayments = allPayments.filter(payment => 
+        clientInvoices.some(invoice => invoice.id === payment.invoice_id)
+      );
+
+      // Combine invoices and payments into transaction history
+      const transactions = [
+        ...clientInvoices.map(invoice => ({
+          id: invoice.id,
+          type: 'invoice',
+          description: invoice.description,
+          amount: parseFloat(invoice.amount || invoice.total || '0'),
+          status: invoice.status.toLowerCase(),
+          date: invoice.created_at || invoice.createdAt,
+          invoice_number: invoice.invoice_number || invoice.invoiceNumber,
+          payment_method: invoice.payment_method,
+        })),
+        ...clientPayments.map(payment => ({
+          id: payment.id,
+          type: 'payment',
+          description: `Payment for ${payment.invoice?.description || 'Invoice'}`,
+          amount: parseFloat(payment.amount || '0'),
+          status: payment.status.toLowerCase(),
+          date: payment.created_at || payment.createdAt,
+          payment_method: payment.method,
+          transaction_id: payment.transaction_id,
+        }))
+      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      return {
+        transactions,
+        invoices: clientInvoices,
+        payments: clientPayments,
       };
-      
-      window.addEventListener('invoiceDeleted', handleInvoiceChange);
-      window.addEventListener('invoiceCreated', handleInvoiceChange);
-      window.addEventListener('invoiceUpdated', handleInvoiceChange);
-      
-      return () => {
-        window.removeEventListener('invoiceDeleted', handleInvoiceChange);
-        window.removeEventListener('invoiceCreated', handleInvoiceChange);
-        window.removeEventListener('invoiceUpdated', handleInvoiceChange);
+    } catch (error) {
+      console.error('Error fetching client transaction history:', error);
+      return {
+        transactions: [],
+        invoices: [],
+        payments: [],
+        error: error instanceof Error ? error.message : 'Unknown error'
       };
     }
-  }, [user, fetchClientData]);
+  }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PAID':
-        return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-800';
-      case 'UNPAID':
-        return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800';
-      case 'OVERDUE':
-        return 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-800';
-      default:
-        return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700';
+  // Audit Logs (Admin only)
+  async getAuditLogs(params?: any) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value) searchParams.append(key, String(value));
+      });
     }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 dark:border-emerald-400 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading your dashboard...</p>
-        </div>
-      </div>
-    );
+    
+    const query = searchParams.toString();
+    return this.request(`/audit${query ? `?${query}` : ''}`);
   }
 
-  // Show message if no user data
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No User Data</h2>
-          <p className="text-gray-600 dark:text-gray-400">Please log in to view your dashboard.</p>
-        </div>
-      </div>
-    );
+  // Clients helper method
+  async getClients() {
+    return this.getUsers({ role: 'CLIENT' });
   }
-
-  // Show error state
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="h-8 w-8 text-red-500 dark:text-red-400" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Error Loading Dashboard</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-          <button
-            onClick={() => fetchClientData()}
-            className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Header with refresh button */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Welcome, {user?.fullName}</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Manage your projects and invoices</p>
-        </div>
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => fetchClientData()}
-            disabled={loading}
-            className="inline-flex items-center px-3 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
-          </button>
-          <div className="flex items-center space-x-2">
-            <Package className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-xl font-bold text-gray-900 dark:text-white">Tech Processing LLC</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <FileText className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Invoices</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalInvoices}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <DollarSign className="h-8 w-8 text-gray-600 dark:text-gray-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Amount</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">${stats.totalAmount.toLocaleString()}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Paid Amount</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">${stats.paidAmount.toLocaleString()}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-slate-700 hover:shadow-md transition-shadow">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Clock className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Unpaid Invoices</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.unpaidCount}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Invoices */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Invoices</h2>
-        </div>
-        <div className="overflow-x-auto">
-          {recentInvoices.length > 0 ? (
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
-              <thead className="bg-gray-50 dark:bg-slate-700">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Description
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Amount
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Due Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Payment Method
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
-                {recentInvoices.map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      {invoice.description}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      ${parseFloat(invoice.amount || '0').toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(invoice.status)}`}>
-                        {invoice.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      {new Date(invoice.due_date).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                      {invoice.payment_method || 'Not specified'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="px-6 py-8 text-center">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Invoices Yet</h3>
-              <p className="text-gray-500 dark:text-gray-400">You don't have any invoices at the moment.</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Active Subscriptions */}
-      {activeSubscriptions.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Active Subscriptions</h2>
-            <button
-              onClick={() => setShowSubscriptionsModal(true)}
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-            >
-              View All ({activeSubscriptions.length})
-            </button>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {activeSubscriptions.slice(0, 2).map((subscription) => (
-                <div key={subscription.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                        <Package className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-gray-900">
-                          {subscription.servicePackage?.name || subscription.description || 'Custom Service'}
-                        </h3>
-                        <p className="text-xs text-gray-500">{subscription.frequency} Billing</p>
-                      </div>
-                    </div>
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      subscription.status === 'ACTIVE' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {subscription.status}
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Amount:</span>
-                      <span className="font-semibold text-gray-900">
-                        ${parseFloat(subscription.amount || '0').toLocaleString()}/{subscription.frequency.toLowerCase()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Next Billing:</span>
-                      <span className="text-gray-900">
-                        {subscription.nextBillingDate || subscription.next_billing_date 
-                          ? new Date(subscription.nextBillingDate || subscription.next_billing_date).toLocaleDateString()
-                          : 'Not set'
-                        }
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Total Billed:</span>
-                      <span className="text-gray-900">
-                        ${parseFloat(subscription.totalBilled || subscription.total_billed || '0').toLocaleString()}
-                      </span>
-                    </div>
-                    {subscription.description && (
-                      <div className="mt-3 pt-2 border-t border-gray-100">
-                        <p className="text-xs text-gray-600">{subscription.description}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Subscriptions Modal */}
-      {showSubscriptionsModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                  <Package className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900">Your Active Subscriptions</h2>
-                  <p className="text-sm text-gray-600">Manage your recurring services</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowSubscriptionsModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="flex-1 overflow-y-auto p-6">
-              {activeSubscriptions.length === 0 ? (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Package className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Subscriptions</h3>
-                  <p className="text-gray-500">You don't have any active subscriptions at the moment.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {activeSubscriptions.map((subscription) => (
-                    <div key={subscription.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center">
-                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                            <Package className="h-6 w-6 text-blue-600" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900">
-                              {subscription.servicePackage?.name || subscription.description || 'Custom Service'}
-                            </h3>
-                            <p className="text-sm text-gray-500">{subscription.frequency} Billing</p>
-                          </div>
-                        </div>
-                        <span className={`px-3 py-1 text-sm font-medium rounded-full ${
-                          subscription.status === 'ACTIVE' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {subscription.status}
-                        </span>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Amount:</span>
-                          <span className="font-semibold text-gray-900">
-                            ${parseFloat(subscription.amount || '0').toLocaleString()}/{subscription.frequency.toLowerCase()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Next Billing:</span>
-                          <span className="text-gray-900">
-                            {subscription.nextBillingDate || subscription.next_billing_date 
-                              ? new Date(subscription.nextBillingDate || subscription.next_billing_date).toLocaleDateString()
-                              : 'Not set'
-                            }
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Start Date:</span>
-                          <span className="text-gray-900">
-                            {subscription.startDate || subscription.start_date
-                              ? new Date(subscription.startDate || subscription.start_date).toLocaleDateString()
-                              : 'Not set'
-                            }
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Total Billed:</span>
-                          <span className="text-gray-900">
-                            ${parseFloat(subscription.totalBilled || subscription.total_billed || '0').toLocaleString()}
-                          </span>
-                        </div>
-                        {subscription.servicePackage?.features && subscription.servicePackage.features.length > 0 && (
-                          <div className="pt-3 border-t border-gray-100">
-                            <span className="text-sm text-gray-600 block mb-2">Features:</span>
-                            <div className="flex flex-wrap gap-1">
-                              {subscription.servicePackage.features.map((feature, index) => (
-                                <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
-                                  {feature}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {subscription.description && (
-                          <div className="pt-3 border-t border-gray-100">
-                            <p className="text-sm text-gray-600">{subscription.description}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="border-t border-gray-200 px-6 py-4">
-              <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-500">
-                  {activeSubscriptions.length} active subscription{activeSubscriptions.length !== 1 ? 's' : ''}
-                </div>
-                <button
-                  onClick={() => setShowSubscriptionsModal(false)}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Service Requests */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 mb-6">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Service Requests</h2>
-            <a
-              href="/client/services"
-              className="text-sm text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium"
-            >
-              Browse Services
-            </a>
-          </div>
-        </div>
-        <div className="p-6">
-          {serviceRequests.length > 0 ? (
-            <div className="space-y-4">
-              {serviceRequests.slice(0, 3).map((request) => (
-                <div key={request.id} className="border border-gray-200 dark:border-slate-600 rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                          {request.isCustomQuote ? 'Custom Quote Request' : (request.service?.name || 'Service Request')}
-                        </h3>
-                        <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(request.status)}`}>
-                          {request.status === 'PENDING' && <Clock className="h-3 w-3 mr-1" />}
-                          {request.status === 'REVIEWING' && <Eye className="h-3 w-3 mr-1" />}
-                          {request.status === 'QUOTE_READY' && <DollarSign className="h-3 w-3 mr-1" />}
-                          {request.status === 'APPROVED' && <CheckCircle className="h-3 w-3 mr-1" />}
-                          {request.status === 'REJECTED' && <XCircle className="h-3 w-3 mr-1" />}
-                          {request.status === 'IN_PROGRESS' && <Package className="h-3 w-3 mr-1" />}
-                          {request.status === 'REVIEW' && <Eye className="h-3 w-3 mr-1" />}
-                          {request.status === 'COMPLETED' && <CheckCircle className="h-3 w-3 mr-1" />}
-                          {request.status}
-                        </span>
-                        {request.isCustomQuote && (
-                          <span className="inline-flex items-center px-1 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-400 border border-purple-200 dark:border-purple-800">
-                            CUSTOM
-                          </span>
-                        )}
-                      </div>
-                      
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
-                        {request.description}
-                      </p>
-                      
-                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                        <span>{new Date(request.createdAt).toLocaleDateString()}</span>
-                        {request.budget && (
-                          <span>Budget: ${request.budget.toLocaleString()}</span>
-                        )}
-                        {request.quoteAmount && (
-                          <span>Quote: ${request.quoteAmount.toLocaleString()}</span>
-                        )}
-                        {request.timeline && (
-                          <span>Timeline: {request.timeline}</span>
-                        )}
-                      </div>
-                      
-                      {/* Delivery Information */}
-                      {(request.expectedStartDate || request.expectedDeliveryDate) && (
-                        <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
-                          <div className="text-xs text-blue-800 dark:text-blue-200">
-                            {request.expectedStartDate && (
-                              <div><strong>Expected Start:</strong> {new Date(request.expectedStartDate).toLocaleDateString()}</div>
-                            )}
-                            {request.expectedDeliveryDate && (
-                              <div><strong>Expected Delivery:</strong> {new Date(request.expectedDeliveryDate).toLocaleDateString()}</div>
-                            )}
-                            {request.actualStartDate && (
-                              <div><strong>Actual Start:</strong> {new Date(request.actualStartDate).toLocaleDateString()}</div>
-                            )}
-                            {request.actualDeliveryDate && (
-                              <div><strong>Actual Delivery:</strong> {new Date(request.actualDeliveryDate).toLocaleDateString()}</div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Payment Information */}
-                      {(request.quoteAmount || request.paymentTerms) && (
-                        <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
-                          <div className="text-xs text-green-800 dark:text-green-200">
-                            {request.quoteAmount && (
-                              <div><strong>Quote Amount:</strong> ${request.quoteAmount.toLocaleString()}</div>
-                            )}
-                            {request.paymentTerms && (
-                              <div><strong>Payment Terms:</strong> {request.paymentTerms}</div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Status-specific Information */}
-                      {request.status === 'QUOTE_READY' && request.quoteAmount && (
-                        <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
-                          <div className="flex items-start">
-                            <div className="flex-shrink-0">
-                              <DollarSign className="h-4 w-4 text-blue-500 dark:text-blue-400 mt-0.5" />
-                            </div>
-                            <div className="ml-2">
-                              <div className="text-xs text-blue-800 dark:text-blue-200">
-                                <strong>Quote Ready:</strong> Your quote for ${request.quoteAmount.toLocaleString()} is ready for review.
-                              </div>
-                              <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                                Review the quote details and let us know if you'd like to proceed.
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {request.status === 'APPROVED' && request.quoteAmount && (
-                        <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
-                          <div className="flex items-start">
-                            <div className="flex-shrink-0">
-                              <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400 mt-0.5" />
-                            </div>
-                            <div className="ml-2">
-                              <div className="text-xs text-green-800 dark:text-green-200">
-                                <strong>Project Approved:</strong> Your project has been approved! An invoice for ${request.quoteAmount.toLocaleString()} has been generated.
-                              </div>
-                              <div className="text-xs text-green-700 dark:text-green-300 mt-1">
-                                Please check your invoices section and make payment to begin work.
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {request.status === 'IN_PROGRESS' && (
-                        <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded border border-purple-200 dark:border-purple-800">
-                          <div className="flex items-start">
-                            <div className="flex-shrink-0">
-                              <Package className="h-4 w-4 text-purple-500 dark:text-purple-400 mt-0.5" />
-                            </div>
-                            <div className="ml-2">
-                              <div className="text-xs text-purple-800 dark:text-purple-200">
-                                <strong>Work in Progress:</strong> Your project is currently being developed.
-                              </div>
-                              <div className="text-xs text-purple-700 dark:text-purple-300 mt-1">
-                                We'll keep you updated on the progress and notify you when it's ready for review.
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {request.status === 'COMPLETED' && (
-                        <div className="mt-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded border border-emerald-200 dark:border-emerald-800">
-                          <div className="flex items-start">
-                            <div className="flex-shrink-0">
-                              <CheckCircle className="h-4 w-4 text-emerald-500 dark:text-emerald-400 mt-0.5" />
-                            </div>
-                            <div className="ml-2">
-                              <div className="text-xs text-emerald-800 dark:text-emerald-200">
-                                <strong>Project Completed:</strong> Your project has been successfully delivered!
-                              </div>
-                              <div className="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
-                                Thank you for choosing Tech Processing LLC. We hope you're satisfied with the results.
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {request.status === 'REJECTED' && (
-                        <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
-                          <div className="flex items-start">
-                            <div className="flex-shrink-0">
-                              <XCircle className="h-4 w-4 text-red-500 dark:text-red-400 mt-0.5" />
-                            </div>
-                            <div className="ml-2">
-                              <div className="text-xs text-red-800 dark:text-red-200">
-                                <strong>Request Declined:</strong> Unfortunately, we cannot proceed with this request at this time.
-                              </div>
-                              <div className="text-xs text-red-700 dark:text-red-300 mt-1">
-                                Please contact us if you have questions or would like to discuss alternatives.
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {request.adminNotes && (
-                        <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
-                          <p className="text-xs text-yellow-800 dark:text-yellow-200">
-                            <strong>Our Response:</strong> {request.adminNotes}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              {serviceRequests.length > 3 && (
-                <div className="text-center pt-2">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Showing 3 of {serviceRequests.length} requests
-                  </p>
-                  <a
-                    href="/client/services"
-                    className="text-sm text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium ml-2"
-                  >
-                    View All Requests
-                  </a>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Package className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Service Requests</h3>
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
-                You haven't submitted any service requests yet. Get started by browsing our services or requesting a custom quote.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <a
-                  href="/client/services"
-                  className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors"
-                >
-                  <Package className="h-4 w-4 mr-2" />
-                  Browse Services
-                </a>
-                <a
-                  href="/client/services"
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Request Custom Quote
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-6 border border-emerald-200 dark:border-emerald-800">
-        <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <a
-              href="/client/services"
-              className="flex flex-col items-center p-4 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-emerald-700 hover:shadow-md transition-all duration-200 hover:-translate-y-1"
-            >
-              <Package className="h-8 w-8 text-emerald-600 dark:text-emerald-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900 dark:text-white">Browse Services</span>
-            </a>
-            <a
-              href="/client/invoices"
-              className="flex flex-col items-center p-4 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-emerald-700 hover:shadow-md transition-all duration-200 hover:-translate-y-1"
-            >
-              <FileText className="h-8 w-8 text-emerald-600 dark:text-emerald-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900 dark:text-white">View Invoices</span>
-            </a>
-            <a
-              href="mailto:support@techprocessing.com"
-              className="flex flex-col items-center p-4 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-emerald-700 hover:shadow-md transition-all duration-200 hover:-translate-y-1"
-            >
-              <UserCheck className="h-8 w-8 text-emerald-600 dark:text-emerald-400 mb-2" />
-              <span className="text-sm font-medium text-gray-900 dark:text-white">Contact Support</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 }
+
+export const apiClient = new ApiClient();

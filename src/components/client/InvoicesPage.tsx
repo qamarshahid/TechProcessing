@@ -1,212 +1,1304 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { apiClient } from '../../lib/api';
-import { useAuth } from '../../contexts/AuthContext';
-import { useNotifications } from '../common/NotificationSystem';
-import { logger } from '../../lib/logger';
-import { FileText, Download, CreditCard, DollarSign, AlertCircle, RefreshCw, Eye } from 'lucide-react';
+class ApiClient {
+  private baseURL: string;
+  private token: string | null = null;
 
-export function InvoicesPage() {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const { showError, showSuccess, showWarning } = useNotifications();
-  
-  const [invoices, setInvoices] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState('ALL');
+  constructor() {
+    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
+  }
 
-  const fetchInvoices = useCallback(async () => {
-    if (!user?.id) {
-      setInvoices([]);
-      setLoading(false);
-      return;
+  setToken(token: string | null) {
+    this.token = token;
+    if (token) {
+      localStorage.setItem('auth_token', token);
+    } else {
+      localStorage.removeItem('auth_token');
     }
+  }
 
-    setLoading(true);
-    setError(null);
+  private async request(endpoint: string, options: RequestInit = {}) {
+    const url = `${this.baseURL}${endpoint}`;
+    
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
 
     try {
-      // Fetch client-specific invoices
-      const response = await apiClient.getClientInvoices(user.id);
-      let clientInvoices = response.invoices || [];
-      
-      // Filter by status if not 'ALL'
-      if (filter !== 'ALL') {
-        clientInvoices = clientInvoices.filter(invoice => invoice.status === filter);
+      const response = await fetch(url, {
+        ...options,
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return await response.json();
       }
       
-      setInvoices(clientInvoices);
-      showSuccess('Invoices Loaded', `Successfully loaded ${clientInvoices.length} invoices.`);
+      return await response.text();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      logger.error('Error fetching invoices:', error);
-      setError(errorMessage);
-      showError('Failed to Load Invoices', 'Unable to load your invoices. Please try again later.');
-      setInvoices([]);
-    } finally {
-      setLoading(false);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Network error occurred');
     }
-  }, [user?.id, filter, showError, showSuccess]);
-
-  useEffect(() => {
-    fetchInvoices();
-  }, [fetchInvoices]);
-
-  const handlePayInvoice = (invoice: any) => {
-    navigate(`/payment/${invoice.id}`);
-  };
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PAID':
-        return 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-800';
-      case 'UNPAID':
-        return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800';
-      case 'OVERDUE':
-        return 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-800';
-      default:
-        return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700';
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 dark:border-emerald-400 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading your invoices...</p>
-        </div>
-      </div>
-    );
   }
 
-  // Show error state
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="h-8 w-8 text-red-500 dark:text-red-400" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Error Loading Invoices</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-          <button
-            onClick={() => fetchInvoices()}
-            className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
+  // Authentication
+  async login(email: string, password: string) {
+    const response = await this.request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    this.setToken(response.access_token);
+    return response;
   }
 
-  return (
-    <div className="space-y-6">
-      {/* Header with refresh button */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Invoices</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400">View and manage your project invoices</p>
-        </div>
-        <button
-          onClick={() => fetchInvoices()}
-          disabled={loading}
-          className="inline-flex items-center px-3 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
-      </div>
+  async register(email: string, password: string, fullName: string, role: string) {
+    const response = await this.request('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, fullName, role }),
+    });
+    this.setToken(response.access_token);
+    return response;
+  }
 
-      {/* Filter Tabs */}
-      <div className="border-b border-gray-200 dark:border-slate-700">
-        <nav className="-mb-px flex space-x-8">
-          {['ALL', 'PAID', 'UNPAID', 'OVERDUE'].map((status) => (
-            <button
-              key={status}
-              onClick={() => setFilter(status)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                filter === status
-                  ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
-              }`}
-            >
-              {status}
-            </button>
-          ))}
-        </nav>
-      </div>
+  async logout() {
+    this.setToken(null);
+  }
 
-      {/* Invoices Grid */}
-      {invoices.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {invoices.map((invoice) => (
-            <div key={invoice.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
-                    <FileText className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Invoice #{invoice.id}</h3>
-                    <div className="flex items-center text-emerald-600 dark:text-emerald-400">
-                      <DollarSign className="h-4 w-4" />
-                      <span className="font-bold">{parseFloat(invoice.amount || '0').toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(invoice.status)}`}>
-                  {invoice.status}
-                </span>
-              </div>
-              
-              <p className="text-gray-600 dark:text-gray-400 mb-4">{invoice.description}</p>
-              
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">Due Date:</span>
-                  <span className="text-gray-900 dark:text-white">{new Date(invoice.due_date).toLocaleDateString()}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">Payment Method:</span>
-                  <span className="text-gray-900 dark:text-white">{invoice.payment_method || 'Not specified'}</span>
-                </div>
-              </div>
-              
-              <div className="flex space-x-2">
-                <button className="flex-1 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </button>
-                {invoice.status === 'UNPAID' && (
-                  <button 
-                    onClick={() => handlePayInvoice(invoice)}
-                    className="flex-1 bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center"
-                  >
-                    <CreditCard className="h-4 w-4 mr-2" />
-                    Pay Now
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FileText className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Invoices Found</h3>
-          <p className="text-gray-500 dark:text-gray-400">
-            {filter === 'ALL' 
-              ? "You don't have any invoices yet." 
-              : `No ${filter.toLowerCase()} invoices found.`
-            }
-          </p>
-        </div>
-      )}
-    </div>
-  );
+  async getProfile() {
+    return this.request('/auth/profile');
+  }
+
+  // Users Management (Admin only)
+  async getUsers(params?: { role?: string; includeInactive?: boolean }) {
+    const searchParams = new URLSearchParams();
+    if (params?.role) searchParams.append('role', params.role);
+    if (params?.includeInactive) searchParams.append('includeInactive', 'true');
+    
+    const query = searchParams.toString();
+    const response = await this.request(`/users${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+  }
+
+  async createUser(userData: any) {
+    return this.request('/users', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async updateUser(userId: string, userData: any) {
+    return this.request(`/users/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async deleteUser(userId: string, hardDelete: boolean = false) {
+    return this.request(`/users/${userId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ hardDelete }),
+    });
+  }
+
+  async updateClient(clientId: string, clientData: any) {
+    return this.request(`/users/${clientId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(clientData),
+    });
+  }
+
+  async updateClientCredentials(clientId: string, credentialsData: any) {
+    return this.request(`/users/${clientId}/credentials`, {
+      method: 'PATCH',
+      body: JSON.stringify(credentialsData),
+    });
+  }
+
+  // Agent Management (Admin only)
+  async getAgents() {
+    const response = await this.request('/agent-management');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+  }
+
+  async createAgent(agentData: any) {
+    return this.request('/agent-management', {
+      method: 'POST',
+      body: JSON.stringify(agentData),
+    });
+  }
+
+  async deleteAgent(agentId: string, hardDelete: boolean = false) {
+    return this.request(`/agent-management/${agentId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ hardDelete }),
+    });
+  }
+
+  async updateAgentStatus(agentId: string, isActive: boolean) {
+    return this.request(`/agent-management/${agentId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    });
+  }
+
+  async updateAgentCommissionRates(agentId: string, agentRate: number, closerRate: number) {
+    return this.request(`/agent-management/${agentId}/commission-rates`, {
+      method: 'PATCH',
+      body: JSON.stringify({ 
+        agentCommissionRate: agentRate, 
+        closerCommissionRate: closerRate 
+      }),
+    });
+  }
+
+  // Agent Sales (Agent & Admin)
+  async getOwnAgentProfile() {
+    const response = await this.request('/agents/stats');
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+  }
+
+  async getAgentSales() {
+    const response = await this.request('/agents/sales/me');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+  }
+
+  async getAllAgentSales() {
+    const response = await this.request('/agents/sales/all');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+  }
+
+  async createAgentSale(saleData: any) {
+    return this.request('/agents/sales', {
+      method: 'POST',
+      body: JSON.stringify(saleData),
+    });
+  }
+
+  async resubmitAgentSale(resubmitData: any) {
+    return this.request('/agents/sales/resubmit', {
+      method: 'POST',
+      body: JSON.stringify(resubmitData),
+    });
+  }
+
+  async updateSaleStatus(saleId: string, status: string) {
+    return this.request(`/agents/sales/${saleId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async updateCommissionStatus(saleId: string, status: string) {
+    return this.request(`/agents/sales/${saleId}/commission-status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async updateSaleNotes(saleId: string, notes: string) {
+    return this.request(`/agents/sales/${saleId}/notes`, {
+      method: 'PATCH',
+      body: JSON.stringify({ notes }),
+    });
+  }
+
+  async getAgentMonthlyStats() {
+    return this.request('/agents/monthly-stats');
+  }
+
+  // Closer Management (Admin only)
+  async getAllClosers() {
+    return this.request('/closers');
+  }
+
+  async getActiveClosers() {
+    return this.request('/agents/closers/active');
+  }
+
+  async createCloser(closerData: any) {
+    return this.request('/closers', {
+      method: 'POST',
+      body: JSON.stringify(closerData),
+    });
+  }
+
+  async updateCloser(closerId: string, closerData: any) {
+    return this.request(`/closers/${closerId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(closerData),
+    });
+  }
+
+  async deleteCloser(closerId: string) {
+    return this.request(`/closers/${closerId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getCloserStats(closerId: string) {
+    return this.request(`/closers/${closerId}/stats`);
+  }
+
+  async getCloserSales(closerId: string) {
+    return this.request(`/closers/${closerId}/sales`);
+  }
+
+  async getAllClosersStats() {
+    return this.request('/closers/stats');
+  }
+
+  async getFilteredCloserStats(filters: any) {
+    const searchParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) searchParams.append(key, String(value));
+    });
+    
+    const query = searchParams.toString();
+    return this.request(`/closers/stats/filtered${query ? `?${query}` : ''}`);
+  }
+
+  async getCloserAuditData(filters: any) {
+    const searchParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) searchParams.append(key, String(value));
+    });
+    
+    const query = searchParams.toString();
+    return this.request(`/closers/audit${query ? `?${query}` : ''}`);
+  }
+
+  // Service Packages
+  async getServices() {
+    const response = await this.request('/service-packages');
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+  }
+
+  async createService(serviceData: any) {
+    return this.request('/service-packages', {
+      method: 'POST',
+      body: JSON.stringify(serviceData),
+    });
+  }
+
+  async updateService(serviceId: string, serviceData: any) {
+    return this.request(`/service-packages/${serviceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(serviceData),
+    });
+  }
+
+  async deleteService(serviceId: string) {
+    return this.request(`/service-packages/${serviceId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Service Requests (Client & Admin)
+  async getServiceRequests(filters?: any) {
+    const searchParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) searchParams.append(key, String(value));
+      });
+    }
+    
+    const query = searchParams.toString();
+    const response = await this.request(`/service-requests${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+  }
+
+  async getClientServiceRequests(clientId: string) {
+    const response = await this.request(`/service-requests/my-requests`);
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+  }
+
+  async createServiceRequest(requestData: any) {
+    return this.request('/service-requests', {
+      method: 'POST',
+      body: JSON.stringify(requestData),
+    });
+  }
+
+  async updateServiceRequest(requestId: string, updateData: any) {
+    return this.request(`/service-requests/${requestId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updateData),
+    });
+  }
+
+  async createPriceAdjustment(requestId: string, adjustmentData: any) {
+    return this.request(`/service-requests/${requestId}/price-adjustments`, {
+      method: 'POST',
+      body: JSON.stringify(adjustmentData),
+    });
+  }
+
+  async updatePriceAdjustmentStatus(adjustmentId: string, statusData: any) {
+    return this.request(`/service-requests/price-adjustments/${adjustmentId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify(statusData),
+    });
+  }
+
+  async uploadAttachment(requestId: string, file: File, category: string, description?: string) {
+    // In a real implementation, this would upload to cloud storage
+    // For demo purposes, we'll simulate the upload
+    const attachmentData = {
+      fileName: file.name,
+      fileUrl: URL.createObjectURL(file),
+      fileSize: file.size,
+      fileType: file.type,
+      category,
+      description,
+    };
+
+    return this.request(`/service-requests/${requestId}/attachments`, {
+      method: 'POST',
+      body: JSON.stringify(attachmentData),
+    });
+  }
+
+  async deleteAttachment(attachmentId: string) {
+    return this.request(`/service-requests/attachments/${attachmentId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Invoices
+  async getInvoices(params?: { status?: string; clientId?: string }) {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.append('status', params.status);
+    if (params?.clientId) searchParams.append('clientId', params.clientId);
+    
+    const query = searchParams.toString();
+    const response = await this.request(`/invoices${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+  }
+
+  async getClientInvoices(clientId: string) {
+    const response = await this.request(`/invoices?clientId=${clientId}`);
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+  }
+
+  async createInvoice(invoiceData: any) {
+    return this.request('/invoices', {
+      method: 'POST',
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async updateInvoice(invoiceId: string, invoiceData: any) {
+    return this.request(`/invoices/${invoiceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(invoiceData),
+    });
+  }
+
+  async updateInvoiceStatus(invoiceId: string, status: string) {
+    return this.request(`/invoices/${invoiceId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async deleteInvoice(invoiceId: string, deletePayments: boolean = false) {
+    return this.request(`/invoices/${invoiceId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ deletePayments }),
+    });
+  }
+
+  async generateInvoicePDF(invoiceId: string) {
+    // Simulate PDF generation
+    return {
+      success: true,
+      pdfUrl: '#',
+      filename: `invoice-${invoiceId}.pdf`
+    };
+  }
+
+  // Payments
+  async getPayments() {
+    const response = await this.request('/payments');
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+  }
+
+  async createHostedPaymentToken(paymentData: any) {
+    return this.request('/payments/hosted-token', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async processPayment(paymentData: any) {
+    return this.request('/payments', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async getCompletedPayments() {
+    return this.request('/payments?status=COMPLETED');
+  }
+
+  async processRefund(refundData: any) {
+    // Simulate refund processing
+    return { success: true, refundId: 'ref_' + Date.now() };
+  }
+
+  async getRefunds() {
+    // Simulate refunds data
+    return { refunds: [] };
+  }
+
+  // Payment Links (Admin only)
+  async getPaymentLinks() {
+    const response = await this.request('/payment-links');
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+  }
+
+  async createPaymentLink(linkData: any) {
+    return this.request('/payment-links', {
+      method: 'POST',
+      body: JSON.stringify(linkData),
+    });
+  }
+
+  async getPaymentLinkByToken(token: string) {
+    return this.request(`/payment-links/token/${token}`);
+  }
+
+  async processPaymentLinkPayment(token: string, paymentData: any) {
+    return this.request(`/payment-links/token/${token}/process-payment`, {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async deletePaymentLink(linkId: string) {
+    return this.request(`/payment-links/${linkId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async resendPaymentLinkEmail(linkId: string) {
+    return this.request(`/payment-links/${linkId}/resend-email`, {
+      method: 'POST',
+    });
+  }
+
+  async sendPaymentLinkEmail(emailData: any) {
+    // Simulate email sending
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ success: true, messageId: 'email_' + Date.now() });
+      }, 1000);
+    });
+  }
+
+  async sendPaymentLinkSMS(smsData: any) {
+    // Simulate SMS sending
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ success: true, messageId: 'sms_' + Date.now() });
+      }, 1000);
+    });
+  }
+
+  // Enhanced Card Charging
+  async chargeCard(paymentData: any) {
+    return this.request('/payments/charge-card', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async processDirectPayment(paymentData: any) {
+    return this.request('/payments/direct', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async savePaymentMethod(clientId: string, cardData: any) {
+    return this.request(`/payments/save-method/${clientId}`, {
+      method: 'POST',
+      body: JSON.stringify(cardData),
+    });
+  }
+
+  async getClientPaymentMethods(clientId: string) {
+    return this.request(`/payments/methods/${clientId}`);
+  }
+
+  async chargeStoredCard(clientId: string, paymentMethodId: string, amount: number, description?: string) {
+    return this.request('/payments/charge-stored', {
+      method: 'POST',
+      body: JSON.stringify({
+        clientId,
+        paymentMethodId,
+        amount,
+        description,
+      }),
+    });
+  }
+
+  // Subscriptions
+  async getSubscriptions() {
+    const response = await this.request('/subscriptions');
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+  }
+
+  async getClientSubscriptions(clientId: string) {
+    return this.request(`/subscriptions/client/${clientId}`);
+  }
+
+  async createSubscription(subscriptionData: any) {
+    return this.request('/subscriptions', {
+      method: 'POST',
+      body: JSON.stringify(subscriptionData),
+    });
+  }
+
+  async updateSubscription(subscriptionId: string, subscriptionData: any) {
+    return this.request(`/subscriptions/${subscriptionId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(subscriptionData),
+    });
+  }
+
+  async updateSubscriptionStatus(subscriptionId: string, status: string) {
+    return this.request(`/subscriptions/${subscriptionId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async deleteSubscription(subscriptionId: string) {
+    return this.request(`/subscriptions/${subscriptionId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Client Transaction History
+  async getClientTransactionHistory(clientId: string) {
+    try {
+      const [invoicesResponse, paymentsResponse] = await Promise.all([
+        this.getInvoices({ clientId }),
+        this.getPayments()
+      ]);
+
+      const clientInvoices = invoicesResponse.invoices || [];
+      const allPayments = paymentsResponse.payments || [];
+      const clientPayments = allPayments.filter(payment => 
+        clientInvoices.some(invoice => invoice.id === payment.invoice_id)
+      );
+
+      // Combine invoices and payments into transaction history
+      const transactions = [
+        ...clientInvoices.map(invoice => ({
+          id: invoice.id,
+          type: 'invoice',
+          description: invoice.description,
+          amount: parseFloat(invoice.amount || invoice.total || '0'),
+          status: invoice.status.toLowerCase(),
+          date: invoice.created_at || invoice.createdAt,
+          invoice_number: invoice.invoice_number || invoice.invoiceNumber,
+          payment_method: invoice.payment_method,
+        })),
+        ...clientPayments.map(payment => ({
+          id: payment.id,
+          type: 'payment',
+          description: `Payment for ${payment.invoice?.description || 'Invoice'}`,
+          amount: parseFloat(payment.amount || '0'),
+          status: payment.status.toLowerCase(),
+          date: payment.created_at || payment.createdAt,
+          payment_method: payment.method,
+          transaction_id: payment.transaction_id,
+        }))
+      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      return {
+        transactions,
+        invoices: clientInvoices,
+        payments: clientPayments,
+      };
+    } catch (error) {
+      console.error('Error fetching client transaction history:', error);
+      return {
+        transactions: [],
+        invoices: [],
+        payments: [],
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  // Audit Logs (Admin only)
+  async getAuditLogs(params?: any) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value) searchParams.append(key, String(value));
+      });
+    }
+    
+    const query = searchParams.toString();
+    return this.request(`/audit${query ? `?${query}` : ''}`);
+  }
+
+  // Clients helper method
+  async getClients() {
+    return this.getUsers({ role: 'CLIENT' });
+  }
 }
+
+export const apiClient = new ApiClient();

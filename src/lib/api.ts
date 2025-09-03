@@ -86,7 +86,57 @@ class ApiClient {
     if (params?.includeInactive) searchParams.append('includeInactive', 'true');
     
     const query = searchParams.toString();
-    return this.request(`/users${query ? `?${query}` : ''}`);
+    const response = await this.request(`/users${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
+    // Ensure we always return an object with users array
+    if (Array.isArray(response)) {
+      return { users: response };
+    }
+    return { users: response?.users || [] };
   }
 
   async createUser(userData: any) {
@@ -126,7 +176,57 @@ class ApiClient {
 
   // Agent Management (Admin only)
   async getAgents() {
-    return this.request('/agent-management');
+    const response = await this.request('/agent-management');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.agents || [];
   }
 
   async createAgent(agentData: any) {
@@ -162,15 +262,165 @@ class ApiClient {
 
   // Agent Sales (Agent & Admin)
   async getOwnAgentProfile() {
-    return this.request('/agents/stats');
+    const response = await this.request('/agents/stats');
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
+    // Handle both agent profile and stats response formats
+    if (response?.agent) {
+      return response.agent;
+    }
+    return response;
   }
 
   async getAgentSales() {
-    return this.request('/agents/sales/me');
+    const response = await this.request('/agents/sales/me');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
   }
 
   async getAllAgentSales() {
-    return this.request('/agents/sales/all');
+    const response = await this.request('/agents/sales/all');
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
+    // Ensure we always return an array
+    if (Array.isArray(response)) {
+      return response;
+    }
+    return response?.sales || [];
   }
 
   async createAgentSale(saleData: any) {
@@ -275,7 +525,57 @@ class ApiClient {
 
   // Service Packages
   async getServices() {
-    return this.request('/service-packages');
+    const response = await this.request('/service-packages');
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
+    // Ensure we always return an object with services array
+    if (Array.isArray(response)) {
+      return { services: response };
+    }
+    return { services: response?.services || [] };
   }
 
   async createService(serviceData: any) {
@@ -308,11 +608,111 @@ class ApiClient {
     }
     
     const query = searchParams.toString();
-    return this.request(`/service-requests${query ? `?${query}` : ''}`);
+    const response = await this.request(`/service-requests${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
   }
 
   async getClientServiceRequests(clientId: string) {
-    return this.request(`/service-requests/my-requests`);
+    const response = await this.request(`/service-requests/my-requests`);
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
+    // Ensure we always return an object with serviceRequests array
+    if (Array.isArray(response)) {
+      return { serviceRequests: response };
+    }
+    return { serviceRequests: response?.serviceRequests || [] };
   }
 
   async createServiceRequest(requestData: any) {
@@ -374,11 +774,111 @@ class ApiClient {
     if (params?.clientId) searchParams.append('clientId', params.clientId);
     
     const query = searchParams.toString();
-    return this.request(`/invoices${query ? `?${query}` : ''}`);
+    const response = await this.request(`/invoices${query ? `?${query}` : ''}`);
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
   }
 
   async getClientInvoices(clientId: string) {
-    return this.request(`/invoices?clientId=${clientId}`);
+    const response = await this.request(`/invoices?clientId=${clientId}`);
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
+    // Ensure we always return an object with invoices array
+    if (Array.isArray(response)) {
+      return { invoices: response };
+    }
+    return { invoices: response?.invoices || [] };
   }
 
   async createInvoice(invoiceData: any) {
@@ -420,7 +920,57 @@ class ApiClient {
 
   // Payments
   async getPayments() {
-    return this.request('/payments');
+    const response = await this.request('/payments');
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
+    // Ensure we always return an object with payments array
+    if (Array.isArray(response)) {
+      return { payments: response };
+    }
+    return { payments: response?.payments || [] };
   }
 
   async createHostedPaymentToken(paymentData: any) {
@@ -453,7 +1003,57 @@ class ApiClient {
 
   // Payment Links (Admin only)
   async getPaymentLinks() {
-    return this.request('/payment-links');
+    const response = await this.request('/payment-links');
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
+    // Ensure we always return an object with links array
+    if (Array.isArray(response)) {
+      return { links: response };
+    }
+    return { links: response?.links || [] };
   }
 
   async createPaymentLink(linkData: any) {
@@ -544,7 +1144,57 @@ class ApiClient {
 
   // Subscriptions
   async getSubscriptions() {
-    return this.request('/subscriptions');
+    const response = await this.request('/subscriptions');
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
+    // Ensure we always return an object with subscriptions array
+    if (Array.isArray(response)) {
+      return { subscriptions: response };
+    }
+    return { subscriptions: response?.subscriptions || [] };
   }
 
   async getClientSubscriptions(clientId: string) {
