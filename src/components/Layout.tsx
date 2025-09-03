@@ -82,6 +82,7 @@ export function Layout({ children }: LayoutProps) {
       items: [
         { path: '/admin/payments', label: 'Payment History', icon: CreditCard },
         { path: '/admin/payment-links', label: 'Payment Links', icon: LinkIcon },
+        { path: '/admin/payment-processing', label: 'Process Payments', icon: Zap },
         { path: '/admin/refunds', label: 'Refunds', icon: Undo2 },
       ]
     },
