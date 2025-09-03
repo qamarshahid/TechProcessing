@@ -47,7 +47,7 @@ export function ServicesPage() {
     const customService = {
       id: 'custom',
       name: 'Custom Solution',
-      description: 'Custom solution tailored to your specific needs',
+      description: 'Tell us about your unique project requirements and we\'ll provide a detailed custom quote tailored specifically to your needs. Our team will work with you to understand your goals and deliver the perfect solution.',
       price: 0
     };
     setSelectedService(customService);
@@ -180,18 +180,32 @@ export function ServicesPage() {
       )}
 
       {/* Contact Section */}
-      <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-6 border border-emerald-200 dark:border-emerald-800">
+      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-8 border border-emerald-200 dark:border-emerald-800 shadow-lg">
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Need a Custom Solution?</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Don't see what you're looking for? We create custom solutions tailored to your specific needs.
+          <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <Package className="h-8 w-8 text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Need a Custom Solution?</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto leading-relaxed">
+            Don't see exactly what you're looking for? We specialize in creating custom solutions tailored to your unique business requirements. 
+            From complex web applications to specialized integrations, our team can bring your vision to life.
           </p>
-          <button 
-            onClick={handleCustomQuote}
-            className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white py-2 px-6 rounded-lg transition-colors"
-          >
-            Get Custom Quote
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button 
+              onClick={handleCustomQuote}
+              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 dark:from-emerald-500 dark:to-teal-500 dark:hover:from-emerald-600 dark:hover:to-teal-600 text-white py-3 px-8 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 flex items-center justify-center"
+            >
+              <Target className="h-5 w-5 mr-2" />
+              Request Custom Quote
+            </button>
+            <a
+              href="mailto:contact@techprocessing.com"
+              className="bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 py-3 px-8 rounded-xl font-bold transition-all duration-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 flex items-center justify-center"
+            >
+              <UserCheck className="h-5 w-5 mr-2" />
+              Contact Sales Team
+            </a>
+          </div>
         </div>
       </div>
 

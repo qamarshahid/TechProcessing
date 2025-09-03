@@ -680,7 +680,7 @@ export function ServiceRequestsPage() {
                         Invoice Auto-Generation
                       </h3>
                       <p className="text-sm text-blue-700 dark:text-blue-400 mt-1">
-                        When you approve this request, an invoice will be automatically generated for the client with the quote amount.
+                        When you approve this request with a quote amount, an invoice will be automatically generated for the client. The client must pay the invoice before work can begin.
                       </p>
                     </div>
                   </div>
@@ -705,6 +705,23 @@ export function ServiceRequestsPage() {
                 </div>
               )}
 
+              {editForm.status === 'QUOTE_READY' && !editForm.quoteAmount && (
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <AlertCircle className="h-5 w-5 text-yellow-500 dark:text-yellow-400" />
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                        Quote Amount Required
+                      </h3>
+                      <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
+                        Please set a quote amount before marking as QUOTE_READY. This will be used to generate the invoice when approved.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="flex items-center justify-end space-x-3 pt-4">
                 <button
                   onClick={() => {
@@ -717,7 +734,8 @@ export function ServiceRequestsPage() {
                 </button>
                 <button
                   onClick={handleUpdateRequest}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors"
+                  disabled={editForm.status === 'QUOTE_READY' && !editForm.quoteAmount}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Update Request
                 </button>

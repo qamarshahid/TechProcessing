@@ -154,7 +154,7 @@ export function ServiceRequestModal({
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Service Info */}
-          <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
+          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg p-6 border border-emerald-200 dark:border-emerald-800 shadow-sm">
             <h3 className="font-medium text-emerald-900 dark:text-emerald-100 mb-2">
               {service.id === 'custom' ? 'Custom Solution Request' : 'Service Details'}
             </h3>
@@ -167,9 +167,14 @@ export function ServiceRequestModal({
               </p>
             )}
             {service.id === 'custom' && (
-              <p className="text-sm font-medium text-emerald-800 dark:text-emerald-200 mt-2">
-                Custom pricing will be provided based on your requirements
-              </p>
+              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center">
+                  <Target className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" />
+                  <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    Custom pricing will be provided based on your specific requirements
+                  </span>
+                </div>
+              </div>
             )}
           </div>
 
@@ -184,9 +189,9 @@ export function ServiceRequestModal({
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white ${
                 errors.description ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-slate-600'
               }`}
-              rows={4}
+              rows={service.id === 'custom' ? 6 : 4}
               placeholder={service.id === 'custom' 
-                ? "Describe your project requirements, goals, timeline, and any specific features or technologies you need. Be as detailed as possible to help us provide an accurate quote."
+                ? "Please provide detailed information about your project:\n\n• What type of solution do you need?\n• What are your main goals and objectives?\n• What features or functionality do you require?\n• Do you have any specific technology preferences?\n• What is your target timeline?\n• Any integration requirements?\n\nThe more details you provide, the more accurate our custom quote will be."
                 : "Describe your project requirements, goals, and any specific features you need..."
               }
             />
@@ -203,6 +208,11 @@ export function ServiceRequestModal({
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {service.id === 'custom' ? 'Budget Range (Optional)' : 'Budget (Optional)'}
             </label>
+            {service.id === 'custom' && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                Providing a budget range helps us tailor our proposal to your needs
+              </p>
+            )}
             <div className="relative">
               <span className="absolute left-3 top-2 text-gray-500 dark:text-gray-400">$</span>
               <input
@@ -212,11 +222,16 @@ export function ServiceRequestModal({
                 className={`w-full pl-8 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white ${
                   errors.budget ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-slate-600'
                 }`}
-                placeholder={service.id === 'custom' ? "e.g., 5000-15000" : "0.00"}
+                placeholder={service.id === 'custom' ? "e.g., 5000 (for $5,000-$10,000 range)" : "0.00"}
                 min="0"
                 step="0.01"
               />
             </div>
+            {service.id === 'custom' && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Enter the lower end of your budget range (e.g., 5000 for $5,000-$10,000)
+              </p>
+            )}
             {errors.budget && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
@@ -236,6 +251,7 @@ export function ServiceRequestModal({
               className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
             >
               <option value="">Select timeline</option>
+              <option value="ASAP">ASAP (Rush project)</option>
               <option value="1-2 weeks">1-2 weeks</option>
               <option value="1 month">1 month</option>
               <option value="2-3 months">2-3 months</option>

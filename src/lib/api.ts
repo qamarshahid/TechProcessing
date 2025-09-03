@@ -1,87 +1,50 @@
-import { Closer } from '../types';
-import { logger } from './logger';
-
-// Import User type for getProfile
-interface User {
-  id: string;
-  email: string;
-  fullName: string;
-  role: string;
-  companyName?: string;
-  isActive: boolean;
-}
-
 class ApiClient {
   private baseURL: string;
   private token: string | null = null;
 
   constructor() {
-    // Use the deployed backend URL (primary Cloud Run service)
-    const directURL = 'https://techprocessing-320817886283.northamerica-northeast2.run.app/api';
-
-    // Try different CORS proxy services
-    // Option 1: CORS Anywhere (requires visiting demo page first)
-    // const corsProxyURL = 'https://cors-anywhere.herokuapp.com/' + directURL;
-
-    // Option 2: All Origins CORS proxy
-    // const corsProxyURL = 'https://api.allorigins.win/get?url=' + encodeURIComponent(directURL);
-
-    // Option 3: Use direct URL and handle CORS in environment variables
-    this.baseURL = import.meta.env.VITE_API_URL || directURL;
-    this.token = localStorage.getItem('auth_token');
+    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
   }
 
   setToken(token: string | null) {
-    logger.debug('Setting authentication token', { hasToken: !!token });
     this.token = token;
     if (token) {
       localStorage.setItem('auth_token', token);
-      logger.debug('Token saved to localStorage');
     } else {
       localStorage.removeItem('auth_token');
-      logger.debug('Token removed from localStorage');
     }
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    // Add cache-busting parameter to force fresh requests
-    const cacheBuster = `_t=${Date.now()}`;
-    const url = `${this.baseURL}${endpoint}${endpoint.includes('?') ? '&' : '?'}${cacheBuster}`;
+  private async request(endpoint: string, options: RequestInit = {}) {
+    const url = `${this.baseURL}${endpoint}`;
     
-    const config: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(this.token && { Authorization: `Bearer ${this.token}` }),
-        ...options.headers,
-      },
-      cache: 'no-store',
-      ...options,
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...options.headers,
     };
 
-    logger.apiRequest(options.method || 'GET', url, !!this.token);
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
 
     try {
-      const response = await fetch(url, config);
-      logger.apiResponse(response.status);
-      
+      const response = await fetch(url, {
+        ...options,
+        headers,
+      });
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        logger.error('API request failed', { status: response.status, message: errorData.message });
         throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
-        const data = await response.json();
-        return data;
+        return await response.json();
       }
       
-      return response as unknown as T;
+      return await response.text();
     } catch (error) {
-      logger.error('Network request failed', { error: error instanceof Error ? error.message : 'Unknown error' });
       if (error instanceof Error) {
         throw error;
       }
@@ -89,1683 +52,547 @@ class ApiClient {
     }
   }
 
-  // Auth methods
+  // Authentication
   async login(email: string, password: string) {
-    const response = await this.request<{
-      access_token: string;
-      user: {
-        id: string;
-        email: string;
-        fullName: string;
-        role: string;
-      };
-    }>('/auth/login', {
+    const response = await this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
-
     this.setToken(response.access_token);
     return response;
   }
 
   async register(email: string, password: string, fullName: string, role: string) {
-    const response = await this.request<{
-      access_token: string;
-      user: {
-        id: string;
-        email: string;
-        fullName: string;
-        role: string;
-      };
-    }>('/auth/register', {
+    const response = await this.request('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ email, password, fullName, role }),
     });
-
     this.setToken(response.access_token);
     return response;
   }
 
-  async getProfile() {
-    return this.request<User>('/auth/profile');
-  }
-
   async logout() {
     this.setToken(null);
-    return Promise.resolve();
   }
 
-  // User methods
+  async getProfile() {
+    return this.request('/auth/profile');
+  }
+
+  // Users Management (Admin only)
   async getUsers(params?: { role?: string; includeInactive?: boolean }) {
-    try {
-      const queryParams = new URLSearchParams();
-      if (params?.role) {
-        queryParams.append('role', params.role);
-      }
-      if (params?.includeInactive) {
-        queryParams.append('includeInactive', 'true');
-      }
-      
-      const endpoint = `/users${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      const response = await this.request<any>(endpoint);
-      
-      // Handle both array response and object with users property
-      if (Array.isArray(response)) {
-        return { users: response };
-      }
-      return { users: response.users || response };
-    } catch (error) {
-      logger.error('Error fetching users', { error: error instanceof Error ? error.message : 'Unknown error' });
-      // Return mock data as fallback
-      const mockUsers = [
-        {
-          id: '1',
-          email: 'admin@techprocessing.com',
-          full_name: 'System Administrator',
-          fullName: 'System Administrator',
-          role: 'ADMIN',
-          is_active: true,
-          isActive: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: '2',
-          email: 'john.doe@example.com',
-          full_name: 'John Doe',
-          fullName: 'John Doe',
-          role: 'CLIENT',
-          is_active: true,
-          isActive: true,
-          phone: '(555) 123-4567',
-          company: 'Doe Enterprises',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: '3',
-          email: 'jane.smith@example.com',
-          full_name: 'Jane Smith',
-          fullName: 'Jane Smith',
-          role: 'CLIENT',
-          is_active: true,
-          isActive: true,
-          phone: '(555) 987-6543',
-          company: 'Smith Solutions',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-      ];
-      
-      // Filter by role if specified
-      const filteredUsers = params?.role 
-        ? mockUsers.filter(user => user.role === params.role)
-        : mockUsers;
-      
-      return { users: filteredUsers };
-    }
+    const searchParams = new URLSearchParams();
+    if (params?.role) searchParams.append('role', params.role);
+    if (params?.includeInactive) searchParams.append('includeInactive', 'true');
+    
+    const query = searchParams.toString();
+    return this.request(`/users${query ? `?${query}` : ''}`);
   }
 
-  async createUser(userData: {
-    email: string;
-    password: string;
-    fullName: string;
-    role: string;
-  }) {
-    return this.request<{ user: any }>('/users', {
+  async createUser(userData: any) {
+    return this.request('/users', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   }
 
   async updateUser(userId: string, userData: any) {
-    return this.request<{ user: any }>(`/users/${userId}`, {
+    return this.request(`/users/${userId}`, {
       method: 'PATCH',
       body: JSON.stringify(userData),
     });
   }
 
   async deleteUser(userId: string, hardDelete: boolean = false) {
-    const qs = hardDelete ? '?hardDelete=true' : '';
-    return this.request<{ success: boolean }>(`/users/${userId}${qs}`, {
+    return this.request(`/users/${userId}`, {
       method: 'DELETE',
       body: JSON.stringify({ hardDelete }),
     });
   }
 
-  async getUserStats() {
-    return this.request<{ stats: any }>('/users/stats');
-  }
-
-  // Client methods (alias for users with CLIENT role)
-  async getClients() {
-    return this.getUsers({ role: 'CLIENT' });
-  }
-
-  async createClient(clientData: any) {
-    return this.createUser({
-      ...clientData,
-      password: 'temp123', // Temporary password, should be changed
-      role: 'CLIENT',
+  async updateClient(clientId: string, clientData: any) {
+    return this.request(`/users/${clientId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(clientData),
     });
   }
 
-  async updateClient(clientId: string, clientData: any) {
-    return this.updateUser(clientId, clientData);
-  }
-
-  async updateClientCredentials(clientId: string, credentialsData: {
-    email: string;
-    password: string;
-    sendEmail: boolean;
-  }) {
-    return this.request<{ success: boolean }>(`/users/${clientId}/credentials`, {
+  async updateClientCredentials(clientId: string, credentialsData: any) {
+    return this.request(`/users/${clientId}/credentials`, {
       method: 'PATCH',
       body: JSON.stringify(credentialsData),
     });
   }
 
-  async deleteClient(clientId: string) {
-    return this.deleteUser(clientId);
+  // Agent Management (Admin only)
+  async getAgents() {
+    return this.request('/agent-management');
   }
 
-  async toggleClientStatus(clientId: string, isActive: boolean) {
-    return this.updateUser(clientId, { isActive });
-  }
-
-  async createClientProfile(profileData: {
-    fullName: string;
-    email: string;
-    phone?: string;
-    company?: string;
-    address?: string;
-    notes?: string;
-  }) {
-    return this.createUser({
-      email: profileData.email,
-      fullName: profileData.fullName,
-      password: 'temp123', // Temporary password
-      role: 'CLIENT',
-    });
-  }
-
-  // Invoice methods
-  async getInvoices(params?: { status?: string; limit?: number }) {
-    try {
-      const queryParams = new URLSearchParams();
-      if (params?.status && params.status !== 'ALL') {
-        queryParams.append('status', params.status);
-      }
-      if (params?.limit) {
-        queryParams.append('limit', params.limit.toString());
-      }
-      
-      const endpoint = `/invoices${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      const response = await this.request<any>(endpoint);
-      
-      // Handle both array response and object with invoices property
-      if (Array.isArray(response)) {
-        return { invoices: response };
-      }
-      // If response is an empty array, return it as invoices array
-      if (response && typeof response === 'object' && Object.keys(response).length === 0) {
-        return { invoices: [] };
-      }
-      return { invoices: response.invoices || response };
-    } catch (error) {
-      logger.error('Error fetching invoices:', error);
-      // Return all invoices for admin view as fallback
-      const mockInvoices = this.generateAllClientInvoices();
-      
-      // Filter by status if specified
-      const filteredInvoices = params?.status && params.status !== 'ALL'
-        ? mockInvoices.filter(invoice => invoice.status === params.status)
-        : mockInvoices;
-      
-      // Apply limit if specified
-      const limitedInvoices = params?.limit
-        ? filteredInvoices.slice(0, params.limit)
-        : filteredInvoices;
-      
-      return { invoices: limitedInvoices };
-    }
-  }
-
-
-  private generateAllClientInvoices() {
-    const allClients = [
-      { id: '2', name: 'John Doe', company: 'Doe Enterprises' },
-      { id: '3', name: 'Jane Smith', company: 'Smith Solutions' },
-      { id: '4', name: 'Mike Johnson', company: 'Johnson Tech' },
-      { id: '5', name: 'Sarah Wilson', company: 'Wilson Digital' }
-    ];
-
-    const allInvoices = [];
-    allClients.forEach(client => {
-      const clientInvoices = this.generateInvoicesForClient(client.id, client.name, client.company);
-      allInvoices.push(...clientInvoices);
-    });
-
-    return allInvoices;
-  }
-
-  private generateInvoicesForClient(clientId: string, clientName?: string, clientCompany?: string) {
-    // Generate a consistent hash based on client ID
-    const hash = this.simpleHash(clientId);
-    const invoiceCount = 2 + (hash % 4); // 2-5 invoices per client
-    
-    const invoices = [];
-    const projects = [
-      'Website Development Project',
-      'E-commerce Platform Development', 
-      'Mobile App Development',
-      'Database Migration',
-      'SEO Optimization',
-      'Monthly Maintenance',
-      'Security Audit',
-      'Performance Optimization'
-    ];
-
-    const amounts = [500, 1200, 2500, 3500, 4500, 5000, 7500, 10000];
-    const statuses = ['PAID', 'UNPAID', 'OVERDUE', 'DRAFT'];
-
-    for (let i = 0; i < invoiceCount; i++) {
-      const projectIndex = (hash + i) % projects.length;
-      const amountIndex = (hash + i) % amounts.length;
-      const statusIndex = (hash + i) % statuses.length;
-      
-      const baseDate = new Date();
-      const createdDaysAgo = 30 + (i * 15);
-      const dueDaysFromCreated = 30;
-      
-      const createdDate = new Date(baseDate.getTime() - (createdDaysAgo * 24 * 60 * 60 * 1000));
-      const dueDate = new Date(createdDate.getTime() + (dueDaysFromCreated * 24 * 60 * 60 * 1000));
-      
-      const status = statuses[statusIndex];
-      const paidDate = status === 'PAID' ? new Date(dueDate.getTime() - (5 * 24 * 60 * 60 * 1000)) : null;
-
-      invoices.push({
-        id: `inv_${clientId}_${hash}_${i + 1}`,
-        client_id: clientId,
-        client_name: clientName || `Client ${clientId}`,
-        client: {
-          id: clientId,
-          full_name: clientName || `Client ${clientId}`,
-          fullName: clientName || `Client ${clientId}`,
-          email: `client${clientId}@example.com`,
-          company: clientCompany || `Company ${clientId}`
-        },
-        description: projects[projectIndex],
-        amount: amounts[amountIndex].toString(),
-        tax: (amounts[amountIndex] * 0.1).toString(),
-        total: (amounts[amountIndex] * 1.1).toString(),
-        status: status,
-        due_date: dueDate.toISOString(),
-        paid_date: paidDate?.toISOString() || null,
-        created_at: createdDate.toISOString(),
-        updated_at: createdDate.toISOString(),
-        payment_method: status === 'PAID' ? (i % 2 === 0 ? 'CARD' : 'BANK_TRANSFER') : null,
-        notes: `Invoice for ${projects[projectIndex]} - Client: ${clientName || clientId}`
-      });
-    }
-
-    return invoices;
-  }
-
-  private simpleHash(str: string): number {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return Math.abs(hash);
-  }
-
-  async createInvoice(invoiceData: {
-    clientId: string;
-    servicePackageId?: string;
-    description: string;
-    amount: number;
-    tax?: number;
-    dueDate: string;
-    notes?: string;
-  }) {
-    return this.request<{ invoice: any }>('/invoices', {
+  async createAgent(agentData: any) {
+    return this.request('/agent-management', {
       method: 'POST',
-      body: JSON.stringify(invoiceData),
+      body: JSON.stringify(agentData),
     });
   }
 
-  async updateInvoice(invoiceId: string, invoiceData: any) {
-    return this.request<{ invoice: any }>(`/invoices/${invoiceId}`, {
+  async deleteAgent(agentId: string, hardDelete: boolean = false) {
+    return this.request(`/agent-management/${agentId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ hardDelete }),
+    });
+  }
+
+  async updateAgentStatus(agentId: string, isActive: boolean) {
+    return this.request(`/agent-management/${agentId}/status`, {
       method: 'PATCH',
-      body: JSON.stringify(invoiceData),
+      body: JSON.stringify({ isActive }),
     });
   }
 
-  async updateInvoiceStatus(invoiceId: string, status: string) {
-    return this.request<{ invoice: any }>(`/invoices/${invoiceId}/status`, {
+  async updateAgentCommissionRates(agentId: string, agentRate: number, closerRate: number) {
+    return this.request(`/agent-management/${agentId}/commission-rates`, {
+      method: 'PATCH',
+      body: JSON.stringify({ 
+        agentCommissionRate: agentRate, 
+        closerCommissionRate: closerRate 
+      }),
+    });
+  }
+
+  // Agent Sales (Agent & Admin)
+  async getOwnAgentProfile() {
+    return this.request('/agents/stats');
+  }
+
+  async getAgentSales() {
+    return this.request('/agents/sales/me');
+  }
+
+  async getAllAgentSales() {
+    return this.request('/agents/sales/all');
+  }
+
+  async createAgentSale(saleData: any) {
+    return this.request('/agents/sales', {
+      method: 'POST',
+      body: JSON.stringify(saleData),
+    });
+  }
+
+  async resubmitAgentSale(resubmitData: any) {
+    return this.request('/agents/sales/resubmit', {
+      method: 'POST',
+      body: JSON.stringify(resubmitData),
+    });
+  }
+
+  async updateSaleStatus(saleId: string, status: string) {
+    return this.request(`/agents/sales/${saleId}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     });
   }
 
-  async deleteInvoice(invoiceId: string, deletePayments: boolean = false) {
-    const queryParams = deletePayments ? '?deletePayments=true' : '';
-    return this.request<{ success: boolean }>(`/invoices/${invoiceId}${queryParams}`, {
+  async updateCommissionStatus(saleId: string, status: string) {
+    return this.request(`/agents/sales/${saleId}/commission-status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async updateSaleNotes(saleId: string, notes: string) {
+    return this.request(`/agents/sales/${saleId}/notes`, {
+      method: 'PATCH',
+      body: JSON.stringify({ notes }),
+    });
+  }
+
+  async getAgentMonthlyStats() {
+    return this.request('/agents/monthly-stats');
+  }
+
+  // Closer Management (Admin only)
+  async getAllClosers() {
+    return this.request('/closers');
+  }
+
+  async getActiveClosers() {
+    return this.request('/agents/closers/active');
+  }
+
+  async createCloser(closerData: any) {
+    return this.request('/closers', {
+      method: 'POST',
+      body: JSON.stringify(closerData),
+    });
+  }
+
+  async updateCloser(closerId: string, closerData: any) {
+    return this.request(`/closers/${closerId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(closerData),
+    });
+  }
+
+  async deleteCloser(closerId: string) {
+    return this.request(`/closers/${closerId}`, {
       method: 'DELETE',
     });
   }
 
-  async getInvoiceStats() {
-    try {
-      const response = await this.request<{ stats: any }>('/invoices/stats');
-      return response;
-    } catch (error) {
-      logger.error('Error fetching invoice stats:', error);
-      // Return mock stats as fallback
-      return {
-        stats: {
-          total_invoices: '3',
-          paid_amount: '4500.00',
-          unpaid_invoices: '2',
-          total_amount: '7500.00'
-        }
-      };
-    }
+  async getCloserStats(closerId: string) {
+    return this.request(`/closers/${closerId}/stats`);
   }
 
-  async generateInvoicePDF(invoiceId: string) {
-    const response = await fetch(`${this.baseURL}/invoices/${invoiceId}/pdf`, {
-      headers: {
-        ...(this.token && { Authorization: `Bearer ${this.token}` }),
-      },
+  async getCloserSales(closerId: string) {
+    return this.request(`/closers/${closerId}/sales`);
+  }
+
+  async getAllClosersStats() {
+    return this.request('/closers/stats');
+  }
+
+  async getFilteredCloserStats(filters: any) {
+    const searchParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) searchParams.append(key, String(value));
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to generate PDF');
-    }
-
-    const blob = await response.blob();
-    const pdfUrl = URL.createObjectURL(blob);
     
-    return {
-      success: true,
-      pdfUrl,
-      filename: `invoice-${invoiceId}.pdf`,
-    };
+    const query = searchParams.toString();
+    return this.request(`/closers/stats/filtered${query ? `?${query}` : ''}`);
   }
 
-  // Client-specific methods
-  async getClientInvoices(clientId: string) {
-    try {
-      const response = await this.request<{ invoices: any[] }>(`/invoices?clientId=${clientId}`);
-      return response;
-    } catch (error) {
-      logger.error('Error fetching client invoices:', error);
-      // Return client-specific mock invoices
-      const clientInvoices = this.generateInvoicesForClient(clientId, `Client ${clientId}`, `Company ${clientId}`);
-      return { invoices: clientInvoices };
-    }
-  }
-
-  async getClientPayments(clientId: string) {
-    try {
-      const response = await this.request<{ payments: any[] }>(`/payments?clientId=${clientId}`);
-      return response;
-    } catch (error) {
-      logger.error('Error fetching client payments:', error);
-      // Return client-specific mock payments
-      const clientPayments = this.generatePaymentsForClient(clientId, `Client ${clientId}`);
-      return { payments: clientPayments };
-    }
-  }
-
-  async getClientTransactionHistory(clientId: string) {
-    try {
-      logger.debug('Fetching transaction history for client:', clientId);
-      
-      // Get all invoices and filter for this client
-      const allInvoicesResponse = await this.getInvoices();
-      const allInvoices = allInvoicesResponse.invoices || [];
-      
-      logger.debug('All invoices from backend:', allInvoices);
-      logger.debug('Looking for client ID:', clientId);
-      
-      // Filter invoices for this specific client
-      const clientInvoices = allInvoices.filter(invoice => {
-        // Check multiple possible client ID fields
-        const matches = invoice.client_id === clientId || 
-                       invoice.clientId === clientId ||
-                       invoice.client?.id === clientId ||
-                       (typeof invoice.client === 'string' && invoice.client === clientId);
-        
-        logger.debug('Invoice match check:', {
-          invoiceId: invoice.id,
-          description: invoice.description,
-          client_id: invoice.client_id,
-          clientId: invoice.clientId,
-          client: invoice.client,
-          targetClientId: clientId,
-          matches
-        });
-        
-        return matches;
-      });
-      
-      logger.debug('Filtered client invoices:', clientInvoices);
-      
-      // Get all payments and filter for this client
-      const allPaymentsResponse = await this.getPayments();
-      const allPayments = allPaymentsResponse.payments || [];
-      
-      logger.debug('All payments from backend:', allPayments);
-      
-      const clientPayments = allPayments.filter(payment => 
-        payment.client_id === clientId || 
-        payment.clientId === clientId ||
-        payment.user_id === clientId ||
-        payment.userId === clientId
-      );
-      
-      logger.debug('Filtered client payments:', clientPayments);
-      
-      // Get all subscriptions and filter for this client
-      const allSubscriptionsResponse = await this.getSubscriptions();
-      const allSubscriptions = allSubscriptionsResponse.subscriptions || [];
-      
-      logger.debug('All subscriptions from backend:', allSubscriptions);
-      
-      const clientSubscriptions = allSubscriptions.filter(subscription => 
-        subscription.client_id === clientId || 
-        subscription.clientId === clientId ||
-        subscription.client?.id === clientId
-      );
-      
-      logger.debug('Filtered client subscriptions:', clientSubscriptions);
-      
-      logger.debug('Client data processed');
-      
-      // Combine into transaction history
-      const transactions = [];
-      
-      // Add invoices
-      clientInvoices.forEach(invoice => {
-        transactions.push({
-          id: invoice.id,
-          type: 'invoice',
-          description: invoice.description,
-          amount: parseFloat(invoice.amount || invoice.total || '0'),
-          status: invoice.status.toLowerCase(),
-          date: invoice.created_at || invoice.createdAt,
-          due_date: invoice.due_date || invoice.dueDate,
-          invoice_number: invoice.invoice_number || invoice.invoiceNumber || `INV-${invoice.id.slice(-8)}`,
-          payment_method: null,
-          transaction_id: invoice.id,
-          invoice_id: invoice.id
-        });
-      });
-      
-      // Add payments
-      clientPayments.forEach(payment => {
-        transactions.push({
-          id: payment.id,
-          type: 'payment',
-          description: `Payment for: ${payment.invoice_description || 'Invoice'}`,
-          amount: parseFloat(payment.amount || '0'),
-          status: payment.status.toLowerCase(),
-          date: payment.created_at || payment.createdAt || payment.processed_at,
-          payment_method: payment.method,
-          transaction_id: payment.transaction_id,
-          invoice_number: null
-        });
-      });
-      
-      // Add subscriptions
-      clientSubscriptions.forEach(subscription => {
-        transactions.push({
-          id: subscription.id,
-          type: 'subscription',
-          description: subscription.description || `${subscription.frequency} Subscription`,
-          amount: parseFloat(subscription.amount || '0'),
-          status: subscription.status.toLowerCase(),
-          date: subscription.created_at || subscription.createdAt,
-          due_date: subscription.next_billing_date || subscription.nextBillingDate,
-          frequency: subscription.frequency,
-          start_date: subscription.start_date || subscription.startDate,
-          total_billed: parseFloat(subscription.total_billed || subscription.totalBilled || '0'),
-          service_package: subscription.servicePackage?.name || subscription.service_package?.name,
-          transaction_id: subscription.id,
-          subscription_id: subscription.id
-        });
-      });
-      
-      // Sort by date (newest first)
-      transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      
-      logger.debug('Final transactions:', transactions);
-      
-      return { transactions, invoices: clientInvoices, payments: clientPayments, subscriptions: clientSubscriptions };
-    } catch (error) {
-      logger.error('Error fetching client transaction history:', error);
-      
-      // Return empty data on complete failure but log the error
-      logger.error('Complete failure in getClientTransactionHistory:', error);
-      return { 
-        transactions: [], 
-        invoices: [], 
-        payments: [],
-        subscriptions: [],
-        error: error.message 
-      };
-    }
-  }
-
-  // Generate client-specific payments
-  private generatePaymentsForClient(clientId: string, clientName?: string) {
-    const clientInvoices = this.generateInvoicesForClient(clientId, clientName, `Company ${clientId}`);
-    const paidInvoices = clientInvoices.filter(inv => inv.status === 'PAID');
+  async getCloserAuditData(filters: any) {
+    const searchParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) searchParams.append(key, String(value));
+    });
     
-    return paidInvoices.map(invoice => ({
-      id: `pay_${clientId}_${this.simpleHash(invoice.id)}_${Date.now()}`,
-      invoice_id: invoice.id,
-      client_id: clientId,
-      client_name: clientName || `Client ${clientId}`,
-      amount: invoice.amount,
-      method: invoice.payment_method || 'CARD',
-      status: 'COMPLETED',
-      transaction_id: `TXN_${this.simpleHash(clientId + invoice.id)}_${this.simpleHash(clientId)}`,
-      invoice_description: invoice.description,
-      created_at: invoice.paid_date || invoice.created_at,
-      processed_at: invoice.paid_date || invoice.created_at
-    }));
+    const query = searchParams.toString();
+    return this.request(`/closers/audit${query ? `?${query}` : ''}`);
   }
 
-  // Payment methods
-  async getPayments() {
-    try {
-      const response = await this.request<any>('/payments');
-      // Handle both array response and object with payments property
-      if (Array.isArray(response)) {
-        return { payments: response };
-      }
-      return { payments: response.payments || response };
-    } catch (error) {
-      logger.error('Error fetching payments:', error);
-      // Return mock data as fallback
-      return {
-        payments: [
-          {
-            id: '1',
-            invoice_id: '2',
-            client_name: 'Jane Smith',
-            amount: '4500.00',
-            method: 'CARD',
-            status: 'COMPLETED',
-            transaction_id: 'TXN_123456789',
-            created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            invoice_description: 'E-commerce Platform Development'
-          }
-        ]
-      };
-    }
-  }
-
-  async processPayment(paymentData: {
-    invoiceId: string;
-    amount: number;
-    method: string;
-    cardDetails?: {
-      cardNumber: string;
-      expiryDate: string;
-      cvv: string;
-      cardholderName: string;
-    };
-    notes?: string;
-  }) {
-    return this.request<{ payment: any }>('/payments', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async updatePaymentStatus(paymentId: string, status: string) {
-    return this.request<{ payment: any }>(`/payments/${paymentId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async getPaymentStats() {
-    return this.request<{ stats: any }>('/payments/stats');
-  }
-
-  async getCompletedPayments() {
-    return this.request<{ payments: any[] }>('/payments?status=COMPLETED');
-  }
-
-  // Service Package methods
+  // Service Packages
   async getServices() {
-    try {
-      const response = await this.request<any[]>('/service-packages');
-      // Handle both array response and object with services property
-      if (Array.isArray(response)) {
-        return { services: response };
-      }
-      return { services: (response as any).services || response };
-    } catch (error) {
-      logger.error('Error fetching services:', error);
-      // Return mock data as fallback
-      return {
-        services: [
-          {
-            id: '1',
-            name: 'Starter Website Package',
-            description: 'Perfect for small businesses and personal websites',
-            price: 799,
-            features: ['Responsive Design', 'Up to 5 Pages', 'Contact Form', 'Basic SEO', '1 Month Support'],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          {
-            id: '2',
-            name: 'Business Website Package',
-            description: 'Professional website with advanced features',
-            price: 1999,
-            features: ['Custom Design', 'Up to 15 Pages', 'E-commerce Ready', 'Advanced SEO', 'Analytics Setup', '3 Months Support'],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          {
-            id: '3',
-            name: 'Enterprise Application',
-            description: 'Full-stack web application with custom functionality',
-            price: 4999,
-            features: ['Custom Development', 'Database Integration', 'User Authentication', 'Admin Dashboard', 'API Development', '6 Months Support'],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }
-        ]
-      };
-    }
+    return this.request('/service-packages');
   }
 
-  async createService(serviceData: {
-    name: string;
-    description: string;
-    price: number;
-    features: string[];
-  }) {
-    return this.request<{ service: any }>('/service-packages', {
+  async createService(serviceData: any) {
+    return this.request('/service-packages', {
       method: 'POST',
       body: JSON.stringify(serviceData),
     });
   }
 
   async updateService(serviceId: string, serviceData: any) {
-    return this.request<{ service: any }>(`/service-packages/${serviceId}`, {
+    return this.request(`/service-packages/${serviceId}`, {
       method: 'PATCH',
       body: JSON.stringify(serviceData),
     });
   }
 
   async deleteService(serviceId: string) {
-    return this.request<{ success: boolean }>(`/service-packages/${serviceId}`, {
+    return this.request(`/service-packages/${serviceId}`, {
       method: 'DELETE',
     });
   }
 
-  // Service Request methods
-  async createServiceRequest(requestData: {
-    serviceId: string;
-    clientId: string;
-    description: string;
-    budget?: number;
-    timeline?: string;
-    additionalRequirements?: string;
-  }) {
-    // Handle custom quote requests
-    const isCustomQuote = requestData.serviceId === 'custom';
-    const requestPayload = {
-      ...requestData,
-      serviceId: isCustomQuote ? null : requestData.serviceId,
-      isCustomQuote: isCustomQuote,
-      requestType: isCustomQuote ? 'CUSTOM_QUOTE' : 'SERVICE_REQUEST'
-    };
+  // Service Requests (Client & Admin)
+  async getServiceRequests(filters?: any) {
+    const searchParams = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) searchParams.append(key, String(value));
+      });
+    }
     
-    return this.request<{ serviceRequest: any }>('/service-requests', {
+    const query = searchParams.toString();
+    return this.request(`/service-requests${query ? `?${query}` : ''}`);
+  }
+
+  async getClientServiceRequests(clientId: string) {
+    return this.request(`/service-requests/my-requests`);
+  }
+
+  async createServiceRequest(requestData: any) {
+    return this.request('/service-requests', {
       method: 'POST',
-      body: JSON.stringify(requestPayload),
+      body: JSON.stringify(requestData),
     });
   }
 
-  async getServiceRequests(filters?: {
-    status?: string;
-    clientId?: string;
-    serviceId?: string;
-  }) {
-    const queryParams = new URLSearchParams();
-    if (filters?.status) queryParams.append('status', filters.status);
-    if (filters?.clientId) queryParams.append('clientId', filters.clientId);
-    if (filters?.serviceId) queryParams.append('serviceId', filters.serviceId);
-    
-    const endpoint = `/service-requests${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    return this.request<{ serviceRequests: any[] }>(endpoint);
-  }
-
-  async updateServiceRequest(requestId: string, updateData: {
-    status?: string;
-    adminNotes?: string;
-    estimatedCost?: number;
-    estimatedTimeline?: string;
-    expectedStartDate?: string;
-    expectedDeliveryDate?: string;
-    actualStartDate?: string;
-    actualDeliveryDate?: string;
-    quoteAmount?: number;
-    paymentTerms?: string;
-  }) {
-    return this.request<{ serviceRequest: any }>(`/service-requests/${requestId}`, {
+  async updateServiceRequest(requestId: string, updateData: any) {
+    return this.request(`/service-requests/${requestId}`, {
       method: 'PATCH',
       body: JSON.stringify(updateData),
     });
   }
 
-  async getClientServiceRequests(clientId: string) {
-    return this.request<{ serviceRequests: any[] }>(`/service-requests/client/${clientId}`);
-  }
-
-  // Price Adjustment methods
-  async createPriceAdjustment(requestId: string, adjustmentData: {
-    previousAmount: number;
-    newAmount: number;
-    reason: string;
-  }) {
-    return this.request<{ priceAdjustment: any }>(`/service-requests/${requestId}/price-adjustments`, {
+  async createPriceAdjustment(requestId: string, adjustmentData: any) {
+    return this.request(`/service-requests/${requestId}/price-adjustments`, {
       method: 'POST',
       body: JSON.stringify(adjustmentData),
     });
   }
 
-  async updatePriceAdjustmentStatus(adjustmentId: string, status: 'APPROVED' | 'REJECTED', clientNotes?: string) {
-    return this.request<{ priceAdjustment: any }>(`/price-adjustments/${adjustmentId}/status`, {
+  async updatePriceAdjustmentStatus(adjustmentId: string, statusData: any) {
+    return this.request(`/service-requests/price-adjustments/${adjustmentId}/status`, {
       method: 'PATCH',
-      body: JSON.stringify({ status, clientNotes }),
+      body: JSON.stringify(statusData),
     });
   }
 
-  // File Attachment methods
   async uploadAttachment(requestId: string, file: File, category: string, description?: string) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('category', category);
-    if (description) formData.append('description', description);
+    // In a real implementation, this would upload to cloud storage
+    // For demo purposes, we'll simulate the upload
+    const attachmentData = {
+      fileName: file.name,
+      fileUrl: URL.createObjectURL(file),
+      fileSize: file.size,
+      fileType: file.type,
+      category,
+      description,
+    };
 
-    return this.request<{ attachment: any }>(`/service-requests/${requestId}/attachments`, {
+    return this.request(`/service-requests/${requestId}/attachments`, {
       method: 'POST',
-      body: formData,
-      headers: {
-        // Don't set Content-Type for FormData, let browser set it
-      },
+      body: JSON.stringify(attachmentData),
     });
   }
 
   async deleteAttachment(attachmentId: string) {
-    return this.request<{ success: boolean }>(`/attachments/${attachmentId}`, {
+    return this.request(`/service-requests/attachments/${attachmentId}`, {
       method: 'DELETE',
     });
   }
 
-  async getAttachments(requestId: string) {
-    return this.request<{ attachments: any[] }>(`/service-requests/${requestId}/attachments`);
+  // Invoices
+  async getInvoices(params?: { status?: string; clientId?: string }) {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.append('status', params.status);
+    if (params?.clientId) searchParams.append('clientId', params.clientId);
+    
+    const query = searchParams.toString();
+    return this.request(`/invoices${query ? `?${query}` : ''}`);
   }
 
-  // Payment Link methods
-  async getPaymentLinks() {
-    try {
-      logger.debug('Fetching payment links from API...');
-      const response = await this.request<any>('/payment-links').catch(error => {
-        logger.error('API call failed, using fallback data:', error);
-        throw error; // Re-throw to trigger catch block
-      });
-      logger.debug('Payment links API response received');
-      // Handle both array response and object with links property
-      if (Array.isArray(response)) {
-        return { links: response };
-      }
-      return { links: response.links || response };
-    } catch (error) {
-      logger.error('Error fetching payment links:', error);
-      // Return mock data as fallback
-      return {
-        links: [
-          {
-            id: 'mock_1',
-            title: 'Website Development Payment',
-            description: 'Final payment for website project',
-            amount: 2500,
-            status: 'ACTIVE',
-            client: {
-              id: '2',
-              full_name: 'John Doe',
-              fullName: 'John Doe',
-              email: 'john@example.com'
-            },
-            secure_token: 'abc123def456',
-            secureToken: 'abc123def456',
-            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            created_at: new Date().toISOString(),
-            createdAt: new Date().toISOString()
-          }
-        ]
-      };
-    }
+  async getClientInvoices(clientId: string) {
+    return this.request(`/invoices?clientId=${clientId}`);
   }
 
-  private generateSecureToken(): string {
-    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
-    let token = '';
-    for (let i = 0; i < 16; i++) {
-      token += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return token;
+  async createInvoice(invoiceData: any) {
+    return this.request('/invoices', {
+      method: 'POST',
+      body: JSON.stringify(invoiceData),
+    });
   }
 
-  async getClientSubscriptions(clientId: string) {
-    try {
-      const response = await this.request<any>(`/subscriptions/client/${clientId}`);
-      
-      // Handle empty array response
-      if (Array.isArray(response)) {
-        return { subscriptions: response };
-      }
-      // If response is an empty object, return empty subscriptions array
-      if (response && typeof response === 'object' && Object.keys(response).length === 0) {
-        return { subscriptions: [] };
-      }
-      return { subscriptions: response.subscriptions || response };
-    } catch (error) {
-      console.error('API: Error getting client subscriptions:', error);
-      throw error;
-    }
+  async updateInvoice(invoiceId: string, invoiceData: any) {
+    return this.request(`/invoices/${invoiceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(invoiceData),
+    });
   }
 
-  async createPaymentLink(linkData: {
-    clientId: string;
-    title: string;
-    description: string;
-    amount: number;
-    expiresAt: string;
-    allowPartialPayment?: boolean;
-    metadata?: any;
-  }) {
-    try {
-      return this.request<{ link: any }>('/payment-links', {
-        method: 'POST',
-        body: JSON.stringify(linkData),
-      });
-    } catch (error) {
-      logger.error('Error creating payment link:', error);
-      // Return mock success for demo
-      return { 
-        link: { 
-          id: `link_${Date.now()}`, 
-          ...linkData, 
-          status: 'ACTIVE',
-          secure_token: Math.random().toString(36).substr(2, 16),
-          created_at: new Date().toISOString() 
-        } 
-      };
-    }
+  async updateInvoiceStatus(invoiceId: string, status: string) {
+    return this.request(`/invoices/${invoiceId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
   }
 
-  async getPaymentLinkByToken(token: string) {
-    try {
-      const response = await this.request<{ link: any }>(`/payment-links/token/${token}`);
-      return response;
-    } catch (error) {
-      logger.error('Error fetching payment link by token:', error);
-      // Return mock payment link for demo
-      const mockLink = {
-        id: `link_${token}`,
-        title: 'Website Development Payment',
-        description: 'Final payment for website development project',
-        amount: 2500,
-        client: {
-          id: '2',
-          full_name: 'John Doe',
-          email: 'john@example.com',
-          company_name: 'Doe Enterprises'
-        },
-        status: 'ACTIVE',
-        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        created_at: new Date().toISOString(),
-      };
-      return { link: mockLink };
-    }
+  async deleteInvoice(invoiceId: string, deletePayments: boolean = false) {
+    return this.request(`/invoices/${invoiceId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ deletePayments }),
+    });
   }
 
-  async processPaymentLinkPayment(token: string, paymentData: any) {
-    try {
-      logger.debug('API: Processing payment for token');
-      const response = await this.request<any>(`/payment-links/token/${token}/process-payment`, {
-        method: 'POST',
-        body: JSON.stringify(paymentData),
-      });
-      logger.debug('API: Payment processing response received');
-      return response;
-    } catch (error) {
-      logger.error('Error processing payment:', error);
-      throw error;
-    }
+  async generateInvoicePDF(invoiceId: string) {
+    // Simulate PDF generation
+    return {
+      success: true,
+      pdfUrl: '#',
+      filename: `invoice-${invoiceId}.pdf`
+    };
   }
 
-  async resendPaymentLinkEmail(linkId: string) {
-    try {
-      const response = await this.request<any>(`/payment-links/${linkId}/resend-email`, {
-        method: 'POST',
-      });
-      return response;
-    } catch (error) {
-      logger.error('Error resending payment link email:', error);
-      throw error;
-    }
+  // Payments
+  async getPayments() {
+    return this.request('/payments');
   }
 
-  async deletePaymentLink(linkId: string) {
-    try {
-      return this.request<{ success: boolean }>(`/payment-links/${linkId}`, {
-        method: 'DELETE',
-      });
-    } catch (error) {
-      logger.error('Error deleting payment link:', error);
-      // Return mock success for demo
-      return { success: true };
-    }
-  }
-
-  // Subscription methods
-  async getSubscriptions() {
-    try {
-      logger.debug('Fetching subscriptions from API...');
-      const response = await this.request<any>('/subscriptions').catch(error => {
-        logger.error('API call failed, using fallback data:', error);
-        throw error; // Re-throw to trigger catch block
-      });
-      logger.debug('Subscriptions API response received');
-      // Handle both array response and object with subscriptions property
-      if (Array.isArray(response)) {
-        return { subscriptions: response };
-      }
-      return { subscriptions: response.subscriptions || response };
-    } catch (error) {
-      logger.error('Error fetching subscriptions:', error);
-      // Return mock data as fallback
-      return {
-        subscriptions: [
-          {
-            id: '72800f9a-914a-48a8-b779-3ea7699f65ea',
-            clientId: '5d6ce508-06ce-46d6-8af5-cd0dc3898656',
-            client_id: '5d6ce508-06ce-46d6-8af5-cd0dc3898656',
-            client: {
-              id: '5d6ce508-06ce-46d6-8af5-cd0dc3898656',
-              full_name: 'John Doe',
-              fullName: 'John Doe',
-              email: 'john@example.com'
-            },
-            amount: 299.99,
-            frequency: 'MONTHLY',
-            status: 'ACTIVE',
-            description: 'Monthly Website Maintenance',
-            startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-            start_date: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-            nextBillingDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-            next_billing_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-            totalBilled: 599.98,
-            total_billed: 599.98,
-            createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-            created_at: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-            metadata: { notes: 'Monthly maintenance and updates' }
-          }
-        ]
-      };
-    }
-  }
-
-  async updateSubscription(subscriptionId: string, subscriptionData: any) {
-    try {
-      return this.request<{ subscription: any }>(`/subscriptions/${subscriptionId}`, {
-        method: 'PATCH',
-        body: JSON.stringify(subscriptionData),
-      });
-    } catch (error) {
-      logger.error('Error updating subscription:', error);
-      // Return mock success for demo
-      return { 
-        subscription: { 
-          id: subscriptionId, 
-          ...subscriptionData, 
-          updatedAt: new Date().toISOString() 
-        } 
-      };
-    }
-  }
-
-
-  async createSubscription(subscriptionData: {
-    clientId: string;
-    serviceId?: string;
-    amount: number;
-    frequency: string;
-    startDate: string;
-    description: string;
-  }) {
-    try {
-      // Map serviceId to servicePackageId for backend compatibility
-      const backendData = {
-        ...subscriptionData,
-        servicePackageId: subscriptionData.serviceId,
-      };
-      delete backendData.serviceId;
-      
-      return this.request<{ subscription: any }>('/subscriptions', {
-        method: 'POST',
-        body: JSON.stringify(backendData),
-      });
-    } catch (error) {
-      logger.error('Error creating subscription:', error);
-      // Return mock success for demo
-      return { 
-        subscription: { 
-          id: `sub_${Date.now()}`, 
-          ...subscriptionData, 
-          status: 'ACTIVE',
-          createdAt: new Date().toISOString() 
-        } 
-      };
-    }
-  }
-
-  async updateSubscriptionStatus(subscriptionId: string, status: string) {
-    try {
-      return this.request<{ subscription: any }>(`/subscriptions/${subscriptionId}/status`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status }),
-      });
-    } catch (error) {
-      logger.error('Error updating subscription status:', error);
-      // Return mock success for demo
-      return { 
-        subscription: { 
-          id: subscriptionId, 
-          status, 
-          updatedAt: new Date().toISOString() 
-        } 
-      };
-    }
-  }
-
-  async deleteSubscription(subscriptionId: string) {
-    try {
-      return this.request<{ success: boolean }>(`/subscriptions/${subscriptionId}`, {
-        method: 'DELETE',
-      });
-    } catch (error) {
-      logger.error('Error deleting subscription:', error);
-      // Return mock success for demo
-      return { success: true };
-    }
-  }
-
-  // Refund methods
-  async getRefunds() {
-    try {
-      const response = await this.request<any>('/refunds');
-      // Handle both array response and object with refunds property
-      if (Array.isArray(response)) {
-        return { refunds: response };
-      }
-      return { refunds: response.refunds || response || [] };
-    } catch (error) {
-      logger.error('Error fetching refunds:', error);
-      // Return mock refunds data
-      return {
-        refunds: [
-          {
-            id: '1',
-            client_name: 'John Doe',
-            client_email: 'john@example.com',
-            original_amount: 2500,
-            refund_amount: 1000,
-            reason: 'Customer Request',
-            status: 'COMPLETED',
-            payment_id: 'pay_123',
-            created_at: new Date().toISOString()
-          }
-        ]
-      };
-    }
-  }
-
-  async processRefund(refundData: {
-    paymentId: string;
-    refundAmount: number;
-    reason: string;
-    notes?: string;
-  }) {
-    try {
-      const response = await this.request<{ refund: any }>('/refunds', {
-        method: 'POST',
-        body: JSON.stringify(refundData),
-      });
-      return response;
-    } catch (error) {
-      logger.error('Error processing refund:', error);
-      // Return mock success for demo
-      return {
-        refund: {
-          id: `refund_${Date.now()}`,
-          ...refundData,
-          status: 'COMPLETED',
-          created_at: new Date().toISOString()
-        }
-      };
-    }
-  }
-
-  // Audit methods
-  async getAuditLogs(params?: {
-    page?: number;
-    limit?: number;
-    action?: string;
-    entityType?: string;
-    userId?: string;
-  }) {
-    try {
-      const queryParams = new URLSearchParams();
-      if (params?.page) queryParams.append('page', params.page.toString());
-      if (params?.limit) queryParams.append('limit', params.limit.toString());
-      if (params?.action) queryParams.append('action', params.action);
-      if (params?.entityType) queryParams.append('entityType', params.entityType);
-      if (params?.userId) queryParams.append('userId', params.userId);
-      
-      const endpoint = `/audit${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-      const response = await this.request<{ logs: any[]; total: number; page: number; limit: number }>(endpoint);
-      return response;
-    } catch (error) {
-      logger.error('Error fetching audit logs:', error);
-      // Return mock audit logs as fallback
-      return {
-        logs: [
-          {
-            id: '1',
-            action: 'USER_LOGIN',
-            entityType: 'User',
-            entityId: '1',
-            details: { email: 'admin@techprocessing.com' },
-            user: { email: 'admin@techprocessing.com', fullName: 'System Administrator' },
-            ipAddress: '192.168.1.1',
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: '2',
-            action: 'INVOICE_CREATED',
-            entityType: 'Invoice',
-            entityId: '1',
-            details: { amount: 2500, client: 'John Doe' },
-            user: { email: 'admin@techprocessing.com', fullName: 'System Administrator' },
-            ipAddress: '192.168.1.1',
-            createdAt: new Date(Date.now() - 60000).toISOString()
-          },
-          {
-            id: '3',
-            action: 'PAYMENT_SUCCESS',
-            entityType: 'Payment',
-            entityId: '1',
-            details: { amount: 4500, method: 'CARD' },
-            user: { email: 'jane.smith@example.com', fullName: 'Jane Smith' },
-            ipAddress: '192.168.1.2',
-            createdAt: new Date(Date.now() - 120000).toISOString()
-          }
-        ],
-        total: 3,
-        page: params?.page || 1,
-        limit: params?.limit || 50
-      };
-    }
-  }
-
-  async getAuditStats() {
-    return this.request<{ stats: any }>('/audit/stats');
-  }
-
-  // Hosted Payment methods
-  async createHostedPaymentToken(paymentData: {
-    invoiceId: string;
-    amount: number;
-    returnUrl?: string;
-    cancelUrl?: string;
-    description?: string;
-  }) {
-    return this.request<{
-      token: string;
-      hostedPaymentUrl: string;
-      expiresAt: string;
-    }>('/payments/hosted-token', {
+  async createHostedPaymentToken(paymentData: any) {
+    return this.request('/payments/hosted-token', {
       method: 'POST',
       body: JSON.stringify(paymentData),
     });
   }
 
-  async getEntityAuditLogs(entityType: string, entityId: string) {
-    return this.request<{ logs: any[] }>(`/audit/entity/${entityType}/${entityId}`);
+  async processPayment(paymentData: any) {
+    return this.request('/payments', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
   }
 
-  // Agent methods
-  async createAgent(agentData: {
-    email: string;
-    password: string;
-    fullName: string;
-    agentCode: string;
-    salesPersonName: string;
-    closerName: string;
-    agentCommissionRate?: number;
-    closerCommissionRate?: number;
-    companyName?: string;
-    isActive?: boolean;
-  }) {
-    try {
-      // Use the existing working agent creation endpoint
-      return this.request<{ agent: any }>('/agents', {
-        method: 'POST',
-        body: JSON.stringify(agentData),
-      });
-    } catch (error) {
-      logger.error('Error creating agent:', error);
-      throw error;
-    }
+  async getCompletedPayments() {
+    return this.request('/payments?status=COMPLETED');
   }
 
-  async getAgents() {
-    try {
-      // Fetch AGENT users including inactive so disabled agents remain listed
-      const { users } = await this.getUsers({ role: 'AGENT', includeInactive: true });
-
-      const agents = (users || []).map((user: any) => {
-        const profile = Array.isArray(user.agentProfiles) && user.agentProfiles.length > 0
-          ? user.agentProfiles[0]
-          : null;
-
-        if (!profile) {
-          return null;
-        }
-
-        return {
-          // Use the USER id for row id so actions like delete/toggle target the user endpoints
-          id: user.id,
-          userId: user.id,
-          agentCode: profile.agentCode,
-          salesPersonName: profile.salesPersonName,
-          closerName: profile.closerName,
-          agentCommissionRate: Number(profile.agentCommissionRate ?? 0),
-          closerCommissionRate: Number(profile.closerCommissionRate ?? 0),
-          totalEarnings: Number(profile.totalEarnings ?? 0),
-          totalPaidOut: Number(profile.totalPaidOut ?? 0),
-          pendingCommission: Number(profile.pendingCommission ?? 0),
-          totalSales: Number(profile.totalSales ?? 0),
-          totalSalesValue: Number(profile.totalSalesValue ?? 0),
-          isActive: Boolean(user.isActive),
-          metadata: profile.metadata ?? null,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-          user: {
-            id: user.id,
-            email: user.email,
-            fullName: user.fullName,
-            role: user.role,
-            companyName: user.companyName,
-            isActive: Boolean(user.isActive),
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-          },
-        };
-      }).filter(Boolean);
-
-      return agents;
-    } catch (error) {
-      logger.error('Error fetching agents:', error);
-      return [];
-    }
+  async processRefund(refundData: any) {
+    // Simulate refund processing
+    return { success: true, refundId: 'ref_' + Date.now() };
   }
 
-  async deleteAgent(agentId: string, hardDelete: boolean = false) {
-    try {
-      const qs = hardDelete ? '?hardDelete=true' : '';
-      // Use the working users endpoint for agent deletion
-      // The users service handles both users and agents correctly
-      return this.request<{ success: boolean }>(`/users/${agentId}${qs}`, {
-        method: 'DELETE',
-        body: JSON.stringify({ hardDelete }),
-      });
-    } catch (error) {
-      logger.error('Error deleting agent:', error);
-      throw error;
-    }
+  async getRefunds() {
+    // Simulate refunds data
+    return { refunds: [] };
   }
 
-  async getAgentStats() {
+  // Payment Links (Admin only)
+  async getPaymentLinks() {
+    return this.request('/payment-links');
+  }
+
+  async createPaymentLink(linkData: any) {
+    return this.request('/payment-links', {
+      method: 'POST',
+      body: JSON.stringify(linkData),
+    });
+  }
+
+  async getPaymentLinkByToken(token: string) {
+    return this.request(`/payment-links/token/${token}`);
+  }
+
+  async processPaymentLinkPayment(token: string, paymentData: any) {
+    return this.request(`/payment-links/token/${token}/process-payment`, {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async deletePaymentLink(linkId: string) {
+    return this.request(`/payment-links/${linkId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async resendPaymentLinkEmail(linkId: string) {
+    return this.request(`/payment-links/${linkId}/resend-email`, {
+      method: 'POST',
+    });
+  }
+
+  // Subscriptions
+  async getSubscriptions() {
+    return this.request('/subscriptions');
+  }
+
+  async getClientSubscriptions(clientId: string) {
+    return this.request(`/subscriptions/client/${clientId}`);
+  }
+
+  async createSubscription(subscriptionData: any) {
+    return this.request('/subscriptions', {
+      method: 'POST',
+      body: JSON.stringify(subscriptionData),
+    });
+  }
+
+  async updateSubscription(subscriptionId: string, subscriptionData: any) {
+    return this.request(`/subscriptions/${subscriptionId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(subscriptionData),
+    });
+  }
+
+  async updateSubscriptionStatus(subscriptionId: string, status: string) {
+    return this.request(`/subscriptions/${subscriptionId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async deleteSubscription(subscriptionId: string) {
+    return this.request(`/subscriptions/${subscriptionId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Client Transaction History
+  async getClientTransactionHistory(clientId: string) {
     try {
-      return this.request<any>('/agents/stats');
-    } catch (error) {
-      logger.error('Error fetching agent stats:', error);
+      const [invoicesResponse, paymentsResponse] = await Promise.all([
+        this.getInvoices({ clientId }),
+        this.getPayments()
+      ]);
+
+      const clientInvoices = invoicesResponse.invoices || [];
+      const allPayments = paymentsResponse.payments || [];
+      const clientPayments = allPayments.filter(payment => 
+        clientInvoices.some(invoice => invoice.id === payment.invoice_id)
+      );
+
+      // Combine invoices and payments into transaction history
+      const transactions = [
+        ...clientInvoices.map(invoice => ({
+          id: invoice.id,
+          type: 'invoice',
+          description: invoice.description,
+          amount: parseFloat(invoice.amount || invoice.total || '0'),
+          status: invoice.status.toLowerCase(),
+          date: invoice.created_at || invoice.createdAt,
+          invoice_number: invoice.invoice_number || invoice.invoiceNumber,
+          payment_method: invoice.payment_method,
+        })),
+        ...clientPayments.map(payment => ({
+          id: payment.id,
+          type: 'payment',
+          description: `Payment for ${payment.invoice?.description || 'Invoice'}`,
+          amount: parseFloat(payment.amount || '0'),
+          status: payment.status.toLowerCase(),
+          date: payment.created_at || payment.createdAt,
+          payment_method: payment.method,
+          transaction_id: payment.transaction_id,
+        }))
+      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
       return {
-        totalAgents: 0,
-        activeAgents: 0,
-        totalSales: 0,
-        totalSalesValue: 0,
-        totalCommissions: 0,
-        totalPaidOut: 0,
-        pendingCommissions: 0,
-        agents: [],
+        transactions,
+        invoices: clientInvoices,
+        payments: clientPayments,
+      };
+    } catch (error) {
+      console.error('Error fetching client transaction history:', error);
+      return {
+        transactions: [],
+        invoices: [],
+        payments: [],
+        error: error instanceof Error ? error.message : 'Unknown error'
       };
     }
   }
 
-  async getOwnAgentProfile() {
-    try {
-      return this.request<any>('/agents/profile/me');
-    } catch (error) {
-      logger.error('Error fetching own agent profile:', error);
-      throw error;
-    }
-  }
-
-  async createAgentSale(saleData: {
-    clientName: string;
-    clientEmail: string;
-    clientPhone?: string;
-    serviceName: string;
-    serviceDescription?: string;
-    saleAmount: number;
-    saleDate?: string;
-    paymentDate?: string;
-    saleStatus?: string;
-    notes?: string;
-    clientDetails?: any;
-    metadata?: any;
-  }) {
-    try {
-      return this.request<any>('/agents/sales', {
-        method: 'POST',
-        body: JSON.stringify(saleData),
+  // Audit Logs (Admin only)
+  async getAuditLogs(params?: any) {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value) searchParams.append(key, String(value));
       });
-    } catch (error) {
-      logger.error('Error creating agent sale:', error);
-      throw error;
     }
+    
+    const query = searchParams.toString();
+    return this.request(`/audit${query ? `?${query}` : ''}`);
   }
 
-  async getAgentSales(agentId?: string) {
-    try {
-      const endpoint = agentId ? `/agents/sales?agentId=${agentId}` : '/agents/sales/me';
-      const response = await this.request<any[]>(endpoint);
-      return response;
-    } catch (error) {
-      logger.error('Error fetching agent sales:', error);
-      return [];
-    }
-  }
-
-  async getAllAgentSales() {
-    try {
-      // For now, return empty array since agent sales endpoint doesn't exist
-      // TODO: Implement agent sales functionality in backend
-      return [];
-    } catch (error) {
-      logger.error('Error fetching all agent sales:', error);
-      return [];
-    }
-  }
-
-  async getAgentSale(id: string) {
-    try {
-      return this.request<any>(`/agents/sales/${id}`);
-    } catch (error) {
-      logger.error('Error fetching agent sale:', error);
-      throw error;
-    }
-  }
-
-  async updateSaleStatus(id: string, status: string) {
-    try {
-      return this.request<any>(`/agents/sales/${id}/status`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status }),
-      });
-    } catch (error) {
-      logger.error('Error updating sale status:', error);
-      throw error;
-    }
-  }
-
-  async updateCommissionStatus(id: string, status: string) {
-    try {
-      return this.request<any>(`/agents/sales/${id}/commission-status`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status }),
-      });
-    } catch (error) {
-      logger.error('Error updating commission status:', error);
-      throw error;
-    }
-  }
-
-  async updateAgentSaleNotes(id: string, notes: string) {
-    try {
-      return this.request<any>(`/agents/sales/${id}/notes`, {
-        method: 'PATCH',
-        body: JSON.stringify({ notes }),
-      });
-    } catch (error) {
-      logger.error('Error updating agent sale notes:', error);
-      throw error;
-    }
-  }
-
-  async resubmitAgentSale(resubmitData: any) {
-    try {
-      return this.request<any>('/agents/sales/resubmit', {
-        method: 'POST',
-        body: JSON.stringify(resubmitData),
-      });
-    } catch (error) {
-      logger.error('Error resubmitting agent sale:', error);
-      throw error;
-    }
-  }
-
-  async updateAgentCommissionRates(agentId: string, agentCommissionRate: number, closerCommissionRate: number) {
-    try {
-      return this.request<any>(`/agents/${agentId}/commission-rates`, {
-        method: 'PATCH',
-        body: JSON.stringify({ agentCommissionRate, closerCommissionRate }),
-      });
-    } catch (error) {
-      logger.error('Error updating agent commission rates:', error);
-      throw error;
-    }
-  }
-
-  async updateAgentStatus(agentId: string, isActive: boolean) {
-    try {
-      // Use the users endpoint to update agent status
-      return this.request<any>(`/users/${agentId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ isActive }),
-      });
-    } catch (error) {
-      logger.error('Error updating agent status:', error);
-      throw error;
-    }
-  }
-
-  async getAgentMonthlyStats() {
-    try {
-      return this.request<any>('/agents/monthly-stats');
-    } catch (error) {
-      logger.error('Error fetching agent monthly stats:', error);
-      throw error;
-    }
-  }
-
-  // Closer methods
-  async getActiveClosers() {
-    try {
-      return this.request<Closer[]>('/agents/closers/active');
-    } catch (error) {
-      logger.error('Error fetching active closers:', error);
-      throw error;
-    }
-  }
-
-  async getAllClosers() {
-    try {
-      return this.request<Closer[]>('/closers');
-    } catch (error) {
-      logger.error('Error fetching all closers:', error);
-      throw error;
-    }
-  }
-
-  async getCloser(id: string) {
-    try {
-      return this.request<Closer>(`/closers/${id}`);
-    } catch (error) {
-      logger.error('Error fetching closer:', error);
-      throw error;
-    }
-  }
-
-  async createCloser(closerData: any) {
-    try {
-      return this.request<Closer>('/closers', {
-        method: 'POST',
-        body: JSON.stringify(closerData),
-      });
-    } catch (error) {
-      logger.error('Error creating closer:', error);
-      throw error;
-    }
-  }
-
-  async updateCloser(id: string, closerData: any) {
-    try {
-      return this.request<Closer>(`/closers/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(closerData),
-      });
-    } catch (error) {
-      logger.error('Error updating closer:', error);
-      throw error;
-    }
-  }
-
-  async deleteCloser(id: string) {
-    try {
-      return this.request<void>(`/closers/${id}`, {
-        method: 'DELETE',
-      });
-    } catch (error) {
-      logger.error('Error deleting closer:', error);
-      throw error;
-    }
-  }
-
-  async getCloserStats(id: string) {
-    try {
-      logger.debug('Making request to:', `/closers/${id}/stats`);
-      const result = await this.request<any>(`/closers/${id}/stats`);
-      logger.debug('Closer stats response received');
-      return result;
-    } catch (error) {
-      logger.error('Error fetching closer stats:', error);
-      logger.error('Error response received');
-      throw error;
-    }
-  }
-
-  async getCloserMonthlyStats(id: string) {
-    try {
-      return this.request<any>(`/closers/${id}/monthly-stats`);
-    } catch (error) {
-      logger.error('Error fetching closer monthly stats:', error);
-      throw error;
-    }
-  }
-
-  async getCloserSales(id: string) {
-    try {
-      return this.request<any>(`/closers/${id}/sales`);
-    } catch (error) {
-      logger.error('Error fetching closer sales:', error);
-      throw error;
-    }
-  }
-
-  async getAllClosersStats() {
-    try {
-      return this.request<any>('/closers/stats');
-    } catch (error) {
-      logger.error('Error fetching all closers stats:', error);
-      throw error;
-    }
-  }
-
-  async getFilteredCloserStats(filters: any) {
-    try {
-      const queryParams = new URLSearchParams();
-      
-      if (filters.startDate) queryParams.append('startDate', filters.startDate);
-      if (filters.endDate) queryParams.append('endDate', filters.endDate);
-      if (filters.month) queryParams.append('month', filters.month);
-      if (filters.minCommission) queryParams.append('minCommission', filters.minCommission.toString());
-      if (filters.maxCommission) queryParams.append('maxCommission', filters.maxCommission.toString());
-      
-      const queryString = queryParams.toString();
-      const url = queryString ? `/closers/stats/filtered?${queryString}` : '/closers/stats/filtered';
-      
-      return this.request<any>(url);
-    } catch (error) {
-      logger.error('Error fetching filtered closer stats:', error);
-      throw error;
-    }
-  }
-
-  async getCloserAuditData(filters: any) {
-    try {
-      const queryParams = new URLSearchParams();
-      
-      if (filters.closerId) queryParams.append('closerId', filters.closerId);
-      if (filters.agentId) queryParams.append('agentId', filters.agentId);
-      if (filters.startDate) queryParams.append('startDate', filters.startDate);
-      if (filters.endDate) queryParams.append('endDate', filters.endDate);
-      if (filters.saleStatus) queryParams.append('saleStatus', filters.saleStatus);
-      if (filters.commissionStatus) queryParams.append('commissionStatus', filters.commissionStatus);
-      if (filters.minAmount) queryParams.append('minAmount', filters.minAmount.toString());
-      if (filters.maxAmount) queryParams.append('maxAmount', filters.maxAmount.toString());
-      
-      const queryString = queryParams.toString();
-      const url = queryString ? `/closers/audit?${queryString}` : '/closers/audit';
-      
-      return this.request<AgentSale[]>(url);
-    } catch (error) {
-      logger.error('Error fetching closer audit data:', error);
-      throw error;
-    }
+  // Clients helper method
+  async getClients() {
+    return this.getUsers({ role: 'CLIENT' });
   }
 }
 
-// Export singleton instance
 export const apiClient = new ApiClient();
