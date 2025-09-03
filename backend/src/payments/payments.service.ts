@@ -79,6 +79,162 @@ export class PaymentsService {
     return this.findOne(processedPayment.id);
   }
 
+  async chargeCard(chargeData: any, user: User): Promise<any> {
+    try {
+      // Validate charge data
+      if (!chargeData.amount || chargeData.amount <= 0) {
+        throw new BadRequestException('Invalid amount');
+      }
+
+      if (!chargeData.cardDetails) {
+        throw new BadRequestException('Card details are required');
+      }
+
+      // Process payment through Authorize.Net
+      const paymentRequest = {
+        amount: chargeData.amount,
+        cardNumber: chargeData.cardDetails.cardNumber,
+        expiryDate: chargeData.cardDetails.expiryDate,
+        cvv: chargeData.cardDetails.cvv,
+        cardholderName: chargeData.cardDetails.cardholderName,
+        billingAddress: chargeData.cardDetails.billingAddress,
+        email: chargeData.clientEmail,
+        description: chargeData.notes || chargeData.description || 'Direct charge',
+        invoiceNumber: chargeData.invoiceId || `DIRECT_${Date.now()}`
+      };
+
+      const result = await this.authorizeNetService.processPayment(paymentRequest);
+
+      if (result.success) {
+        // Create payment record
+        let payment;
+        
+        if (chargeData.type === 'invoice' && chargeData.invoiceId) {
+          // Invoice payment
+          const invoice = await this.invoicesService.findOne(chargeData.invoiceId);
+          payment = this.paymentsRepository.create({
+            invoiceId: chargeData.invoiceId,
+            userId: invoice.clientId,
+            amount: chargeData.amount,
+            method: PaymentMethod.CARD,
+            status: PaymentStatus.COMPLETED,
+            transactionId: result.transactionId,
+            gatewayResponse: result.gatewayResponse,
+            processedAt: new Date(),
+            notes: chargeData.notes || 'Admin/Agent direct charge'
+          });
+
+          await this.paymentsRepository.save(payment);
+
+          // Update invoice status
+          await this.invoicesService.updateStatus(
+            chargeData.invoiceId,
+            InvoiceStatus.PAID,
+            user
+          );
+        } else {
+          // Direct charge - create a temporary invoice record for tracking
+          const tempInvoice = await this.invoicesService.create({
+            clientId: chargeData.clientId || 'temp-client',
+            amount: chargeData.amount,
+            tax: 0,
+            description: chargeData.description || 'Direct charge',
+            dueDate: new Date().toISOString(),
+            notes: 'Direct charge via admin/agent'
+          }, user);
+
+          payment = this.paymentsRepository.create({
+            invoiceId: tempInvoice.id,
+            userId: chargeData.clientId || user.id,
+            amount: chargeData.amount,
+            method: PaymentMethod.CARD,
+            status: PaymentStatus.COMPLETED,
+            transactionId: result.transactionId,
+            gatewayResponse: result.gatewayResponse,
+            processedAt: new Date(),
+            notes: chargeData.notes || 'Direct charge'
+          });
+
+          await this.paymentsRepository.save(payment);
+        }
+
+        // Audit log
+        await this.auditService.log({
+          action: 'CARD_CHARGED',
+          entityType: 'Payment',
+          entityId: payment.id,
+          details: { 
+            amount: chargeData.amount,
+            chargedBy: user.role,
+            transactionId: result.transactionId
+          },
+          user,
+        });
+
+        return {
+          success: true,
+          transactionId: result.transactionId,
+          amount: chargeData.amount,
+          message: 'Payment processed successfully'
+        };
+      } else {
+        // Audit log for failed payment
+        await this.auditService.log({
+          action: 'CARD_CHARGE_FAILED',
+          entityType: 'Payment',
+          entityId: 'failed',
+          details: { 
+            amount: chargeData.amount,
+            error: result.error,
+            chargedBy: user.role
+          },
+          user,
+        });
+
+        return {
+          success: false,
+          error: result.error || 'Payment processing failed'
+        };
+      }
+    } catch (error) {
+      console.error('Error charging card:', error);
+      throw new BadRequestException(error.message || 'Failed to process payment');
+    }
+  }
+
+  async processLinkPayment(paymentData: any): Promise<any> {
+    try {
+      // Process payment through Authorize.Net
+      const paymentRequest = {
+        amount: paymentData.amount,
+        cardNumber: paymentData.cardNumber,
+        expiryDate: paymentData.expiryDate,
+        cvv: paymentData.cvv,
+        cardholderName: paymentData.cardholderName,
+        billingAddress: paymentData.billingAddress,
+        email: paymentData.email,
+        description: paymentData.description || 'Payment link payment'
+      };
+
+      const result = await this.authorizeNetService.processPayment(paymentRequest);
+
+      if (result.success) {
+        return {
+          success: true,
+          transactionId: result.transactionId,
+          message: 'Payment processed successfully'
+        };
+      } else {
+        return {
+          success: false,
+          error: result.error || 'Payment processing failed'
+        };
+      }
+    } catch (error) {
+      console.error('Error processing link payment:', error);
+      throw new BadRequestException(error.message || 'Failed to process payment');
+    }
+  }
   async handleWebhook(payload: any, signature: string, rawBody: Buffer): Promise<any> {
     try {
       // Validate webhook signature

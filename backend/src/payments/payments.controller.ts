@@ -42,6 +42,23 @@ export class PaymentsController {
   ) {
     return this.hostedPaymentService.createHostedPaymentToken(createHostedPaymentDto);
   }
+
+  @Post('charge-card')
+  @Roles(UserRole.ADMIN, UserRole.AGENT)
+  @ApiOperation({ summary: 'Charge a card directly (Admin/Agent only)' })
+  @ApiResponse({ status: 201, description: 'Card charged successfully' })
+  async chargeCard(@Body() chargeData: any, @CurrentUser() currentUser: User) {
+    return this.paymentsService.chargeCard(chargeData, currentUser);
+  }
+
+  @Post('process-link-payment')
+  @Public()
+  @ApiOperation({ summary: 'Process payment via payment link (Public)' })
+  @ApiResponse({ status: 200, description: 'Payment processed successfully' })
+  async processLinkPayment(@Body() paymentData: any) {
+    return this.paymentsService.processLinkPayment(paymentData);
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new payment' })
   @ApiResponse({ status: 201, description: 'Payment created successfully' })
