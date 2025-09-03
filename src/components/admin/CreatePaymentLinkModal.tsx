@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
-import { X, DollarSign, Calendar, User, FileText } from 'lucide-react';
+import { X, DollarSign, Calendar, User, FileText, Mail, Phone, CreditCard, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface Client {
@@ -22,8 +22,22 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
   const [clientId, setClientId] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
   const [clients, setClients] = useState<Client[]>([]);
+  const [formData, setFormData] = useState({
+    clientId: '',
+    clientName: '',
+    clientEmail: '',
+    clientPhone: '',
+    title: '',
+    description: '',
+    amount: '',
+    expiresAt: '',
+    sendEmail: true,
+    sendSMS: false,
+    allowPartialPayment: false,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isNewClient, setIsNewClient] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -38,9 +52,9 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
   const fetchClients = async () => {
     try {
       console.log('Fetching clients...');
-      const response = await apiClient.getClients();
+      const response = await apiClient.getUsers({ role: 'CLIENT' });
       console.log('Clients response:', response);
-      const clientList = response.users || response || [];
+      const clientList = response.users || [];
       console.log('Client list:', clientList);
       setClients(Array.isArray(clientList) ? clientList : []);
     } catch (error) {
@@ -52,12 +66,22 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title.trim() || !amount.trim() || !clientId || !expiresAt) {
+    if (!formData.title.trim() || !formData.amount.trim() || !formData.expiresAt) {
       setError('Please fill in all required fields');
       return;
     }
 
-    if (parseFloat(amount) <= 0) {
+    if (isNewClient && (!formData.clientName.trim() || !formData.clientEmail.trim())) {
+      setError('Please provide client name and email for new client');
+      return;
+    }
+
+    if (!isNewClient && !formData.clientId) {
+      setError('Please select a client or choose to create a new one');
+      return;
+    }
+
+    if (parseFloat(formData.amount) <= 0) {
       setError('Amount must be greater than 0');
       return;
     }
@@ -67,18 +91,32 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
 
     try {
       const paymentLinkData = {
-        title: title.trim(),
-        description: description.trim(),
-        amount: parseFloat(amount),
-        clientId,
-        expiresAt: new Date(expiresAt).toISOString(),
-        allowPartialPayment: false,
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        amount: parseFloat(formData.amount),
+        expiresAt: new Date(formData.expiresAt).toISOString(),
+        allowPartialPayment: formData.allowPartialPayment,
         metadata: {
-          sendEmail: true,
+          sendEmail: formData.sendEmail,
+          sendSMS: formData.sendSMS,
           createdBy: user?.id,
+          ...(isNewClient && {
+            newClient: {
+              name: formData.clientName,
+              email: formData.clientEmail,
+              phone: formData.clientPhone,
+            }
+          })
         },
+        ...(isNewClient ? {
+          clientName: formData.clientName,
+          clientEmail: formData.clientEmail,
+          clientPhone: formData.clientPhone,
+        } : {
+          clientId: formData.clientId,
+        })
       };
-      console.log('Sending payment link data:', paymentLinkData);
+      
       const paymentLink = await apiClient.createPaymentLink(paymentLinkData);
 
       onSuccess(paymentLink);
@@ -90,6 +128,23 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    
+    if (e.target.type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData(prev => ({
+        ...prev,
+        [name]: checked
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
@@ -97,11 +152,11 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-600">
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg mr-3">
-              <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              <CreditCard className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Create Payment Link</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Generate a new payment link for a client</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Generate secure payment link for anyone</p>
             </div>
           </div>
           <button
@@ -119,6 +174,87 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
               <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
           )}
+
+          {/* Client Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Client Information
+            </label>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    checked={!isNewClient}
+                    onChange={() => setIsNewClient(false)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Existing Client</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    checked={isNewClient}
+                    onChange={() => setIsNewClient(true)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">New Client</span>
+                </label>
+              </div>
+
+              {!isNewClient ? (
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                  <select
+                    name="clientId"
+                    value={formData.clientId}
+                    onChange={handleChange}
+                    className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select existing client</option>
+                    {clients.map(client => (
+                      <option key={client.id} value={client.id}>
+                        {client.fullName} ({client.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <input
+                      type="text"
+                      name="clientName"
+                      value={formData.clientName}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Client full name *"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      name="clientEmail"
+                      value={formData.clientEmail}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Client email *"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <input
+                      type="tel"
+                      name="clientPhone"
+                      value={formData.clientPhone}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Client phone (optional)"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Title */}
           <div>
@@ -175,30 +311,6 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
             </div>
           </div>
 
-          {/* Client */}
-          <div>
-            <label htmlFor="client" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Client *
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-              <select
-                id="client"
-                value={clientId}
-                onChange={(e) => setClientId(e.target.value)}
-                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              >
-                <option value="">Select a client</option>
-                {(clients || []).map((client) => (
-                  <option key={client.id} value={client.id}>
-                    {client.fullName} ({client.email})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
           {/* Expiration Date */}
           <div>
             <label htmlFor="expiresAt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -215,6 +327,68 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
                 className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
+            </div>
+          </div>
+
+          {/* Payment Options */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Payment Options</h3>
+            
+            <div className="space-y-3">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="allowPartialPayment"
+                  checked={formData.allowPartialPayment}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600 rounded"
+                />
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Allow partial payments</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Notification Options */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Notification Options</h3>
+            
+            <div className="space-y-3">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="sendEmail"
+                  checked={formData.sendEmail}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600 rounded"
+                />
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Send email notification</span>
+              </label>
+              
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="sendSMS"
+                  checked={formData.sendSMS}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600 rounded"
+                />
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Send SMS notification</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Security Notice */}
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="flex items-center">
+              <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
+              <div>
+                <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                  Secure Payment Processing
+                </h3>
+                <p className="text-sm text-blue-700 dark:text-blue-400 mt-1">
+                  All payments are processed securely through Authorize.Net with bank-grade encryption.
+                </p>
+              </div>
             </div>
           </div>
 

@@ -486,6 +486,62 @@ class ApiClient {
     });
   }
 
+  async sendPaymentLinkEmail(emailData: any) {
+    // Simulate email sending
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ success: true, messageId: 'email_' + Date.now() });
+      }, 1000);
+    });
+  }
+
+  async sendPaymentLinkSMS(smsData: any) {
+    // Simulate SMS sending
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ success: true, messageId: 'sms_' + Date.now() });
+      }, 1000);
+    });
+  }
+
+  // Enhanced Card Charging
+  async chargeCard(paymentData: any) {
+    return this.request('/payments/charge-card', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async processDirectPayment(paymentData: any) {
+    return this.request('/payments/direct', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async savePaymentMethod(clientId: string, cardData: any) {
+    return this.request(`/payments/save-method/${clientId}`, {
+      method: 'POST',
+      body: JSON.stringify(cardData),
+    });
+  }
+
+  async getClientPaymentMethods(clientId: string) {
+    return this.request(`/payments/methods/${clientId}`);
+  }
+
+  async chargeStoredCard(clientId: string, paymentMethodId: string, amount: number, description?: string) {
+    return this.request('/payments/charge-stored', {
+      method: 'POST',
+      body: JSON.stringify({
+        clientId,
+        paymentMethodId,
+        amount,
+        description,
+      }),
+    });
+  }
+
   // Subscriptions
   async getSubscriptions() {
     return this.request('/subscriptions');

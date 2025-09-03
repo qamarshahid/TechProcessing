@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
 import { useNotifications } from '../common/NotificationSystem';
-import { ConfirmationModal } from '../common/ConfirmationModal';
+import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 import { 
   Plus, 
   Search, 
@@ -19,9 +19,14 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Mail
+  Mail,
+  Send,
+  QrCode,
+  Share2
 } from 'lucide-react';
 import { CreatePaymentLinkModal } from './CreatePaymentLinkModal';
+import { PaymentLinkDetailsModal } from './PaymentLinkDetailsModal';
+import { SendPaymentLinkModal } from './SendPaymentLinkModal';
 
 interface PaymentLink {
   id: string;
@@ -52,10 +57,13 @@ export function PaymentLinksPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
   
-  // Confirmation modal state
+  // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState<PaymentLink | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showSendModal, setShowSendModal] = useState(false);
+  const [selectedLink, setSelectedLink] = useState<PaymentLink | null>(null);
 
   useEffect(() => {
     fetchPaymentLinks();
@@ -110,6 +118,24 @@ export function PaymentLinksPage() {
       console.error('Error resending email:', error);
       showError('Email Failed', 'Failed to resend payment link email. Please try again.');
     }
+  };
+
+  const handleViewDetails = (link: PaymentLink) => {
+    setSelectedLink(link);
+    setShowDetailsModal(true);
+  };
+
+  const handleSendLink = (link: PaymentLink) => {
+    setSelectedLink(link);
+    setShowSendModal(true);
+  };
+
+  const generateQRCode = (link: PaymentLink) => {
+    const paymentUrl = `${window.location.origin}/payment-link/${link.secureToken || link.token}`;
+    // In a real implementation, you would generate a QR code
+    // For now, we'll just copy the link
+    copyToClipboard(paymentUrl, link.id);
+    showSuccess('QR Code Generated', 'Payment link copied to clipboard. Use a QR code generator to create a scannable code.');
   };
 
   const copyToClipboard = async (text: string, linkId: string) => {
@@ -325,6 +351,20 @@ export function PaymentLinksPage() {
                       <Copy className="h-4 w-4" />
                     )}
                   </button>
+                  <button
+                    onClick={() => generateQRCode(link)}
+                    className="p-2 text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                    title="Generate QR Code"
+                  >
+                    <QrCode className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleSendLink(link)}
+                    className="p-2 text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors"
+                    title="Send payment link"
+                  >
+                    <Send className="h-4 w-4" />
+                  </button>
                   <a
                     href={`/payment-link/${link.secureToken || link.token}`}
                     target="_blank"
@@ -335,11 +375,11 @@ export function PaymentLinksPage() {
                     <ExternalLink className="h-4 w-4" />
                   </a>
                   <button
-                    onClick={() => handleResendEmail(link.id)}
+                    onClick={() => handleViewDetails(link)}
                     className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    title="Resend email"
+                    title="View details"
                   >
-                    <Mail className="h-4 w-4" />
+                    <Eye className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteClick(link)}
@@ -421,20 +461,45 @@ export function PaymentLinksPage() {
       )}
 
       {/* Delete Confirmation Modal */}
-      <ConfirmationModal
+      <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => {
           setShowDeleteModal(false);
           setLinkToDelete(null);
         }}
-        onConfirm={handleDeletePaymentLink}
+        onConfirm={(hardDelete) => handleDeletePaymentLink()}
         title="Delete Payment Link"
         message={`Are you sure you want to delete this payment link for ${linkToDelete?.client?.fullName || 'Unknown Client'}? This action cannot be undone and will permanently remove the payment link from the system.`}
-        confirmText="Delete Payment Link"
-        cancelText="Cancel"
-        type="danger"
+        entityName={linkToDelete?.title || 'Payment Link'}
+        entityType="payment"
         isLoading={isDeleting}
       />
+
+      {/* Payment Link Details Modal */}
+      {showDetailsModal && selectedLink && (
+        <PaymentLinkDetailsModal
+          link={selectedLink}
+          onClose={() => {
+            setShowDetailsModal(false);
+            setSelectedLink(null);
+          }}
+          onLinkUpdated={fetchPaymentLinks}
+        />
+      )}
+
+      {/* Send Payment Link Modal */}
+      {showSendModal && selectedLink && (
+        <SendPaymentLinkModal
+          link={selectedLink}
+          onClose={() => {
+            setShowSendModal(false);
+            setSelectedLink(null);
+          }}
+          onSent={() => {
+            showSuccess('Payment Link Sent', 'Payment link has been sent successfully.');
+          }}
+        />
+      )}
     </div>
   );
 }

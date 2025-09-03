@@ -6,6 +6,7 @@ import { useNotifications } from '../common/NotificationSystem';
 import { Agent, AgentSale, SaleStatus } from '../../types';
 import { AddSaleModal } from './AddSaleModal';
 import { ResubmitSaleModal } from './ResubmitSaleModal';
+import { AgentChargeCardModal } from './AgentChargeCardModal';
 import { 
   User, 
   DollarSign, 
@@ -16,7 +17,8 @@ import {
   XCircle, 
   AlertCircle,
   Plus,
-  RefreshCw
+  RefreshCw,
+  CreditCard
 } from 'lucide-react';
 
 export function AgentDashboard() {
@@ -29,6 +31,7 @@ export function AgentDashboard() {
   const [showAddSaleModal, setShowAddSaleModal] = useState(false);
   const [showResubmitModal, setShowResubmitModal] = useState(false);
   const [selectedSaleForResubmit, setSelectedSaleForResubmit] = useState<AgentSale | null>(null);
+  const [showChargeCardModal, setShowChargeCardModal] = useState(false);
 
   const fetchAgentData = useCallback(async () => {
     if (!user) {
@@ -315,6 +318,13 @@ export function AgentDashboard() {
                   Add Sale
                 </button>
                 <button
+                  onClick={() => setShowChargeCardModal(true)}
+                  className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Charge Card
+                </button>
+                <button
                   onClick={fetchAgentData}
                   className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
@@ -477,6 +487,18 @@ export function AgentDashboard() {
             setSelectedSaleForResubmit(null);
           }}
           onSuccess={handleResubmitSuccess}
+        />
+      )}
+
+      {/* Agent Charge Card Modal */}
+      {showChargeCardModal && (
+        <AgentChargeCardModal
+          isOpen={showChargeCardModal}
+          onClose={() => setShowChargeCardModal(false)}
+          onPaymentProcessed={() => {
+            setShowChargeCardModal(false);
+            showSuccess('Payment Processed', 'Card has been charged successfully.');
+          }}
         />
       )}
     </div>

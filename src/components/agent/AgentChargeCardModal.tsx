@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { X, CreditCard, User, DollarSign, Lock, Calendar, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
 import { apiClient } from '../../lib/api';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNotifications } from '../common/NotificationSystem';
 
-interface ChargeClientModalProps {
+interface AgentChargeCardModalProps {
   isOpen: boolean;
   onClose: () => void;
   onPaymentProcessed: () => void;
-  preSelectedInvoice?: any;
 }
 
-export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSelectedInvoice }: ChargeClientModalProps) {
-  const [clients, setClients] = useState<any[]>([]);
-  const [invoices, setInvoices] = useState<any[]>([]);
+export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: AgentChargeCardModalProps) {
+  const { user } = useAuth();
+  const { showSuccess, showError } = useNotifications();
+  
   const [formData, setFormData] = useState({
-    chargeType: 'invoice', // 'invoice' or 'direct'
-    clientId: '',
     clientName: '',
     clientEmail: '',
-    invoiceId: '',
     amount: '',
     description: '',
     cardNumber: '',
@@ -33,38 +32,12 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
       zipCode: '',
       country: 'US',
     },
-    saveCard: false,
     sendReceipt: true,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [step, setStep] = useState(1); // 1: Client/Invoice, 2: Card Details, 3: Confirmation
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchClients();
-      fetchInvoices();
-    }
-  }, [isOpen]);
-
-  const fetchClients = async () => {
-    try {
-      const response = await apiClient.getUsers({ role: 'CLIENT' });
-      setClients(response.users.filter(u => u.role === 'CLIENT'));
-    } catch (error) {
-      console.error('Error fetching clients:', error);
-    }
-  };
-
-  const fetchInvoices = async () => {
-    try {
-      const response = await apiClient.getInvoices();
-      setInvoices(response.invoices.filter(inv => inv.status === 'UNPAID' || inv.status === 'OVERDUE'));
-    } catch (error) {
-      console.error('Error fetching invoices:', error);
-    }
-  };
+  const [step, setStep] = useState(1); // 1: Client Info, 2: Card Details, 3: Confirmation
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,14 +47,9 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
 
     try {
       const paymentData = {
-        type: formData.chargeType,
-        ...(formData.chargeType === 'invoice' ? {
-          invoiceId: formData.invoiceId,
-        } : {
-          clientId: formData.clientId,
-          clientName: formData.clientName,
-          clientEmail: formData.clientEmail,
-        }),
+        type: 'agent_direct',
+        clientName: formData.clientName,
+        clientEmail: formData.clientEmail,
         amount: parseFloat(formData.amount),
         method: 'CARD',
         cardDetails: {
@@ -93,9 +61,9 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
         },
         notes: formData.description,
         metadata: {
-          saveCard: formData.saveCard,
           sendReceipt: formData.sendReceipt,
-          chargedBy: 'admin',
+          chargedBy: 'agent',
+          agentId: user?.id,
         },
       };
 
@@ -120,34 +88,43 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
 
   const resetForm = () => {
     setFormData({
-      clientId: '',
-      invoiceId: '',
+      clientName: '',
+      clientEmail: '',
       amount: '',
       description: '',
       cardNumber: '',
       expiryDate: '',
       cvv: '',
       cardholderName: '',
+      billingAddress: {
+        firstName: '',
+        lastName: '',
+        address: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: 'US',
+      },
+      sendReceipt: true,
     });
     setError('');
     setSuccess('');
+    setStep(1);
   };
 
   const nextStep = () => {
     if (step === 1) {
-      // Validate step 1
-      if (formData.chargeType === 'invoice' && !formData.invoiceId) {
-        setError('Please select an invoice');
+      if (!formData.clientName || !formData.clientEmail || !formData.amount) {
+        setError('Please fill in all required fields');
         return;
       }
-      if (formData.chargeType === 'direct' && (!formData.clientName || !formData.clientEmail || !formData.amount)) {
-        setError('Please fill in all required fields');
+      if (parseFloat(formData.amount) <= 0) {
+        setError('Amount must be greater than 0');
         return;
       }
       setError('');
       setStep(2);
     } else if (step === 2) {
-      // Validate step 2
       if (!formData.cardNumber || !formData.expiryDate || !formData.cvv || !formData.cardholderName) {
         setError('Please fill in all card details');
         return;
@@ -162,7 +139,7 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
     setError('');
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
     if (name.startsWith('billingAddress.')) {
@@ -185,21 +162,6 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
         ...prev,
         [name]: value
       }));
-    }
-
-    // Auto-fill amount when invoice is selected
-    if (name === 'invoiceId' && value && formData.chargeType === 'invoice') {
-      const selectedInvoice = invoices.find(inv => inv.id === value);
-      if (selectedInvoice) {
-        setFormData(prev => ({
-          ...prev,
-          amount: selectedInvoice.total || selectedInvoice.amount,
-          description: `Payment for: ${selectedInvoice.description}`,
-          clientId: selectedInvoice.client_id || '',
-          clientName: selectedInvoice.client?.fullName || '',
-          clientEmail: selectedInvoice.client?.email || '',
-        }));
-      }
     }
   };
 
@@ -253,7 +215,7 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
               <CreditCard className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Charge Client Card</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Agent Card Charge</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">Step {step} of 3</p>
             </div>
           </div>
@@ -278,141 +240,94 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
             </div>
           )}
 
-          {/* Step 1: Client and Invoice Selection */}
+          {/* Step 1: Client Information */}
           {step === 1 && (
             <div className="space-y-6">
-              {/* Charge Type Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                  Charge Type
-                </label>
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, chargeType: 'invoice' }))}
-                    className={`p-4 rounded-lg border-2 transition-colors ${
-                      formData.chargeType === 'invoice'
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                        : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 text-gray-600 dark:text-gray-400'
-                    }`}
-                  >
-                    <div className="text-center">
-                      <FileText className="h-8 w-8 mx-auto mb-2" />
-                      <div className="font-medium">Invoice Payment</div>
-                      <div className="text-xs mt-1">Charge for existing invoice</div>
-                    </div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, chargeType: 'direct' }))}
-                    className={`p-4 rounded-lg border-2 transition-colors ${
-                      formData.chargeType === 'direct'
-                        ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300'
-                        : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500 text-gray-600 dark:text-gray-400'
-                    }`}
-                  >
-                    <div className="text-center">
-                      <CreditCard className="h-8 w-8 mx-auto mb-2" />
-                      <div className="font-medium">Direct Charge</div>
-                      <div className="text-xs mt-1">Charge any amount directly</div>
-                    </div>
-                  </button>
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="flex items-center">
+                  <User className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
+                  <div>
+                    <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                      Agent Direct Charge
+                    </h3>
+                    <p className="text-sm text-blue-700 dark:text-blue-400 mt-1">
+                      Charge any client's card directly as an agent
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Invoice Selection */}
-              {formData.chargeType === 'invoice' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Select Invoice *
+                    Client Name *
                   </label>
-                  <select
-                    name="invoiceId"
-                    value={formData.invoiceId}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
-                  >
-                    <option value="">Select an unpaid invoice</option>
-                    {invoices.map(invoice => (
-                      <option key={invoice.id} value={invoice.id}>
-                        {invoice.client?.fullName || 'Unknown Client'} - {invoice.description} - ${invoice.total || invoice.amount}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <input
+                      type="text"
+                      name="clientName"
+                      value={formData.clientName}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                      placeholder="Enter client name"
+                    />
+                  </div>
                 </div>
-              )}
 
-              {/* Direct Charge Form */}
-              {formData.chargeType === 'direct' && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Client Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="clientName"
-                        value={formData.clientName}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                        placeholder="Enter client name"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Client Email *
-                      </label>
-                      <input
-                        type="email"
-                        name="clientEmail"
-                        value={formData.clientEmail}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                        placeholder="Enter client email"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Amount *
-                      </label>
-                      <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
-                        <input
-                          type="number"
-                          name="amount"
-                          value={formData.amount}
-                          onChange={handleChange}
-                          required
-                          min="0"
-                          step="0.01"
-                          className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                          placeholder="0.00"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Description
-                      </label>
-                      <input
-                        type="text"
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
-                        placeholder="Payment description"
-                      />
-                    </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Client Email *
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <input
+                      type="email"
+                      name="clientEmail"
+                      value={formData.clientEmail}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                      placeholder="Enter client email"
+                    />
                   </div>
                 </div>
-              )}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Amount *
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <input
+                      type="number"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleChange}
+                      required
+                      min="0"
+                      step="0.01"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
+                    placeholder="Payment description"
+                  />
+                </div>
+              </div>
             </div>
           )}
 
@@ -572,18 +487,7 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
                 </div>
               </div>
 
-              {/* Payment Options */}
-              <div className="space-y-3">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="saveCard"
-                    checked={formData.saveCard}
-                    onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600 rounded"
-                  />
-                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Save card for future payments</span>
-                </label>
+              <div>
                 <label className="flex items-center">
                   <input
                     type="checkbox"
@@ -620,16 +524,12 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
                 <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Payment Summary</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Type:</span>
-                    <span className="text-gray-900 dark:text-white">
-                      {formData.chargeType === 'invoice' ? 'Invoice Payment' : 'Direct Charge'}
-                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">Client:</span>
+                    <span className="text-gray-900 dark:text-white">{formData.clientName}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Client:</span>
-                    <span className="text-gray-900 dark:text-white">
-                      {formData.clientName || clients.find(c => c.id === formData.clientId)?.fullName}
-                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">Email:</span>
+                    <span className="text-gray-900 dark:text-white">{formData.clientEmail}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Amount:</span>
@@ -685,13 +585,13 @@ export function ChargeClientModal({ isOpen, onClose, onPaymentProcessed, preSele
             </div>
             
             <div className="flex space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-3 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors font-medium"
-            >
-              Cancel
-            </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-3 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors font-medium"
+              >
+                Cancel
+              </button>
               
               {step < 3 ? (
                 <button
