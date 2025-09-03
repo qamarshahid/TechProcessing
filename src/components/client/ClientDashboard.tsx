@@ -3,7 +3,7 @@ import { apiClient } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../common/NotificationSystem';
 import { logger } from '../../lib/logger';
-import { FileText, DollarSign, Clock, CheckCircle, Package, AlertCircle, RefreshCw, XCircle, Eye } from 'lucide-react';
+import { FileText, DollarSign, Clock, CheckCircle, Package, AlertCircle, RefreshCw, XCircle, Eye, UserCheck } from 'lucide-react';
 
 export function ClientDashboard() {
   const { user } = useAuth();
@@ -549,178 +549,182 @@ export function ClientDashboard() {
                 <div key={request.id} className="border border-gray-200 dark:border-slate-600 rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                                             <div className="flex items-center gap-3 mb-2">
-                         <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                           {request.isCustomQuote ? 'Custom Quote Request' : (request.service?.name || 'Service Request')}
-                         </h3>
-                         <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(request.status)}`}>
-                           {request.status === 'PENDING' && <Clock className="h-3 w-3 mr-1" />}
-                           {request.status === 'REVIEWING' && <Eye className="h-3 w-3 mr-1" />}
-                           {request.status === 'QUOTE_READY' && <DollarSign className="h-3 w-3 mr-1" />}
-                           {request.status === 'APPROVED' && <CheckCircle className="h-3 w-3 mr-1" />}
-                           {request.status === 'REJECTED' && <XCircle className="h-3 w-3 mr-1" />}
-                           {request.status === 'IN_PROGRESS' && <Package className="h-3 w-3 mr-1" />}
-                           {request.status === 'REVIEW' && <Eye className="h-3 w-3 mr-1" />}
-                           {request.status === 'COMPLETED' && <CheckCircle className="h-3 w-3 mr-1" />}
-                           {request.status}
-                         </span>
-                         {request.isCustomQuote && (
-                           <span className="inline-flex items-center px-1 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-400 border border-purple-200 dark:border-purple-800">
-                             CUSTOM
-                           </span>
-                         )}
-                       </div>
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {request.isCustomQuote ? 'Custom Quote Request' : (request.service?.name || 'Service Request')}
+                        </h3>
+                        <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(request.status)}`}>
+                          {request.status === 'PENDING' && <Clock className="h-3 w-3 mr-1" />}
+                          {request.status === 'REVIEWING' && <Eye className="h-3 w-3 mr-1" />}
+                          {request.status === 'QUOTE_READY' && <DollarSign className="h-3 w-3 mr-1" />}
+                          {request.status === 'APPROVED' && <CheckCircle className="h-3 w-3 mr-1" />}
+                          {request.status === 'REJECTED' && <XCircle className="h-3 w-3 mr-1" />}
+                          {request.status === 'IN_PROGRESS' && <Package className="h-3 w-3 mr-1" />}
+                          {request.status === 'REVIEW' && <Eye className="h-3 w-3 mr-1" />}
+                          {request.status === 'COMPLETED' && <CheckCircle className="h-3 w-3 mr-1" />}
+                          {request.status}
+                        </span>
+                        {request.isCustomQuote && (
+                          <span className="inline-flex items-center px-1 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-400 border border-purple-200 dark:border-purple-800">
+                            CUSTOM
+                          </span>
+                        )}
+                      </div>
                       
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
                         {request.description}
                       </p>
                       
-                                             <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                         <span>{new Date(request.createdAt).toLocaleDateString()}</span>
-                         {request.budget && (
-                           <span>Budget: ${request.budget.toLocaleString()}</span>
-                         )}
-                         {request.quoteAmount && (
-                           <span>Quote: ${request.quoteAmount.toLocaleString()}</span>
-                         )}
-                         {request.timeline && (
-                           <span>Timeline: {request.timeline}</span>
-                         )}
-                       </div>
+                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                        <span>{new Date(request.createdAt).toLocaleDateString()}</span>
+                        {request.budget && (
+                          <span>Budget: ${request.budget.toLocaleString()}</span>
+                        )}
+                        {request.quoteAmount && (
+                          <span>Quote: ${request.quoteAmount.toLocaleString()}</span>
+                        )}
+                        {request.timeline && (
+                          <span>Timeline: {request.timeline}</span>
+                        )}
+                      </div>
                       
-                                             {/* Delivery Information */}
-                       {(request.expectedStartDate || request.expectedDeliveryDate) && (
-                         <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
-                           <div className="text-xs text-blue-800 dark:text-blue-200">
-                             {request.expectedStartDate && (
-                               <div><strong>Expected Start:</strong> {new Date(request.expectedStartDate).toLocaleDateString()}</div>
-                             )}
-                             {request.expectedDeliveryDate && (
-                               <div><strong>Expected Delivery:</strong> {new Date(request.expectedDeliveryDate).toLocaleDateString()}</div>
-                             )}
-                             {request.actualStartDate && (
-                               <div><strong>Actual Start:</strong> {new Date(request.actualStartDate).toLocaleDateString()}</div>
-                             )}
-                             {request.actualDeliveryDate && (
-                               <div><strong>Actual Delivery:</strong> {new Date(request.actualDeliveryDate).toLocaleDateString()}</div>
-                             )}
-                           </div>
-                         </div>
-                       )}
+                      {/* Delivery Information */}
+                      {(request.expectedStartDate || request.expectedDeliveryDate) && (
+                        <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                          <div className="text-xs text-blue-800 dark:text-blue-200">
+                            {request.expectedStartDate && (
+                              <div><strong>Expected Start:</strong> {new Date(request.expectedStartDate).toLocaleDateString()}</div>
+                            )}
+                            {request.expectedDeliveryDate && (
+                              <div><strong>Expected Delivery:</strong> {new Date(request.expectedDeliveryDate).toLocaleDateString()}</div>
+                            )}
+                            {request.actualStartDate && (
+                              <div><strong>Actual Start:</strong> {new Date(request.actualStartDate).toLocaleDateString()}</div>
+                            )}
+                            {request.actualDeliveryDate && (
+                              <div><strong>Actual Delivery:</strong> {new Date(request.actualDeliveryDate).toLocaleDateString()}</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
 
-                       {/* Payment Information */}
-                       {(request.quoteAmount || request.paymentTerms) && (
-                         <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
-                           <div className="text-xs text-green-800 dark:text-green-200">
-                             {request.quoteAmount && (
-                               <div><strong>Quote Amount:</strong> ${request.quoteAmount.toLocaleString()}</div>
-                             )}
-                             {request.paymentTerms && (
-                               <div><strong>Payment Terms:</strong> {request.paymentTerms}</div>
-                             )}
-                           </div>
-                         </div>
-                       )}
+                      {/* Payment Information */}
+                      {(request.quoteAmount || request.paymentTerms) && (
+                        <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                          <div className="text-xs text-green-800 dark:text-green-200">
+                            {request.quoteAmount && (
+                              <div><strong>Quote Amount:</strong> ${request.quoteAmount.toLocaleString()}</div>
+                            )}
+                            {request.paymentTerms && (
+                              <div><strong>Payment Terms:</strong> {request.paymentTerms}</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
 
-                       {/* Status-specific Information */}
-                       {request.status === 'QUOTE_READY' && request.quoteAmount && (
-                         <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
-                           <div className="flex items-start">
-                             <div className="flex-shrink-0">
-                               <DollarSign className="h-4 w-4 text-blue-500 dark:text-blue-400 mt-0.5" />
-                             </div>
-                             <div className="ml-2">
-                               <div className="text-xs text-blue-800 dark:text-blue-200">
-                                 <strong>Quote Ready:</strong> Your quote for ${request.quoteAmount.toLocaleString()} is ready for review.
-                               </div>
-                               <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                                 Review the quote details and let us know if you'd like to proceed.
-                               </div>
-                             </div>
-                           </div>
-                         </div>
-                       )}
-                               </div>
-                             </div>
-                           </div>
-                         </div>
-                       )}
+                      {/* Status-specific Information */}
+                      {request.status === 'QUOTE_READY' && request.quoteAmount && (
+                        <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0">
+                              <DollarSign className="h-4 w-4 text-blue-500 dark:text-blue-400 mt-0.5" />
+                            </div>
+                            <div className="ml-2">
+                              <div className="text-xs text-blue-800 dark:text-blue-200">
+                                <strong>Quote Ready:</strong> Your quote for ${request.quoteAmount.toLocaleString()} is ready for review.
+                              </div>
+                              <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                                Review the quote details and let us know if you'd like to proceed.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
-                       {request.status === 'APPROVED' && request.quoteAmount && (
-                         <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
-                           <div className="flex items-start">
-                             <div className="flex-shrink-0">
-                               <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400 mt-0.5" />
-                             </div>
-                             <div className="ml-2">
-                               <div className="text-xs text-green-800 dark:text-green-200">
-                                 <strong>Project Approved:</strong> Your project has been approved! An invoice for ${request.quoteAmount.toLocaleString()} has been generated.
-                               </div>
-                               <div className="text-xs text-green-700 dark:text-green-300 mt-1">
-                                 Please check your invoices section and make payment to begin work.
-                               </div>
-                             </div>
-                           </div>
-                         </div>
-                       )}
-                       {request.status === 'IN_PROGRESS' && (
-                         <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded border border-purple-200 dark:border-purple-800">
-                           <div className="flex items-start">
-                             <div className="flex-shrink-0">
-                               <Package className="h-4 w-4 text-purple-500 dark:text-purple-400 mt-0.5" />
-                             </div>
-                             <div className="ml-2">
-                               <div className="text-xs text-purple-800 dark:text-purple-200">
-                                 <strong>Work in Progress:</strong> Your project is currently being developed.
-                               </div>
-                               <div className="text-xs text-purple-700 dark:text-purple-300 mt-1">
-                                 We'll keep you updated on the progress and notify you when it's ready for review.
-                               </div>
-                             </div>
-                           </div>
-                         </div>
-                       )}
-                       {request.adminNotes && (
-                       {request.status === 'COMPLETED' && (
-                         <div className="mt-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded border border-emerald-200 dark:border-emerald-800">
-                           <div className="flex items-start">
-                             <div className="flex-shrink-0">
-                               <CheckCircle className="h-4 w-4 text-emerald-500 dark:text-emerald-400 mt-0.5" />
-                             </div>
-                             <div className="ml-2">
-                               <div className="text-xs text-emerald-800 dark:text-emerald-200">
-                                 <strong>Project Completed:</strong> Your project has been successfully delivered!
-                               </div>
-                               <div className="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
-                                 Thank you for choosing Tech Processing LLC. We hope you're satisfied with the results.
-                               </div>
-                             </div>
-                           </div>
-                         </div>
-                       )}
-                         <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
-                       {request.status === 'REJECTED' && (
-                         <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
-                           <div className="flex items-start">
-                             <div className="flex-shrink-0">
-                               <XCircle className="h-4 w-4 text-red-500 dark:text-red-400 mt-0.5" />
-                             </div>
-                             <div className="ml-2">
-                               <div className="text-xs text-red-800 dark:text-red-200">
-                                 <strong>Request Declined:</strong> Unfortunately, we cannot proceed with this request at this time.
-                               </div>
-                               <div className="text-xs text-red-700 dark:text-red-300 mt-1">
-                                 Please contact us if you have questions or would like to discuss alternatives.
-                           <p className="text-xs text-yellow-800 dark:text-yellow-200">
-                             <strong>Admin Response:</strong> {request.adminNotes}
-                           </p>
-                         </div>
-                       )}
+                      {request.status === 'APPROVED' && request.quoteAmount && (
+                        <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0">
+                              <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400 mt-0.5" />
+                            </div>
+                            <div className="ml-2">
+                              <div className="text-xs text-green-800 dark:text-green-200">
+                                <strong>Project Approved:</strong> Your project has been approved! An invoice for ${request.quoteAmount.toLocaleString()} has been generated.
+                              </div>
+                              <div className="text-xs text-green-700 dark:text-green-300 mt-1">
+                                Please check your invoices section and make payment to begin work.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {request.status === 'IN_PROGRESS' && (
+                        <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded border border-purple-200 dark:border-purple-800">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0">
+                              <Package className="h-4 w-4 text-purple-500 dark:text-purple-400 mt-0.5" />
+                            </div>
+                            <div className="ml-2">
+                              <div className="text-xs text-purple-800 dark:text-purple-200">
+                                <strong>Work in Progress:</strong> Your project is currently being developed.
+                              </div>
+                              <div className="text-xs text-purple-700 dark:text-purple-300 mt-1">
+                                We'll keep you updated on the progress and notify you when it's ready for review.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {request.status === 'COMPLETED' && (
+                        <div className="mt-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded border border-emerald-200 dark:border-emerald-800">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0">
+                              <CheckCircle className="h-4 w-4 text-emerald-500 dark:text-emerald-400 mt-0.5" />
+                            </div>
+                            <div className="ml-2">
+                              <div className="text-xs text-emerald-800 dark:text-emerald-200">
+                                <strong>Project Completed:</strong> Your project has been successfully delivered!
+                              </div>
+                              <div className="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
+                                Thank you for choosing Tech Processing LLC. We hope you're satisfied with the results.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {request.status === 'REJECTED' && (
+                        <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
+                          <div className="flex items-start">
+                            <div className="flex-shrink-0">
+                              <XCircle className="h-4 w-4 text-red-500 dark:text-red-400 mt-0.5" />
+                            </div>
+                            <div className="ml-2">
+                              <div className="text-xs text-red-800 dark:text-red-200">
+                                <strong>Request Declined:</strong> Unfortunately, we cannot proceed with this request at this time.
+                              </div>
+                              <div className="text-xs text-red-700 dark:text-red-300 mt-1">
+                                Please contact us if you have questions or would like to discuss alternatives.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {request.adminNotes && (
+                        <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+                          <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                            <strong>Our Response:</strong> {request.adminNotes}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               ))}
-                             <strong>Our Response:</strong> {request.adminNotes}
+
               {serviceRequests.length > 3 && (
                 <div className="text-center pt-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
