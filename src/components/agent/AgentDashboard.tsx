@@ -245,8 +245,19 @@ export function AgentDashboard() {
 
         {/* Agent Profile */}
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Agent Profile</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Agent Profile</h2>
+            <div className="flex items-center space-x-2">
+              <span className={`px-3 py-1 text-sm font-medium rounded-full ${
+                agent.isActive 
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
+                  : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+              }`}>
+                {agent.isActive ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Agent Code</p>
               <p className="text-lg text-gray-900 dark:text-white font-mono">{agent.agentCode}</p>
@@ -260,6 +271,30 @@ export function AgentDashboard() {
               <p className="text-lg text-gray-900 dark:text-white">
                 {agent.agentCommissionRate}%
               </p>
+            </div>
+          </div>
+          
+          {/* Performance Summary */}
+          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-slate-600">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                  {agent.totalSales > 0 ? ((agent.totalEarnings / agent.totalSalesValue) * 100).toFixed(1) : '0'}%
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Effective Commission Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  ${agent.totalSales > 0 ? (agent.totalSalesValue / agent.totalSales).toFixed(0) : '0'}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Average Sale Value</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  ${agent.totalSales > 0 ? (agent.totalEarnings / agent.totalSales).toFixed(0) : '0'}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Average Commission per Sale</div>
+              </div>
             </div>
           </div>
         </div>
@@ -351,7 +386,9 @@ export function AgentDashboard() {
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
                             {sale.clientName}
                           </div>
-                          {/* Agent can only see client name, not email or phone */}
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            Closer: {sale.closerName}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -360,7 +397,7 @@ export function AgentDashboard() {
                             {sale.serviceName}
                           </div>
                           {sale.serviceDescription && (
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-xs">
                               {sale.serviceDescription}
                             </div>
                           )}
@@ -370,11 +407,19 @@ export function AgentDashboard() {
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
                           ${sale.saleAmount.toLocaleString()}
                         </span>
+                        {sale.saleDate && (
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {new Date(sale.saleDate).toLocaleDateString()}
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
                           ${sale.agentCommission.toLocaleString()}
                         </span>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {sale.agentCommissionRate}% rate
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(sale.saleStatus)}`}>

@@ -530,9 +530,17 @@ export function ClientDashboard() {
       )}
 
       {/* Service Requests */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 mb-6">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Service Requests</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">My Service Requests</h2>
+            <a
+              href="/client/services"
+              className="text-sm text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium"
+            >
+              Browse Services
+            </a>
+          </div>
         </div>
         <div className="p-6">
           {serviceRequests.length > 0 ? (
@@ -614,27 +622,95 @@ export function ClientDashboard() {
                          </div>
                        )}
 
-                       {/* Invoice Information for Approved Requests */}
-                       {request.status === 'APPROVED' && request.quoteAmount && (
-                         <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                       {/* Status-specific Information */}
+                       {request.status === 'QUOTE_READY' && request.quoteAmount && (
+                         <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
                            <div className="flex items-start">
                              <div className="flex-shrink-0">
                                <DollarSign className="h-4 w-4 text-blue-500 dark:text-blue-400 mt-0.5" />
                              </div>
                              <div className="ml-2">
                                <div className="text-xs text-blue-800 dark:text-blue-200">
-                                 <strong>Invoice Generated:</strong> An invoice for ${request.quoteAmount.toLocaleString()} has been automatically generated.
+                                 <strong>Quote Ready:</strong> Your quote for ${request.quoteAmount.toLocaleString()} is ready for review.
                                </div>
                                <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                                 Please check your invoices section and make payment to start the work.
+                                 Review the quote details and let us know if you'd like to proceed.
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       )}
                                </div>
                              </div>
                            </div>
                          </div>
                        )}
 
+                       {request.status === 'APPROVED' && request.quoteAmount && (
+                         <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                           <div className="flex items-start">
+                             <div className="flex-shrink-0">
+                               <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400 mt-0.5" />
+                             </div>
+                             <div className="ml-2">
+                               <div className="text-xs text-green-800 dark:text-green-200">
+                                 <strong>Project Approved:</strong> Your project has been approved! An invoice for ${request.quoteAmount.toLocaleString()} has been generated.
+                               </div>
+                               <div className="text-xs text-green-700 dark:text-green-300 mt-1">
+                                 Please check your invoices section and make payment to begin work.
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       )}
+                       {request.status === 'IN_PROGRESS' && (
+                         <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded border border-purple-200 dark:border-purple-800">
+                           <div className="flex items-start">
+                             <div className="flex-shrink-0">
+                               <Package className="h-4 w-4 text-purple-500 dark:text-purple-400 mt-0.5" />
+                             </div>
+                             <div className="ml-2">
+                               <div className="text-xs text-purple-800 dark:text-purple-200">
+                                 <strong>Work in Progress:</strong> Your project is currently being developed.
+                               </div>
+                               <div className="text-xs text-purple-700 dark:text-purple-300 mt-1">
+                                 We'll keep you updated on the progress and notify you when it's ready for review.
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       )}
                        {request.adminNotes && (
+                       {request.status === 'COMPLETED' && (
+                         <div className="mt-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded border border-emerald-200 dark:border-emerald-800">
+                           <div className="flex items-start">
+                             <div className="flex-shrink-0">
+                               <CheckCircle className="h-4 w-4 text-emerald-500 dark:text-emerald-400 mt-0.5" />
+                             </div>
+                             <div className="ml-2">
+                               <div className="text-xs text-emerald-800 dark:text-emerald-200">
+                                 <strong>Project Completed:</strong> Your project has been successfully delivered!
+                               </div>
+                               <div className="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
+                                 Thank you for choosing Tech Processing LLC. We hope you're satisfied with the results.
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       )}
                          <div className="mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+                       {request.status === 'REJECTED' && (
+                         <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
+                           <div className="flex items-start">
+                             <div className="flex-shrink-0">
+                               <XCircle className="h-4 w-4 text-red-500 dark:text-red-400 mt-0.5" />
+                             </div>
+                             <div className="ml-2">
+                               <div className="text-xs text-red-800 dark:text-red-200">
+                                 <strong>Request Declined:</strong> Unfortunately, we cannot proceed with this request at this time.
+                               </div>
+                               <div className="text-xs text-red-700 dark:text-red-300 mt-1">
+                                 Please contact us if you have questions or would like to discuss alternatives.
                            <p className="text-xs text-yellow-800 dark:text-yellow-200">
                              <strong>Admin Response:</strong> {request.adminNotes}
                            </p>
@@ -644,12 +720,18 @@ export function ClientDashboard() {
                   </div>
                 </div>
               ))}
-              
+                             <strong>Our Response:</strong> {request.adminNotes}
               {serviceRequests.length > 3 && (
                 <div className="text-center pt-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     Showing 3 of {serviceRequests.length} requests
                   </p>
+                  <a
+                    href="/client/services"
+                    className="text-sm text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium ml-2"
+                  >
+                    View All Requests
+                  </a>
                 </div>
               )}
             </div>
@@ -660,17 +742,56 @@ export function ClientDashboard() {
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Service Requests</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-4">
-                You haven't submitted any service requests yet.
+                You haven't submitted any service requests yet. Get started by browsing our services or requesting a custom quote.
               </p>
-              <a
-                href="/client/services"
-                className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors"
-              >
-                <Package className="h-4 w-4 mr-2" />
-                Browse Services
-              </a>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <a
+                  href="/client/services"
+                  className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors"
+                >
+                  <Package className="h-4 w-4 mr-2" />
+                  Browse Services
+                </a>
+                <a
+                  href="/client/services"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Request Custom Quote
+                </a>
+              </div>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-6 border border-emerald-200 dark:border-emerald-800">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <a
+              href="/client/services"
+              className="flex flex-col items-center p-4 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-emerald-700 hover:shadow-md transition-all duration-200 hover:-translate-y-1"
+            >
+              <Package className="h-8 w-8 text-emerald-600 dark:text-emerald-400 mb-2" />
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Browse Services</span>
+            </a>
+            <a
+              href="/client/invoices"
+              className="flex flex-col items-center p-4 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-emerald-700 hover:shadow-md transition-all duration-200 hover:-translate-y-1"
+            >
+              <FileText className="h-8 w-8 text-emerald-600 dark:text-emerald-400 mb-2" />
+              <span className="text-sm font-medium text-gray-900 dark:text-white">View Invoices</span>
+            </a>
+            <a
+              href="mailto:support@techprocessing.com"
+              className="flex flex-col items-center p-4 bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-emerald-700 hover:shadow-md transition-all duration-200 hover:-translate-y-1"
+            >
+              <UserCheck className="h-8 w-8 text-emerald-600 dark:text-emerald-400 mb-2" />
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Contact Support</span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
