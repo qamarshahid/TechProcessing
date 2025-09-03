@@ -3,9 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class CreatePaymentLinkDto {
-  @ApiProperty({ example: 'client-uuid-here' })
+  @ApiProperty({ example: 'client-uuid-here', required: false })
+  @IsOptional()
   @IsUUID()
-  clientId: string;
+  clientId?: string;
 
   @ApiProperty({ example: 'Website Development Payment' })
   @IsString()
@@ -31,7 +32,13 @@ export class CreatePaymentLinkDto {
   @IsBoolean()
   allowPartialPayment?: boolean;
 
-  @ApiProperty({ example: {}, required: false })
+  @ApiProperty({ 
+    example: { 
+      sendEmail: true, 
+      newClient: { name: 'John Doe', email: 'john@example.com', phone: '+1234567890' } 
+    }, 
+    required: false 
+  })
   @IsOptional()
   metadata?: any;
 }

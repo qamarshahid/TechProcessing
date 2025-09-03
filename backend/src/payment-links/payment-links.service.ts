@@ -38,6 +38,26 @@ export class PaymentLinksService {
   ) {}
 
   async create(createPaymentLinkDto: CreatePaymentLinkDto, createdBy: User): Promise<PaymentLink> {
+    // Handle both client-based and non-client payment links
+    let clientId = createPaymentLinkDto.clientId;
+    let clientName = '';
+    let clientEmail = '';
+    
+    if (createPaymentLinkDto.clientId) {
+      // Existing client
+      const client = await this.usersService.findOne(createPaymentLinkDto.clientId);
+      clientName = client.fullName;
+      clientEmail = client.email;
+    } else {
+      // Non-client payment (from metadata)
+      const metadata = createPaymentLinkDto.metadata || {};
+      if (metadata.newClient) {
+        clientName = metadata.newClient.name;
+        clientEmail = metadata.newClient.email;
+        clientId = null; // No client_id for non-clients
+      }
+    }
+
     const paymentLink = this.paymentLinksRepository.create(createPaymentLinkDto);
     const savedPaymentLink = await this.paymentLinksRepository.save(paymentLink);
 
@@ -88,7 +108,7 @@ export class PaymentLinksService {
   async findByToken(token: string): Promise<PaymentLink> {
     const paymentLink = await this.paymentLinksRepository.findOne({
       where: { secureToken: token },
-      relations: ['client'],
+      relations: ['client'], // This will be null for non-client payments
     });
 
     if (!paymentLink) {
@@ -166,13 +186,17 @@ export class PaymentLinksService {
       throw new BadRequestException('Payment link has expired');
     }
 
-    // Process payment through Authorize.Net
+    // Process payment through Authorize.Net with enhanced data
     const paymentResult = await this.authorizeNetService.processPayment({
       amount: paymentLink.amount,
       cardNumber: paymentRequest.cardNumber,
       expiryDate: paymentRequest.expiryDate,
       cvv: paymentRequest.cvv,
       cardholderName: paymentRequest.cardholderName,
+      billingAddress: paymentRequest.billingAddress,
+      email: paymentRequest.email,
+      description: paymentLink.title,
+      invoiceNumber: `PL_${paymentLink.id.substring(0, 8)}`
     });
 
     if (paymentResult.success) {
@@ -183,12 +207,26 @@ export class PaymentLinksService {
         ...paymentLink.metadata,
         paymentProcessed: true,
         transactionId: paymentResult.transactionId,
+        authCode: paymentResult.authCode,
         cardholderName: paymentRequest.cardholderName,
         billingAddress: paymentRequest.billingAddress,
         email: paymentRequest.email,
         processedAt: new Date(),
       };
       await this.paymentLinksRepository.save(paymentLink);
+
+      // Create payment record for tracking
+      try {
+        // Create a temporary invoice for non-client payments or link to existing client
+        const tempInvoice = await this.createTempInvoiceForPaymentLink(paymentLink, paymentResult);
+        
+        // Update payment link with payment reference
+        paymentLink.paymentId = tempInvoice.id;
+        await this.paymentLinksRepository.save(paymentLink);
+      } catch (error) {
+        console.error('Error creating payment record for payment link:', error);
+        // Don't fail the payment if record creation fails
+      }
 
       // Audit log
       await this.auditService.log({
@@ -197,15 +235,18 @@ export class PaymentLinksService {
         entityId: paymentLink.id,
         details: { 
           transactionId: paymentResult.transactionId,
-          amount: paymentLink.amount 
+          amount: paymentLink.amount,
+          clientType: paymentLink.clientId ? 'existing' : 'non-client'
         },
-        user: paymentLink.client,
+        user: paymentLink.client || null,
       });
 
       return {
         success: true,
         message: 'Payment processed successfully',
         transactionId: paymentResult.transactionId,
+        authCode: paymentResult.authCode,
+        amount: paymentLink.amount
       };
     } else {
       // Audit log for failed payment
@@ -222,6 +263,18 @@ export class PaymentLinksService {
 
       throw new BadRequestException(paymentResult.error || 'Payment processing failed');
     }
+  }
+
+  private async createTempInvoiceForPaymentLink(paymentLink: PaymentLink, paymentResult: any): Promise<any> {
+    // This would create a temporary invoice record for tracking purposes
+    // Implementation depends on your invoice service structure
+    return {
+      id: `temp_${paymentLink.id}`,
+      amount: paymentLink.amount,
+      description: paymentLink.title,
+      status: 'PAID',
+      transactionId: paymentResult.transactionId
+    };
   }
 
   async resendEmail(id: string, updatedBy: User): Promise<void> {
