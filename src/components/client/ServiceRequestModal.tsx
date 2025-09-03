@@ -1,719 +1,331 @@
-class ApiClient {
-  private baseURL: string;
-  private token: string | null = null;
-
-  constructor() {
-    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
-  }
-
-  setToken(token: string | null) {
-    this.token = token;
-    if (token) {
-      localStorage.setItem('auth_token', token);
-    } else {
-      localStorage.removeItem('auth_token');
-    }
-  }
-
-  private async request(endpoint: string, options: RequestInit = {}) {
-    const url = `${this.baseURL}${endpoint}`;
-    
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    };
-
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
-    }
-
-    try {
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        return await response.json();
-      }
-      
-      return await response.text();
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error('Network error occurred');
-    }
-  }
-
-  // Authentication
-  async login(email: string, password: string) {
-    const response = await this.request('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
-    this.setToken(response.access_token);
-    return response;
-  }
-
-  async register(email: string, password: string, fullName: string, role: string) {
-    const response = await this.request('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, fullName, role }),
-    });
-    this.setToken(response.access_token);
-    return response;
-  }
-
-  async logout() {
-    this.setToken(null);
-  }
-
-  async getProfile() {
-    return this.request('/auth/profile');
-  }
-
-  // Users Management (Admin only)
-  async getUsers(params?: { role?: string; includeInactive?: boolean }) {
-    const searchParams = new URLSearchParams();
-    if (params?.role) searchParams.append('role', params.role);
-    if (params?.includeInactive) searchParams.append('includeInactive', 'true');
-    
-    const query = searchParams.toString();
-    const response = await this.request(`/users${query ? `?${query}` : ''}`);
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-  }
-
-  async createUser(userData: any) {
-    return this.request('/users', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
-  }
-
-  async updateUser(userId: string, userData: any) {
-    return this.request(`/users/${userId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(userData),
-    });
-  }
-
-  async deleteUser(userId: string, hardDelete: boolean = false) {
-    return this.request(`/users/${userId}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ hardDelete }),
-    });
-  }
-
-  async updateClient(clientId: string, clientData: any) {
-    return this.request(`/users/${clientId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(clientData),
-    });
-  }
-
-  async updateClientCredentials(clientId: string, credentialsData: any) {
-    return this.request(`/users/${clientId}/credentials`, {
-      method: 'PATCH',
-      body: JSON.stringify(credentialsData),
-    });
-  }
-
-  // Agent Management (Admin only)
-  async getAgents() {
-    const response = await this.request('/agent-management');
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-  }
-
-  async createAgent(agentData: any) {
-    return this.request('/agent-management', {
-      method: 'POST',
-      body: JSON.stringify(agentData),
-    });
-  }
-
-  async deleteAgent(agentId: string, hardDelete: boolean = false) {
-    return this.request(`/agent-management/${agentId}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ hardDelete }),
-    });
-  }
-
-  async updateAgentStatus(agentId: string, isActive: boolean) {
-    return this.request(`/agent-management/${agentId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ isActive }),
-    });
-  }
-
-  async updateAgentCommissionRates(agentId: string, agentRate: number, closerRate: number) {
-    return this.request(`/agent-management/${agentId}/commission-rates`, {
-      method: 'PATCH',
-      body: JSON.stringify({ 
-        agentCommissionRate: agentRate, 
-        closerCommissionRate: closerRate 
-      }),
-    });
-  }
-
-  // Agent Sales (Agent & Admin)
-  async getOwnAgentProfile() {
-    const response = await this.request('/agents/stats');
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-  }
-
-  async getAgentSales() {
-    const response = await this.request('/agents/sales/me');
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-  }
-
-  async getAllAgentSales() {
-    const response = await this.request('/agents/sales/all');
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-  }
-
-  async createAgentSale(saleData: any) {
-    return this.request('/agents/sales', {
-      method: 'POST',
-      body: JSON.stringify(saleData),
-    });
-  }
-
-  async resubmitAgentSale(resubmitData: any) {
-    return this.request('/agents/sales/resubmit', {
-      method: 'POST',
-      body: JSON.stringify(resubmitData),
-    });
-  }
-
-  async updateSaleStatus(saleId: string, status: string) {
-    return this.request(`/agents/sales/${saleId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async updateCommissionStatus(saleId: string, status: string) {
-    return this.request(`/agents/sales/${saleId}/commission-status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async updateSaleNotes(saleId: string, notes: string) {
-    return this.request(`/agents/sales/${saleId}/notes`, {
-      method: 'PATCH',
-      body: JSON.stringify({ notes }),
-    });
-  }
-
-  async getAgentMonthlyStats() {
-    return this.request('/agents/monthly-stats');
-  }
-
-  // Closer Management (Admin only)
-  async getAllClosers() {
-    return this.request('/closers');
-  }
-
-  async getActiveClosers() {
-    return this.request('/agents/closers/active');
-  }
-
-  async createCloser(closerData: any) {
-    return this.request('/closers', {
-      method: 'POST',
-      body: JSON.stringify(closerData),
-    });
-  }
-
-  async updateCloser(closerId: string, closerData: any) {
-    return this.request(`/closers/${closerId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(closerData),
-    });
-  }
-
-  async deleteCloser(closerId: string) {
-    return this.request(`/closers/${closerId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async getCloserStats(closerId: string) {
-    return this.request(`/closers/${closerId}/stats`);
-  }
-
-  async getCloserSales(closerId: string) {
-    return this.request(`/closers/${closerId}/sales`);
-  }
-
-  async getAllClosersStats() {
-    return this.request('/closers/stats');
-  }
-
-  async getFilteredCloserStats(filters: any) {
-    const searchParams = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) searchParams.append(key, String(value));
-    });
-    
-    const query = searchParams.toString();
-    return this.request(`/closers/stats/filtered${query ? `?${query}` : ''}`);
-  }
-
-  async getCloserAuditData(filters: any) {
-    const searchParams = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) searchParams.append(key, String(value));
-    });
-    
-    const query = searchParams.toString();
-    return this.request(`/closers/audit${query ? `?${query}` : ''}`);
-  }
-
-  // Service Packages
-  async getServices() {
-    const response = await this.request('/service-packages');
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-  }
-
-  async createService(serviceData: any) {
-    return this.request('/service-packages', {
-      method: 'POST',
-      body: JSON.stringify(serviceData),
-    });
-  }
-
-  async updateService(serviceId: string, serviceData: any) {
-    return this.request(`/service-packages/${serviceId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(serviceData),
-    });
-  }
-
-  async deleteService(serviceId: string) {
-    return this.request(`/service-packages/${serviceId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Service Requests (Client & Admin)
-  async getServiceRequests(filters?: any) {
-    const searchParams = new URLSearchParams();
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) searchParams.append(key, String(value));
-      });
-    }
-    
-    const query = searchParams.toString();
-    const response = await this.request(`/service-requests${query ? `?${query}` : ''}`);
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-  }
-
-  async getClientServiceRequests(clientId: string) {
-    const response = await this.request(`/service-requests/my-requests`);
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-  }
-
-  async createServiceRequest(requestData: any) {
-    return this.request('/service-requests', {
-      method: 'POST',
-      body: JSON.stringify(requestData),
-    });
-  }
-
-  async updateServiceRequest(requestId: string, updateData: any) {
-    return this.request(`/service-requests/${requestId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(updateData),
-    });
-  }
-
-  async createPriceAdjustment(requestId: string, adjustmentData: any) {
-    return this.request(`/service-requests/${requestId}/price-adjustments`, {
-      method: 'POST',
-      body: JSON.stringify(adjustmentData),
-    });
-  }
-
-  async updatePriceAdjustmentStatus(adjustmentId: string, statusData: any) {
-    return this.request(`/service-requests/price-adjustments/${adjustmentId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify(statusData),
-    });
-  }
-
-  async uploadAttachment(requestId: string, file: File, category: string, description?: string) {
-    // In a real implementation, this would upload to cloud storage
-    // For demo purposes, we'll simulate the upload
-    const attachmentData = {
-      fileName: file.name,
-      fileUrl: URL.createObjectURL(file),
-      fileSize: file.size,
-      fileType: file.type,
-      category,
-      description,
-    };
-
-    return this.request(`/service-requests/${requestId}/attachments`, {
-      method: 'POST',
-      body: JSON.stringify(attachmentData),
-    });
-  }
-
-  async deleteAttachment(attachmentId: string) {
-    return this.request(`/service-requests/attachments/${attachmentId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Invoices
-  async getInvoices(params?: { status?: string; clientId?: string }) {
-    const searchParams = new URLSearchParams();
-    if (params?.status) searchParams.append('status', params.status);
-    if (params?.clientId) searchParams.append('clientId', params.clientId);
-    
-    const query = searchParams.toString();
-    const response = await this.request(`/invoices${query ? `?${query}` : ''}`);
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-  }
-
-  async getClientInvoices(clientId: string) {
-    const response = await this.request(`/invoices?clientId=${clientId}`);
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-  }
-
-  async createInvoice(invoiceData: any) {
-    return this.request('/invoices', {
-      method: 'POST',
-      body: JSON.stringify(invoiceData),
-    });
-  }
-
-  async updateInvoice(invoiceId: string, invoiceData: any) {
-    return this.request(`/invoices/${invoiceId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(invoiceData),
-    });
-  }
-
-  async updateInvoiceStatus(invoiceId: string, status: string) {
-    return this.request(`/invoices/${invoiceId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async deleteInvoice(invoiceId: string, deletePayments: boolean = false) {
-    return this.request(`/invoices/${invoiceId}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ deletePayments }),
-    });
-  }
-
-  async generateInvoicePDF(invoiceId: string) {
-    // Simulate PDF generation
-    return {
-      success: true,
-      pdfUrl: '#',
-      filename: `invoice-${invoiceId}.pdf`
-    };
-  }
-
-  // Payments
-  async getPayments() {
-    const response = await this.request('/payments');
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-  }
-
-  async createHostedPaymentToken(paymentData: any) {
-    return this.request('/payments/hosted-token', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async processPayment(paymentData: any) {
-    return this.request('/payments', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async getCompletedPayments() {
-    return this.request('/payments?status=COMPLETED');
-  }
-
-  async processRefund(refundData: any) {
-    // Simulate refund processing
-    return { success: true, refundId: 'ref_' + Date.now() };
-  }
-
-  async getRefunds() {
-    // Simulate refunds data
-    return { refunds: [] };
-  }
-
-  // Payment Links (Admin only)
-  async getPaymentLinks() {
-    const response = await this.request('/payment-links');
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-  }
-
-  async createPaymentLink(linkData: any) {
-    return this.request('/payment-links', {
-      method: 'POST',
-      body: JSON.stringify(linkData),
-    });
-  }
-
-  async getPaymentLinkByToken(token: string) {
-    return this.request(`/payment-links/token/${token}`);
-  }
-
-  async processPaymentLinkPayment(token: string, paymentData: any) {
-    return this.request(`/payment-links/token/${token}/process-payment`, {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async deletePaymentLink(linkId: string) {
-    return this.request(`/payment-links/${linkId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async resendPaymentLinkEmail(linkId: string) {
-    return this.request(`/payment-links/${linkId}/resend-email`, {
-      method: 'POST',
-    });
-  }
-
-  async sendPaymentLinkEmail(emailData: any) {
-    // Simulate email sending
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ success: true, messageId: 'email_' + Date.now() });
-      }, 1000);
-    });
-  }
-
-  async sendPaymentLinkSMS(smsData: any) {
-    // Simulate SMS sending
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ success: true, messageId: 'sms_' + Date.now() });
-      }, 1000);
-    });
-  }
-
-  // Enhanced Card Charging
-  async chargeCard(paymentData: any) {
-    return this.request('/payments/charge-card', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async processDirectPayment(paymentData: any) {
-    return this.request('/payments/direct', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async savePaymentMethod(clientId: string, cardData: any) {
-    return this.request(`/payments/save-method/${clientId}`, {
-      method: 'POST',
-      body: JSON.stringify(cardData),
-    });
-  }
-
-  async getClientPaymentMethods(clientId: string) {
-    return this.request(`/payments/methods/${clientId}`);
-  }
-
-  async chargeStoredCard(clientId: string, paymentMethodId: string, amount: number, description?: string) {
-    return this.request('/payments/charge-stored', {
-      method: 'POST',
-      body: JSON.stringify({
-        clientId,
-        paymentMethodId,
-        amount,
-        description,
-      }),
-    });
-  }
-
-  // Subscriptions
-  async getSubscriptions() {
-    const response = await this.request('/subscriptions');
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-  }
-
-  async getClientSubscriptions(clientId: string) {
-    return this.request(`/subscriptions/client/${clientId}`);
-  }
-
-  async createSubscription(subscriptionData: any) {
-    return this.request('/subscriptions', {
-      method: 'POST',
-      body: JSON.stringify(subscriptionData),
-    });
-  }
-
-  async updateSubscription(subscriptionId: string, subscriptionData: any) {
-    return this.request(`/subscriptions/${subscriptionId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(subscriptionData),
-    });
-  }
-
-  async updateSubscriptionStatus(subscriptionId: string, status: string) {
-    return this.request(`/subscriptions/${subscriptionId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async deleteSubscription(subscriptionId: string) {
-    return this.request(`/subscriptions/${subscriptionId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Client Transaction History
-  async getClientTransactionHistory(clientId: string) {
-    try {
-      const [invoicesResponse, paymentsResponse] = await Promise.all([
-        this.getInvoices({ clientId }),
-        this.getPayments()
-      ]);
-
-      const clientInvoices = invoicesResponse.invoices || [];
-      const allPayments = paymentsResponse.payments || [];
-      const clientPayments = allPayments.filter(payment => 
-        clientInvoices.some(invoice => invoice.id === payment.invoice_id)
-      );
-
-      // Combine invoices and payments into transaction history
-      const transactions = [
-        ...clientInvoices.map(invoice => ({
-          id: invoice.id,
-          type: 'invoice',
-          description: invoice.description,
-          amount: parseFloat(invoice.amount || invoice.total || '0'),
-          status: invoice.status.toLowerCase(),
-          date: invoice.created_at || invoice.createdAt,
-          invoice_number: invoice.invoice_number || invoice.invoiceNumber,
-          payment_method: invoice.payment_method,
-        })),
-        ...clientPayments.map(payment => ({
-          id: payment.id,
-          type: 'payment',
-          description: `Payment for ${payment.invoice?.description || 'Invoice'}`,
-          amount: parseFloat(payment.amount || '0'),
-          status: payment.status.toLowerCase(),
-          date: payment.created_at || payment.createdAt,
-          payment_method: payment.method,
-          transaction_id: payment.transaction_id,
-        }))
-      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-      return {
-        transactions,
-        invoices: clientInvoices,
-        payments: clientPayments,
-      };
-    } catch (error) {
-      console.error('Error fetching client transaction history:', error);
-      return {
-        transactions: [],
-        invoices: [],
-        payments: [],
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
-  }
-
-  // Audit Logs (Admin only)
-  async getAuditLogs(params?: any) {
-    const searchParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value) searchParams.append(key, String(value));
-      });
-    }
-    
-    const query = searchParams.toString();
-    return this.request(`/audit${query ? `?${query}` : ''}`);
-  }
-
-  // Clients helper method
-  async getClients() {
-    return this.getUsers({ role: 'CLIENT' });
-  }
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNotifications } from '../common/NotificationSystem';
+import { apiClient } from '../../lib/api';
+import { logger } from '../../lib/logger';
+import { 
+  X, 
+  Package, 
+  DollarSign, 
+  FileText, 
+  Calendar, 
+  Send,
+  AlertCircle,
+  CheckCircle,
+  User,
+  Target,
+  Sparkles
+} from 'lucide-react';
+
+interface ServiceRequestModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onServiceRequested: () => void;
+  selectedService?: any;
 }
 
-export const apiClient = new ApiClient();
+export function ServiceRequestModal({ 
+  isOpen, 
+  onClose, 
+  onServiceRequested, 
+  selectedService 
+}: ServiceRequestModalProps) {
+  const { user } = useAuth();
+  const { showError, showSuccess } = useNotifications();
+  
+  const [formData, setFormData] = useState({
+    serviceId: '',
+    description: '',
+    budget: '',
+    timeline: '',
+    additionalRequirements: '',
+    isCustomQuote: false,
+    requestType: 'SERVICE_REQUEST'
+  });
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (selectedService) {
+      setFormData(prev => ({
+        ...prev,
+        serviceId: selectedService.id,
+        description: `Request for ${selectedService.name}`,
+        isCustomQuote: false,
+        requestType: 'SERVICE_REQUEST'
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        serviceId: '',
+        description: '',
+        isCustomQuote: true,
+        requestType: 'CUSTOM_QUOTE'
+      }));
+    }
+  }, [selectedService]);
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.description.trim()) {
+      newErrors.description = 'Description is required';
+    }
+    
+    if (formData.budget && parseFloat(formData.budget) <= 0) {
+      newErrors.budget = 'Budget must be greater than 0';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const requestData = {
+        serviceId: formData.serviceId || undefined,
+        description: formData.description.trim(),
+        budget: formData.budget ? parseFloat(formData.budget) : undefined,
+        timeline: formData.timeline.trim() || undefined,
+        additionalRequirements: formData.additionalRequirements.trim() || undefined,
+        isCustomQuote: formData.isCustomQuote,
+        requestType: formData.requestType,
+      };
+
+      await apiClient.createServiceRequest(requestData);
+      
+      showSuccess(
+        'Service Request Submitted', 
+        'Your request has been submitted successfully. We will review it and get back to you soon.'
+      );
+      
+      // Reset form
+      setFormData({
+        serviceId: '',
+        description: '',
+        budget: '',
+        timeline: '',
+        additionalRequirements: '',
+        isCustomQuote: false,
+        requestType: 'SERVICE_REQUEST'
+      });
+      setErrors({});
+      
+      onServiceRequested();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to submit service request';
+      logger.error('Error creating service request:', error);
+      showError('Request Failed', errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden border border-gray-200 dark:border-slate-700">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 dark:from-blue-900/20 to-indigo-50 dark:to-indigo-900/20">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mr-4 shadow-xl">
+              {selectedService ? <Package className="h-6 w-6 text-white" /> : <Target className="h-6 w-6 text-white" />}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                {selectedService ? 'Request Service' : 'Custom Quote Request'}
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {selectedService ? selectedService.name : 'Tell us about your custom project'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-10 h-10 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+          >
+            <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            {/* Selected Service Info */}
+            {selectedService && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                <div className="flex items-center">
+                  <Package className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
+                  <div>
+                    <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">Selected Service</h3>
+                    <p className="text-sm text-blue-700 dark:text-blue-400">{selectedService.name} - ${selectedService.price?.toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Custom Quote Info */}
+            {!selectedService && (
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
+                <div className="flex items-center">
+                  <Sparkles className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+                  <div>
+                    <h3 className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Custom Quote Request</h3>
+                    <p className="text-sm text-emerald-700 dark:text-emerald-400">Describe your project and we'll provide a tailored solution</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Project Description *
+              </label>
+              <div className="relative">
+                <FileText className="absolute left-3 top-3 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white resize-none ${
+                    errors.description ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-slate-600'
+                  }`}
+                  rows={4}
+                  placeholder={selectedService 
+                    ? `Describe your requirements for ${selectedService.name}...`
+                    : "Describe your custom project requirements in detail..."
+                  }
+                />
+              </div>
+              {errors.description && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {errors.description}
+                </p>
+              )}
+            </div>
+
+            {/* Budget and Timeline */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Budget (Optional)
+                </label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <input
+                    type="number"
+                    value={formData.budget}
+                    onChange={(e) => handleInputChange('budget', e.target.value)}
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white ${
+                      errors.budget ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-slate-600'
+                    }`}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                {errors.budget && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+                    <AlertCircle className="h-4 w-4 mr-1" />
+                    {errors.budget}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Timeline (Optional)
+                </label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <input
+                    type="text"
+                    value={formData.timeline}
+                    onChange={(e) => handleInputChange('timeline', e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    placeholder="e.g., 2-3 weeks, ASAP, etc."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Requirements */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Additional Requirements (Optional)
+              </label>
+              <textarea
+                value={formData.additionalRequirements}
+                onChange={(e) => handleInputChange('additionalRequirements', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white resize-none"
+                rows={3}
+                placeholder="Any specific requirements, preferences, or constraints..."
+              />
+            </div>
+
+            {/* Info Box */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+              <div className="flex items-start">
+                <CheckCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">What Happens Next?</h3>
+                  <ul className="text-sm text-blue-700 dark:text-blue-400 mt-2 space-y-1">
+                    <li>• Our team will review your request within 24 hours</li>
+                    <li>• We'll provide a detailed quote and timeline</li>
+                    <li>• You can approve, request changes, or ask questions</li>
+                    <li>• Work begins once the quote is approved</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        {/* Fixed Footer */}
+        <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-700/50">
+          <div className="flex space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg hover:shadow-emerald-500/25"
+            >
+              {loading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" />
+                  Submit Request
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
