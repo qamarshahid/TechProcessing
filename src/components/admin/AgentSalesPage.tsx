@@ -40,12 +40,20 @@ interface AgentSale {
   id: string;
   saleAmount: number;
   agentCommission: number;
+  agentCommissionRate: number;
+  closerCommission: number;
+  closerCommissionRate: number;
   clientName: string;
+  closerName: string;
   agent: {
     salesPersonName: string;
     user: {
       fullName: string;
     };
+  };
+  closer?: {
+    closerName: string;
+    commissionRate: number;
   };
   createdAt: string;
   saleDate?: string;
@@ -325,13 +333,19 @@ export default function AgentSalesPage() {
                       Agent
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Closer
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Client
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Amount
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Commission
+                      Agent Commission
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Closer Commission
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Status
@@ -347,7 +361,7 @@ export default function AgentSalesPage() {
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {agentSales.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-6 py-12 text-center">
+                      <td colSpan={9} className="px-6 py-12 text-center">
                         <div className="text-gray-500 dark:text-gray-400">
                           <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -366,13 +380,29 @@ export default function AgentSalesPage() {
                           {sale.agent?.salesPersonName || sale.agent?.user?.fullName || 'Unknown Agent'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          {sale.closerName || sale.closer?.closerName || 'No Closer'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {sale.clientName}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                           ${(sale.saleAmount || 0).toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                          ${(sale.agentCommission || 0).toLocaleString()}
+                          <div>
+                            <div className="font-medium">${(sale.agentCommission || 0).toLocaleString()}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              {sale.agentCommissionRate || 0}% rate
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                          <div>
+                            <div className="font-medium">${(sale.closerCommission || 0).toLocaleString()}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              {sale.closerCommissionRate || sale.closer?.commissionRate || 0}% rate
+                            </div>
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
