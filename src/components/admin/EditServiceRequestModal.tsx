@@ -18,6 +18,21 @@ interface ServiceRequest {
   deadline?: string;
   contact_email?: string;
   contact_phone?: string;
+  // Nested objects from backend
+  client?: {
+    id: string;
+    email: string;
+    fullName: string;
+    phone?: string;
+    companyName?: string;
+  };
+  service?: {
+    id: string;
+    name: string;
+    description?: string;
+    price?: string;
+    category?: string;
+  };
 }
 
 interface EditServiceRequestModalProps {
@@ -46,14 +61,14 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
   useEffect(() => {
     if (request && isOpen) {
       setFormData({
-        service_type: request.service_type || '',
+        service_type: request.service?.name || request.service_type || '',
         description: request.description || '',
         status: request.status || '',
         priority: request.priority || '',
         estimated_cost: request.estimated_cost || '',
         deadline: request.deadline ? new Date(request.deadline).toISOString().split('T')[0] : '',
-        contact_email: request.contact_email || '',
-        contact_phone: request.contact_phone || '',
+        contact_email: request.client?.email || request.contact_email || '',
+        contact_phone: request.client?.phone || request.contact_phone || '',
         assigned_to: request.assigned_to || '',
       });
     }
@@ -68,9 +83,12 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
 
     try {
       const updateData = {
-        ...formData,
-        estimated_cost: formData.estimated_cost ? parseFloat(formData.estimated_cost) : null,
-        deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
+        description: formData.description,
+        budget: formData.estimated_cost ? parseFloat(formData.estimated_cost) : null,
+        timeline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
+        status: formData.status,
+        adminNotes: formData.priority ? `Priority: ${formData.priority}` : null,
+        assignedTo: formData.assigned_to || null,
       };
 
       await apiClient.updateServiceRequest(request.id, updateData);
