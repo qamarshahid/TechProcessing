@@ -216,6 +216,20 @@ class ApiClient {
     });
   }
 
+  async updateAgentSaleStatus(saleId: string, status: string) {
+    return this.request(`/agents/sales/${saleId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async updateAgentSaleNotes(saleId: string, notes: string) {
+    return this.request(`/agents/sales/${saleId}/notes`, {
+      method: 'PATCH',
+      body: JSON.stringify({ notes }),
+    });
+  }
+
   async updateSaleStatus(saleId: string, status: string) {
     return this.request(`/agents/sales/${saleId}/status`, {
       method: 'PATCH',

@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../common/NotificationSystem';
 import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
 import AddAgentModal from './AddAgentModal';
+import { CheckCircle, XCircle, RefreshCw, MessageSquare } from 'lucide-react';
 
 interface Agent {
   id: string;
@@ -42,10 +43,14 @@ interface AgentSale {
   clientName: string;
   agent: {
     salesPersonName: string;
+    user: {
+      fullName: string;
+    };
   };
   createdAt: string;
   saleDate?: string;
   saleStatus: string;
+  notes?: string;
 }
 
 export default function AgentSalesPage() {
@@ -62,6 +67,12 @@ export default function AgentSalesPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Sale action state
+  const [updatingSale, setUpdatingSale] = useState<string | null>(null);
+  const [showNotesModal, setShowNotesModal] = useState(false);
+  const [selectedSale, setSelectedSale] = useState<AgentSale | null>(null);
+  const [notesText, setNotesText] = useState('');
 
   // Check if user has admin access
   const isAdmin = user?.role === 'ADMIN';
@@ -132,6 +143,59 @@ export default function AgentSalesPage() {
     setShowAddAgentModal(false);
     fetchData(); // Refresh the agents list
     showSuccess('Agent Added', 'New agent has been added successfully.');
+  };
+
+  const handleUpdateSaleStatus = async (saleId: string, status: string) => {
+    setUpdatingSale(saleId);
+    try {
+      await apiClient.updateAgentSaleStatus(saleId, status);
+      
+      // Update local state
+      setAgentSales(prev => prev.map(sale => 
+        sale.id === saleId 
+          ? { ...sale, saleStatus: status }
+          : sale
+      ));
+      
+      showSuccess('Sale Status Updated', `Sale status has been updated to ${status}.`);
+    } catch (err) {
+      logger.error('Failed to update sale status', err);
+      showError('Update Failed', 'Failed to update sale status. Please try again.');
+    } finally {
+      setUpdatingSale(null);
+    }
+  };
+
+  const handleAddNotes = (sale: AgentSale) => {
+    setSelectedSale(sale);
+    setNotesText(sale.notes || '');
+    setShowNotesModal(true);
+  };
+
+  const handleSaveNotes = async () => {
+    if (!selectedSale) return;
+    
+    setUpdatingSale(selectedSale.id);
+    try {
+      await apiClient.updateAgentSaleNotes(selectedSale.id, notesText);
+      
+      // Update local state
+      setAgentSales(prev => prev.map(sale => 
+        sale.id === selectedSale.id 
+          ? { ...sale, notes: notesText }
+          : sale
+      ));
+      
+      showSuccess('Notes Updated', 'Sale notes have been updated successfully.');
+      setShowNotesModal(false);
+      setSelectedSale(null);
+      setNotesText('');
+    } catch (err) {
+      logger.error('Failed to update sale notes', err);
+      showError('Update Failed', 'Failed to update sale notes. Please try again.');
+    } finally {
+      setUpdatingSale(null);
+    }
   };
 
   const handleDeleteClick = (agent: Agent) => {
@@ -275,12 +339,15 @@ export default function AgentSalesPage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Date
                     </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {agentSales.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center">
+                      <td colSpan={7} className="px-6 py-12 text-center">
                         <div className="text-gray-500 dark:text-gray-400">
                           <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -296,7 +363,7 @@ export default function AgentSalesPage() {
                     agentSales.map((sale) => (
                       <tr key={sale.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                          {sale.agent?.salesPersonName || 'Unknown Agent'}
+                          {sale.agent?.salesPersonName || sale.agent?.user?.fullName || 'Unknown Agent'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {sale.clientName}
@@ -320,6 +387,52 @@ export default function AgentSalesPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {new Date(sale.saleDate || sale.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex space-x-2">
+                            {sale.saleStatus === 'PENDING' && (
+                              <>
+                                <button
+                                  onClick={() => handleUpdateSaleStatus(sale.id, 'APPROVED')}
+                                  disabled={updatingSale === sale.id}
+                                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30 transition-colors disabled:opacity-50"
+                                  title="Approve Sale"
+                                >
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                  Approve
+                                </button>
+                                <button
+                                  onClick={() => handleUpdateSaleStatus(sale.id, 'REJECTED')}
+                                  disabled={updatingSale === sale.id}
+                                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50"
+                                  title="Reject Sale"
+                                >
+                                  <XCircle className="h-3 w-3 mr-1" />
+                                  Reject
+                                </button>
+                              </>
+                            )}
+                            {sale.saleStatus === 'REJECTED' && (
+                              <button
+                                onClick={() => handleUpdateSaleStatus(sale.id, 'PENDING')}
+                                disabled={updatingSale === sale.id}
+                                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:hover:bg-yellow-900/30 transition-colors disabled:opacity-50"
+                                title="Reset to Pending"
+                              >
+                                <RefreshCw className="h-3 w-3 mr-1" />
+                                Reset
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleAddNotes(sale)}
+                              disabled={updatingSale === sale.id}
+                              className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors disabled:opacity-50"
+                              title="Add Notes"
+                            >
+                              <MessageSquare className="h-3 w-3 mr-1" />
+                              Notes
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -460,6 +573,67 @@ export default function AgentSalesPage() {
           entityType="agent"
           isLoading={isDeleting}
         />
+
+        {/* Notes Modal */}
+        {showNotesModal && selectedSale && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Sale Notes
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowNotesModal(false);
+                    setSelectedSale(null);
+                    setNotesText('');
+                  }}
+                  className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+                >
+                  <XCircle className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <div className="p-6">
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Sale: {selectedSale.clientName} - ${(selectedSale.saleAmount || 0).toLocaleString()}
+                  </p>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Notes
+                  </label>
+                  <textarea
+                    value={notesText}
+                    onChange={(e) => setNotesText(e.target.value)}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
+                    placeholder="Add notes about this sale..."
+                  />
+                </div>
+                
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowNotesModal(false);
+                      setSelectedSale(null);
+                      setNotesText('');
+                    }}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveNotes}
+                    disabled={updatingSale === selectedSale.id}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {updatingSale === selectedSale.id ? 'Saving...' : 'Save Notes'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

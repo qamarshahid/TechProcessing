@@ -294,7 +294,7 @@ export class AgentService {
     }
 
     return this.agentSaleRepository.find({
-      relations: ['agent', 'client'],
+      relations: ['agent', 'agent.user', 'client'],
       order: { createdAt: 'DESC' },
     });
   }
