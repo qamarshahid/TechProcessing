@@ -5,6 +5,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../common/enums/user-role.enum';
 import { Public } from '../common/decorators/public.decorator';
+import { SessionTrackingService } from '../common/services/session-tracking.service';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -12,6 +13,7 @@ import * as path from 'path';
 @ApiTags('system')
 @Controller('system')
 export class SystemController {
+  constructor(private sessionTrackingService: SessionTrackingService) {}
   @Get('status')
   @Public()
   @ApiOperation({ summary: 'Get system status' })
@@ -90,7 +92,7 @@ export class SystemController {
         interfaces: Object.keys(os.networkInterfaces()).length,
         hostname: os.hostname(),
       },
-      activeUsers: this.getActiveUsersCount(), // This would need to be implemented with session tracking
+      activeUsers: this.getActiveUsersData(),
       databaseConnections: this.getDatabaseConnectionsCount(), // This would need to be implemented
     };
   }
@@ -116,10 +118,13 @@ export class SystemController {
     }
   }
 
-  private getActiveUsersCount() {
-    // This would typically be implemented with session tracking
-    // For now, we'll return a simulated count
-    return Math.floor(Math.random() * 50) + 10; // 10-60 active users
+  private getActiveUsersData() {
+    const activeUsersData = this.sessionTrackingService.getActiveUsersByRole();
+    return {
+      total: activeUsersData.total,
+      byRole: activeUsersData.byRole,
+      details: activeUsersData.details,
+    };
   }
 
   private getDatabaseConnectionsCount() {

@@ -5,6 +5,7 @@ import { User } from '../users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuditService } from '../audit/audit.service';
+import { SessionTrackingService } from '../common/services/session-tracking.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private auditService: AuditService,
+    private sessionTrackingService: SessionTrackingService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -63,8 +65,21 @@ export class AuthService {
       userAgent,
     });
 
+    // Generate JWT token
+    const accessToken = this.jwtService.sign(payload);
+    
+    // Track active session
+    const sessionId = `${user.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    this.sessionTrackingService.addSession(sessionId, {
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      fullName: user.fullName,
+    }, ipAddress || 'Unknown', userAgent || 'Unknown');
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: accessToken,
+      session_id: sessionId,
       user: {
         id: user.id,
         email: user.email,

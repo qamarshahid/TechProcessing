@@ -145,6 +145,11 @@ export function SystemSettingsPage() {
     cpuUsage: '0%',
     diskUsage: '0%',
     activeUsers: 0,
+    activeUsersByRole: {
+      total: 0,
+      byRole: { ADMIN: 0, AGENT: 0, CLIENT: 0 },
+      details: { admins: [], agents: [], clients: [] }
+    },
     databaseConnections: 0,
     // Enhanced system data
     memory: {
@@ -214,8 +219,13 @@ export function SystemSettingsPage() {
         memoryUsage: status.memory?.usage || '0%',
         cpuUsage: status.cpu?.usage || '0%',
         diskUsage: status.disk?.usage || '0%',
-        activeUsers: status.activeUsers || 0,
-        databaseConnections: status.databaseConnections || 0,
+                  activeUsers: status.activeUsers?.total || 0,
+          activeUsersByRole: status.activeUsers || {
+            total: 0,
+            byRole: { ADMIN: 0, AGENT: 0, CLIENT: 0 },
+            details: { admins: [], agents: [], clients: [] }
+          },
+          databaseConnections: status.databaseConnections || 0,
         // Enhanced system data
         memory: {
           usage: status.memory?.usage || '0%',
@@ -453,9 +463,20 @@ export function SystemSettingsPage() {
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Active Users</p>
                 <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{systemStatus.activeUsers}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  DB Connections: {systemStatus.databaseConnections}
-                </p>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span>Admin: {systemStatus.activeUsersByRole.byRole.ADMIN}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span>Agent: {systemStatus.activeUsersByRole.byRole.AGENT}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span>Client: {systemStatus.activeUsersByRole.byRole.CLIENT}</span>
+                  </div>
+                </div>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
                 <Users className="h-7 w-7 text-white" />
@@ -467,7 +488,7 @@ export function SystemSettingsPage() {
                 <span>Current sessions</span>
               </div>
               <div className="text-xs">
-                Host: {systemStatus.network.hostname}
+                DB: {systemStatus.databaseConnections}
               </div>
             </div>
           </div>
