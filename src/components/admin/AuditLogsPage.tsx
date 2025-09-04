@@ -409,6 +409,31 @@ export function AuditLogsPage() {
     }
   };
 
+  const formatIpAddress = (ip: string): string => {
+    if (!ip || ip === 'N/A') return 'N/A';
+    
+    // Handle IPv6 addresses - show first 4 segments
+    if (ip.includes(':')) {
+      const segments = ip.split(':');
+      if (segments.length > 4) {
+        return `${segments.slice(0, 4).join(':')}...`;
+      }
+      return ip;
+    }
+    
+    // Handle IPv4 addresses
+    if (ip.includes('.')) {
+      return ip;
+    }
+    
+    // Handle other formats
+    if (ip.length > 15) {
+      return `${ip.substring(0, 15)}...`;
+    }
+    
+    return ip;
+  };
+
   const getActionIcon = (action?: string) => {
     const actionLower = (action || '').toLowerCase();
     
@@ -758,10 +783,10 @@ export function AuditLogsPage() {
         {/* Logs Table */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700 table-fixed">
               <thead className="bg-slate-50 dark:bg-slate-700/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <th className="w-40 px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <button
                       onClick={() => {
                         setSortBy('timestamp');
@@ -775,7 +800,7 @@ export function AuditLogsPage() {
                       )}
                     </button>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <th className="w-32 px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <button
                       onClick={() => {
                         setSortBy('action');
@@ -789,7 +814,7 @@ export function AuditLogsPage() {
                       )}
                     </button>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <th className="w-40 px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <button
                       onClick={() => {
                         setSortBy('user');
@@ -803,8 +828,8 @@ export function AuditLogsPage() {
                       )}
                     </button>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">IP Address</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <th className="w-32 px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">IP Address</th>
+                  <th className="w-24 px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <button
                       onClick={() => {
                         setSortBy('severity');
@@ -818,10 +843,10 @@ export function AuditLogsPage() {
                       )}
                     </button>
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Category</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Risk Level</th>
+                  <th className="w-24 px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Category</th>
+                  <th className="w-24 px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Risk</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Description</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
+                  <th className="w-20 px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
@@ -856,7 +881,9 @@ export function AuditLogsPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                         <div className="flex items-center">
                           <Globe className="h-4 w-4 mr-2 text-slate-400" />
-                          {log.ip_address || log.ipAddress || 'N/A'}
+                          <div className="max-w-32 truncate" title={log.ip_address || log.ipAddress || 'N/A'}>
+                            {formatIpAddress(log.ip_address || log.ipAddress)}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -896,19 +923,21 @@ export function AuditLogsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-900 dark:text-white">
-                        <div className="max-w-md truncate" title={log.description || 'No description'}>
-                          {log.description || 'No description available'}
+                        <div className="max-w-xs">
+                          <div className="truncate" title={log.description || 'No description'}>
+                            {log.description || 'No description available'}
+                          </div>
+                          {log.user_email && (
+                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">
+                              📧 {log.user_email}
+                            </div>
+                          )}
+                          {log.sessionId && (
+                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                              🔑 {log.sessionId.substring(0, 8)}...
+                            </div>
+                          )}
                         </div>
-                        {log.user_email && (
-                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            Email: {log.user_email}
-                          </div>
-                        )}
-                        {log.sessionId && (
-                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            Session: {log.sessionId.substring(0, 8)}...
-                          </div>
-                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2">
