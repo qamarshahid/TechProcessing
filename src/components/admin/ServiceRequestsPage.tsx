@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
 import { useNotifications } from '../common/NotificationSystem';
 import { logger } from '../../lib/logger';
+import { EditServiceRequestModal } from './EditServiceRequestModal';
 import {
   FileText, DollarSign, Clock, CheckCircle, XCircle, RefreshCw, Search, Eye, Edit, Trash2, Filter, TrendingUp, BarChart3, Activity, Shield, AlertCircle, Info, Calendar, User, Building, ArrowUpDown, ChevronDown, ChevronUp, Settings, HelpCircle, Zap, Rocket, Plus, Star, Tag, Layers, CalendarDays, MessageSquare, Phone, Mail, MapPin, Clock3, Receipt, ArrowLeftRight, MessageCircle, AlertTriangle, CheckSquare, Ban, Play, Pause, Code, Palette, X
 } from 'lucide-react';
@@ -952,6 +953,17 @@ export function ServiceRequestsPage() {
           </div>
         </div>
       )}
+
+      {/* Edit Service Request Modal */}
+      <EditServiceRequestModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingRequest(null);
+        }}
+        onRequestUpdated={handleRequestUpdated}
+        request={editingRequest}
+      />
     </div>
   );
 }
