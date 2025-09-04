@@ -785,4 +785,47 @@ export class AgentService {
 
     return updatedAgent;
   }
+
+  async revokeSaleApproval(saleId: string, reason: string, currentUser: User): Promise<AgentSale> {
+    // Find the sale
+    const sale = await this.agentSaleRepository.findOne({
+      where: { id: saleId },
+      relations: ['agent', 'agent.user', 'closer']
+    });
+
+    if (!sale) {
+      throw new NotFoundException('Sale not found');
+    }
+
+    // Check if sale is approved
+    if (sale.saleStatus !== SaleStatus.APPROVED) {
+      throw new BadRequestException('Only approved sales can be revoked');
+    }
+
+    // Update sale status to REVOKED
+    sale.saleStatus = SaleStatus.REVOKED;
+    sale.notes = sale.notes ? `${sale.notes}\n\nREVOKED: ${reason}` : `REVOKED: ${reason}`;
+    sale.updatedAt = new Date();
+
+    const updatedSale = await this.agentSaleRepository.save(sale);
+
+    // Log the audit event
+    await this.auditService.log({
+      action: 'SALE_APPROVAL_REVOKED',
+      entityType: 'agent_sale',
+      entityId: saleId,
+      user: currentUser,
+      details: {
+        saleReference: sale.saleReference,
+        agentName: sale.agent?.salesPersonName || sale.agent?.user?.fullName || 'Unknown',
+        clientName: sale.clientName,
+        saleAmount: sale.saleAmount,
+        reason: reason,
+        previousStatus: SaleStatus.APPROVED,
+        newStatus: SaleStatus.REVOKED
+      }
+    });
+
+    return updatedSale;
+  }
 }

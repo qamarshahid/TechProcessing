@@ -206,6 +206,30 @@ export default function AgentSalesPage() {
     }
   };
 
+  const handleRevokeSaleApproval = async (saleId: string) => {
+    const reason = prompt('Please provide a reason for revoking this approval:');
+    if (!reason || !reason.trim()) return;
+    
+    setUpdatingSale(saleId);
+    try {
+      await apiClient.revokeSaleApproval(saleId, reason.trim());
+      
+      // Update local state
+      setAgentSales(prev => prev.map(sale => 
+        sale.id === saleId 
+          ? { ...sale, saleStatus: 'REVOKED' }
+          : sale
+      ));
+      
+      showSuccess('Approval Revoked', 'Sale approval has been revoked successfully.');
+    } catch (error) {
+      logger.error('Error revoking sale approval:', error);
+      showError('Revoke Failed', 'Failed to revoke sale approval. Please try again.');
+    } finally {
+      setUpdatingSale(null);
+    }
+  };
+
   const handleDeleteClick = (agent: Agent) => {
     setAgentToDelete(agent);
     setShowDeleteModal(true);
@@ -406,10 +430,12 @@ export default function AgentSalesPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            sale.saleStatus === 'COMPLETED'
+                            sale.saleStatus === 'APPROVED'
                               ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
                               : sale.saleStatus === 'PENDING'
                               ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                              : sale.saleStatus === 'REVOKED'
+                              ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400'
                               : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                           }`}>
                             {sale.saleStatus}
@@ -441,6 +467,17 @@ export default function AgentSalesPage() {
                                   Reject
                                 </button>
                               </>
+                            )}
+                            {sale.saleStatus === 'APPROVED' && (
+                              <button
+                                onClick={() => handleRevokeSaleApproval(sale.id)}
+                                disabled={updatingSale === sale.id}
+                                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-orange-100 text-orange-700 hover:bg-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:hover:bg-orange-900/30 transition-colors disabled:opacity-50"
+                                title="Revoke Approval"
+                              >
+                                <XCircle className="h-3 w-3 mr-1" />
+                                Revoke
+                              </button>
                             )}
                             {sale.saleStatus === 'REJECTED' && (
                               <button

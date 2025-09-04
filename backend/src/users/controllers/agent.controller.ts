@@ -161,6 +161,18 @@ export class AgentController {
     return this.agentService.updateSaleNotes(id, notes, currentUser);
   }
 
+  @Patch('sales/:id/revoke')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Revoke approved sale (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Sale approval revoked successfully' })
+  revokeSaleApproval(
+    @Param('id') id: string,
+    @Body('reason') reason: string,
+    @CurrentUser() currentUser: User,
+  ) {
+    return this.agentService.revokeSaleApproval(id, reason, currentUser);
+  }
+
 
 
 }

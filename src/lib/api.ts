@@ -251,6 +251,13 @@ class ApiClient {
     });
   }
 
+  async revokeSaleApproval(saleId: string, reason: string) {
+    return this.request(`/agents/sales/${saleId}/revoke`, {
+      method: 'PATCH',
+      body: JSON.stringify({ reason }),
+    });
+  }
+
   async getAgentMonthlyStats() {
     return this.request('/agents/monthly-stats');
   }
