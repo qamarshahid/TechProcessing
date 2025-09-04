@@ -48,19 +48,27 @@ export function ServicesPage() {
       const response = await apiClient.getServices();
       const servicesList = response?.services || [];
       
-      setServices(Array.isArray(servicesList) ? servicesList : []);
-      calculateStats(servicesList);
-      showSuccess('Services Data Loaded', `Successfully loaded ${servicesList.length} services.`);
+      // Ensure we always have an array
+      const safeServicesList = Array.isArray(servicesList) ? servicesList : [];
+      setServices(safeServicesList);
+      setFilteredServices(safeServicesList); // Initialize filtered services
+      calculateStats(safeServicesList);
+      showSuccess('Services Data Loaded', `Successfully loaded ${safeServicesList.length} services.`);
     } catch (error) {
       logger.error('Error fetching services:', error);
       showError('Failed to Load Services', 'Unable to load services data. Please try again later.');
       setServices([]);
+      setFilteredServices([]);
     } finally {
       setLoading(false);
     }
   };
 
   const calculateStats = (servicesList: any[]) => {
+    if (!Array.isArray(servicesList)) {
+      servicesList = [];
+    }
+    
     const totalServices = servicesList.length;
     const activeServices = servicesList.filter(s => s.status === 'ACTIVE').length;
     const inactiveServices = servicesList.filter(s => s.status === 'INACTIVE').length;
@@ -77,28 +85,30 @@ export function ServicesPage() {
   };
 
   const filterServices = () => {
-    let filtered = [...services];
+    // Ensure services is always an array
+    const safeServices = Array.isArray(services) ? services : [];
+    let filtered = [...safeServices];
 
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(service =>
-        service.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.category?.toLowerCase().includes(searchTerm.toLowerCase())
+        service?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service?.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service?.category?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Category filter
     if (filters.category) {
       filtered = filtered.filter(service => 
-        service.category?.toLowerCase() === filters.category.toLowerCase()
+        service?.category?.toLowerCase() === filters.category.toLowerCase()
       );
     }
 
     // Status filter
     if (filters.status) {
       filtered = filtered.filter(service => 
-        service.status?.toLowerCase() === filters.status.toLowerCase()
+        service?.status?.toLowerCase() === filters.status.toLowerCase()
       );
     }
 
@@ -106,7 +116,7 @@ export function ServicesPage() {
     if (filters.price) {
       const price = parseFloat(filters.price);
       filtered = filtered.filter(service => 
-        parseFloat(service.price || '0') >= price
+        parseFloat(service?.price || '0') >= price
       );
     }
 
@@ -118,17 +128,23 @@ export function ServicesPage() {
       if (action === 'delete') {
         // This would typically call an API to delete the service
         showSuccess('Service Deleted', 'Service deleted successfully.');
-        setServices(prev => prev.filter(s => s.id !== serviceId));
+        setServices(prev => {
+          const safePrev = Array.isArray(prev) ? prev : [];
+          return safePrev.filter(s => s?.id !== serviceId);
+        });
       } else {
         // This would typically call an API to update service status
         const newStatus = action === 'activate' ? 'ACTIVE' : 'INACTIVE';
         showSuccess('Service Updated', `Service ${action}d successfully.`);
         
-        setServices(prev => prev.map(service => 
-          service.id === serviceId 
-            ? { ...service, status: newStatus }
-            : service
-        ));
+        setServices(prev => {
+          const safePrev = Array.isArray(prev) ? prev : [];
+          return safePrev.map(service => 
+            service?.id === serviceId 
+              ? { ...service, status: newStatus }
+              : service
+          );
+        });
       }
       
       fetchServices(); // Refresh data
@@ -171,6 +187,10 @@ export function ServicesPage() {
       </div>
     );
   }
+
+  // Ensure filteredServices is always an array
+  const safeFilteredServices = Array.isArray(filteredServices) ? filteredServices : [];
+  const safeServices = Array.isArray(services) ? services : [];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -308,8 +328,8 @@ export function ServicesPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredServices.map((service) => (
-                <tr key={service.id} className="hover:bg-gray-50">
+              {safeFilteredServices.map((service) => (
+                <tr key={service?.id || Math.random()} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
@@ -319,25 +339,25 @@ export function ServicesPage() {
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
-                          {service.name || 'Unnamed Service'}
+                          {service?.name || 'Unnamed Service'}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {service.description || 'No description'}
+                          {service?.description || 'No description'}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {service.category || 'Uncategorized'}
+                    {service?.category || 'Uncategorized'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    ${parseFloat(service.price || '0').toFixed(2)}
+                    ${parseFloat(service?.price || '0').toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(service.status)}`}>
-                      {getStatusIcon(service.status)}
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(service?.status)}`}>
+                      {getStatusIcon(service?.status)}
                       <span className="ml-1 capitalize">
-                        {service.status || 'Unknown'}
+                        {service?.status || 'Unknown'}
                       </span>
                     </span>
                   </td>
@@ -349,9 +369,9 @@ export function ServicesPage() {
                       >
                         <Edit className="w-4 h-4" />
                       </button>
-                      {service.status === 'ACTIVE' ? (
+                      {service?.status === 'ACTIVE' ? (
                         <button
-                          onClick={() => handleServiceAction(service.id, 'deactivate')}
+                          onClick={() => handleServiceAction(service?.id, 'deactivate')}
                           className="text-yellow-600 hover:text-yellow-900"
                           title="Deactivate service"
                         >
@@ -359,7 +379,7 @@ export function ServicesPage() {
                         </button>
                       ) : (
                         <button
-                          onClick={() => handleServiceAction(service.id, 'activate')}
+                          onClick={() => handleServiceAction(service?.id, 'activate')}
                           className="text-green-600 hover:text-green-900"
                           title="Activate service"
                         >
@@ -367,7 +387,7 @@ export function ServicesPage() {
                         </button>
                       )}
                       <button
-                        onClick={() => handleServiceAction(service.id, 'delete')}
+                        onClick={() => handleServiceAction(service?.id, 'delete')}
                         className="text-red-600 hover:text-red-900"
                         title="Delete service"
                       >
@@ -381,12 +401,12 @@ export function ServicesPage() {
           </table>
         </div>
         
-        {filteredServices.length === 0 && (
+        {safeFilteredServices.length === 0 && (
           <div className="text-center py-12">
             <Package className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">No services found</h3>
             <p className="mt-1 text-sm text-gray-500">
-              {services.length === 0 ? 'No services available.' : 'Try adjusting your search or filters.'}
+              {safeServices.length === 0 ? 'No services available.' : 'Try adjusting your search or filters.'}
             </p>
           </div>
         )}

@@ -156,6 +156,10 @@ export function SubscriptionsPage() {
     );
   }
 
+  // Ensure arrays are always safe
+  const safeFilteredSubscriptions = Array.isArray(filteredSubscriptions) ? filteredSubscriptions : [];
+  const safeSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
@@ -289,7 +293,7 @@ export function SubscriptionsPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredSubscriptions.map((subscription) => (
+              {safeFilteredSubscriptions.map((subscription) => (
                 <tr key={subscription.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -373,12 +377,12 @@ export function SubscriptionsPage() {
           </table>
         </div>
         
-        {filteredSubscriptions.length === 0 && (
+        {safeFilteredSubscriptions.length === 0 && (
           <div className="text-center py-12">
             <CreditCard className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">No subscriptions found</h3>
             <p className="mt-1 text-sm text-gray-500">
-              {subscriptions.length === 0 ? 'No subscriptions available.' : 'Try adjusting your search or filters.'}
+              {safeSubscriptions.length === 0 ? 'No subscriptions available.' : 'Try adjusting your search or filters.'}
             </p>
           </div>
         )}

@@ -201,6 +201,10 @@ export function RefundsPage() {
     );
   }
 
+  // Ensure arrays are always safe
+  const safeFilteredRefunds = Array.isArray(filteredRefunds) ? filteredRefunds : [];
+  const safeRefunds = Array.isArray(refunds) ? refunds : [];
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
@@ -346,7 +350,7 @@ export function RefundsPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredRefunds.map((refund) => (
+              {safeFilteredRefunds.map((refund) => (
                 <tr key={refund.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -432,12 +436,12 @@ export function RefundsPage() {
           </table>
         </div>
         
-        {filteredRefunds.length === 0 && (
+        {safeFilteredRefunds.length === 0 && (
           <div className="text-center py-12">
             <RotateCcw className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">No refunds found</h3>
             <p className="mt-1 text-sm text-gray-500">
-              {refunds.length === 0 ? 'No refunds available.' : 'Try adjusting your search or filters.'}
+              {safeRefunds.length === 0 ? 'No refunds available.' : 'Try adjusting your search or filters.'}
             </p>
           </div>
         )}
