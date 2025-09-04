@@ -32,7 +32,7 @@ export class AuthService {
     return null;
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, ipAddress?: string, userAgent?: string) {
     const user = await this.validateUser(loginDto.email, loginDto.password);
     
     if (!user) {
@@ -48,13 +48,19 @@ export class AuthService {
     // Update last login
     await this.usersService.updateLastLogin(user.id);
 
-    // Audit log
+    // Audit log with IP and User Agent
     await this.auditService.log({
       action: 'USER_LOGIN',
       entityType: 'User',
       entityId: user.id,
-      details: { email: user.email },
+      details: { 
+        email: user.email,
+        ipAddress,
+        userAgent,
+      },
       user: user,
+      ipAddress,
+      userAgent,
     });
 
     return {
@@ -68,7 +74,7 @@ export class AuthService {
     };
   }
 
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: RegisterDto, ipAddress?: string, userAgent?: string) {
     try {
       const user = await this.usersService.create(registerDto);
       
@@ -78,13 +84,20 @@ export class AuthService {
         role: user.role 
       };
 
-      // Audit log
+      // Audit log with IP and User Agent
       await this.auditService.log({
         action: 'USER_REGISTERED',
         entityType: 'User',
         entityId: user.id,
-        details: { email: user.email, role: user.role },
+        details: { 
+          email: user.email, 
+          role: user.role,
+          ipAddress,
+          userAgent,
+        },
         user: user,
+        ipAddress,
+        userAgent,
       });
 
       return {

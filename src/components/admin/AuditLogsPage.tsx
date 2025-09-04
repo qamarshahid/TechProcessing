@@ -50,6 +50,7 @@ interface AuditLog {
   description?: string;
   user_name?: string;
   userName?: string;
+  user_email?: string;
   ip_address?: string;
   ipAddress?: string;
   severity?: string;
@@ -57,7 +58,20 @@ interface AuditLog {
   action_type?: string;
   category?: string;
   resource?: string;
+  entityType?: string;
+  entityId?: string;
+  entityName?: string;
+  userId?: string;
+  user?: any;
   details?: any;
+  auditContext?: any;
+  sessionId?: string;
+  requestId?: string;
+  userAgent?: string;
+  location?: string;
+  changes?: any;
+  outcome?: string;
+  riskLevel?: string;
   status?: string;
 }
 
@@ -109,8 +123,34 @@ export function AuditLogsPage() {
       let logsList: AuditLog[] = [];
       
       if (response?.logs && Array.isArray(response.logs)) {
-        // Backend response format
-        logsList = response.logs;
+        // Backend response format - validate and clean data
+        logsList = response.logs.map((log: any) => ({
+          ...log,
+          // Ensure required fields have fallback values
+          timestamp: log.timestamp || log.created_at || new Date().toISOString(),
+          created_at: log.created_at || log.timestamp || new Date().toISOString(),
+          action: log.action || 'UNKNOWN_ACTION',
+          user_name: log.user_name || log.userName || 'System',
+          userName: log.userName || log.user_name || 'System',
+          user_email: log.user_email || log.user?.email || null,
+          ip_address: log.ip_address || log.ipAddress || 'N/A',
+          ipAddress: log.ipAddress || log.ip_address || 'N/A',
+          severity: log.severity || log.level || 'info',
+          level: log.level || log.severity || 'info',
+          category: log.category || 'user',
+          action_type: log.action_type || 'user_action',
+          entityType: log.entityType || 'Unknown',
+          entityId: log.entityId || 'N/A',
+          entityName: log.entityName || null,
+          sessionId: log.sessionId || null,
+          requestId: log.requestId || null,
+          userAgent: log.userAgent || null,
+          location: log.location || 'Unknown',
+          changes: log.changes || null,
+          outcome: log.outcome || 'Success',
+          riskLevel: log.riskLevel || 'Medium',
+          description: log.description || `User ${(log.action || 'unknown').toLowerCase().replace(/_/g, ' ')}`,
+        }));
       } else if (response && Array.isArray(response)) {
         // Direct array response
         logsList = response;
@@ -120,11 +160,20 @@ export function AuditLogsPage() {
         logger.warn('Using mock audit logs data - backend endpoint may not be available');
       }
       
-      setAuditLogs(logsList);
-      setFilteredLogs(logsList);
-      calculateStats(logsList);
+      // Validate data integrity
+      const validLogs = logsList.filter(log => {
+        return log.id && log.action && (log.timestamp || log.created_at);
+      });
       
-      showSuccess('Audit Logs Loaded', `Successfully loaded ${logsList.length} audit logs.`);
+      if (validLogs.length !== logsList.length) {
+        logger.warn(`Filtered out ${logsList.length - validLogs.length} invalid audit logs`);
+      }
+      
+      setAuditLogs(validLogs);
+      setFilteredLogs(validLogs);
+      calculateStats(validLogs);
+      
+      showSuccess('Audit Logs Loaded', `Successfully loaded ${validLogs.length} audit logs.`);
     } catch (error) {
       logger.error('Error fetching audit logs:', error);
       setError('Failed to load audit logs. Please try again.');
@@ -178,9 +227,10 @@ export function AuditLogsPage() {
       );
     }
 
-    // Apply date range filter
+    // Apply date range filter with improved accuracy
     if (filters.dateRange) {
-      const today = new Date();
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
       const lastWeek = new Date(today);
@@ -190,16 +240,20 @@ export function AuditLogsPage() {
 
       filtered = filtered.filter(log => {
         const logDate = new Date(log.timestamp || log.created_at || '');
+        if (isNaN(logDate.getTime())) return false;
+
+        // Normalize log date to start of day for accurate comparison
+        const logDateNormalized = new Date(logDate.getFullYear(), logDate.getMonth(), logDate.getDate());
         
         switch (filters.dateRange) {
           case 'today':
-            return logDate.toDateString() === today.toDateString();
+            return logDateNormalized.getTime() === today.getTime();
           case 'yesterday':
-            return logDate.toDateString() === yesterday.toDateString();
+            return logDateNormalized.getTime() === yesterday.getTime();
           case 'lastWeek':
-            return logDate >= lastWeek;
+            return logDateNormalized >= lastWeek;
           case 'lastMonth':
-            return logDate >= lastMonth;
+            return logDateNormalized >= lastMonth;
           default:
             return true;
         }
@@ -259,35 +313,54 @@ export function AuditLogsPage() {
       return logDate.toDateString() === today.toDateString();
     }).length;
     
-    const criticalLogs = logsList.filter(log => 
-      (log.severity || '').toLowerCase() === 'critical' || 
-      (log.level || '').toLowerCase() === 'critical'
-    ).length;
+    // Critical logs - more precise filtering
+    const criticalLogs = logsList.filter(log => {
+      const severity = (log.severity || log.level || '').toLowerCase();
+      const action = (log.action || '').toLowerCase();
+      return severity === 'critical' || severity === 'error' ||
+             action.includes('delete') || action.includes('remove') ||
+             action.includes('security') || action.includes('auth');
+    }).length;
     
-    const userActions = logsList.filter(log => 
-      (log.action_type || '').toLowerCase() === 'user_action' || 
-      (log.category || '').toLowerCase() === 'user'
-    ).length;
+    // User actions - based on action_type and category
+    const userActions = logsList.filter(log => {
+      const actionType = (log.action_type || '').toLowerCase();
+      const category = (log.category || '').toLowerCase();
+      const action = (log.action || '').toLowerCase();
+      return actionType === 'user_action' || category === 'user' ||
+             (action.includes('create') && !action.includes('admin')) ||
+             (action.includes('update') && !action.includes('admin'));
+    }).length;
     
-    const systemActions = logsList.filter(log => 
-      (log.action_type || '').toLowerCase() === 'system_action' || 
-      (log.category || '').toLowerCase() === 'system'
-    ).length;
+    // System actions - more precise filtering
+    const systemActions = logsList.filter(log => {
+      const actionType = (log.action_type || '').toLowerCase();
+      const category = (log.category || '').toLowerCase();
+      const action = (log.action || '').toLowerCase();
+      return actionType === 'admin_action' || category === 'system' ||
+             action.includes('admin') || action.includes('system');
+    }).length;
 
-    const securityEvents = logsList.filter(log => 
-      (log.category || '').toLowerCase() === 'security' ||
-      (log.action || '').toLowerCase().includes('login') ||
-      (log.action || '').toLowerCase().includes('logout') ||
-      (log.action || '').toLowerCase().includes('password') ||
-      (log.action || '').toLowerCase().includes('permission')
-    ).length;
+    // Security events - comprehensive filtering
+    const securityEvents = logsList.filter(log => {
+      const category = (log.category || '').toLowerCase();
+      const actionType = (log.action_type || '').toLowerCase();
+      const action = (log.action || '').toLowerCase();
+      return category === 'security' || actionType === 'security_action' ||
+             action.includes('login') || action.includes('logout') ||
+             action.includes('password') || action.includes('permission') ||
+             action.includes('auth') || action.includes('security');
+    }).length;
 
-    const adminActions = logsList.filter(log => 
-      (log.action || '').toLowerCase().includes('admin') ||
-      (log.action || '').toLowerCase().includes('delete') ||
-      (log.action || '').toLowerCase().includes('update') ||
-      (log.action || '').toLowerCase().includes('create')
-    ).length;
+    // Admin actions - more precise filtering
+    const adminActions = logsList.filter(log => {
+      const actionType = (log.action_type || '').toLowerCase();
+      const action = (log.action || '').toLowerCase();
+      return actionType === 'admin_action' ||
+             (action.includes('admin') && (action.includes('delete') || 
+              action.includes('update') || action.includes('create'))) ||
+             action.includes('delete') || action.includes('remove');
+    }).length;
 
     setStats({
       totalLogs,
@@ -745,6 +818,8 @@ export function AuditLogsPage() {
                       )}
                     </button>
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Category</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Risk Level</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Description</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -792,10 +867,48 @@ export function AuditLogsPage() {
                           </span>
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          log.category === 'security' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400' :
+                          log.category === 'user' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' :
+                          log.category === 'system' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400' :
+                          'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                        }`}>
+                          {log.category === 'security' ? <Shield className="h-3 w-3 mr-1" /> :
+                           log.category === 'user' ? <User className="h-3 w-3 mr-1" /> :
+                           log.category === 'system' ? <Settings className="h-3 w-3 mr-1" /> :
+                           <Activity className="h-3 w-3 mr-1" />}
+                          <span className="capitalize">{log.category || 'Unknown'}</span>
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          log.riskLevel === 'High' ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400' :
+                          log.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' :
+                          log.riskLevel === 'Low' ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' :
+                          'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                        }`}>
+                          {log.riskLevel === 'High' ? <AlertTriangle className="h-3 w-3 mr-1" /> :
+                           log.riskLevel === 'Medium' ? <AlertCircle className="h-3 w-3 mr-1" /> :
+                           log.riskLevel === 'Low' ? <CheckCircle className="h-3 w-3 mr-1" /> :
+                           <Info className="h-3 w-3 mr-1" />}
+                          <span>{log.riskLevel || 'Medium'}</span>
+                        </span>
+                      </td>
                       <td className="px-6 py-4 text-sm text-slate-900 dark:text-white">
-                        <div className="max-w-xs truncate" title={log.description || 'No description'}>
+                        <div className="max-w-md truncate" title={log.description || 'No description'}>
                           {log.description || 'No description available'}
                         </div>
+                        {log.user_email && (
+                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                            Email: {log.user_email}
+                          </div>
+                        )}
+                        {log.sessionId && (
+                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                            Session: {log.sessionId.substring(0, 8)}...
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2">
@@ -816,7 +929,7 @@ export function AuditLogsPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center">
+                    <td colSpan={9} className="px-6 py-12 text-center">
                       <div className="text-slate-500 dark:text-slate-400">
                         <FileText className="mx-auto h-12 w-12 mb-4 text-slate-300 dark:text-slate-600" />
                         <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No audit logs found</h3>

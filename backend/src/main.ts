@@ -5,6 +5,7 @@ import { Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { RequestInfoInterceptor } from './common/interceptors/request-info.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { CorsMiddleware } from './common/middleware/cors.middleware';
 import { AppModule } from './app.module';
@@ -56,6 +57,7 @@ async function bootstrap() {
 
   // Global interceptors and filters
   app.useGlobalInterceptors(
+    new RequestInfoInterceptor(), // Capture IP and User Agent
     new LoggingInterceptor(),
     // Ensure @Exclude() and serialization rules are applied globally
     new ClassSerializerInterceptor(app.get(Reflector)),

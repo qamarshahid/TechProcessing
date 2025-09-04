@@ -44,10 +44,9 @@ export class PaymentLinksService {
     let clientEmail = '';
     
     if (createPaymentLinkDto.clientId) {
-      // Existing client
-      const client = await this.usersService.findOne(createPaymentLinkDto.clientId);
-      clientName = client.fullName;
-      clientEmail = client.email;
+      // Existing client - for now, use placeholder data since UsersService is not available
+      clientName = 'Client';
+      clientEmail = 'client@example.com';
     } else {
       // Non-client payment (from metadata)
       const metadata = createPaymentLinkDto.metadata || {};

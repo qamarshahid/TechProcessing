@@ -11,6 +11,7 @@ import { PaymentLinksModule } from './payment-links/payment-links.module';
 import { ServiceRequestsModule } from './service-requests/service-requests.module';
 import { ServicePackagesModule } from './service-packages/service-packages.module';
 import { HealthModule } from './health/health.module';
+import { SystemModule } from './system/system.module';
 import { DatabaseModule } from './database/database.module';
 
 // Determine whether to skip database initialization (useful for tests)
@@ -55,6 +56,7 @@ const baseImports: any[] = [
     validationSchema,
   }),
   HealthModule,
+  SystemModule,
 ];
 
 let appImports: any[];
