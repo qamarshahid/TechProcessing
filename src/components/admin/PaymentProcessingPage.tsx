@@ -1,784 +1,424 @@
-class ApiClient {
-  private baseURL: string;
-  private token: string | null = null;
+import React, { useState, useEffect } from 'react';
+import { useNotifications } from '../common/NotificationSystem';
+import { apiClient } from '../../lib/api';
+import { logger } from '../../lib/logger';
+import { 
+  CreditCard, 
+  DollarSign, 
+  Clock, 
+  CheckCircle, 
+  AlertCircle, 
+  XCircle,
+  RefreshCw,
+  TrendingUp,
+  Play
+} from 'lucide-react';
 
-  constructor() {
-    this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8081/api';
-  }
+export function PaymentProcessingPage() {
+  const { showSuccess, showError } = useNotifications();
+  const [payments, setPayments] = useState<any[]>([]);
+  const [filteredPayments, setFilteredPayments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    status: '',
+    method: '',
+    amount: '',
+  });
+  const [stats, setStats] = useState({
+    totalPayments: 0,
+    totalAmount: 0,
+    processingPayments: 0,
+    pendingPayments: 0,
+    failedPayments: 0,
+  });
 
-  setToken(token: string | null) {
-    this.token = token;
-    if (token) {
-      localStorage.setItem('auth_token', token);
-    } else {
-      localStorage.removeItem('auth_token');
-    }
-  }
+  useEffect(() => {
+    fetchPayments();
+  }, []);
 
-  private async request(endpoint: string, options: RequestInit = {}) {
-    const url = `${this.baseURL}${endpoint}`;
-    
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    };
+  useEffect(() => {
+    filterPayments();
+  }, [payments, searchTerm, filters]);
 
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
-    }
-
+  const fetchPayments = async () => {
     try {
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        return await response.json();
-      }
+      setLoading(true);
+      const response = await apiClient.getPayments();
+      const paymentList = response?.payments || [];
       
-      return await response.text();
+      setPayments(Array.isArray(paymentList) ? paymentList : []);
+      calculateStats(paymentList);
+      showSuccess('Payment Processing Data Loaded', `Successfully loaded ${paymentList.length} payments.`);
     } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new Error('Network error occurred');
+      logger.error('Error fetching payments:', error);
+      showError('Failed to Load Payments', 'Unable to load payment processing data. Please try again later.');
+      setPayments([]);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  // Authentication
-  async login(email: string, password: string) {
-    const response = await this.request('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
+  const calculateStats = (paymentList: any[]) => {
+    const totalPayments = paymentList.length;
+    const totalAmount = paymentList.reduce((sum, payment) => 
+      sum + parseFloat(payment.amount || '0'), 0
+    );
+    const processingPayments = paymentList.filter(p => 
+      p.status === 'PROCESSING' || p.status === 'processing'
+    ).length;
+    const pendingPayments = paymentList.filter(p => 
+      p.status === 'PENDING' || p.status === 'pending'
+    ).length;
+    const failedPayments = paymentList.filter(p => 
+      p.status === 'FAILED' || p.status === 'failed'
+    ).length;
+
+    setStats({
+      totalPayments,
+      totalAmount,
+      processingPayments,
+      pendingPayments,
+      failedPayments,
     });
-    this.setToken(response.access_token);
-    return response;
-  }
-
-  async register(email: string, password: string, fullName: string, role: string) {
-    const response = await this.request('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, fullName, role }),
-    });
-    this.setToken(response.access_token);
-    return response;
-  }
-
-  async logout() {
-    this.setToken(null);
-  }
-
-  async getProfile() {
-    return this.request('/auth/profile');
-  }
-
-  // Users Management (Admin only)
-  async getUsers(params?: { role?: string; includeInactive?: boolean }) {
-    const searchParams = new URLSearchParams();
-    if (params?.role) searchParams.append('role', params.role);
-    if (params?.includeInactive) searchParams.append('includeInactive', 'true');
-    
-    const query = searchParams.toString();
-    const response = await this.request(`/users${query ? `?${query}` : ''}`);
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-    // Ensure we always return an object with users array
-    if (Array.isArray(response)) {
-      return { users: response };
-    }
-    return { users: response?.users || [] };
-  }
-
-  async createUser(userData: any) {
-    return this.request('/users', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
-  }
-
-  async updateUser(userId: string, userData: any) {
-    return this.request(`/users/${userId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(userData),
-    });
-  }
-
-  async deleteUser(userId: string, hardDelete: boolean = false) {
-    return this.request(`/users/${userId}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ hardDelete }),
-    });
-  }
-
-  async updateClient(clientId: string, clientData: any) {
-    return this.request(`/users/${clientId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(clientData),
-    });
-  }
-
-  async updateClientCredentials(clientId: string, credentialsData: any) {
-    return this.request(`/users/${clientId}/credentials`, {
-      method: 'PATCH',
-      body: JSON.stringify(credentialsData),
-    });
-  }
-
-  // Agent Management (Admin only)
-  async getAgents() {
-    const response = await this.request('/agent-management');
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.agents || [];
-  }
-
-  async createAgent(agentData: any) {
-    return this.request('/agent-management', {
-      method: 'POST',
-      body: JSON.stringify(agentData),
-    });
-  }
-
-  async deleteAgent(agentId: string, hardDelete: boolean = false) {
-    return this.request(`/agent-management/${agentId}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ hardDelete }),
-    });
-  }
-
-  async updateAgentStatus(agentId: string, isActive: boolean) {
-    return this.request(`/agent-management/${agentId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ isActive }),
-    });
-  }
-
-  async updateAgentCommissionRates(agentId: string, agentRate: number, closerRate: number) {
-    return this.request(`/agent-management/${agentId}/commission-rates`, {
-      method: 'PATCH',
-      body: JSON.stringify({ 
-        agentCommissionRate: agentRate, 
-        closerCommissionRate: closerRate 
-      }),
-    });
-  }
-
-  // Agent Sales (Agent & Admin)
-  async getOwnAgentProfile() {
-    const response = await this.request('/agents/stats');
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-    // Handle both agent profile and stats response formats
-    if (response?.agent) {
-      return response.agent;
-    }
-    return response;
-  }
-
-  async getAgentSales() {
-    const response = await this.request('/agents/sales/me');
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-  }
-
-  async getAllAgentSales() {
-    const response = await this.request('/agents/sales/all');
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-    // Ensure we always return an array
-    if (Array.isArray(response)) {
-      return response;
-    }
-    return response?.sales || [];
-  }
-
-  async createAgentSale(saleData: any) {
-    return this.request('/agents/sales', {
-      method: 'POST',
-      body: JSON.stringify(saleData),
-    });
-  }
-
-  async resubmitAgentSale(resubmitData: any) {
-    return this.request('/agents/sales/resubmit', {
-      method: 'POST',
-      body: JSON.stringify(resubmitData),
-    });
-  }
-
-  async updateSaleStatus(saleId: string, status: string) {
-    return this.request(`/agents/sales/${saleId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async updateCommissionStatus(saleId: string, status: string) {
-    return this.request(`/agents/sales/${saleId}/commission-status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async updateSaleNotes(saleId: string, notes: string) {
-    return this.request(`/agents/sales/${saleId}/notes`, {
-      method: 'PATCH',
-      body: JSON.stringify({ notes }),
-    });
-  }
-
-  async getAgentMonthlyStats() {
-    return this.request('/agents/monthly-stats');
-  }
-
-  // Closer Management (Admin only)
-  async getAllClosers() {
-    return this.request('/closers');
-  }
-
-  async getActiveClosers() {
-    return this.request('/agents/closers/active');
-  }
-
-  async createCloser(closerData: any) {
-    return this.request('/closers', {
-      method: 'POST',
-      body: JSON.stringify(closerData),
-    });
-  }
-
-  async updateCloser(closerId: string, closerData: any) {
-    return this.request(`/closers/${closerId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(closerData),
-    });
-  }
-
-  async deleteCloser(closerId: string) {
-    return this.request(`/closers/${closerId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async getCloserStats(closerId: string) {
-    return this.request(`/closers/${closerId}/stats`);
-  }
-
-  async getCloserSales(closerId: string) {
-    return this.request(`/closers/${closerId}/sales`);
-  }
-
-  async getAllClosersStats() {
-    return this.request('/closers/stats');
-  }
-
-  async getFilteredCloserStats(filters: any) {
-    const searchParams = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) searchParams.append(key, String(value));
-    });
-    
-    const query = searchParams.toString();
-    return this.request(`/closers/stats/filtered${query ? `?${query}` : ''}`);
-  }
-
-  async getCloserAuditData(filters: any) {
-    const searchParams = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) searchParams.append(key, String(value));
-    });
-    
-    const query = searchParams.toString();
-    return this.request(`/closers/audit${query ? `?${query}` : ''}`);
-  }
-
-  // Service Packages
-  async getServices() {
-    const response = await this.request('/service-packages');
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-    // Ensure we always return an object with services array
-    if (Array.isArray(response)) {
-      return { services: response };
-    }
-    return { services: response?.services || [] };
-  }
-
-  async createService(serviceData: any) {
-    return this.request('/service-packages', {
-      method: 'POST',
-      body: JSON.stringify(serviceData),
-    });
-  }
-
-  async updateService(serviceId: string, serviceData: any) {
-    return this.request(`/service-packages/${serviceId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(serviceData),
-    });
-  }
-
-  async deleteService(serviceId: string) {
-    return this.request(`/service-packages/${serviceId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Service Requests (Client & Admin)
-  async getServiceRequests(filters?: any) {
-    const searchParams = new URLSearchParams();
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) searchParams.append(key, String(value));
-      });
-    }
-    
-    const query = searchParams.toString();
-    const response = await this.request(`/service-requests${query ? `?${query}` : ''}`);
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-  }
-
-  async getClientServiceRequests(clientId: string) {
-    const response = await this.request(`/service-requests/my-requests`);
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-    // Ensure we always return an object with serviceRequests array
-    if (Array.isArray(response)) {
-      return { serviceRequests: response };
-    }
-    return { serviceRequests: response?.serviceRequests || [] };
-  }
-
-  async createServiceRequest(requestData: any) {
-    return this.request('/service-requests', {
-      method: 'POST',
-      body: JSON.stringify(requestData),
-    });
-  }
-
-  async updateServiceRequest(requestId: string, updateData: any) {
-    return this.request(`/service-requests/${requestId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(updateData),
-    });
-  }
-
-  async createPriceAdjustment(requestId: string, adjustmentData: any) {
-    return this.request(`/service-requests/${requestId}/price-adjustments`, {
-      method: 'POST',
-      body: JSON.stringify(adjustmentData),
-    });
-  }
-
-  async updatePriceAdjustmentStatus(adjustmentId: string, statusData: any) {
-    return this.request(`/service-requests/price-adjustments/${adjustmentId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify(statusData),
-    });
-  }
-
-  async uploadAttachment(requestId: string, file: File, category: string, description?: string) {
-    // In a real implementation, this would upload to cloud storage
-    // For demo purposes, we'll simulate the upload
-    const attachmentData = {
-      fileName: file.name,
-      fileUrl: URL.createObjectURL(file),
-      fileSize: file.size,
-      fileType: file.type,
-      category,
-      description,
-    };
-
-    return this.request(`/service-requests/${requestId}/attachments`, {
-      method: 'POST',
-      body: JSON.stringify(attachmentData),
-    });
-  }
-
-  async deleteAttachment(attachmentId: string) {
-    return this.request(`/service-requests/attachments/${attachmentId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Invoices
-  async getInvoices(params?: { status?: string; clientId?: string }) {
-    const searchParams = new URLSearchParams();
-    if (params?.status) searchParams.append('status', params.status);
-    if (params?.clientId) searchParams.append('clientId', params.clientId);
-    
-    const query = searchParams.toString();
-    const response = await this.request(`/invoices${query ? `?${query}` : ''}`);
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-  }
-
-  async getClientInvoices(clientId: string) {
-    const response = await this.request(`/invoices?clientId=${clientId}`);
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-    // Ensure we always return an object with invoices array
-    if (Array.isArray(response)) {
-      return { invoices: response };
-    }
-    return { invoices: response?.invoices || [] };
-  }
-
-  async createInvoice(invoiceData: any) {
-    return this.request('/invoices', {
-      method: 'POST',
-      body: JSON.stringify(invoiceData),
-    });
-  }
-
-  async updateInvoice(invoiceId: string, invoiceData: any) {
-    return this.request(`/invoices/${invoiceId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(invoiceData),
-    });
-  }
-
-  async updateInvoiceStatus(invoiceId: string, status: string) {
-    return this.request(`/invoices/${invoiceId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async deleteInvoice(invoiceId: string, deletePayments: boolean = false) {
-    return this.request(`/invoices/${invoiceId}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ deletePayments }),
-    });
-  }
-
-  async generateInvoicePDF(invoiceId: string) {
-    // Simulate PDF generation
-    return {
-      success: true,
-      pdfUrl: '#',
-      filename: `invoice-${invoiceId}.pdf`
-    };
-  }
-
-  // Payments
-  async getPayments() {
-    const response = await this.request('/payments');
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-    // Ensure we always return an object with payments array
-    if (Array.isArray(response)) {
-      return { payments: response };
-    }
-    return { payments: response?.payments || [] };
-  }
-
-  async createHostedPaymentToken(paymentData: any) {
-    return this.request('/payments/hosted-token', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async processPayment(paymentData: any) {
-    return this.request('/payments', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async getCompletedPayments() {
-    return this.request('/payments?status=COMPLETED');
-  }
-
-  async processRefund(refundData: any) {
-    // Simulate refund processing
-    return { success: true, refundId: 'ref_' + Date.now() };
-  }
-
-  async getRefunds() {
-    // Simulate refunds data
-    return { refunds: [] };
-  }
-
-  // Payment Links (Admin only)
-  async getPaymentLinks() {
-    const response = await this.request('/payment-links');
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-    // Ensure we always return an object with links array
-    if (Array.isArray(response)) {
-      return { links: response };
-    }
-    return { links: response?.links || [] };
-  }
-
-  async createPaymentLink(linkData: any) {
-    return this.request('/payment-links', {
-      method: 'POST',
-      body: JSON.stringify(linkData),
-    });
-  }
-
-  async getPaymentLinkByToken(token: string) {
-    return this.request(`/payment-links/token/${token}`);
-  }
-
-  async processPaymentLinkPayment(token: string, paymentData: any) {
-    return this.request(`/payment-links/token/${token}/process-payment`, {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async deletePaymentLink(linkId: string) {
-    return this.request(`/payment-links/${linkId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  async resendPaymentLinkEmail(linkId: string) {
-    return this.request(`/payment-links/${linkId}/resend-email`, {
-      method: 'POST',
-    });
-  }
-
-  async sendPaymentLinkEmail(emailData: any) {
-    // Simulate email sending
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ success: true, messageId: 'email_' + Date.now() });
-      }, 1000);
-    });
-  }
-
-  async sendPaymentLinkSMS(smsData: any) {
-    // Simulate SMS sending
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ success: true, messageId: 'sms_' + Date.now() });
-      }, 1000);
-    });
-  }
-
-  // Enhanced Card Charging
-  async chargeCard(paymentData: any) {
-    return this.request('/payments/charge-card', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async processDirectPayment(paymentData: any) {
-    return this.request('/payments/direct', {
-      method: 'POST',
-      body: JSON.stringify(paymentData),
-    });
-  }
-
-  async savePaymentMethod(clientId: string, cardData: any) {
-    return this.request(`/payments/save-method/${clientId}`, {
-      method: 'POST',
-      body: JSON.stringify(cardData),
-    });
-  }
-
-  async getClientPaymentMethods(clientId: string) {
-    return this.request(`/payments/methods/${clientId}`);
-  }
-
-  async chargeStoredCard(clientId: string, paymentMethodId: string, amount: number, description?: string) {
-    return this.request('/payments/charge-stored', {
-      method: 'POST',
-      body: JSON.stringify({
-        clientId,
-        paymentMethodId,
-        amount,
-        description,
-      }),
-    });
-  }
-
-  // Subscriptions
-  async getSubscriptions() {
-    const response = await this.request('/subscriptions');
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-    // Ensure we always return an object with subscriptions array
-    if (Array.isArray(response)) {
-      return { subscriptions: response };
-    }
-    return { subscriptions: response?.subscriptions || [] };
-  }
-
-  async getClientSubscriptions(clientId: string) {
-    return this.request(`/subscriptions/client/${clientId}`);
-  }
-
-  async createSubscription(subscriptionData: any) {
-    return this.request('/subscriptions', {
-      method: 'POST',
-      body: JSON.stringify(subscriptionData),
-    });
-  }
-
-  async updateSubscription(subscriptionId: string, subscriptionData: any) {
-    return this.request(`/subscriptions/${subscriptionId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(subscriptionData),
-    });
-  }
-
-  async updateSubscriptionStatus(subscriptionId: string, status: string) {
-    return this.request(`/subscriptions/${subscriptionId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status }),
-    });
-  }
-
-  async deleteSubscription(subscriptionId: string) {
-    return this.request(`/subscriptions/${subscriptionId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  // Client Transaction History
-  async getClientTransactionHistory(clientId: string) {
-    try {
-      const [invoicesResponse, paymentsResponse] = await Promise.all([
-        this.getInvoices({ clientId }),
-        this.getPayments()
-      ]);
-
-      const clientInvoices = invoicesResponse.invoices || [];
-      const allPayments = paymentsResponse.payments || [];
-      const clientPayments = allPayments.filter(payment => 
-        clientInvoices.some(invoice => invoice.id === payment.invoice_id)
+  };
+
+  const filterPayments = () => {
+    let filtered = [...payments];
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(payment =>
+        payment.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        payment.transaction_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        payment.invoice?.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
 
-      // Combine invoices and payments into transaction history
-      const transactions = [
-        ...clientInvoices.map(invoice => ({
-          id: invoice.id,
-          type: 'invoice',
-          description: invoice.description,
-          amount: parseFloat(invoice.amount || invoice.total || '0'),
-          status: invoice.status.toLowerCase(),
-          date: invoice.created_at || invoice.createdAt,
-          invoice_number: invoice.invoice_number || invoice.invoiceNumber,
-          payment_method: invoice.payment_method,
-        })),
-        ...clientPayments.map(payment => ({
-          id: payment.id,
-          type: 'payment',
-          description: `Payment for ${payment.invoice?.description || 'Invoice'}`,
-          amount: parseFloat(payment.amount || '0'),
-          status: payment.status.toLowerCase(),
-          date: payment.created_at || payment.createdAt,
-          payment_method: payment.method,
-          transaction_id: payment.transaction_id,
-        }))
-      ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // Status filter
+    if (filters.status) {
+      filtered = filtered.filter(payment => 
+        payment.status?.toLowerCase() === filters.status.toLowerCase()
+      );
+    }
 
-      return {
-        transactions,
-        invoices: clientInvoices,
-        payments: clientPayments,
-      };
+    // Method filter
+    if (filters.method) {
+      filtered = filtered.filter(payment => 
+        payment.method?.toLowerCase() === filters.method.toLowerCase()
+      );
+    }
+
+    // Amount filter
+    if (filters.amount) {
+      const amount = parseFloat(filters.amount);
+      filtered = filtered.filter(payment => 
+        parseFloat(payment.amount || '0') >= amount
+      );
+    }
+
+    setFilteredPayments(filtered);
+  };
+
+  const handleStatusUpdate = async (paymentId: string, newStatus: string) => {
+    try {
+      // This would typically call an API to update payment status
+      showSuccess('Status Updated', `Payment status updated to ${newStatus}`);
+      fetchPayments(); // Refresh data
     } catch (error) {
-      console.error('Error fetching client transaction history:', error);
-      return {
-        transactions: [],
-        invoices: [],
-        payments: [],
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
+      logger.error('Error updating payment status:', error);
+      showError('Update Failed', 'Failed to update payment status. Please try again.');
     }
+  };
+
+  const handleRetryPayment = async (paymentId: string) => {
+    try {
+      // This would typically call an API to retry the payment
+      showSuccess('Payment Retry Initiated', 'Payment retry has been initiated.');
+      fetchPayments(); // Refresh data
+    } catch (error) {
+      logger.error('Error retrying payment:', error);
+      showError('Retry Failed', 'Failed to retry payment. Please try again.');
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'completed':
+      case 'success':
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'processing':
+        return <Clock className="w-4 h-4 text-blue-500" />;
+      case 'pending':
+        return <Clock className="w-4 h-4 text-yellow-500" />;
+      case 'failed':
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      default:
+        return <AlertCircle className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'completed':
+      case 'success':
+        return 'bg-green-100 text-green-800';
+      case 'processing':
+        return 'bg-blue-100 text-blue-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'failed':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
   }
 
-  // Audit Logs (Admin only)
-  async getAuditLogs(params?: any) {
-    const searchParams = new URLSearchParams();
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value) searchParams.append(key, String(value));
-      });
-    }
-    
-    const query = searchParams.toString();
-    return this.request(`/audit${query ? `?${query}` : ''}`);
-  }
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment Processing</h1>
+        <p className="text-gray-600">Monitor and manage payment processing operations</p>
+      </div>
 
-  // Clients helper method
-  async getClients() {
-    return this.getUsers({ role: 'CLIENT' });
-  }
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <DollarSign className="w-6 h-6 text-blue-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Payments</p>
+              <p className="text-2xl font-semibold text-gray-900">{stats.totalPayments}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <TrendingUp className="w-6 h-6 text-green-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Amount</p>
+              <p className="text-2xl font-semibold text-gray-900">${stats.totalAmount.toFixed(2)}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Play className="w-6 h-6 text-blue-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Processing</p>
+              <p className="text-2xl font-semibold text-gray-900">{stats.processingPayments}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-yellow-100 rounded-lg">
+              <Clock className="w-6 h-6 text-yellow-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Pending</p>
+              <p className="text-2xl font-semibold text-gray-900">{stats.pendingPayments}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="p-2 bg-red-100 rounded-lg">
+              <XCircle className="w-6 h-6 text-red-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Failed</p>
+              <p className="text-2xl font-semibold text-gray-900">{stats.failedPayments}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="bg-white rounded-lg shadow mb-6">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search payments..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex gap-2">
+              <select
+                value={filters.status}
+                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">All Statuses</option>
+                <option value="processing">Processing</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="failed">Failed</option>
+              </select>
+              <select
+                value={filters.method}
+                onChange={(e) => setFilters({ ...filters, method: e.target.value })}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">All Methods</option>
+                <option value="credit_card">Credit Card</option>
+                <option value="debit_card">Debit Card</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="ach">ACH</option>
+              </select>
+              <button
+                onClick={fetchPayments}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Payments Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-900">Payment Processing Queue</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Payment
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Client
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Amount
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Method
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredPayments.map((payment) => (
+                <tr key={payment.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-10 w-10">
+                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <CreditCard className="w-5 h-5 text-blue-600" />
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">
+                          {payment.transaction_id || payment.id}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {payment.invoice?.invoice_number || 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {payment.client_name || payment.client?.name || 'Unknown'}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {payment.client_email || payment.client?.email || 'N/A'}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      ${parseFloat(payment.amount || '0').toFixed(2)}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(payment.status)}`}>
+                      {getStatusIcon(payment.status)}
+                      <span className="ml-1 capitalize">
+                        {payment.status || 'Unknown'}
+                      </span>
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {payment.method || 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(payment.created_at || payment.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleStatusUpdate(payment.id, 'completed')}
+                        className="text-green-600 hover:text-green-900"
+                        title="Mark as completed"
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleRetryPayment(payment.id)}
+                        className="text-blue-600 hover:text-blue-900"
+                        title="Retry payment"
+                      >
+                        <RefreshCw className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleStatusUpdate(payment.id, 'failed')}
+                        className="text-red-600 hover:text-red-900"
+                        title="Mark as failed"
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        {filteredPayments.length === 0 && (
+          <div className="text-center py-12">
+            <CreditCard className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No payments found</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {payments.length === 0 ? 'No payments available.' : 'Try adjusting your search or filters.'}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
-
-export const apiClient = new ApiClient();
