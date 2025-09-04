@@ -51,6 +51,7 @@ interface AuditLog {
   user_name?: string;
   userName?: string;
   user_email?: string;
+  user_role?: string;
   ip_address?: string;
   ipAddress?: string;
   severity?: string;
@@ -135,6 +136,7 @@ export function AuditLogsPage() {
           user_name: log.user_name || log.userName || 'System',
           userName: log.userName || log.user_name || 'System',
           user_email: log.user_email || log.user?.email || null,
+          user_role: log.user_role || log.user?.role || 'CLIENT',
           ip_address: log.ip_address || log.ipAddress || 'N/A',
           ipAddress: log.ipAddress || log.ip_address || 'N/A',
           severity: log.severity || log.level || 'info',
@@ -434,6 +436,45 @@ export function AuditLogsPage() {
     }
     
     return ip;
+  };
+
+  const getUserRoleIcon = (user: any, log?: any) => {
+    const role = user?.role || 'CLIENT';
+    
+    // Check if this is a closer-related action
+    const isCloserAction = log?.entityType === 'Closer' || 
+                          log?.action?.toLowerCase().includes('closer') ||
+                          log?.description?.toLowerCase().includes('closer');
+    
+    switch (role.toUpperCase()) {
+      case 'ADMIN':
+        return <Shield className="h-4 w-4 text-red-500" title="Administrator" />;
+      case 'AGENT':
+        // Show special icon if agent is working with closers
+        if (isCloserAction) {
+          return <Users className="h-4 w-4 text-purple-500" title="Agent (Closer Activity)" />;
+        }
+        return <Users className="h-4 w-4 text-blue-500" title="Agent" />;
+      case 'CLIENT':
+        return <User className="h-4 w-4 text-green-500" title="Client" />;
+      default:
+        return <User className="h-4 w-4 text-slate-500" title="Client" />;
+    }
+  };
+
+  const getUserRoleColor = (user: any) => {
+    const role = user?.role || 'CLIENT';
+    
+    switch (role.toUpperCase()) {
+      case 'ADMIN':
+        return 'text-red-500';
+      case 'AGENT':
+        return 'text-blue-500';
+      case 'CLIENT':
+        return 'text-green-500';
+      default:
+        return 'text-slate-500';
+    }
   };
 
   const getActionIcon = (action?: string) => {
@@ -874,10 +915,26 @@ export function AuditLogsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <User className="h-4 w-4 mr-2 text-slate-400" />
-                          <span className="text-sm text-slate-900 dark:text-white">
-                            {log.user_name || log.userName || 'System'}
-                          </span>
+                          <div className="flex items-center space-x-2">
+                            {getUserRoleIcon(log.user, log)}
+                            <div className="flex flex-col">
+                              <span className="text-sm text-slate-900 dark:text-white font-medium">
+                                {log.user_name || log.userName || 'System'}
+                              </span>
+                              <div className="flex items-center space-x-1">
+                                {log.user?.role && (
+                                  <span className={`text-xs ${getUserRoleColor(log.user)} font-medium`}>
+                                    {log.user.role}
+                                  </span>
+                                )}
+                                {(log.entityType === 'Closer' || log.action?.toLowerCase().includes('closer')) && (
+                                  <span className="text-xs text-purple-500 font-medium">
+                                    • Closer
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">

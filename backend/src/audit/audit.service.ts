@@ -259,6 +259,7 @@ export class AuditService {
           user_name: log.user?.fullName || 'System',
           userName: log.user?.fullName || 'System',
           user_email: log.user?.email || null,
+          user_role: log.user?.role || 'CLIENT',
           ip_address: this.ipGeolocationService.formatIpForDisplay(log.ipAddress || 'N/A'),
           ipAddress: this.ipGeolocationService.formatIpForDisplay(log.ipAddress || 'N/A'),
           full_ip_address: log.ipAddress || 'N/A', // Keep full IP for reference
@@ -270,7 +271,10 @@ export class AuditService {
           entityId: log.entityId,
           entityName: log.details?.entityName || null,
           userId: log.userId,
-          user: log.user,
+          user: {
+            ...log.user,
+            role: log.user?.role || 'CLIENT',
+          },
           details: log.details,
           auditContext: auditContext,
           // Additional audit fields
