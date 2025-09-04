@@ -779,8 +779,12 @@ class ApiClient {
 
   async getSystemStatus() {
     try {
-      return await this.request('/system/status');
+      console.log('Fetching system status from:', this.baseURL + '/system/status'); // Debug log
+      const response = await this.request('/system/status');
+      console.log('System status API response:', response); // Debug log
+      return response;
     } catch (error) {
+      console.error('System status API error:', error); // Debug log
       // Return mock system status if API is not available
       return {
         status: {
