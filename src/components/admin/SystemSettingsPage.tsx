@@ -209,46 +209,45 @@ export function SystemSettingsPage() {
       // The API returns the data directly - use the full response object
       const status = response;
       console.log('System Status Data:', status); // Debug log
-        setSystemStatus({
-          uptime: status.uptime || '0 days, 0 hours',
-          memoryUsage: status.memory?.usage || '0%',
-          cpuUsage: status.cpu?.usage || '0%',
-          diskUsage: status.disk?.usage || '0%',
-          activeUsers: status.activeUsers || 0,
-          databaseConnections: status.databaseConnections || 0,
-          // Enhanced system data
-          memory: {
-            usage: status.memory?.usage || '0%',
-            total: status.memory?.total || 0,
-            used: status.memory?.used || 0,
-            free: status.memory?.free || 0,
-            processHeap: status.memory?.processHeap || 0,
-            processRss: status.memory?.processRss || 0,
-          },
-          cpu: {
-            usage: status.cpu?.usage || '0%',
-            loadAverage: status.cpu?.loadAverage || 0,
-            cores: status.cpu?.cores || 0,
-            model: status.cpu?.model || 'Unknown',
-          },
-          disk: {
-            usage: status.disk?.usage || '0%',
-            total: status.disk?.total || 0,
-            used: status.disk?.used || 0,
-            free: status.disk?.free || 0,
-          },
-          system: {
-            platform: status.system?.platform || 'Unknown',
-            arch: status.system?.arch || 'Unknown',
-            nodeVersion: status.system?.nodeVersion || 'Unknown',
-            pid: status.system?.pid || 0,
-          },
-          network: {
-            interfaces: status.network?.interfaces || 0,
-            hostname: status.network?.hostname || 'Unknown',
-          },
-        });
-      }
+      setSystemStatus({
+        uptime: status.uptime || '0 days, 0 hours',
+        memoryUsage: status.memory?.usage || '0%',
+        cpuUsage: status.cpu?.usage || '0%',
+        diskUsage: status.disk?.usage || '0%',
+        activeUsers: status.activeUsers || 0,
+        databaseConnections: status.databaseConnections || 0,
+        // Enhanced system data
+        memory: {
+          usage: status.memory?.usage || '0%',
+          total: status.memory?.total || 0,
+          used: status.memory?.used || 0,
+          free: status.memory?.free || 0,
+          processHeap: status.memory?.processHeap || 0,
+          processRss: status.memory?.processRss || 0,
+        },
+        cpu: {
+          usage: status.cpu?.usage || '0%',
+          loadAverage: status.cpu?.loadAverage || 0,
+          cores: status.cpu?.cores || 0,
+          model: status.cpu?.model || 'Unknown',
+        },
+        disk: {
+          usage: status.disk?.usage || '0%',
+          total: status.disk?.total || 0,
+          used: status.disk?.used || 0,
+          free: status.disk?.free || 0,
+        },
+        system: {
+          platform: status.system?.platform || 'Unknown',
+          arch: status.system?.arch || 'Unknown',
+          nodeVersion: status.system?.nodeVersion || 'Unknown',
+          pid: status.system?.pid || 0,
+        },
+        network: {
+          interfaces: status.network?.interfaces || 0,
+          hostname: status.network?.hostname || 'Unknown',
+        },
+      });
     } catch (error) {
       logger.error('Error fetching system status:', error);
     }
