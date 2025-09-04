@@ -76,7 +76,7 @@ export function PaymentProcessingPage() {
 
     // Apply status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(payment => payment.status.toLowerCase() === statusFilter.toLowerCase());
+      filtered = filtered.filter(payment => (payment.status || '').toLowerCase() === statusFilter.toLowerCase());
     }
 
     // Apply sorting
@@ -93,8 +93,8 @@ export function PaymentProcessingPage() {
           bValue = new Date(b.created_at || b.updated_at || '');
           break;
         case 'status':
-          aValue = a.status.toLowerCase();
-          bValue = b.status.toLowerCase();
+          aValue = (a.status || '').toLowerCase();
+          bValue = (b.status || '').toLowerCase();
           break;
         default:
           aValue = a.client_name || a.client?.fullName || '';
@@ -125,7 +125,7 @@ export function PaymentProcessingPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'completed':
       case 'paid':
@@ -506,7 +506,7 @@ export function PaymentProcessingPage() {
                             <Eye className="h-4 w-4" />
                           </button>
                           
-                          {payment.status.toLowerCase() === 'pending' && (
+                          {(payment.status || '').toLowerCase() === 'pending' && (
                             <>
                               <button
                                 onClick={() => handleStatusChange(payment.id, 'completed')}

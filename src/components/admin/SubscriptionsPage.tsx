@@ -80,7 +80,7 @@ export function SubscriptionsPage() {
 
     // Apply status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(subscription => subscription.status.toLowerCase() === statusFilter.toLowerCase());
+      filtered = filtered.filter(subscription => (subscription.status || '').toLowerCase() === statusFilter.toLowerCase());
     }
 
     // Apply plan filter
@@ -102,8 +102,8 @@ export function SubscriptionsPage() {
           bValue = new Date(b.created_at || b.updated_at || '');
           break;
         case 'status':
-          aValue = a.status.toLowerCase();
-          bValue = b.status.toLowerCase();
+          aValue = (a.status || '').toLowerCase();
+          bValue = (b.status || '').toLowerCase();
           break;
         case 'client':
           aValue = a.client_name || '';
@@ -142,7 +142,7 @@ export function SubscriptionsPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'active':
       case 'active_trial':
@@ -161,7 +161,7 @@ export function SubscriptionsPage() {
     }
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'active':
       case 'active_trial':

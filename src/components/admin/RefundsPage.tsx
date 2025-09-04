@@ -78,12 +78,12 @@ export function RefundsPage() {
 
     // Apply status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(refund => refund.status.toLowerCase() === statusFilter.toLowerCase());
+      filtered = filtered.filter(refund => (refund.status || '').toLowerCase() === statusFilter.toLowerCase());
     }
 
     // Apply reason filter
     if (reasonFilter !== 'all') {
-      filtered = filtered.filter(refund => refund.reason.toLowerCase() === reasonFilter.toLowerCase());
+      filtered = filtered.filter(refund => (refund.reason || '').toLowerCase() === reasonFilter.toLowerCase());
     }
 
     // Apply sorting
@@ -100,8 +100,8 @@ export function RefundsPage() {
           bValue = new Date(b.created_at || b.updated_at || '');
           break;
         case 'status':
-          aValue = a.status.toLowerCase();
-          bValue = b.status.toLowerCase();
+          aValue = (a.status || '').toLowerCase();
+          bValue = (b.status || '').toLowerCase();
           break;
         case 'client':
           aValue = a.client_name || '';
@@ -136,7 +136,7 @@ export function RefundsPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'approved':
       case 'completed':
@@ -154,7 +154,7 @@ export function RefundsPage() {
     }
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'approved':
       case 'completed':
@@ -172,7 +172,7 @@ export function RefundsPage() {
     }
   };
 
-  const getReasonIcon = (reason: string) => {
+  const getReasonIcon = (reason?: string) => {
     switch (reason?.toLowerCase()) {
       case 'duplicate_charge':
         return <AlertTriangle className="h-4 w-4" />;

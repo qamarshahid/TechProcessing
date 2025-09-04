@@ -80,7 +80,7 @@ export function ServiceRequestsPage() {
 
     // Apply status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(request => request.status.toLowerCase() === statusFilter.toLowerCase());
+      filtered = filtered.filter(request => (request.status || '').toLowerCase() === statusFilter.toLowerCase());
     }
 
     // Apply priority filter
@@ -102,8 +102,8 @@ export function ServiceRequestsPage() {
           bValue = new Date(b.created_at || b.updated_at || '');
           break;
         case 'status':
-          aValue = a.status.toLowerCase();
-          bValue = b.status.toLowerCase();
+          aValue = (a.status || '').toLowerCase();
+          bValue = (b.status || '').toLowerCase();
           break;
         case 'priority':
           aValue = a.priority || '';
@@ -142,7 +142,7 @@ export function ServiceRequestsPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'approved':
       case 'in_progress':

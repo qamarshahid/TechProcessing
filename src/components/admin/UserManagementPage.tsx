@@ -84,7 +84,7 @@ export function UserManagementPage() {
 
     // Apply status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(user => user.status.toLowerCase() === statusFilter.toLowerCase());
+      filtered = filtered.filter(user => (user.status || '').toLowerCase() === statusFilter.toLowerCase());
     }
 
     // Apply sorting
@@ -105,8 +105,8 @@ export function UserManagementPage() {
           bValue = b.role || '';
           break;
         case 'status':
-          aValue = a.status.toLowerCase();
-          bValue = b.status.toLowerCase();
+          aValue = (a.status || '').toLowerCase();
+          bValue = (b.status || '').toLowerCase();
           break;
         case 'date':
           aValue = new Date(a.created_at || a.updated_at || '');
@@ -141,7 +141,7 @@ export function UserManagementPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'active':
       case 'verified':
@@ -213,8 +213,8 @@ export function UserManagementPage() {
 
   const calculateStats = () => {
     const total = users.length;
-    const active = users.filter(u => u.status.toLowerCase() === 'active' || u.status.toLowerCase() === 'verified').length;
-    const inactive = users.filter(u => u.status.toLowerCase() === 'inactive' || u.status.toLowerCase() === 'suspended').length;
+    const active = users.filter(u => (u.status || '').toLowerCase() === 'active' || (u.status || '').toLowerCase() === 'verified').length;
+    const inactive = users.filter(u => (u.status || '').toLowerCase() === 'inactive' || (u.status || '').toLowerCase() === 'suspended').length;
     const admins = users.filter(u => u.role?.toLowerCase() === 'admin').length;
     const agents = users.filter(u => u.role?.toLowerCase() === 'agent').length;
     const clients = users.filter(u => u.role?.toLowerCase() === 'client').length;
