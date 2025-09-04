@@ -173,6 +173,15 @@ export class AgentController {
     return this.agentService.revokeSaleApproval(id, reason, currentUser);
   }
 
+  @Post('recalculate-stats')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Recalculate all agent statistics (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Agent statistics recalculated successfully' })
+  async recalculateAllAgentStats(@CurrentUser() currentUser: User) {
+    await this.agentService.recalculateAllAgentStats();
+    return { message: 'All agent statistics have been recalculated successfully' };
+  }
+
 
 
 }

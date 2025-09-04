@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, Between } from 'typeorm';
+import { Repository, In, Between, Not } from 'typeorm';
 import { Agent } from '../entities/agent.entity';
 import { AgentSale, SaleStatus, CommissionStatus } from '../entities/agent-sale.entity';
 import { User } from '../entities/user.entity';
@@ -542,15 +542,29 @@ export class AgentService {
   }
 
   private async updateAgentStats(agentId: string): Promise<void> {
-    const sales = await this.agentSaleRepository.find({
-      where: { agentId, saleStatus: SaleStatus.APPROVED },
+    // Get all sales except rejected ones for total count and value
+    const allSales = await this.agentSaleRepository.find({
+      where: { 
+        agentId, 
+        saleStatus: Not(SaleStatus.REJECTED) 
+      },
     });
 
-    const totalSales = sales.length;
-    const totalSalesValue = sales.reduce((sum, sale) => sum + Number(sale.saleAmount), 0);
-    // Only count agent commission (6%) for earnings, not total commission
-    const totalEarnings = sales.reduce((sum, sale) => sum + Number(sale.agentCommission), 0);
-    const totalPaidOut = sales
+    // Get only approved sales for commission calculations
+    const approvedSales = await this.agentSaleRepository.find({
+      where: { 
+        agentId, 
+        saleStatus: SaleStatus.APPROVED 
+      },
+    });
+
+    // Calculate total sales count and value (excluding rejected)
+    const totalSales = allSales.length;
+    const totalSalesValue = allSales.reduce((sum, sale) => sum + Number(sale.saleAmount), 0);
+    
+    // Calculate earnings and commissions (only from approved sales)
+    const totalEarnings = approvedSales.reduce((sum, sale) => sum + Number(sale.agentCommission), 0);
+    const totalPaidOut = approvedSales
       .filter(sale => sale.commissionStatus === CommissionStatus.PAID)
       .reduce((sum, sale) => sum + Number(sale.agentCommission), 0);
     const pendingCommission = totalEarnings - totalPaidOut;
@@ -622,8 +636,17 @@ export class AgentService {
       const startOfMonth = new Date(year, month - 1, 1);
       const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
 
-      // Query sales for this month
-      const sales = await this.agentSaleRepository.find({
+      // Query all sales for this month (excluding rejected)
+      const allSales = await this.agentSaleRepository.find({
+        where: {
+          agentId,
+          saleStatus: Not(SaleStatus.REJECTED),
+          saleDate: Between(startOfMonth, endOfMonth),
+        },
+      });
+
+      // Query approved sales for commission calculations
+      const approvedSales = await this.agentSaleRepository.find({
         where: {
           agentId,
           saleStatus: SaleStatus.APPROVED,
@@ -632,10 +655,10 @@ export class AgentService {
       });
 
       // Calculate stats for this month
-      const totalSales = sales.length;
-      const totalSalesValue = sales.reduce((sum, sale) => sum + Number(sale.saleAmount), 0);
-      const totalCommission = sales.reduce((sum, sale) => sum + Number(sale.agentCommission), 0);
-      const paidCommission = sales
+      const totalSales = allSales.length;
+      const totalSalesValue = allSales.reduce((sum, sale) => sum + Number(sale.saleAmount), 0);
+      const totalCommission = approvedSales.reduce((sum, sale) => sum + Number(sale.agentCommission), 0);
+      const paidCommission = approvedSales
         .filter(sale => sale.commissionStatus === CommissionStatus.PAID)
         .reduce((sum, sale) => sum + Number(sale.agentCommission), 0);
       const pendingCommission = totalCommission - paidCommission;
@@ -827,5 +850,13 @@ export class AgentService {
     });
 
     return updatedSale;
+  }
+
+  async recalculateAllAgentStats(): Promise<void> {
+    const agents = await this.agentRepository.find();
+    
+    for (const agent of agents) {
+      await this.updateAgentStats(agent.id);
+    }
   }
 }
