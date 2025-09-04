@@ -232,7 +232,10 @@ export function AdminDashboard() {
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Users</p>
+                <div className="flex items-center mb-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                  <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Total Users</p>
+                </div>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.totalUsers}</p>
               </div>
               <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
@@ -249,7 +252,10 @@ export function AdminDashboard() {
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Revenue</p>
+                <div className="flex items-center mb-1">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                  <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Total Revenue</p>
+                </div>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">${dashboardData.stats.totalRevenue.toLocaleString()}</p>
               </div>
               <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
@@ -266,7 +272,10 @@ export function AdminDashboard() {
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Invoices</p>
+                <div className="flex items-center mb-1">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                  <p className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Total Invoices</p>
+                </div>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.totalInvoices}</p>
               </div>
               <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
@@ -283,7 +292,10 @@ export function AdminDashboard() {
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Active Agents</p>
+                <div className="flex items-center mb-1">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
+                  <p className="text-sm font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wide">Active Agents</p>
+                </div>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.activeAgents}</p>
               </div>
               <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
@@ -301,8 +313,11 @@ export function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-white">User Breakdown</h3>
-              <Users className="h-4 w-4 text-slate-400" />
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                <h3 className="text-base font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">User Breakdown</h3>
+              </div>
+              <Users className="h-4 w-4 text-blue-400" />
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -322,8 +337,11 @@ export function AdminDashboard() {
 
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-white">Financial Overview</h3>
-              <DollarSign className="h-4 w-4 text-slate-400" />
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                <h3 className="text-base font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Financial Overview</h3>
+              </div>
+              <DollarSign className="h-4 w-4 text-emerald-400" />
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -343,8 +361,11 @@ export function AdminDashboard() {
 
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-semibold text-slate-900 dark:text-white">Platform Health</h3>
-              <Activity className="h-4 w-4 text-slate-400" />
+              <div className="flex items-center">
+                <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
+                <h3 className="text-base font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wide">Platform Health</h3>
+              </div>
+              <Activity className="h-4 w-4 text-orange-400" />
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
