@@ -256,8 +256,33 @@ export class ServiceRequestsService {
   }
 
   async remove(id: string): Promise<void> {
-    const serviceRequest = await this.findOne(id);
-    await this.serviceRequestRepository.remove(serviceRequest);
+    try {
+      // Try to find the service request first
+      let serviceRequest: ServiceRequest;
+      
+      try {
+        serviceRequest = await this.findOne(id);
+      } catch (error) {
+        // If findOne fails (e.g., due to admin session issues), try direct query
+        console.log('findOne failed, trying direct query:', error.message);
+        const result = await this.serviceRequestRepository.query(
+          `SELECT * FROM service_requests WHERE id = $1`,
+          [id]
+        );
+        
+        if (!result || result.length === 0) {
+          throw new NotFoundException(`Service request with ID ${id} not found`);
+        }
+        
+        serviceRequest = result[0];
+      }
+      
+      // Remove the service request
+      await this.serviceRequestRepository.remove(serviceRequest);
+    } catch (error) {
+      console.error('Error removing service request:', error);
+      throw error;
+    }
   }
 
   // Price Adjustment methods

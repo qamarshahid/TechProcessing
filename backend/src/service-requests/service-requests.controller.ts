@@ -87,8 +87,14 @@ export class ServiceRequestsController {
 
   @Delete(':id')
   @Roles(UserRole.ADMIN)
-  remove(@Param('id') id: string) {
-    return this.serviceRequestsService.remove(id);
+  async remove(@Param('id') id: string) {
+    try {
+      await this.serviceRequestsService.remove(id);
+      return { message: 'Service request deleted successfully' };
+    } catch (error) {
+      console.error('Error in delete controller:', error);
+      throw error;
+    }
   }
 
   // Price Adjustment endpoints
