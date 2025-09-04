@@ -373,6 +373,12 @@ class ApiClient {
     });
   }
 
+  async deleteServiceRequest(requestId: string) {
+    return this.request(`/service-requests/${requestId}`, {
+      method: 'DELETE',
+    });
+  }
+
   async createPriceAdjustment(requestId: string, adjustmentData: any) {
     return this.request(`/service-requests/${requestId}/price-adjustments`, {
       method: 'POST',

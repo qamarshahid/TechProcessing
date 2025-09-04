@@ -35,6 +35,12 @@ export function ServiceRequestsPage() {
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewingRequest, setViewingRequest] = useState<ServiceRequest | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingRequest, setEditingRequest] = useState<ServiceRequest | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingRequest, setDeletingRequest] = useState<ServiceRequest | null>(null);
   const { showSuccess, showError } = useNotifications();
 
   useEffect(() => {
@@ -140,6 +146,41 @@ export function ServiceRequestsPage() {
       logger.error('Error updating request status:', error);
       showError('Update Failed', 'Failed to update request status. Please try again.');
     }
+  };
+
+  const handleViewRequest = (request: ServiceRequest) => {
+    setViewingRequest(request);
+    setShowViewModal(true);
+  };
+
+  const handleEditRequest = (request: ServiceRequest) => {
+    setEditingRequest(request);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteRequest = (request: ServiceRequest) => {
+    setDeletingRequest(request);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteRequest = async () => {
+    if (!deletingRequest) return;
+
+    try {
+      await apiClient.deleteServiceRequest(deletingRequest.id);
+      setRequests(prev => prev.filter(r => r.id !== deletingRequest.id));
+      showSuccess('Request Deleted', 'Service request has been deleted successfully.');
+      setShowDeleteModal(false);
+      setDeletingRequest(null);
+    } catch (error) {
+      logger.error('Error deleting request:', error);
+      showError('Delete Failed', 'Failed to delete service request. Please try again.');
+    }
+  };
+
+  const handleRequestUpdated = () => {
+    fetchRequests(); // Refresh the requests list
+    showSuccess('Request Updated', 'Service request has been updated successfully.');
   };
 
   const getStatusColor = (status?: string) => {
@@ -522,15 +563,30 @@ export function ServiceRequestsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-slate-900 dark:text-white">
-                          {request.client_name || 'Unknown Client'}
-                        </div>
-                        {request.contact_email && (
-                          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
-                            <Mail className="h-3 w-3" />
-                            {request.contact_email}
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-8 w-8">
+                            <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                              <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            </div>
                           </div>
-                        )}
+                          <div className="ml-3">
+                            <div className="text-sm font-medium text-slate-900 dark:text-white">
+                              {request.client_name || 'Unknown Client'}
+                            </div>
+                            {request.contact_email && (
+                              <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
+                                <Mail className="h-3 w-3" />
+                                {request.contact_email}
+                              </div>
+                            )}
+                            {request.contact_phone && (
+                              <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
+                                <Phone className="h-3 w-3" />
+                                {request.contact_phone}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(request.priority)}`}>
@@ -555,46 +611,68 @@ export function ServiceRequestsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex space-x-2">
+                        <div className="flex items-center gap-1">
                           <button
-                            onClick={() => setSelectedRequest(request)}
-                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                            onClick={() => handleViewRequest(request)}
+                            className="text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                             title="View Details"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           </button>
                           
-                                                                                {request.status?.toLowerCase() === 'pending' && (
-                             <>
-                               <button
-                                 onClick={() => handleStatusChange(request.id, 'approved')}
-                                 className="text-emerald-600 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors"
-                                 title="Approve Request"
-                               >
-                                 <CheckCircle className="w-4 h-4" />
-                               </button>
-                               <button
-                                 onClick={() => handleStatusChange(request.id, 'rejected')}
-                                 className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                                 title="Reject Request"
-                               >
-                                 <XCircle className="w-4 h-4" />
-                               </button>
-                             </>
-                           )}
-                           
-                           {request.status?.toLowerCase() === 'approved' && (
-                             <button
-                               onClick={() => handleStatusChange(request.id, 'in_progress')}
-                               className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-                               title="Start Work"
-                             >
-                               <Play className="w-4 h-4" />
-                             </button>
-                           )}
+                          <button
+                            onClick={() => handleEditRequest(request)}
+                            className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            title="Edit Request"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+
+                          {request.status?.toLowerCase() === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => handleStatusChange(request.id, 'approved')}
+                                className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                title="Approve Request"
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleStatusChange(request.id, 'rejected')}
+                                className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                title="Reject Request"
+                              >
+                                <XCircle className="h-4 w-4" />
+                              </button>
+                            </>
+                          )}
                           
-                          <button className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300 transition-colors">
-                            <Edit className="w-4 h-4" />
+                          {request.status?.toLowerCase() === 'approved' && (
+                            <button
+                              onClick={() => handleStatusChange(request.id, 'in_progress')}
+                              className="text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                              title="Start Work"
+                            >
+                              <Play className="h-4 w-4" />
+                            </button>
+                          )}
+
+                          {request.status?.toLowerCase() === 'in_progress' && (
+                            <button
+                              onClick={() => handleStatusChange(request.id, 'completed')}
+                              className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                              title="Mark Complete"
+                            >
+                              <CheckSquare className="h-4 w-4" />
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => handleDeleteRequest(request)}
+                            className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            title="Delete Request"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
@@ -647,6 +725,233 @@ export function ServiceRequestsPage() {
           </div>
         </div>
       </div>
+
+      {/* View Request Modal */}
+      {showViewModal && viewingRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mr-3">
+                  <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Service Request Details</h2>
+              </div>
+              <button
+                onClick={() => {
+                  setShowViewModal(false);
+                  setViewingRequest(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Service Type
+                  </label>
+                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                    <p className="text-gray-900 dark:text-white font-medium">{viewingRequest.service_type || 'Not specified'}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Status
+                  </label>
+                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(viewingRequest.status)}`}>
+                      {getStatusIcon(viewingRequest.status)}
+                      <span className="ml-1 capitalize">
+                        {viewingRequest.status}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Priority
+                  </label>
+                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getPriorityColor(viewingRequest.priority)}`}>
+                      {getPriorityIcon(viewingRequest.priority)}
+                      <span className="ml-1 capitalize">
+                        {viewingRequest.priority || 'Not specified'}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Estimated Cost
+                  </label>
+                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                    <p className="text-gray-900 dark:text-white font-semibold">
+                      {viewingRequest.estimated_cost ? `$${parseFloat(viewingRequest.estimated_cost).toFixed(2)}` : 'Not specified'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                  Description
+                </label>
+                <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                  <p className="text-gray-900 dark:text-white">{viewingRequest.description || 'No description provided'}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Client Information
+                  </label>
+                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg space-y-2">
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4 text-blue-500" />
+                      <span className="text-gray-900 dark:text-white font-medium">{viewingRequest.client_name || 'Unknown Client'}</span>
+                    </div>
+                    {viewingRequest.contact_email && (
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-blue-500" />
+                        <span className="text-gray-900 dark:text-white">{viewingRequest.contact_email}</span>
+                      </div>
+                    )}
+                    {viewingRequest.contact_phone && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-blue-500" />
+                        <span className="text-gray-900 dark:text-white">{viewingRequest.contact_phone}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Timeline
+                  </label>
+                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg space-y-2">
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="h-4 w-4 text-blue-500" />
+                      <span className="text-gray-900 dark:text-white">
+                        Deadline: {viewingRequest.deadline ? new Date(viewingRequest.deadline).toLocaleDateString() : 'No deadline set'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-blue-500" />
+                      <span className="text-gray-900 dark:text-white">
+                        Created: {viewingRequest.created_at ? new Date(viewingRequest.created_at).toLocaleDateString() : 'Unknown'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  onClick={() => {
+                    setShowViewModal(false);
+                    setViewingRequest(null);
+                  }}
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => {
+                    setShowViewModal(false);
+                    setViewingRequest(null);
+                    handleEditRequest(viewingRequest);
+                  }}
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center"
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Request
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && deletingRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center mr-3">
+                  <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Delete Request</h2>
+              </div>
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeletingRequest(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="mb-4">
+                <p className="text-gray-600 dark:text-slate-400 mb-2">
+                  Are you sure you want to delete this service request?
+                </p>
+                <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                  <p className="font-medium text-gray-900 dark:text-white">{deletingRequest.service_type || 'Service Request'}</p>
+                  <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">
+                    Client: {deletingRequest.client_name || 'Unknown Client'}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-6">
+                <div className="flex items-start">
+                  <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 mr-2 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                      This action cannot be undone
+                    </p>
+                    <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                      The service request will be permanently removed from the system.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeletingRequest(null);
+                  }}
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteRequest}
+                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center justify-center"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Request
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
