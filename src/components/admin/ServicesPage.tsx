@@ -8,10 +8,10 @@ import {
 
 interface Service {
   id: string;
-  name: string;
+  name?: string;
   description?: string;
-  price: string;
-  status: string;
+  price?: string;
+  status?: string;
   category?: string;
   created_at?: string;
   updated_at?: string;
@@ -69,20 +69,20 @@ export function ServicesPage() {
     // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(service => 
-        service.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.category?.toLowerCase().includes(searchTerm.toLowerCase())
+        (service.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (service.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (service.category || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Apply status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(service => service.status.toLowerCase() === statusFilter.toLowerCase());
+      filtered = filtered.filter(service => (service.status || '').toLowerCase() === statusFilter.toLowerCase());
     }
 
     // Apply category filter
     if (categoryFilter !== 'all') {
-      filtered = filtered.filter(service => service.category?.toLowerCase() === categoryFilter.toLowerCase());
+      filtered = filtered.filter(service => (service.category || '').toLowerCase() === categoryFilter.toLowerCase());
     }
 
     // Apply sorting
@@ -99,16 +99,16 @@ export function ServicesPage() {
           bValue = new Date(b.created_at || b.updated_at || '');
           break;
         case 'status':
-          aValue = a.status.toLowerCase();
-          bValue = b.status.toLowerCase();
+          aValue = (a.status || '').toLowerCase();
+          bValue = (b.status || '').toLowerCase();
           break;
         case 'category':
           aValue = a.category || '';
           bValue = b.category || '';
           break;
         default:
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
+          aValue = (a.name || '').toLowerCase();
+          bValue = (b.name || '').toLowerCase();
       }
 
       if (sortOrder === 'asc') {
@@ -135,7 +135,7 @@ export function ServicesPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'active':
       case 'published':
@@ -153,7 +153,7 @@ export function ServicesPage() {
     }
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'active':
       case 'published':
@@ -171,7 +171,7 @@ export function ServicesPage() {
     }
   };
 
-  const getCategoryIcon = (category: string) => {
+  const getCategoryIcon = (category?: string) => {
     switch (category?.toLowerCase()) {
       case 'consulting':
         return <User className="h-4 w-4" />;
@@ -188,9 +188,9 @@ export function ServicesPage() {
 
   const calculateStats = () => {
     const total = services.length;
-    const active = services.filter(s => s.status.toLowerCase() === 'active' || s.status.toLowerCase() === 'published').length;
-    const inactive = services.filter(s => s.status.toLowerCase() === 'inactive' || s.status.toLowerCase() === 'draft').length;
-    const archived = services.filter(s => s.status.toLowerCase() === 'archived' || s.status.toLowerCase() === 'deleted').length;
+    const active = services.filter(s => (s.status || '').toLowerCase() === 'active' || (s.status || '').toLowerCase() === 'published').length;
+    const inactive = services.filter(s => (s.status || '').toLowerCase() === 'inactive' || (s.status || '').toLowerCase() === 'draft').length;
+    const archived = services.filter(s => (s.status || '').toLowerCase() === 'archived' || (s.status || '').toLowerCase() === 'deleted').length;
     const totalValue = services.reduce((sum, s) => sum + parseFloat(s.price || '0'), 0);
     const avgPrice = total > 0 ? totalValue / total : 0;
 
@@ -512,7 +512,7 @@ export function ServicesPage() {
 
                 {/* Service Actions */}
                 <div className="flex gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
-                  {service.status.toLowerCase() === 'inactive' && (
+                  {(service.status || '').toLowerCase() === 'inactive' && (
                     <button
                       onClick={() => handleStatusChange(service.id, 'active')}
                       className="flex-1 inline-flex items-center justify-center px-3 py-2 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 font-medium rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors text-sm"
@@ -522,7 +522,7 @@ export function ServicesPage() {
                     </button>
                   )}
                   
-                  {service.status.toLowerCase() === 'active' && (
+                  {(service.status || '').toLowerCase() === 'active' && (
                     <button
                       onClick={() => handleStatusChange(service.id, 'inactive')}
                       className="flex-1 inline-flex items-center justify-center px-3 py-2 bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 font-medium rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors text-sm"
