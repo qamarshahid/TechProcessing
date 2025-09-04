@@ -89,12 +89,13 @@ export function AdminDashboard() {
 
       // Calculate stats safely
       const totalUsers = users.length;
-      const totalClients = users.filter(u => u.role === 'CLIENT').length;
+      const totalAgents = agents.filter((a: any) => a.isActive || a.is_active).length;
+      const totalClients = users.filter((u: any) => u.role === 'CLIENT').length;
       const totalInvoices = invoices.length;
-      const completedPayments = payments.filter(p => p.status === 'COMPLETED' || p.status === 'completed');
-      const totalRevenue = completedPayments.reduce((sum, p) => sum + parseFloat(p.amount || '0'), 0);
-      const pendingPayments = payments.filter(p => p.status === 'PENDING' || p.status === 'pending').length;
-      const activeAgents = agents.filter(a => a.isActive || a.is_active).length;
+      const completedPayments = payments.filter((p: any) => p.status === 'COMPLETED' || p.status === 'completed');
+      const totalRevenue = completedPayments.reduce((sum: number, p: any) => sum + parseFloat(p.amount || '0'), 0);
+      const pendingPayments = payments.filter((p: any) => p.status === 'PENDING' || p.status === 'pending').length;
+      const activeAgents = agents.filter((a: any) => a.isActive || a.is_active).length;
 
       setDashboardData({
         users,
@@ -103,6 +104,7 @@ export function AdminDashboard() {
         agents,
         stats: {
           totalUsers,
+          totalAgents,
           totalClients,
           totalInvoices,
           totalRevenue,
