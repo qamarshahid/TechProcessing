@@ -214,18 +214,19 @@ export function SystemSettingsPage() {
       // The API returns the data directly - use the full response object
       const status = response;
       console.log('System Status Data:', status); // Debug log
+      console.log('Active Users Data:', status.activeUsers); // Debug log
       setSystemStatus({
         uptime: status.uptime || '0 days, 0 hours',
         memoryUsage: status.memory?.usage || '0%',
         cpuUsage: status.cpu?.usage || '0%',
         diskUsage: status.disk?.usage || '0%',
-                  activeUsers: status.activeUsers?.total || 0,
-          activeUsersByRole: status.activeUsers || {
-            total: 0,
-            byRole: { ADMIN: 0, AGENT: 0, CLIENT: 0 },
-            details: { admins: [], agents: [], clients: [] }
-          },
-          databaseConnections: status.databaseConnections || 0,
+        activeUsers: status.activeUsers?.total || 0,
+        activeUsersByRole: status.activeUsers || {
+          total: 0,
+          byRole: { ADMIN: 0, AGENT: 0, CLIENT: 0 },
+          details: { admins: [], agents: [], clients: [] }
+        },
+        databaseConnections: status.databaseConnections || 0,
         // Enhanced system data
         memory: {
           usage: status.memory?.usage || '0%',
@@ -466,15 +467,15 @@ export function SystemSettingsPage() {
                 <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 space-y-1">
                   <div className="flex items-center space-x-2">
                     <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                    <span>Admin: {systemStatus.activeUsersByRole.byRole.ADMIN}</span>
+                    <span>Admin: {systemStatus.activeUsersByRole?.byRole?.ADMIN || 0}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                    <span>Agent: {systemStatus.activeUsersByRole.byRole.AGENT}</span>
+                    <span>Agent: {systemStatus.activeUsersByRole?.byRole?.AGENT || 0}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    <span>Client: {systemStatus.activeUsersByRole.byRole.CLIENT}</span>
+                    <span>Client: {systemStatus.activeUsersByRole?.byRole?.CLIENT || 0}</span>
                   </div>
                 </div>
               </div>
