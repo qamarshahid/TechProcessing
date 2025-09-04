@@ -257,31 +257,40 @@ export class ServiceRequestsService {
 
   async remove(id: string): Promise<void> {
     try {
-      // Try to find the service request first
-      let serviceRequest: ServiceRequest;
+      console.log('Attempting to delete service request:', id);
       
+      // First, try to delete using the repository's delete method (simpler approach)
+      const deleteResult = await this.serviceRequestRepository.delete(id);
+      
+      if (deleteResult.affected === 0) {
+        throw new NotFoundException(`Service request with ID ${id} not found`);
+      }
+      
+      console.log('Service request deleted successfully:', id);
+    } catch (error) {
+      console.error('Error removing service request:', error);
+      
+      // If direct delete fails, try to find and remove with relations
       try {
-        serviceRequest = await this.findOne(id);
-      } catch (error) {
-        // If findOne fails (e.g., due to admin session issues), try direct query
-        console.log('findOne failed, trying direct query:', error.message);
-        const result = await this.serviceRequestRepository.query(
-          `SELECT * FROM service_requests WHERE id = $1`,
-          [id]
-        );
+        console.log('Direct delete failed, trying with relations...');
         
-        if (!result || result.length === 0) {
+        // Try to find the service request with relations
+        const serviceRequest = await this.serviceRequestRepository.findOne({
+          where: { id },
+          relations: ['priceAdjustments', 'attachments']
+        });
+        
+        if (!serviceRequest) {
           throw new NotFoundException(`Service request with ID ${id} not found`);
         }
         
-        serviceRequest = result[0];
+        // Remove the service request (cascade should handle related records)
+        await this.serviceRequestRepository.remove(serviceRequest);
+        console.log('Service request deleted with relations:', id);
+      } catch (fallbackError) {
+        console.error('Fallback delete also failed:', fallbackError);
+        throw fallbackError;
       }
-      
-      // Remove the service request
-      await this.serviceRequestRepository.remove(serviceRequest);
-    } catch (error) {
-      console.error('Error removing service request:', error);
-      throw error;
     }
   }
 
