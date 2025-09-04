@@ -206,9 +206,9 @@ export function SystemSettingsPage() {
     try {
       const response = await apiClient.getSystemStatus();
       console.log('System Status Response:', response); // Debug log
-      if (response?.status) {
-        const status = response.status;
-        console.log('System Status Data:', status); // Debug log
+      // The API returns the data directly, not wrapped in a 'status' object
+      const status = response?.status || response;
+      console.log('System Status Data:', status); // Debug log
         setSystemStatus({
           uptime: status.uptime || '0 days, 0 hours',
           memoryUsage: status.memory?.usage || '0%',
