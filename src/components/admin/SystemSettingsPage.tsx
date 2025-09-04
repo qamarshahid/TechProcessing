@@ -146,6 +146,37 @@ export function SystemSettingsPage() {
     diskUsage: '0%',
     activeUsers: 0,
     databaseConnections: 0,
+    // Enhanced system data
+    memory: {
+      usage: '0%',
+      total: 0,
+      used: 0,
+      free: 0,
+      processHeap: 0,
+      processRss: 0,
+    },
+    cpu: {
+      usage: '0%',
+      loadAverage: 0,
+      cores: 0,
+      model: 'Unknown',
+    },
+    disk: {
+      usage: '0%',
+      total: 0,
+      used: 0,
+      free: 0,
+    },
+    system: {
+      platform: 'Unknown',
+      arch: 'Unknown',
+      nodeVersion: 'Unknown',
+      pid: 0,
+    },
+    network: {
+      interfaces: 0,
+      hostname: 'Unknown',
+    },
   });
 
   useEffect(() => {
@@ -175,7 +206,46 @@ export function SystemSettingsPage() {
     try {
       const response = await apiClient.getSystemStatus();
       if (response?.status) {
-        setSystemStatus(response.status);
+        const status = response.status;
+        setSystemStatus({
+          uptime: status.uptime || '0 days, 0 hours',
+          memoryUsage: status.memory?.usage || '0%',
+          cpuUsage: status.cpu?.usage || '0%',
+          diskUsage: status.disk?.usage || '0%',
+          activeUsers: status.activeUsers || 0,
+          databaseConnections: status.databaseConnections || 0,
+          // Enhanced system data
+          memory: {
+            usage: status.memory?.usage || '0%',
+            total: status.memory?.total || 0,
+            used: status.memory?.used || 0,
+            free: status.memory?.free || 0,
+            processHeap: status.memory?.processHeap || 0,
+            processRss: status.memory?.processRss || 0,
+          },
+          cpu: {
+            usage: status.cpu?.usage || '0%',
+            loadAverage: status.cpu?.loadAverage || 0,
+            cores: status.cpu?.cores || 0,
+            model: status.cpu?.model || 'Unknown',
+          },
+          disk: {
+            usage: status.disk?.usage || '0%',
+            total: status.disk?.total || 0,
+            used: status.disk?.used || 0,
+            free: status.disk?.free || 0,
+          },
+          system: {
+            platform: status.system?.platform || 'Unknown',
+            arch: status.system?.arch || 'Unknown',
+            nodeVersion: status.system?.nodeVersion || 'Unknown',
+            pid: status.system?.pid || 0,
+          },
+          network: {
+            interfaces: status.network?.interfaces || 0,
+            hostname: status.network?.hostname || 'Unknown',
+          },
+        });
       }
     } catch (error) {
       logger.error('Error fetching system status:', error);
@@ -312,7 +382,7 @@ export function SystemSettingsPage() {
         </div>
 
         {/* System Status Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
@@ -334,14 +404,22 @@ export function SystemSettingsPage() {
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Memory Usage</p>
                 <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{systemStatus.memoryUsage}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  {systemStatus.memory.used}GB / {systemStatus.memory.total}GB
+                </p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
                 <HardDrive className="h-7 w-7 text-white" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <BarChart3 className="h-4 w-4 mr-1 text-amber-500" />
-              <span>RAM utilization</span>
+            <div className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex items-center">
+                <BarChart3 className="h-4 w-4 mr-1 text-amber-500" />
+                <span>RAM utilization</span>
+              </div>
+              <div className="text-xs">
+                Process: {systemStatus.memory.processRss}MB
+              </div>
             </div>
           </div>
 
@@ -350,14 +428,22 @@ export function SystemSettingsPage() {
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">CPU Usage</p>
                 <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{systemStatus.cpuUsage}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Load: {systemStatus.cpu.loadAverage.toFixed(2)} ({systemStatus.cpu.cores} cores)
+                </p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
                 <Zap className="h-7 w-7 text-white" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <TrendingUp className="h-4 w-4 mr-1 text-blue-500" />
-              <span>Processor load</span>
+            <div className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex items-center">
+                <TrendingUp className="h-4 w-4 mr-1 text-blue-500" />
+                <span>Processor load</span>
+              </div>
+              <div className="text-xs">
+                {systemStatus.cpu.model}
+              </div>
             </div>
           </div>
 
@@ -366,14 +452,46 @@ export function SystemSettingsPage() {
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Active Users</p>
                 <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{systemStatus.activeUsers}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  DB Connections: {systemStatus.databaseConnections}
+                </p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
                 <Users className="h-7 w-7 text-white" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <Activity className="h-4 w-4 mr-1 text-purple-500" />
-              <span>Current sessions</span>
+            <div className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex items-center">
+                <Activity className="h-4 w-4 mr-1 text-purple-500" />
+                <span>Current sessions</span>
+              </div>
+              <div className="text-xs">
+                Host: {systemStatus.network.hostname}
+              </div>
+            </div>
+          </div>
+
+          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Disk Usage</p>
+                <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{systemStatus.diskUsage}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  {systemStatus.disk.used}GB / {systemStatus.disk.total}GB
+                </p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Database className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex items-center">
+                <BarChart3 className="h-4 w-4 mr-1 text-indigo-500" />
+                <span>Storage utilization</span>
+              </div>
+              <div className="text-xs">
+                Free: {systemStatus.disk.free}GB
+              </div>
             </div>
           </div>
         </div>
