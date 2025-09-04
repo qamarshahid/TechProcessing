@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
 import { useNotifications } from '../common/NotificationSystem';
 import { logger } from '../../lib/logger';
+import { EditServiceModal } from './EditServiceModal';
 import {
   Package, DollarSign, Clock, CheckCircle, XCircle, RefreshCw, Search, Eye, Edit, Trash2, Filter, TrendingUp, BarChart3, Activity, Shield, AlertCircle, Info, Calendar, User, Building, ArrowUpDown, ChevronDown, ChevronUp, Settings, HelpCircle, Zap, Rocket, Plus, Star, Tag, Layers, Code, Palette
 } from 'lucide-react';
@@ -32,6 +33,8 @@ export function ServicesPage() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingService, setEditingService] = useState<Service | null>(null);
   const { showSuccess, showError } = useNotifications();
 
   useEffect(() => {
@@ -133,6 +136,31 @@ export function ServicesPage() {
       logger.error('Error updating service status:', error);
       showError('Update Failed', 'Failed to update service status. Please try again.');
     }
+  };
+
+  const handleEditService = (service: Service) => {
+    setEditingService(service);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteService = async (serviceId: string) => {
+    if (!window.confirm('Are you sure you want to delete this service? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await apiClient.deleteService(serviceId);
+      setServices(prev => prev.filter(s => s.id !== serviceId));
+      showSuccess('Service Deleted', 'Service has been deleted successfully.');
+    } catch (error) {
+      logger.error('Error deleting service:', error);
+      showError('Delete Failed', 'Failed to delete service. Please try again.');
+    }
+  };
+
+  const handleServiceUpdated = () => {
+    fetchServices(); // Refresh the services list
+    showSuccess('Service Updated', 'Service has been updated successfully.');
   };
 
   const getStatusColor = (status?: string) => {
@@ -463,10 +491,18 @@ export function ServicesPage() {
                     >
                       <Eye className="h-4 w-4" />
                     </button>
-                    <button className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <button 
+                      onClick={() => handleEditService(service)}
+                      className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      title="Edit Service"
+                    >
                       <Edit className="h-4 w-4" />
                     </button>
-                    <button className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <button 
+                      onClick={() => handleDeleteService(service.id)}
+                      className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      title="Delete Service"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
@@ -581,6 +617,19 @@ export function ServicesPage() {
           </div>
         </div>
       </div>
+
+      {/* Edit Service Modal */}
+      {showEditModal && editingService && (
+        <EditServiceModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingService(null);
+          }}
+          onServiceUpdated={handleServiceUpdated}
+          service={editingService}
+        />
+      )}
     </div>
   );
 }
