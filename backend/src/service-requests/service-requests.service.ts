@@ -294,6 +294,98 @@ export class ServiceRequestsService {
     }
   }
 
+  // Client workflow methods
+  async submitRequest(id: string, clientId: string): Promise<ServiceRequest> {
+    const serviceRequest = await this.findOne(id);
+    
+    // Verify ownership
+    if (serviceRequest.clientId !== clientId) {
+      throw new BadRequestException('You can only submit your own service requests');
+    }
+    
+    // Check if already submitted
+    if (serviceRequest.submitted) {
+      throw new BadRequestException('Service request is already submitted');
+    }
+    
+    // Submit the request
+    serviceRequest.submitted = true;
+    serviceRequest.status = ServiceRequestStatus.PENDING;
+    
+    return this.serviceRequestRepository.save(serviceRequest);
+  }
+
+  async cancelRequest(id: string, clientId: string): Promise<ServiceRequest> {
+    const serviceRequest = await this.findOne(id);
+    
+    // Verify ownership
+    if (serviceRequest.clientId !== clientId) {
+      throw new BadRequestException('You can only cancel your own service requests');
+    }
+    
+    // Check if already submitted - if so, client cannot cancel directly
+    if (serviceRequest.submitted) {
+      throw new BadRequestException('Cannot cancel submitted request. Please request cancellation from admin.');
+    }
+    
+    // Cancel the request (delete it since it's not submitted)
+    await this.serviceRequestRepository.remove(serviceRequest);
+    return serviceRequest;
+  }
+
+  async requestCancellation(id: string, clientId: string): Promise<ServiceRequest> {
+    const serviceRequest = await this.findOne(id);
+    
+    // Verify ownership
+    if (serviceRequest.clientId !== clientId) {
+      throw new BadRequestException('You can only request cancellation for your own service requests');
+    }
+    
+    // Check if already submitted
+    if (!serviceRequest.submitted) {
+      throw new BadRequestException('Cannot request cancellation for unsubmitted request. You can cancel it directly.');
+    }
+    
+    // Check if already in cancellation requested status
+    if (serviceRequest.status === ServiceRequestStatus.CANCELLATION_REQUESTED) {
+      throw new BadRequestException('Cancellation already requested');
+    }
+    
+    // Request cancellation
+    serviceRequest.status = ServiceRequestStatus.CANCELLATION_REQUESTED;
+    
+    return this.serviceRequestRepository.save(serviceRequest);
+  }
+
+  // Admin workflow methods
+  async approveCancellation(id: string): Promise<ServiceRequest> {
+    const serviceRequest = await this.findOne(id);
+    
+    // Check if cancellation was requested
+    if (serviceRequest.status !== ServiceRequestStatus.CANCELLATION_REQUESTED) {
+      throw new BadRequestException('No cancellation request found for this service request');
+    }
+    
+    // Approve cancellation
+    serviceRequest.status = ServiceRequestStatus.CANCELLED;
+    
+    return this.serviceRequestRepository.save(serviceRequest);
+  }
+
+  async rejectCancellation(id: string): Promise<ServiceRequest> {
+    const serviceRequest = await this.findOne(id);
+    
+    // Check if cancellation was requested
+    if (serviceRequest.status !== ServiceRequestStatus.CANCELLATION_REQUESTED) {
+      throw new BadRequestException('No cancellation request found for this service request');
+    }
+    
+    // Reject cancellation - revert to previous status
+    serviceRequest.status = ServiceRequestStatus.PENDING;
+    
+    return this.serviceRequestRepository.save(serviceRequest);
+  }
+
   // Price Adjustment methods
   async createPriceAdjustment(
     requestId: string,

@@ -21,6 +21,8 @@ interface ServiceRequest {
   deadline?: string;
   contact_email?: string;
   contact_phone?: string;
+  submitted?: boolean;
+  client_id?: string;
 }
 
 export function ServiceRequestsPage() {
@@ -184,6 +186,32 @@ export function ServiceRequestsPage() {
     showSuccess('Request Updated', 'Service request has been updated successfully.');
   };
 
+  const handleApproveCancellation = async (requestId: string) => {
+    try {
+      await apiClient.approveCancellation(requestId);
+      setRequests(prev => prev.map(r => 
+        r.id === requestId ? { ...r, status: 'cancelled' } : r
+      ));
+      showSuccess('Cancellation Approved', 'Service request cancellation has been approved.');
+    } catch (error) {
+      logger.error('Error approving cancellation:', error);
+      showError('Approval Failed', 'Failed to approve cancellation. Please try again.');
+    }
+  };
+
+  const handleRejectCancellation = async (requestId: string) => {
+    try {
+      await apiClient.rejectCancellation(requestId);
+      setRequests(prev => prev.map(r => 
+        r.id === requestId ? { ...r, status: 'pending' } : r
+      ));
+      showSuccess('Cancellation Rejected', 'Service request cancellation has been rejected.');
+    } catch (error) {
+      logger.error('Error rejecting cancellation:', error);
+      showError('Rejection Failed', 'Failed to reject cancellation. Please try again.');
+    }
+  };
+
   const getStatusColor = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'approved':
@@ -193,8 +221,11 @@ export function ServiceRequestsPage() {
       case 'under_review':
         return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
       case 'rejected':
-      case 'cancelled':
         return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
+      case 'cancelled':
+        return 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-800';
+      case 'cancellation_requested':
+        return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800';
       case 'completed':
         return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
       default:
@@ -211,8 +242,11 @@ export function ServiceRequestsPage() {
       case 'under_review':
         return <Clock className="h-4 w-4" />;
       case 'rejected':
-      case 'cancelled':
         return <XCircle className="h-4 w-4" />;
+      case 'cancelled':
+        return <Ban className="h-4 w-4" />;
+      case 'cancellation_requested':
+        return <AlertTriangle className="h-4 w-4" />;
       case 'completed':
         return <CheckSquare className="h-4 w-4" />;
       default:
@@ -629,6 +663,7 @@ export function ServiceRequestsPage() {
                             <Edit className="h-4 w-4" />
                           </button>
 
+                          {/* Admin Actions */}
                           {request.status?.toLowerCase() === 'pending' && (
                             <>
                               <button
@@ -666,6 +701,26 @@ export function ServiceRequestsPage() {
                             >
                               <CheckSquare className="h-4 w-4" />
                             </button>
+                          )}
+
+                          {/* Cancellation Request Actions */}
+                          {request.status?.toLowerCase() === 'cancellation_requested' && (
+                            <>
+                              <button
+                                onClick={() => handleApproveCancellation(request.id)}
+                                className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                title="Approve Cancellation"
+                              >
+                                <CheckCircle className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleRejectCancellation(request.id)}
+                                className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                title="Reject Cancellation"
+                              >
+                                <XCircle className="h-4 w-4" />
+                              </button>
+                            </>
                           )}
 
                           <button

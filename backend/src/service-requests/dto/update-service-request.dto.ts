@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber, IsEnum, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsEnum, IsDateString, IsBoolean, IsUUID } from 'class-validator';
 import { ServiceRequestStatus } from '../entities/service-request.entity';
 
 export class UpdateServiceRequestDto {
@@ -57,4 +57,12 @@ export class UpdateServiceRequestDto {
   @IsOptional()
   @IsString()
   paymentTerms?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  submitted?: boolean;
+
+  @IsOptional()
+  @IsUUID()
+  assignedTo?: string;
 }

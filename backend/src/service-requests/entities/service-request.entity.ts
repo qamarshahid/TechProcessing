@@ -22,6 +22,8 @@ export enum ServiceRequestStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   REVIEW = 'REVIEW',
   COMPLETED = 'COMPLETED',
+  CANCELLATION_REQUESTED = 'CANCELLATION_REQUESTED',
+  CANCELLED = 'CANCELLED',
 }
 
 export enum RequestType {
@@ -91,6 +93,9 @@ export class ServiceRequest {
 
   @Column({ type: 'boolean', default: false, name: 'is_custom_quote' })
   isCustomQuote: boolean;
+
+  @Column({ type: 'boolean', default: false, name: 'submitted' })
+  submitted: boolean;
 
   @Column({
     type: 'varchar',

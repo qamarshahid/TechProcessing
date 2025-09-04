@@ -379,6 +379,38 @@ class ApiClient {
     });
   }
 
+  // Client workflow methods
+  async submitServiceRequest(requestId: string) {
+    return this.request(`/service-requests/${requestId}/submit`, {
+      method: 'PATCH',
+    });
+  }
+
+  async cancelServiceRequest(requestId: string) {
+    return this.request(`/service-requests/${requestId}/cancel`, {
+      method: 'DELETE',
+    });
+  }
+
+  async requestServiceRequestCancellation(requestId: string) {
+    return this.request(`/service-requests/${requestId}/request-cancellation`, {
+      method: 'PATCH',
+    });
+  }
+
+  // Admin workflow methods
+  async approveCancellation(requestId: string) {
+    return this.request(`/service-requests/${requestId}/approve-cancellation`, {
+      method: 'PATCH',
+    });
+  }
+
+  async rejectCancellation(requestId: string) {
+    return this.request(`/service-requests/${requestId}/reject-cancellation`, {
+      method: 'PATCH',
+    });
+  }
+
   async createPriceAdjustment(requestId: string, adjustmentData: any) {
     return this.request(`/service-requests/${requestId}/price-adjustments`, {
       method: 'POST',

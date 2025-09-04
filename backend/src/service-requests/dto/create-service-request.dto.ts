@@ -31,6 +31,10 @@ export class CreateServiceRequestDto {
   isCustomQuote?: boolean;
 
   @IsOptional()
+  @IsBoolean()
+  submitted?: boolean;
+
+  @IsOptional()
   @IsEnum(RequestType)
   requestType?: RequestType;
 }

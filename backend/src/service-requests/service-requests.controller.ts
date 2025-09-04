@@ -97,6 +97,38 @@ export class ServiceRequestsController {
     }
   }
 
+  // Client-specific endpoints
+  @Patch(':id/submit')
+  @Roles(UserRole.CLIENT)
+  async submitRequest(@Param('id') id: string, @Request() req) {
+    return this.serviceRequestsService.submitRequest(id, req.user.id);
+  }
+
+  @Delete(':id/cancel')
+  @Roles(UserRole.CLIENT)
+  async cancelRequest(@Param('id') id: string, @Request() req) {
+    return this.serviceRequestsService.cancelRequest(id, req.user.id);
+  }
+
+  @Patch(':id/request-cancellation')
+  @Roles(UserRole.CLIENT)
+  async requestCancellation(@Param('id') id: string, @Request() req) {
+    return this.serviceRequestsService.requestCancellation(id, req.user.id);
+  }
+
+  // Admin-specific endpoints
+  @Patch(':id/approve-cancellation')
+  @Roles(UserRole.ADMIN)
+  async approveCancellation(@Param('id') id: string) {
+    return this.serviceRequestsService.approveCancellation(id);
+  }
+
+  @Patch(':id/reject-cancellation')
+  @Roles(UserRole.ADMIN)
+  async rejectCancellation(@Param('id') id: string) {
+    return this.serviceRequestsService.rejectCancellation(id);
+  }
+
   // Price Adjustment endpoints
   @Post(':requestId/price-adjustments')
   @Roles(UserRole.ADMIN)
