@@ -99,6 +99,25 @@ export function ServiceRequestsPage() {
     }
   };
 
+  const handleClientChange = (clientId: string) => {
+    const selectedClient = clients.find(client => client.id === clientId);
+    if (selectedClient) {
+      setNewRequestForm(prev => ({
+        ...prev,
+        client_id: clientId,
+        contact_email: selectedClient.email || '',
+        contact_phone: selectedClient.phone || '',
+      }));
+    } else {
+      setNewRequestForm(prev => ({
+        ...prev,
+        client_id: clientId,
+        contact_email: '',
+        contact_phone: '',
+      }));
+    }
+  };
+
   const filterAndSortRequests = () => {
     let filtered = [...requests];
 
@@ -1103,6 +1122,20 @@ export function ServiceRequestsPage() {
                 </div>
               )}
 
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="flex items-start">
+                  <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-2 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                      Auto-Population Feature
+                    </p>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                      When you select a client, their contact information will be automatically filled in. You can still edit these fields if needed.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
@@ -1110,7 +1143,7 @@ export function ServiceRequestsPage() {
                   </label>
                   <select
                     value={newRequestForm.client_id}
-                    onChange={(e) => setNewRequestForm(prev => ({ ...prev, client_id: e.target.value }))}
+                    onChange={(e) => handleClientChange(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
                     required
                   >
@@ -1202,12 +1235,21 @@ export function ServiceRequestsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Contact Email
+                    {newRequestForm.client_id && (
+                      <span className="ml-2 text-xs text-emerald-600 dark:text-emerald-400">
+                        (Auto-filled from client)
+                      </span>
+                    )}
                   </label>
                   <input
                     type="email"
                     value={newRequestForm.contact_email}
                     onChange={(e) => setNewRequestForm(prev => ({ ...prev, contact_email: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white ${
+                      newRequestForm.client_id 
+                        ? 'border-emerald-300 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' 
+                        : 'border-gray-300 dark:border-slate-600'
+                    }`}
                     placeholder="client@example.com"
                   />
                 </div>
@@ -1215,12 +1257,21 @@ export function ServiceRequestsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Contact Phone
+                    {newRequestForm.client_id && (
+                      <span className="ml-2 text-xs text-emerald-600 dark:text-emerald-400">
+                        (Auto-filled from client)
+                      </span>
+                    )}
                   </label>
                   <input
                     type="tel"
                     value={newRequestForm.contact_phone}
                     onChange={(e) => setNewRequestForm(prev => ({ ...prev, contact_phone: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white ${
+                      newRequestForm.client_id 
+                        ? 'border-emerald-300 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' 
+                        : 'border-gray-300 dark:border-slate-600'
+                    }`}
                     placeholder="+1 (555) 123-4567"
                   />
                 </div>
