@@ -60,13 +60,6 @@ export class AgentController {
     return this.agentService.deleteAgent(id, body.hardDelete ?? false, currentUser);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get agent by ID' })
-  @ApiResponse({ status: 200, description: 'Agent retrieved successfully' })
-  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
-    return this.agentService.findOne(id, currentUser);
-  }
-
   @Get('monthly-stats')
   @Roles(UserRole.AGENT)
   @ApiOperation({ summary: 'Get agent monthly commission stats (Agent only)' })
@@ -74,6 +67,13 @@ export class AgentController {
   async getMonthlyStats(@CurrentUser() currentUser: User) {
     const agent = await this.agentService.findByUserId(currentUser.id, currentUser);
     return this.agentService.getAgentMonthlyStats(agent.id);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get agent by ID' })
+  @ApiResponse({ status: 200, description: 'Agent retrieved successfully' })
+  findOne(@Param('id') id: string, @CurrentUser() currentUser: User) {
+    return this.agentService.findOne(id, currentUser);
   }
 
 
