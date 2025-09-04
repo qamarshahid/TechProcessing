@@ -37,12 +37,15 @@ interface Agent {
 
 interface AgentSale {
   id: string;
-  amount: number;
-  commission: number;
+  saleAmount: number;
+  agentCommission: number;
   clientName: string;
-  agentName: string;
+  agent: {
+    salesPersonName: string;
+  };
   createdAt: string;
-  status: string;
+  saleDate?: string;
+  saleStatus: string;
 }
 
 export default function AgentSalesPage() {
@@ -293,30 +296,30 @@ export default function AgentSalesPage() {
                     agentSales.map((sale) => (
                       <tr key={sale.id}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                          {sale.agentName}
+                          {sale.agent?.salesPersonName || 'Unknown Agent'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {sale.clientName}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                          ${(sale.amount || 0).toLocaleString()}
+                          ${(sale.saleAmount || 0).toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                          ${(sale.commission || 0).toLocaleString()}
+                          ${(sale.agentCommission || 0).toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            sale.status === 'completed'
+                            sale.saleStatus === 'COMPLETED'
                               ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                              : sale.status === 'pending'
+                              : sale.saleStatus === 'PENDING'
                               ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
                               : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                           }`}>
-                            {sale.status}
+                            {sale.saleStatus}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                          {new Date(sale.createdAt).toLocaleDateString()}
+                          {new Date(sale.saleDate || sale.createdAt).toLocaleDateString()}
                         </td>
                       </tr>
                     ))
