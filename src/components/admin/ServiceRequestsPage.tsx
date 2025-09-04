@@ -118,6 +118,20 @@ export function ServiceRequestsPage() {
     }
   };
 
+  const resetNewRequestForm = () => {
+    setNewRequestForm({
+      service_type: '',
+      description: '',
+      status: 'PENDING',
+      priority: '',
+      estimated_cost: '',
+      deadline: '',
+      contact_email: '',
+      contact_phone: '',
+      client_id: '',
+    });
+  };
+
   const filterAndSortRequests = () => {
     let filtered = [...requests];
 
@@ -249,19 +263,8 @@ export function ServiceRequestsPage() {
       
       showSuccess('Service Request Created', 'The service request has been created successfully.');
       
-      // Reset form
-      setNewRequestForm({
-        service_type: '',
-        description: '',
-        status: 'PENDING',
-        priority: '',
-        estimated_cost: '',
-        deadline: '',
-        contact_email: '',
-        contact_phone: '',
-        client_id: '',
-      });
-      
+      // Reset form and close modal
+      resetNewRequestForm();
       setShowAddModal(false);
       fetchRequests();
     } catch (error) {
@@ -1108,7 +1111,10 @@ export function ServiceRequestsPage() {
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Create New Service Request</h2>
               </div>
               <button
-                onClick={() => setShowAddModal(false)}
+                onClick={() => {
+                  setShowAddModal(false);
+                  resetNewRequestForm();
+                }}
                 className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
               >
                 <X className="h-6 w-6" />
@@ -1294,7 +1300,10 @@ export function ServiceRequestsPage() {
               <div className="flex space-x-3 pt-4">
                 <button
                   type="button"
-                  onClick={() => setShowAddModal(false)}
+                  onClick={() => {
+                    setShowAddModal(false);
+                    resetNewRequestForm();
+                  }}
                   className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium"
                 >
                   Cancel
