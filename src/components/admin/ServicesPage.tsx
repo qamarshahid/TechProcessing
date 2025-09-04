@@ -4,7 +4,7 @@ import { useNotifications } from '../common/NotificationSystem';
 import { logger } from '../../lib/logger';
 import { EditServiceModal } from './EditServiceModal';
 import {
-  Package, DollarSign, Clock, CheckCircle, XCircle, RefreshCw, Search, Eye, Edit, Trash2, Filter, TrendingUp, BarChart3, Activity, Shield, AlertCircle, Info, Calendar, User, Building, ArrowUpDown, ChevronDown, ChevronUp, Settings, HelpCircle, Zap, Rocket, Plus, Star, Tag, Layers, Code, Palette
+  Package, DollarSign, Clock, CheckCircle, XCircle, RefreshCw, Search, Eye, Edit, Trash2, Filter, TrendingUp, BarChart3, Activity, Shield, AlertCircle, Info, Calendar, User, Building, ArrowUpDown, ChevronDown, ChevronUp, Settings, HelpCircle, Zap, Rocket, Plus, Star, Tag, Layers, Code, Palette, X
 } from 'lucide-react';
 
 interface Service {
@@ -35,6 +35,8 @@ export function ServicesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewingService, setViewingService] = useState<Service | null>(null);
   const { showSuccess, showError } = useNotifications();
 
   useEffect(() => {
@@ -136,6 +138,11 @@ export function ServicesPage() {
       logger.error('Error updating service status:', error);
       showError('Update Failed', 'Failed to update service status. Please try again.');
     }
+  };
+
+  const handleViewService = (service: Service) => {
+    setViewingService(service);
+    setShowViewModal(true);
   };
 
   const handleEditService = (service: Service) => {
@@ -485,7 +492,7 @@ export function ServicesPage() {
                   
                   <div className="flex items-center gap-1">
                     <button
-                      onClick={() => setSelectedService(service)}
+                      onClick={() => handleViewService(service)}
                       className="text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                       title="View Details"
                     >
@@ -629,6 +636,135 @@ export function ServicesPage() {
           onServiceUpdated={handleServiceUpdated}
           service={editingService}
         />
+      )}
+
+      {/* View Service Modal */}
+      {showViewModal && viewingService && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mr-3">
+                  <Package className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Service Details</h2>
+              </div>
+              <button
+                onClick={() => {
+                  setShowViewModal(false);
+                  setViewingService(null);
+                }}
+                className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                  Service Name
+                </label>
+                <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                  <p className="text-gray-900 dark:text-white font-medium">{viewingService.name}</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                  Description
+                </label>
+                <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                  <p className="text-gray-900 dark:text-white">{viewingService.description}</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                  Price
+                </label>
+                <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                  <p className="text-gray-900 dark:text-white font-semibold text-lg">
+                    ${parseFloat(viewingService.price || '0').toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              {viewingService.category && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Category
+                  </label>
+                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      {getCategoryIcon(viewingService.category)}
+                      <span className="text-gray-900 dark:text-white capitalize">
+                        {viewingService.category}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {viewingService.status && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Status
+                  </label>
+                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(viewingService.status)}`}>
+                      {getStatusIcon(viewingService.status)}
+                      <span className="ml-1 capitalize">
+                        {viewingService.status}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {viewingService.features && viewingService.features.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Features
+                  </label>
+                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                    <ul className="space-y-2">
+                      {viewingService.features.map((feature, index) => (
+                        <li key={index} className="flex items-center gap-2 text-gray-900 dark:text-white">
+                          <CheckCircle className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  onClick={() => {
+                    setShowViewModal(false);
+                    setViewingService(null);
+                  }}
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => {
+                    setShowViewModal(false);
+                    setViewingService(null);
+                    handleEditService(viewingService);
+                  }}
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center"
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Service
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
