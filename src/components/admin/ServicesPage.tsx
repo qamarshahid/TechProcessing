@@ -39,6 +39,15 @@ export function ServicesPage() {
   const [viewingService, setViewingService] = useState<Service | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingService, setDeletingService] = useState<Service | null>(null);
+  const [newServiceForm, setNewServiceForm] = useState({
+    name: '',
+    description: '',
+    price: '',
+    category: '',
+    status: 'active',
+    duration: '',
+    features: [''],
+  });
   const { showSuccess, showError } = useNotifications();
 
   useEffect(() => {
@@ -175,6 +184,48 @@ export function ServicesPage() {
   const handleServiceUpdated = () => {
     fetchServices(); // Refresh the services list
     showSuccess('Service Updated', 'Service has been updated successfully.');
+  };
+
+  const handleCreateService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const serviceData = {
+        name: newServiceForm.name,
+        description: newServiceForm.description,
+        price: parseFloat(newServiceForm.price),
+        category: newServiceForm.category,
+        status: newServiceForm.status,
+        duration: newServiceForm.duration,
+        features: newServiceForm.features.filter(feature => feature.trim() !== ''),
+      };
+
+      await apiClient.createService(serviceData);
+      
+      showSuccess('Service Created', 'The service has been created successfully.');
+      
+      // Reset form
+      setNewServiceForm({
+        name: '',
+        description: '',
+        price: '',
+        category: '',
+        status: 'active',
+        duration: '',
+        features: [''],
+      });
+      
+      setShowAddModal(false);
+      fetchServices();
+    } catch (error) {
+      logger.error('Error creating service:', error);
+      setError('Failed to create service. Please try again.');
+      showError('Creation Error', 'Failed to create service. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getStatusColor = (status?: string) => {
@@ -631,6 +682,198 @@ export function ServicesPage() {
           </div>
         </div>
       </div>
+
+      {/* Add Service Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center mr-3">
+                  <Plus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Create New Service</h2>
+              </div>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateService} className="p-6 space-y-6">
+              {error && (
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Service Name
+                  </label>
+                  <input
+                    type="text"
+                    value={newServiceForm.name}
+                    onChange={(e) => setNewServiceForm(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    placeholder="e.g., Web Development"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Price
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={newServiceForm.price}
+                    onChange={(e) => setNewServiceForm(prev => ({ ...prev, price: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    placeholder="0.00"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Category
+                  </label>
+                  <select
+                    value={newServiceForm.category}
+                    onChange={(e) => setNewServiceForm(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    <option value="consulting">Consulting</option>
+                    <option value="development">Development</option>
+                    <option value="design">Design</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="support">Support</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Status
+                  </label>
+                  <select
+                    value={newServiceForm.status}
+                    onChange={(e) => setNewServiceForm(prev => ({ ...prev, status: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="draft">Draft</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Duration
+                  </label>
+                  <input
+                    type="text"
+                    value={newServiceForm.duration}
+                    onChange={(e) => setNewServiceForm(prev => ({ ...prev, duration: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    placeholder="e.g., 2-4 weeks"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={newServiceForm.description}
+                  onChange={(e) => setNewServiceForm(prev => ({ ...prev, description: e.target.value }))}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                  placeholder="Describe the service in detail..."
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                  Features
+                </label>
+                <div className="space-y-2">
+                  {newServiceForm.features.map((feature, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={feature}
+                        onChange={(e) => {
+                          const newFeatures = [...newServiceForm.features];
+                          newFeatures[index] = e.target.value;
+                          setNewServiceForm(prev => ({ ...prev, features: newFeatures }));
+                        }}
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                        placeholder={`Feature ${index + 1}`}
+                      />
+                      {newServiceForm.features.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newFeatures = newServiceForm.features.filter((_, i) => i !== index);
+                            setNewServiceForm(prev => ({ ...prev, features: newFeatures }));
+                          }}
+                          className="px-3 py-2 text-red-600 hover:text-red-700 transition-colors"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setNewServiceForm(prev => ({ ...prev, features: [...prev.features, ''] }))}
+                    className="inline-flex items-center px-3 py-2 text-emerald-600 hover:text-emerald-700 transition-colors"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Feature
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Service
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Edit Service Modal */}
       {showEditModal && editingService && (

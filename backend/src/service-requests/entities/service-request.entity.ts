@@ -9,7 +9,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { ServicePackage } from '../../service-packages/entities/service-package.entity';
+import { ServicePackage } from '../../invoices/entities/service-package.entity';
 import { PriceAdjustment } from './price-adjustment.entity';
 import { FileAttachment } from './file-attachment.entity';
 
@@ -97,6 +97,9 @@ export class ServiceRequest {
   @Column({ type: 'boolean', default: false, name: 'submitted' })
   submitted: boolean;
 
+  @Column({ type: 'uuid', nullable: true, name: 'assigned_to_id' })
+  assignedToId: string;
+
   @Column({
     type: 'varchar',
     enum: RequestType,
@@ -129,4 +132,8 @@ export class ServiceRequest {
     cascade: true,
   })
   attachments: FileAttachment[];
+
+  @ManyToOne(() => User, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'assigned_to_id' })
+  assignedTo: User;
 }

@@ -44,6 +44,16 @@ export function ServiceRequestsPage() {
   const [editingRequest, setEditingRequest] = useState<ServiceRequest | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingRequest, setDeletingRequest] = useState<ServiceRequest | null>(null);
+  const [newRequestForm, setNewRequestForm] = useState({
+    service_type: '',
+    description: '',
+    status: 'PENDING',
+    priority: '',
+    estimated_cost: '',
+    deadline: '',
+    contact_email: '',
+    contact_phone: '',
+  });
   const { showSuccess, showError } = useNotifications();
 
   useEffect(() => {
@@ -184,6 +194,50 @@ export function ServiceRequestsPage() {
   const handleRequestUpdated = () => {
     fetchRequests(); // Refresh the requests list
     showSuccess('Request Updated', 'Service request has been updated successfully.');
+  };
+
+  const handleCreateRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const requestData = {
+        service_type: newRequestForm.service_type,
+        description: newRequestForm.description,
+        status: newRequestForm.status,
+        priority: newRequestForm.priority || undefined,
+        estimated_cost: newRequestForm.estimated_cost ? parseFloat(newRequestForm.estimated_cost) : undefined,
+        deadline: newRequestForm.deadline || undefined,
+        contact_email: newRequestForm.contact_email || undefined,
+        contact_phone: newRequestForm.contact_phone || undefined,
+      };
+
+      await apiClient.createServiceRequest(requestData);
+      
+      showSuccess('Service Request Created', 'The service request has been created successfully.');
+      
+      // Reset form
+      setNewRequestForm({
+        service_type: '',
+        description: '',
+        status: 'PENDING',
+        priority: '',
+        estimated_cost: '',
+        deadline: '',
+        contact_email: '',
+        contact_phone: '',
+      });
+      
+      setShowAddModal(false);
+      fetchRequests();
+    } catch (error) {
+      logger.error('Error creating service request:', error);
+      setError('Failed to create service request. Please try again.');
+      showError('Creation Error', 'Failed to create service request. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleApproveCancellation = async (requestId: string) => {
@@ -624,8 +678,8 @@ export function ServiceRequestsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(request.priority)}`}>
-                          {getPriorityIcon(request.priority)}
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(request.priority || '')}`}>
+                          {getPriorityIcon(request.priority || '')}
                           <span className="ml-1 capitalize">
                             {request.priority || 'Unknown'}
                           </span>
@@ -834,8 +888,8 @@ export function ServiceRequestsPage() {
                     Priority
                   </label>
                   <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getPriorityColor(viewingRequest.priority)}`}>
-                      {getPriorityIcon(viewingRequest.priority)}
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getPriorityColor(viewingRequest.priority || '')}`}>
+                      {getPriorityIcon(viewingRequest.priority || '')}
                       <span className="ml-1 capitalize">
                         {viewingRequest.priority || 'Not specified'}
                       </span>
@@ -1005,6 +1059,181 @@ export function ServiceRequestsPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Service Request Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center mr-3">
+                  <Plus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Create New Service Request</h2>
+              </div>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateRequest} className="p-6 space-y-6">
+              {error && (
+                <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Service Type
+                  </label>
+                  <input
+                    type="text"
+                    value={newRequestForm.service_type}
+                    onChange={(e) => setNewRequestForm(prev => ({ ...prev, service_type: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    placeholder="e.g., Web Development, Consulting"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Status
+                  </label>
+                  <select
+                    value={newRequestForm.status}
+                    onChange={(e) => setNewRequestForm(prev => ({ ...prev, status: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    required
+                  >
+                    <option value="">Select Status</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="APPROVED">Approved</option>
+                    <option value="REJECTED">Rejected</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Priority
+                  </label>
+                  <select
+                    value={newRequestForm.priority}
+                    onChange={(e) => setNewRequestForm(prev => ({ ...prev, priority: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                  >
+                    <option value="">Select Priority</option>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                    <option value="URGENT">Urgent</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Estimated Cost
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={newRequestForm.estimated_cost}
+                    onChange={(e) => setNewRequestForm(prev => ({ ...prev, estimated_cost: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    placeholder="0.00"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Deadline
+                  </label>
+                  <input
+                    type="date"
+                    value={newRequestForm.deadline}
+                    onChange={(e) => setNewRequestForm(prev => ({ ...prev, deadline: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Contact Email
+                  </label>
+                  <input
+                    type="email"
+                    value={newRequestForm.contact_email}
+                    onChange={(e) => setNewRequestForm(prev => ({ ...prev, contact_email: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    placeholder="client@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Contact Phone
+                  </label>
+                  <input
+                    type="tel"
+                    value={newRequestForm.contact_phone}
+                    onChange={(e) => setNewRequestForm(prev => ({ ...prev, contact_phone: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={newRequestForm.description}
+                  onChange={(e) => setNewRequestForm(prev => ({ ...prev, description: e.target.value }))}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                  placeholder="Describe the service request in detail..."
+                  required
+                />
+              </div>
+
+              <div className="flex space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Request
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

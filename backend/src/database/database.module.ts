@@ -11,6 +11,9 @@ import { AuditLog } from '../audit/entities/audit-log.entity';
 import { ServicePackage } from '../invoices/entities/service-package.entity';
 import { Subscription } from '../subscriptions/entities/subscription.entity';
 import { PaymentLink } from '../payment-links/entities/payment-link.entity';
+import { ServiceRequest } from '../service-requests/entities/service-request.entity';
+import { PriceAdjustment } from '../service-requests/entities/price-adjustment.entity';
+import { FileAttachment } from '../service-requests/entities/file-attachment.entity';
 
 
 @Module({
@@ -29,7 +32,7 @@ import { PaymentLink } from '../payment-links/entities/payment-link.entity';
           username: config.get('DATABASE_USERNAME'),
           password: config.get('DATABASE_PASSWORD'),
           database: config.get('DATABASE_NAME'),
-          entities: [User, Agent, AgentSale, Closer, Invoice, Payment, AuditLog, ServicePackage, Subscription, PaymentLink],
+          entities: [User, Agent, AgentSale, Closer, Invoice, Payment, AuditLog, ServicePackage, Subscription, PaymentLink, ServiceRequest, PriceAdjustment, FileAttachment],
           synchronize: false,
           logging: ['error'],
           ssl,
