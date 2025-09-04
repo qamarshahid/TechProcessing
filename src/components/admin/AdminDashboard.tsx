@@ -7,7 +7,7 @@ import { logger } from '../../lib/logger';
 import { AddClientModal } from './AddClientModal';
 import { AddInvoiceModal } from './AddInvoiceModal';
 import {
-  Users, FileText, DollarSign, TrendingUp, Calendar, CheckCircle, Clock, AlertCircle, CreditCard, Package, UserPlus, Plus, Eye, RefreshCw, ArrowRight, BarChart3, Activity, Shield, Target, Zap, Rocket, Star, Award, Briefcase, Globe, Layers, Cpu, Database, Server, Code, Palette, Settings
+  Users, FileText, DollarSign, TrendingUp, Calendar, CheckCircle, Clock, AlertCircle, CreditCard, Package, UserPlus, Plus, Eye, RefreshCw, ArrowRight, BarChart3, Activity, Shield, Target, Zap, Star, Award, Briefcase, Globe, Layers, Cpu, Database, Server, Code, Palette, Settings
 } from 'lucide-react';
 
 export function AdminDashboard() {
@@ -184,120 +184,125 @@ export function AdminDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-6 shadow-xl">
-            <Rocket className="h-10 w-10 text-white" />
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-slate-900 dark:text-white mb-1">
+                Welcome back, {user?.fullName || user?.full_name || 'Admin'}
+              </h1>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Platform overview and management dashboard
+              </p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span className="text-xs text-slate-500 dark:text-slate-400">System Online</span>
+            </div>
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-            Welcome back, {user?.fullName || user?.full_name || 'Admin'}! 🚀
-          </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Here's what's happening with your platform today. Monitor performance, manage users, and track revenue in real-time.
-          </p>
         </div>
 
         {/* Quick Actions */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
+        <div className="flex flex-wrap gap-3 mb-8">
           <button
             onClick={() => setShowAddClientModal(true)}
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
           >
-            <UserPlus className="h-5 w-5 mr-2" />
+            <UserPlus className="h-4 w-4 mr-2" />
             Add Client
           </button>
           <button
             onClick={() => setShowAddInvoiceModal(true)}
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+            className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
           >
-            <FileText className="h-5 w-5 mr-2" />
+            <FileText className="h-4 w-4 mr-2" />
             Create Invoice
           </button>
           <button
             onClick={fetchDashboardData}
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+            className="inline-flex items-center px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
           >
-            <RefreshCw className="h-5 w-5 mr-2" />
-            Refresh Data
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
           </button>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {/* Total Users */}
-          <div className="group relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Users</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.totalUsers}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.totalUsers}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Users className="h-7 w-7 text-white" />
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <TrendingUp className="h-4 w-4 mr-1 text-emerald-500" />
+            <div className="mt-3 flex items-center text-xs text-slate-500 dark:text-slate-400">
+              <TrendingUp className="h-3 w-3 mr-1 text-emerald-500" />
               <span>Active platform users</span>
             </div>
           </div>
 
           {/* Total Revenue */}
-          <div className="group relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Revenue</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">${dashboardData.stats.totalRevenue.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">${dashboardData.stats.totalRevenue.toLocaleString()}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <DollarSign className="h-7 w-7 text-white" />
+              <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <BarChart3 className="h-4 w-4 mr-1 text-emerald-500" />
+            <div className="mt-3 flex items-center text-xs text-slate-500 dark:text-slate-400">
+              <BarChart3 className="h-3 w-3 mr-1 text-emerald-500" />
               <span>Lifetime earnings</span>
             </div>
           </div>
 
           {/* Total Invoices */}
-          <div className="group relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Invoices</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.totalInvoices}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.totalInvoices}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <FileText className="h-7 w-7 text-white" />
+              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
+                <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <Activity className="h-4 w-4 mr-1 text-purple-500" />
+            <div className="mt-3 flex items-center text-xs text-slate-500 dark:text-slate-400">
+              <Activity className="h-3 w-3 mr-1 text-purple-500" />
               <span>Documents created</span>
             </div>
           </div>
 
           {/* Active Agents */}
-          <div className="group relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Active Agents</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.activeAgents}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.activeAgents}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Briefcase className="h-7 w-7 text-white" />
+              <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+                <Briefcase className="h-5 w-5 text-orange-600 dark:text-orange-400" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <Shield className="h-4 w-4 mr-1 text-orange-500" />
+            <div className="mt-3 flex items-center text-xs text-slate-500 dark:text-slate-400">
+              <Shield className="h-3 w-3 mr-1 text-orange-500" />
               <span>Team members</span>
             </div>
           </div>
         </div>
 
         {/* Detailed Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">User Breakdown</h3>
-              <Users className="h-5 w-5 text-slate-400" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white">User Breakdown</h3>
+              <Users className="h-4 w-4 text-slate-400" />
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -315,10 +320,10 @@ export function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Financial Overview</h3>
-              <DollarSign className="h-5 w-5 text-slate-400" />
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white">Financial Overview</h3>
+              <DollarSign className="h-4 w-4 text-slate-400" />
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -336,10 +341,10 @@ export function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Platform Health</h3>
-              <Activity className="h-5 w-5 text-slate-400" />
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white">Platform Health</h3>
+              <Activity className="h-4 w-4 text-slate-400" />
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
