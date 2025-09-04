@@ -7,11 +7,14 @@ import {
   DollarSign, 
   Clock, 
   CheckCircle, 
-  AlertCircle, 
+  AlertTriangle, 
   XCircle,
   RefreshCw,
   TrendingUp,
-  Play
+  Eye,
+  Download,
+  Filter,
+  Search
 } from 'lucide-react';
 
 export function PaymentProcessingPage() {
@@ -24,13 +27,15 @@ export function PaymentProcessingPage() {
     status: '',
     method: '',
     amount: '',
+    dateRange: '',
   });
   const [stats, setStats] = useState({
     totalPayments: 0,
-    totalAmount: 0,
-    processingPayments: 0,
     pendingPayments: 0,
+    completedPayments: 0,
     failedPayments: 0,
+    totalAmount: 0,
+    processingFees: 0,
   });
 
   useEffect(() => {
@@ -45,67 +50,75 @@ export function PaymentProcessingPage() {
     try {
       setLoading(true);
       const response = await apiClient.getPayments();
-      const paymentList = response?.payments || [];
+      const paymentsList = response?.payments || [];
       
-      setPayments(Array.isArray(paymentList) ? paymentList : []);
-      calculateStats(paymentList);
-      showSuccess('Payment Processing Data Loaded', `Successfully loaded ${paymentList.length} payments.`);
+      // Ensure we always have an array
+      const safePaymentsList = Array.isArray(paymentsList) ? paymentsList : [];
+      setPayments(safePaymentsList);
+      setFilteredPayments(safePaymentsList);
+      calculateStats(safePaymentsList);
+      showSuccess('Payments Data Loaded', `Successfully loaded ${safePaymentsList.length} payments.`);
     } catch (error) {
       logger.error('Error fetching payments:', error);
-      showError('Failed to Load Payments', 'Unable to load payment processing data. Please try again later.');
+      showError('Failed to Load Payments', 'Unable to load payments data. Please try again later.');
       setPayments([]);
+      setFilteredPayments([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateStats = (paymentList: any[]) => {
-    const totalPayments = paymentList.length;
-    const totalAmount = paymentList.reduce((sum, payment) => 
+  const calculateStats = (paymentsList: any[]) => {
+    if (!Array.isArray(paymentsList)) {
+      paymentsList = [];
+    }
+    
+    const totalPayments = paymentsList.length;
+    const pendingPayments = paymentsList.filter(p => p.status === 'PENDING').length;
+    const completedPayments = paymentsList.filter(p => p.status === 'COMPLETED').length;
+    const failedPayments = paymentsList.filter(p => p.status === 'FAILED').length;
+    const totalAmount = paymentsList.reduce((sum, payment) => 
       sum + parseFloat(payment.amount || '0'), 0
     );
-    const processingPayments = paymentList.filter(p => 
-      p.status === 'PROCESSING' || p.status === 'processing'
-    ).length;
-    const pendingPayments = paymentList.filter(p => 
-      p.status === 'PENDING' || p.status === 'pending'
-    ).length;
-    const failedPayments = paymentList.filter(p => 
-      p.status === 'FAILED' || p.status === 'failed'
-    ).length;
+    const processingFees = paymentsList.reduce((sum, payment) => 
+      sum + parseFloat(payment.processing_fee || '0'), 0
+    );
 
     setStats({
       totalPayments,
-      totalAmount,
-      processingPayments,
       pendingPayments,
+      completedPayments,
       failedPayments,
+      totalAmount,
+      processingFees,
     });
   };
 
   const filterPayments = () => {
-    let filtered = [...payments];
+    // Ensure payments is always an array
+    const safePayments = Array.isArray(payments) ? payments : [];
+    let filtered = [...safePayments];
 
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(payment =>
-        payment.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        payment.transaction_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        payment.invoice?.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        payment?.transaction_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        payment?.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        payment?.payment_method?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Status filter
     if (filters.status) {
       filtered = filtered.filter(payment => 
-        payment.status?.toLowerCase() === filters.status.toLowerCase()
+        payment?.status?.toLowerCase() === filters.status.toLowerCase()
       );
     }
 
     // Method filter
     if (filters.method) {
       filtered = filtered.filter(payment => 
-        payment.method?.toLowerCase() === filters.method.toLowerCase()
+        payment?.payment_method?.toLowerCase().includes(filters.method.toLowerCase())
       );
     }
 
@@ -113,184 +126,232 @@ export function PaymentProcessingPage() {
     if (filters.amount) {
       const amount = parseFloat(filters.amount);
       filtered = filtered.filter(payment => 
-        parseFloat(payment.amount || '0') >= amount
+        parseFloat(payment?.amount || '0') >= amount
       );
     }
 
     setFilteredPayments(filtered);
   };
 
-  const handleStatusUpdate = async (paymentId: string, newStatus: string) => {
+  const handlePaymentAction = async (paymentId: string, action: 'approve' | 'reject' | 'refund') => {
     try {
-      // This would typically call an API to update payment status
-      showSuccess('Status Updated', `Payment status updated to ${newStatus}`);
+      let newStatus = '';
+      let message = '';
+      
+      switch (action) {
+        case 'approve':
+          newStatus = 'COMPLETED';
+          message = 'Payment approved successfully.';
+          break;
+        case 'reject':
+          newStatus = 'FAILED';
+          message = 'Payment rejected.';
+          break;
+        case 'refund':
+          newStatus = 'REFUNDED';
+          message = 'Payment refunded successfully.';
+          break;
+      }
+      
+      showSuccess('Payment Updated', message);
+      
+      setPayments(prev => {
+        const safePrev = Array.isArray(prev) ? prev : [];
+        return safePrev.map(payment => 
+          payment?.id === paymentId 
+            ? { ...payment, status: newStatus }
+            : payment
+        );
+      });
+      
       fetchPayments(); // Refresh data
     } catch (error) {
-      logger.error('Error updating payment status:', error);
-      showError('Update Failed', 'Failed to update payment status. Please try again.');
-    }
-  };
-
-  const handleRetryPayment = async (paymentId: string) => {
-    try {
-      // This would typically call an API to retry the payment
-      showSuccess('Payment Retry Initiated', 'Payment retry has been initiated.');
-      fetchPayments(); // Refresh data
-    } catch (error) {
-      logger.error('Error retrying payment:', error);
-      showError('Retry Failed', 'Failed to retry payment. Please try again.');
+      logger.error(`Error ${action}ing payment:`, error);
+      showError('Action Failed', `Failed to ${action} payment. Please try again.`);
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'completed':
-      case 'success':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'processing':
-        return <Clock className="w-4 h-4 text-blue-500" />;
       case 'pending':
         return <Clock className="w-4 h-4 text-yellow-500" />;
+      case 'completed':
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
       case 'failed':
         return <XCircle className="w-4 h-4 text-red-500" />;
+      case 'refunded':
+        return <AlertTriangle className="w-4 h-4 text-orange-500" />;
       default:
-        return <AlertCircle className="w-4 h-4 text-gray-500" />;
+        return <Clock className="w-4 h-4 text-gray-500" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'completed':
-      case 'success':
-        return 'bg-green-100 text-green-800';
-      case 'processing':
-        return 'bg-blue-100 text-blue-800';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+      case 'completed':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
       case 'failed':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+      case 'refunded':
+        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
     }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-1/3 mb-6"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+            ))}
+          </div>
+          <div className="h-64 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+        </div>
       </div>
     );
   }
 
+  // Ensure arrays are always safe
+  const safeFilteredPayments = Array.isArray(filteredPayments) ? filteredPayments : [];
+  const safePayments = Array.isArray(payments) ? payments : [];
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment Processing</h1>
-        <p className="text-gray-600">Monitor and manage payment processing operations</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-8 border border-blue-200 dark:border-blue-800">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Payment Processing</h1>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">Manage and process client payments and transactions</p>
+          </div>
+          <div className="hidden md:block">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
+              <CreditCard className="h-10 w-10 text-white" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+              <CreditCard className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Payments</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.totalPayments}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Payments</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalPayments}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Clock className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Amount</p>
-              <p className="text-2xl font-semibold text-gray-900">${stats.totalAmount.toFixed(2)}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.pendingPayments}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Play className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+              <CheckCircle className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Processing</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.processingPayments}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.completedPayments}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center">
-            <div className="p-2 bg-yellow-100 rounded-lg">
-              <Clock className="w-6 h-6 text-yellow-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+              <XCircle className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Pending</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.pendingPayments}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Failed</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.failedPayments}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <XCircle className="w-6 h-6 text-red-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+              <DollarSign className="h-6 w-6 text-white" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Failed</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.failedPayments}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Amount</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">${stats.totalAmount.toFixed(2)}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <TrendingUp className="h-6 w-6 text-white" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Processing Fees</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">${stats.processingFees.toFixed(2)}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow mb-6">
-        <div className="p-6 border-b border-gray-200">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
+        <div className="p-6 border-b border-gray-200 dark:border-slate-700">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <input
                 type="text"
-                placeholder="Search payments..."
+                placeholder="Search payments by transaction ID, client name, or payment method..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-gray-400"
               />
             </div>
             <div className="flex gap-2">
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
               >
                 <option value="">All Statuses</option>
-                <option value="processing">Processing</option>
                 <option value="pending">Pending</option>
                 <option value="completed">Completed</option>
                 <option value="failed">Failed</option>
+                <option value="refunded">Refunded</option>
               </select>
               <select
                 value={filters.method}
                 onChange={(e) => setFilters({ ...filters, method: e.target.value })}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
               >
                 <option value="">All Methods</option>
                 <option value="credit_card">Credit Card</option>
                 <option value="debit_card">Debit Card</option>
                 <option value="bank_transfer">Bank Transfer</option>
-                <option value="ach">ACH</option>
+                <option value="paypal">PayPal</option>
               </select>
               <button
                 onClick={fetchPayments}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
               </button>
@@ -300,69 +361,77 @@ export function PaymentProcessingPage() {
       </div>
 
       {/* Payments Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Payment Processing Queue</h2>
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Payment Transactions</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+            <thead className="bg-gray-50 dark:bg-slate-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Payment
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Transaction
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Client
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Method
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredPayments.map((payment) => (
-                <tr key={payment.id} className="hover:bg-gray-50">
+            <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
+              {safeFilteredPayments.map((payment) => (
+                <tr key={payment.id} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                          <CreditCard className="w-5 h-5 text-blue-600" />
+                        <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                          <CreditCard className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         </div>
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {payment.transaction_id || payment.id}
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          {payment.transaction_id || 'Unknown Transaction'}
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {payment.invoice?.invoice_number || 'N/A'}
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {payment.invoice_id ? `Invoice: ${payment.invoice_id}` : 'No invoice'}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {payment.client_name || payment.client?.name || 'Unknown'}
+                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                      {payment.client_name || 'Unknown Client'}
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {payment.client_email || payment.client?.email || 'N/A'}
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {payment.client_email || 'No email'}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white">
                       ${parseFloat(payment.amount || '0').toFixed(2)}
                     </div>
+                    {payment.processing_fee && (
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Fee: ${parseFloat(payment.processing_fee).toFixed(2)}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    {payment.payment_method || 'Unknown Method'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(payment.status)}`}>
@@ -372,34 +441,52 @@ export function PaymentProcessingPage() {
                       </span>
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payment.method || 'N/A'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(payment.created_at || payment.createdAt).toLocaleDateString()}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                    {payment.created_at ? 
+                      new Date(payment.created_at).toLocaleDateString() : 
+                      'N/A'
+                    }
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => handleStatusUpdate(payment.id, 'completed')}
-                        className="text-green-600 hover:text-green-900"
-                        title="Mark as completed"
+                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                        title="View payment details"
                       >
-                        <CheckCircle className="w-4 h-4" />
+                        <Eye className="w-4 h-4" />
                       </button>
+                      {payment.status === 'PENDING' && (
+                        <>
+                          <button
+                            onClick={() => handlePaymentAction(payment.id, 'approve')}
+                            className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 transition-colors"
+                            title="Approve payment"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handlePaymentAction(payment.id, 'reject')}
+                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                            title="Reject payment"
+                          >
+                            <XCircle className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+                      {payment.status === 'COMPLETED' && (
+                        <button
+                          onClick={() => handlePaymentAction(payment.id, 'refund')}
+                          className="text-orange-600 hover:text-orange-900 dark:text-orange-400 dark:hover:text-orange-300 transition-colors"
+                          title="Refund payment"
+                        >
+                          <AlertTriangle className="w-4 h-4" />
+                        </button>
+                      )}
                       <button
-                        onClick={() => handleRetryPayment(payment.id)}
-                        className="text-blue-600 hover:text-blue-900"
-                        title="Retry payment"
+                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 transition-colors"
+                        title="Download receipt"
                       >
-                        <RefreshCw className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleStatusUpdate(payment.id, 'failed')}
-                        className="text-red-600 hover:text-red-900"
-                        title="Mark as failed"
-                      >
-                        <XCircle className="w-4 h-4" />
+                        <Download className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -409,12 +496,12 @@ export function PaymentProcessingPage() {
           </table>
         </div>
         
-        {filteredPayments.length === 0 && (
+        {safeFilteredPayments.length === 0 && (
           <div className="text-center py-12">
-            <CreditCard className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No payments found</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              {payments.length === 0 ? 'No payments available.' : 'Try adjusting your search or filters.'}
+            <CreditCard className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No payments found</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {safePayments.length === 0 ? 'No payments available.' : 'Try adjusting your search or filters.'}
             </p>
           </div>
         )}
