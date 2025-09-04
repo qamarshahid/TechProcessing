@@ -217,15 +217,13 @@ export function ServiceRequestsPage() {
 
     try {
       const requestData = {
-        service_type: newRequestForm.service_type,
+        clientId: newRequestForm.client_id,
         description: newRequestForm.description,
-        status: newRequestForm.status,
-        priority: newRequestForm.priority || undefined,
-        estimated_cost: newRequestForm.estimated_cost ? parseFloat(newRequestForm.estimated_cost) : undefined,
-        deadline: newRequestForm.deadline || undefined,
-        contact_email: newRequestForm.contact_email || undefined,
-        contact_phone: newRequestForm.contact_phone || undefined,
-        client_id: newRequestForm.client_id,
+        budget: newRequestForm.estimated_cost ? parseFloat(newRequestForm.estimated_cost) : undefined,
+        timeline: newRequestForm.deadline || undefined,
+        additionalRequirements: `${newRequestForm.service_type} - Priority: ${newRequestForm.priority || 'Not specified'} - Contact: ${newRequestForm.contact_email || 'N/A'} - Phone: ${newRequestForm.contact_phone || 'N/A'}`,
+        isCustomQuote: true,
+        requestType: 'CUSTOM_QUOTE',
       };
 
       await apiClient.createServiceRequestAdmin(requestData);
