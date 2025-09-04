@@ -192,7 +192,7 @@ export function AgentPerformancePage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Sales Value</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  ${agent.totalSalesValue.toLocaleString()}
+                  ${(agent.totalSalesValue || 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -206,7 +206,7 @@ export function AgentPerformancePage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Earnings</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  ${agent.totalEarnings.toLocaleString()}
+                  ${(agent.totalEarnings || 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -220,7 +220,7 @@ export function AgentPerformancePage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending Commission</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  ${agent.pendingCommission.toLocaleString()}
+                  ${(agent.pendingCommission || 0).toLocaleString()}
                 </p>
               </div>
             </div>

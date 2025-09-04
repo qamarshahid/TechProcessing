@@ -299,10 +299,10 @@ export default function AgentSalesPage() {
                           {sale.clientName}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                          ${sale.amount.toLocaleString()}
+                          ${(sale.amount || 0).toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                          ${sale.commission.toLocaleString()}
+                          ${(sale.commission || 0).toLocaleString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
