@@ -23,6 +23,21 @@ interface ServiceRequest {
   contact_phone?: string;
   submitted?: boolean;
   client_id?: string;
+  // Nested objects from backend
+  client?: {
+    id: string;
+    email: string;
+    fullName: string;
+    phone?: string;
+    companyName?: string;
+  };
+  service?: {
+    id: string;
+    name: string;
+    description?: string;
+    price?: string;
+    category?: string;
+  };
 }
 
 export function ServiceRequestsPage() {
@@ -138,8 +153,8 @@ export function ServiceRequestsPage() {
     // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(request => 
-        request.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        request.service_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (request.client?.fullName || request.client_name)?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (request.service?.name || request.service_type)?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -677,7 +692,7 @@ export function ServiceRequestsPage() {
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-slate-900 dark:text-white">
-                              {request.service_type || 'Unknown Service'}
+                              {request.service?.name || request.service_type || 'Unknown Service'}
                             </div>
                             <div className="text-sm text-slate-500 dark:text-slate-400">
                               {request.description ? (
@@ -696,18 +711,18 @@ export function ServiceRequestsPage() {
                           </div>
                           <div className="ml-3">
                             <div className="text-sm font-medium text-slate-900 dark:text-white">
-                              {request.client_name || 'Unknown Client'}
+                              {request.client?.fullName || request.client_name || 'Unknown Client'}
                             </div>
-                            {request.contact_email && (
+                            {(request.client?.email || request.contact_email) && (
                               <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
                                 <Mail className="h-3 w-3" />
-                                {request.contact_email}
+                                {request.client?.email || request.contact_email}
                               </div>
                             )}
-                            {request.contact_phone && (
+                            {(request.client?.phone || request.contact_phone) && (
                               <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
                                 <Phone className="h-3 w-3" />
-                                {request.contact_phone}
+                                {request.client?.phone || request.contact_phone}
                               </div>
                             )}
                           </div>
@@ -901,7 +916,7 @@ export function ServiceRequestsPage() {
                     Service Type
                   </label>
                   <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                    <p className="text-gray-900 dark:text-white font-medium">{viewingRequest.service_type || 'Not specified'}</p>
+                    <p className="text-gray-900 dark:text-white font-medium">{viewingRequest.service?.name || viewingRequest.service_type || 'Not specified'}</p>
                   </div>
                 </div>
 
@@ -962,18 +977,18 @@ export function ServiceRequestsPage() {
                   <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg space-y-2">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-blue-500" />
-                      <span className="text-gray-900 dark:text-white font-medium">{viewingRequest.client_name || 'Unknown Client'}</span>
+                      <span className="text-gray-900 dark:text-white font-medium">{viewingRequest.client?.fullName || viewingRequest.client_name || 'Unknown Client'}</span>
                     </div>
-                    {viewingRequest.contact_email && (
+                    {(viewingRequest.client?.email || viewingRequest.contact_email) && (
                       <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-blue-500" />
-                        <span className="text-gray-900 dark:text-white">{viewingRequest.contact_email}</span>
+                        <span className="text-gray-900 dark:text-white">{viewingRequest.client?.email || viewingRequest.contact_email}</span>
                       </div>
                     )}
-                    {viewingRequest.contact_phone && (
+                    {(viewingRequest.client?.phone || viewingRequest.contact_phone) && (
                       <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-blue-500" />
-                        <span className="text-gray-900 dark:text-white">{viewingRequest.contact_phone}</span>
+                        <span className="text-gray-900 dark:text-white">{viewingRequest.client?.phone || viewingRequest.contact_phone}</span>
                       </div>
                     )}
                   </div>
@@ -1055,9 +1070,9 @@ export function ServiceRequestsPage() {
                   Are you sure you want to delete this service request?
                 </p>
                 <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                  <p className="font-medium text-gray-900 dark:text-white">{deletingRequest.service_type || 'Service Request'}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{deletingRequest.service?.name || deletingRequest.service_type || 'Service Request'}</p>
                   <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">
-                    Client: {deletingRequest.client_name || 'Unknown Client'}
+                    Client: {deletingRequest.client?.fullName || deletingRequest.client_name || 'Unknown Client'}
                   </p>
                 </div>
               </div>
