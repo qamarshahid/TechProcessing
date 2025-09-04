@@ -1,573 +1,651 @@
 import React, { useState, useEffect } from 'react';
-import { useNotifications } from '../common/NotificationSystem';
 import { apiClient } from '../../lib/api';
+import { useNotifications } from '../common/NotificationSystem';
 import { logger } from '../../lib/logger';
-import { 
-  FileText, 
-  User, 
-  Calendar, 
-  Filter, 
-  Search, 
-  RefreshCw, 
-  Eye, 
-  CheckCircle, 
-  Clock, 
-  AlertTriangle, 
-  XCircle, 
-  MessageSquare, 
-  Phone, 
-  Mail, 
-  Building, 
-  Package, 
-  DollarSign, 
-  TrendingUp, 
-  Edit, 
-  Plus 
+import {
+  FileText, DollarSign, Clock, CheckCircle, XCircle, RefreshCw, Search, Eye, Edit, Trash2, Filter, TrendingUp, BarChart3, Activity, Shield, AlertCircle, Info, Calendar, User, Building, ArrowUpDown, ChevronDown, ChevronUp, Settings, HelpCircle, Zap, Rocket, Plus, Star, Tag, Layers, CalendarDays, MessageSquare, Phone, Mail, MapPin, Clock3, Receipt, ArrowLeftRight, MessageCircle, AlertTriangle, CheckSquare, Ban, Play, Pause, Code, Palette
 } from 'lucide-react';
 
+interface ServiceRequest {
+  id: string;
+  client_name?: string;
+  service_type?: string;
+  description?: string;
+  status: string;
+  priority?: string;
+  created_at?: string;
+  updated_at?: string;
+  assigned_to?: string;
+  estimated_cost?: string;
+  deadline?: string;
+  contact_email?: string;
+  contact_phone?: string;
+}
+
 export function ServiceRequestsPage() {
-  const { showSuccess, showError } = useNotifications();
-  const [serviceRequests, setServiceRequests] = useState<any[]>([]);
-  const [filteredRequests, setFilteredRequests] = useState<any[]>([]);
+  const [requests, setRequests] = useState<ServiceRequest[]>([]);
+  const [filteredRequests, setFilteredRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
-    status: '',
-    priority: '',
-    category: '',
-    dateRange: '',
-  });
-  const [stats, setStats] = useState({
-    totalRequests: 0,
-    pendingRequests: 0,
-    inProgressRequests: 0,
-    completedRequests: 0,
-    cancelledRequests: 0,
-    totalRevenue: 0,
-  });
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const { showSuccess, showError } = useNotifications();
 
   useEffect(() => {
-    fetchServiceRequests();
+    fetchRequests();
   }, []);
 
   useEffect(() => {
-    filterRequests();
-  }, [serviceRequests, searchTerm, filters]);
+    filterAndSortRequests();
+  }, [requests, searchTerm, statusFilter, priorityFilter, sortBy, sortOrder]);
 
-  const fetchServiceRequests = async () => {
+  const fetchRequests = async () => {
     try {
       setLoading(true);
+      setError('');
+      
       const response = await apiClient.getServiceRequests();
       const requestsList = response?.serviceRequests || [];
       
-      // Ensure we always have an array
-      const safeRequestsList = Array.isArray(requestsList) ? requestsList : [];
-      setServiceRequests(safeRequestsList);
-      setFilteredRequests(safeRequestsList);
-      calculateStats(safeRequestsList);
-      showSuccess('Service Requests Data Loaded', `Successfully loaded ${safeRequestsList.length} service requests.`);
+      setRequests(requestsList);
+      setFilteredRequests(requestsList);
+      
+      showSuccess('Requests Loaded', 'Service request data loaded successfully.');
     } catch (error) {
       logger.error('Error fetching service requests:', error);
-      showError('Failed to Load Service Requests', 'Unable to load service requests data. Please try again later.');
-      setServiceRequests([]);
-      setFilteredRequests([]);
+      setError('Failed to load service requests. Please try again.');
+      showError('Request Error', 'Failed to load service requests. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateStats = (requestsList: any[]) => {
-    if (!Array.isArray(requestsList)) {
-      requestsList = [];
-    }
-    
-    const totalRequests = requestsList.length;
-    const pendingRequests = requestsList.filter(r => r.status === 'PENDING').length;
-    const inProgressRequests = requestsList.filter(r => r.status === 'IN_PROGRESS').length;
-    const completedRequests = requestsList.filter(r => r.status === 'COMPLETED').length;
-    const cancelledRequests = requestsList.filter(r => r.status === 'CANCELLED').length;
-    const totalRevenue = requestsList.reduce((sum, request) => 
-      sum + parseFloat(request.estimated_cost || '0'), 0
-    );
+  const filterAndSortRequests = () => {
+    let filtered = [...requests];
 
-    setStats({
-      totalRequests,
-      pendingRequests,
-      inProgressRequests,
-      completedRequests,
-      cancelledRequests,
-      totalRevenue,
-    });
-  };
-
-  const filterRequests = () => {
-    // Ensure serviceRequests is always an array
-    const safeServiceRequests = Array.isArray(serviceRequests) ? serviceRequests : [];
-    let filtered = [...safeServiceRequests];
-
-    // Search filter
+    // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(request =>
-        request?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        request?.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        request?.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(request => 
+        request.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.service_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Status filter
-    if (filters.status) {
-      filtered = filtered.filter(request => 
-        request?.status?.toLowerCase() === filters.status.toLowerCase()
-      );
+    // Apply status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(request => request.status.toLowerCase() === statusFilter.toLowerCase());
     }
 
-    // Priority filter
-    if (filters.priority) {
-      filtered = filtered.filter(request => 
-        request?.priority?.toLowerCase() === filters.priority.toLowerCase()
-      );
+    // Apply priority filter
+    if (priorityFilter !== 'all') {
+      filtered = filtered.filter(request => request.priority?.toLowerCase() === priorityFilter.toLowerCase());
     }
 
-    // Category filter
-    if (filters.category) {
-      filtered = filtered.filter(request => 
-        request?.category?.toLowerCase().includes(filters.category.toLowerCase())
-      );
-    }
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let aValue: any, bValue: any;
+      
+      switch (sortBy) {
+        case 'cost':
+          aValue = parseFloat(a.estimated_cost || '0');
+          bValue = parseFloat(b.estimated_cost || '0');
+          break;
+        case 'date':
+          aValue = new Date(a.created_at || a.updated_at || '');
+          bValue = new Date(b.created_at || b.updated_at || '');
+          break;
+        case 'status':
+          aValue = a.status.toLowerCase();
+          bValue = b.status.toLowerCase();
+          break;
+        case 'priority':
+          aValue = a.priority || '';
+          bValue = b.priority || '';
+          break;
+        case 'deadline':
+          aValue = new Date(a.deadline || '');
+          bValue = new Date(b.deadline || '');
+          break;
+        default:
+          aValue = new Date(a.created_at || a.updated_at || '');
+          bValue = new Date(b.created_at || b.updated_at || '');
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
 
     setFilteredRequests(filtered);
   };
 
-  const handleRequestAction = async (requestId: string, action: 'approve' | 'reject' | 'start' | 'complete' | 'cancel') => {
+  const handleStatusChange = async (requestId: string, newStatus: string) => {
     try {
-      let newStatus = '';
-      let message = '';
+      // Update local state for now (API call would be implemented later)
+      setRequests(prev => prev.map(r => 
+        r.id === requestId ? { ...r, status: newStatus } : r
+      ));
       
-      switch (action) {
-        case 'approve':
-          newStatus = 'APPROVED';
-          message = 'Service request approved successfully.';
-          break;
-        case 'reject':
-          newStatus = 'REJECTED';
-          message = 'Service request rejected.';
-          break;
-        case 'start':
-          newStatus = 'IN_PROGRESS';
-          message = 'Service request started.';
-          break;
-        case 'complete':
-          newStatus = 'COMPLETED';
-          message = 'Service request completed.';
-          break;
-        case 'cancel':
-          newStatus = 'CANCELLED';
-          message = 'Service request cancelled.';
-          break;
-      }
-      
-      showSuccess('Request Updated', message);
-      
-      setServiceRequests(prev => {
-        const safePrev = Array.isArray(prev) ? prev : [];
-        return safePrev.map(request => 
-          request?.id === requestId 
-            ? { ...request, status: newStatus }
-            : request
-        );
-      });
-      
-      fetchServiceRequests(); // Refresh data
+      showSuccess('Status Updated', `Request status updated to ${newStatus}`);
     } catch (error) {
-      logger.error(`Error ${action}ing request:`, error);
-      showError('Action Failed', `Failed to ${action} request. Please try again.`);
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'pending':
-        return <Clock className="w-4 h-4 text-yellow-500" />;
-      case 'approved':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'in_progress':
-        return <AlertTriangle className="w-4 h-4 text-blue-500" />;
-      case 'completed':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'cancelled':
-        return <XCircle className="w-4 h-4 text-red-500" />;
-      default:
-        return <Clock className="w-4 h-4 text-gray-500" />;
+      logger.error('Error updating request status:', error);
+      showError('Update Failed', 'Failed to update request status. Please try again.');
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
       case 'approved':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
       case 'in_progress':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
-      case 'completed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
+      case 'pending':
+      case 'under_review':
+        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
+      case 'rejected':
       case 'cancelled':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+        return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
+      case 'completed':
+        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'approved':
+      case 'in_progress':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'pending':
+      case 'under_review':
+        return <Clock className="h-4 w-4" />;
+      case 'rejected':
+      case 'cancelled':
+        return <XCircle className="h-4 w-4" />;
+      case 'completed':
+        return <CheckSquare className="h-4 w-4" />;
+      default:
+        return <Info className="h-4 w-4" />;
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority?.toLowerCase()) {
       case 'high':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+      case 'urgent':
+        return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
       case 'low':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
     }
   };
 
+  const getPriorityIcon = (priority: string) => {
+    switch (priority?.toLowerCase()) {
+      case 'high':
+      case 'urgent':
+        return <AlertTriangle className="h-4 w-4" />;
+      case 'medium':
+        return <Clock className="h-4 w-4" />;
+      case 'low':
+        return <CheckCircle className="h-4 w-4" />;
+      default:
+        return <Info className="h-4 w-4" />;
+    }
+  };
+
+  const getServiceTypeIcon = (serviceType: string) => {
+    switch (serviceType?.toLowerCase()) {
+      case 'consulting':
+        return <User className="h-4 w-4" />;
+      case 'development':
+        return <Code className="h-4 w-4" />;
+      case 'design':
+        return <Palette className="h-4 w-4" />;
+      case 'marketing':
+        return <TrendingUp className="h-4 w-4" />;
+      case 'support':
+        return <MessageCircle className="h-4 w-4" />;
+      default:
+        return <FileText className="h-4 w-4" />;
+    }
+  };
+
+  const calculateStats = () => {
+    const total = requests.length;
+    const pending = requests.filter(r => r.status.toLowerCase() === 'pending' || r.status.toLowerCase() === 'under_review').length;
+    const inProgress = requests.filter(r => r.status.toLowerCase() === 'approved' || r.status.toLowerCase() === 'in_progress').length;
+    const completed = requests.filter(r => r.status.toLowerCase() === 'completed').length;
+    const totalValue = requests.reduce((sum, r) => sum + parseFloat(r.estimated_cost || '0'), 0);
+    const avgValue = total > 0 ? totalValue / total : 0;
+
+    return { total, pending, inProgress, completed, totalValue, avgValue };
+  };
+
+  const stats = calculateStats();
+
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-1/3 mb-6"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
-            ))}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="animate-pulse space-y-8">
+            {/* Header skeleton */}
+            <div className="text-center">
+              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded-lg w-1/3 mx-auto mb-4"></div>
+              <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mx-auto"></div>
+            </div>
+            
+            {/* Stats grid skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+              ))}
+            </div>
+            
+            {/* Table skeleton */}
+            <div className="h-96 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
           </div>
-          <div className="h-64 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
         </div>
       </div>
     );
   }
 
-  // Ensure arrays are always safe
-  const safeFilteredRequests = Array.isArray(filteredRequests) ? filteredRequests : [];
-  const safeServiceRequests = Array.isArray(serviceRequests) ? serviceRequests : [];
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-8 border border-blue-200 dark:border-blue-800">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Service Requests Management</h1>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">Manage client service requests and project workflow</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl mb-6 shadow-xl">
+            <FileText className="h-10 w-10 text-white" />
           </div>
-          <div className="hidden md:block">
-            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
-              <FileText className="h-10 w-10 text-white" />
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+            Service Request Center 📋
+          </h1>
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+            Manage, track, and process client service requests efficiently. Monitor priorities, assign resources, and ensure timely delivery of exceptional service.
+          </p>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Requests</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.total}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <FileText className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <Activity className="h-4 w-4 mr-1 text-orange-500" />
+              <span>All requests</span>
+            </div>
+          </div>
+
+          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Pending</p>
+                <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">{stats.pending}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Clock className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <Clock3 className="h-4 w-4 mr-1 text-amber-500" />
+              <span>Awaiting review</span>
+            </div>
+          </div>
+
+          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">In Progress</p>
+                <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{stats.inProgress}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Zap className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <TrendingUp className="h-4 w-4 mr-1 text-emerald-500" />
+              <span>Active work</span>
+            </div>
+          </div>
+
+          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Value</p>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">${stats.totalValue.toLocaleString()}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <DollarSign className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <BarChart3 className="h-4 w-4 mr-1 text-blue-500" />
+              <span>Estimated value</span>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-              <FileText className="h-6 w-6 text-white" />
+        {/* Controls */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            {/* Search and Filters */}
+            <div className="flex flex-col sm:flex-row gap-4 flex-1">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search requests..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                >
+                  <option value="all">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+                
+                <select
+                  value={priorityFilter}
+                  onChange={(e) => setPriorityFilter(e.target.value)}
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                >
+                  <option value="all">All Priorities</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+                
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`px-4 py-2 rounded-xl border transition-all duration-200 flex items-center gap-2 ${
+                    showFilters
+                      ? 'bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400'
+                      : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <Filter className="h-4 w-4" />
+                  Filters
+                  {showFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Requests</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalRequests}</p>
-            </div>
-          </div>
-        </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Clock className="h-6 w-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.pendingRequests}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <AlertTriangle className="h-6 w-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">In Progress</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.inProgressRequests}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-              <CheckCircle className="h-6 w-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.completedRequests}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
-              <XCircle className="h-6 w-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Cancelled</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.cancelledRequests}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
-              <TrendingUp className="h-6 w-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">${stats.totalRevenue.toFixed(2)}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
-        <div className="p-6 border-b border-gray-200 dark:border-slate-700">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Search requests by title, client name, or description..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-gray-400"
-              />
-            </div>
+            {/* Actions */}
             <div className="flex gap-2">
-              <select
-                value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
-              >
-                <option value="">All Statuses</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-              <select
-                value={filters.priority}
-                onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
-                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
-              >
-                <option value="">All Priorities</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
-              <select
-                value={filters.category}
-                onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
-              >
-                <option value="">All Categories</option>
-                <option value="web_development">Web Development</option>
-                <option value="mobile_app">Mobile App</option>
-                <option value="consulting">Consulting</option>
-                <option value="design">Design</option>
-              </select>
               <button
-                onClick={fetchServiceRequests}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                onClick={() => setShowAddModal(true)}
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
-                <RefreshCw className="w-4 h-4" />
+                <Plus className="h-4 w-4 mr-2" />
+                New Request
               </button>
+              
               <button
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+                onClick={fetchRequests}
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
-                <Plus className="w-4 h-4" />
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
               </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Service Requests Table */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Service Requests</h2>
+          {/* Advanced Filters */}
+          {showFilters && (
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sort By</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="date">Date</option>
+                    <option value="cost">Cost</option>
+                    <option value="status">Status</option>
+                    <option value="priority">Priority</option>
+                    <option value="deadline">Deadline</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sort Order</label>
+                  <button
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
+                  >
+                    {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                    <ArrowUpDown className="h-4 w-4" />
+                  </button>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Service Type</label>
+                  <select className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">All Types</option>
+                    <option value="consulting">Consulting</option>
+                    <option value="development">Development</option>
+                    <option value="design">Design</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="support">Support</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
-            <thead className="bg-gray-50 dark:bg-slate-700">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Request
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Client
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Priority
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Estimated Cost
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
-              {safeFilteredRequests.map((request) => (
-                <tr key={request.id} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
-                          <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+
+        {/* Requests Table */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
+          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Service Requests</h2>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+              <thead className="bg-slate-50 dark:bg-slate-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Request Details
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Client
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Priority
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Deadline
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+                {filteredRequests.length > 0 ? (
+                  filteredRequests.map((request) => (
+                    <tr key={request.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+                              <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-slate-900 dark:text-white">
+                              {request.service_type || 'Unknown Service'}
+                            </div>
+                            <div className="text-sm text-slate-500 dark:text-slate-400">
+                              {request.description ? (
+                                <span className="line-clamp-1">{request.description}</span>
+                              ) : 'No description'}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {request.title || 'Untitled Request'}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {request.description ? 
-                            (request.description.length > 50 ? 
-                              request.description.substring(0, 50) + '...' : 
-                              request.description
-                            ) : 'No description'
-                          }
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-8 w-8">
-                        <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
-                          <User className="w-4 h-4 text-green-600 dark:text-green-400" />
-                        </div>
-                      </div>
-                      <div className="ml-3">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-slate-900 dark:text-white">
                           {request.client_name || 'Unknown Client'}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {request.client_email || 'No email'}
+                        {request.contact_email && (
+                          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
+                            <Mail className="h-3 w-3" />
+                            {request.contact_email}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getPriorityColor(request.priority)}`}>
+                          {getPriorityIcon(request.priority)}
+                          <span className="ml-1 capitalize">
+                            {request.priority || 'Unknown'}
+                          </span>
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(request.status)}`}>
+                          {getStatusIcon(request.status)}
+                          <span className="ml-1 capitalize">
+                            {request.status || 'Unknown'}
+                          </span>
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        <div className="flex items-center">
+                          <CalendarDays className="h-4 w-4 mr-2 text-slate-400" />
+                          {request.deadline ? new Date(request.deadline).toLocaleDateString() : 'No deadline'}
                         </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => setSelectedRequest(request)}
+                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                            title="View Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          
+                                                                                {request.status?.toLowerCase() === 'pending' && (
+                             <>
+                               <button
+                                 onClick={() => handleStatusChange(request.id, 'approved')}
+                                 className="text-emerald-600 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors"
+                                 title="Approve Request"
+                               >
+                                 <CheckCircle className="w-4 h-4" />
+                               </button>
+                               <button
+                                 onClick={() => handleStatusChange(request.id, 'rejected')}
+                                 className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                                 title="Reject Request"
+                               >
+                                 <XCircle className="w-4 h-4" />
+                               </button>
+                             </>
+                           )}
+                           
+                           {request.status?.toLowerCase() === 'approved' && (
+                             <button
+                               onClick={() => handleStatusChange(request.id, 'in_progress')}
+                               className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                               title="Start Work"
+                             >
+                               <Play className="w-4 h-4" />
+                             </button>
+                           )}
+                          
+                          <button className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300 transition-colors">
+                            <Edit className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="text-slate-500 dark:text-slate-400">
+                        <FileText className="mx-auto h-12 w-12 mb-4 text-slate-300 dark:text-slate-600" />
+                        <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No requests found</h3>
+                        <p className="text-sm mb-4">Try adjusting your search or filter criteria.</p>
+                        <button
+                          onClick={() => setShowAddModal(true)}
+                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create First Request
+                        </button>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {request.category || 'Uncategorized'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(request.priority)}`}>
-                      <span className="capitalize">
-                        {request.priority || 'Unknown'}
-                      </span>
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
-                      {getStatusIcon(request.status)}
-                      <span className="ml-1 capitalize">
-                        {request.status || 'Unknown'}
-                      </span>
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                    ${parseFloat(request.estimated_cost || '0').toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                      <button
-                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-                        title="View request details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      {request.status === 'PENDING' && (
-                        <>
-                          <button
-                            onClick={() => handleRequestAction(request.id, 'approve')}
-                            className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 transition-colors"
-                            title="Approve request"
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleRequestAction(request.id, 'reject')}
-                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                            title="Reject request"
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </button>
-                        </>
-                      )}
-                      {request.status === 'APPROVED' && (
-                        <button
-                          onClick={() => handleRequestAction(request.id, 'start')}
-                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-                          title="Start work"
-                        >
-                          <AlertTriangle className="w-4 h-4" />
-                        </button>
-                      )}
-                      {request.status === 'IN_PROGRESS' && (
-                        <button
-                          onClick={() => handleRequestAction(request.id, 'complete')}
-                          className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 transition-colors"
-                          title="Mark as complete"
-                        >
-                          <CheckCircle className="w-4 h-4" />
-                        </button>
-                      )}
-                      <button
-                        className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
-                        title="Edit request"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {safeFilteredRequests.length === 0 && (
-          <div className="text-center py-12">
-            <FileText className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No service requests found</h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              {safeServiceRequests.length === 0 ? 'No service requests available.' : 'Try adjusting your search or filters.'}
-            </p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
+        </div>
+
+        {/* Quick Actions Footer */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+              <Info className="h-5 w-5" />
+              <span className="text-sm">
+                Showing {filteredRequests.length} of {requests.length} requests
+              </span>
+            </div>
+            
+            <div className="flex gap-2">
+              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                <HelpCircle className="h-4 w-4 mr-2" />
+                Help
+              </button>
+              
+              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

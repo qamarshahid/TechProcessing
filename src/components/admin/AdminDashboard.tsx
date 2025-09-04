@@ -7,25 +7,7 @@ import { logger } from '../../lib/logger';
 import { AddClientModal } from './AddClientModal';
 import { AddInvoiceModal } from './AddInvoiceModal';
 import {
-  Users,
-  FileText,
-  DollarSign,
-  TrendingUp,
-  Calendar,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-  CreditCard,
-  Package,
-  UserPlus,
-  Plus,
-  Eye,
-  RefreshCw,
-  ArrowRight,
-  BarChart3,
-  Activity,
-  Shield,
-  Target
+  Users, FileText, DollarSign, TrendingUp, Calendar, CheckCircle, Clock, AlertCircle, CreditCard, Package, UserPlus, Plus, Eye, RefreshCw, ArrowRight, BarChart3, Activity, Shield, Target, Zap, Rocket, Star, Award, Briefcase, Globe, Layers, Cpu, Database, Server, Code, Palette, Settings
 } from 'lucide-react';
 
 export function AdminDashboard() {
@@ -39,6 +21,7 @@ export function AdminDashboard() {
     agents: [],
     stats: {
       totalUsers: 0,
+      totalAgents: 0,
       totalClients: 0,
       totalInvoices: 0,
       totalRevenue: 0,
@@ -127,15 +110,15 @@ export function AdminDashboard() {
     switch (status?.toLowerCase()) {
       case 'paid':
       case 'completed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
       case 'unpaid':
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
       case 'overdue':
       case 'failed':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+        return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
     }
   };
 
@@ -169,18 +152,28 @@ export function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-1/3 mb-6"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
-            ))}
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {[...Array(2)].map((_, i) => (
-              <div key={i} className="h-64 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
-            ))}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="animate-pulse space-y-8">
+            {/* Header skeleton */}
+            <div className="text-center">
+              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded-lg w-1/3 mx-auto mb-4"></div>
+              <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mx-auto"></div>
+            </div>
+            
+            {/* Stats grid skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+              ))}
+            </div>
+            
+            {/* Content grid skeleton */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="h-96 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -188,317 +181,332 @@ export function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-8 border border-blue-200 dark:border-blue-800">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Admin Dashboard 👋
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
-              Welcome back, {user?.fullName}! Here's your business overview.
-            </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Welcome Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-6 shadow-xl">
+            <Rocket className="h-10 w-10 text-white" />
           </div>
-          <div className="hidden md:block">
-            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
-              <Shield className="h-10 w-10 text-white" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Error Banner */}
-      {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <div className="flex items-center">
-            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mr-2" />
-            <p className="text-red-800 dark:text-red-200">{error}</p>
-            <button
-              onClick={fetchDashboardData}
-              className="ml-auto px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Users className="h-6 w-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Users</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{dashboardData.stats.totalUsers}</p>
-            </div>
-          </div>
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+            Welcome back, {user?.fullName || user?.full_name || 'Admin'}! 🚀
+          </h1>
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            Here's what's happening with your platform today. Monitor performance, manage users, and track revenue in real-time.
+          </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-              <DollarSign className="h-6 w-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">${dashboardData.stats.totalRevenue.toLocaleString()}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
-              <FileText className="h-6 w-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Invoices</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{dashboardData.stats.totalInvoices}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-              <TrendingUp className="h-6 w-6 text-white" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Active Agents</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{dashboardData.stats.activeAgents}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Quick Actions */}
+        <div className="flex flex-wrap justify-center gap-4 mb-12">
           <button
             onClick={() => setShowAddClientModal(true)}
-            className="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-300 hover:-translate-y-1 border border-blue-200 dark:border-blue-800"
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
           >
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg mr-4">
-              <UserPlus className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-blue-900 dark:text-blue-100">Add Client</h3>
-              <p className="text-sm text-blue-700 dark:text-blue-300">Create new client</p>
-            </div>
+            <UserPlus className="h-5 w-5 mr-2" />
+            Add Client
           </button>
-
           <button
             onClick={() => setShowAddInvoiceModal(true)}
-            className="flex items-center p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-all duration-300 hover:-translate-y-1 border border-emerald-200 dark:border-emerald-800"
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
           >
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg mr-4">
-              <FileText className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-emerald-900 dark:text-emerald-100">Create Invoice</h3>
-              <p className="text-sm text-emerald-700 dark:text-emerald-300">Bill a client</p>
-            </div>
+            <FileText className="h-5 w-5 mr-2" />
+            Create Invoice
           </button>
-
-          <Link
-            to="/admin/payment-processing"
-            className="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-300 hover:-translate-y-1 border border-purple-200 dark:border-purple-800"
+          <button
+            onClick={fetchDashboardData}
+            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
           >
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg mr-4">
-              <CreditCard className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-purple-900 dark:text-purple-100">Process Payment</h3>
-              <p className="text-sm text-purple-700 dark:text-purple-300">Charge cards</p>
-            </div>
-          </Link>
-
-          <Link
-            to="/admin/agent-sales"
-            className="flex items-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-all duration-300 hover:-translate-y-1 border border-orange-200 dark:border-orange-800"
-          >
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg mr-4">
-              <Activity className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-orange-900 dark:text-orange-100">Agent Sales</h3>
-              <p className="text-sm text-orange-700 dark:text-orange-300">Manage agents</p>
-            </div>
-          </Link>
+            <RefreshCw className="h-5 w-5 mr-2" />
+            Refresh Data
+          </button>
         </div>
-      </div>
 
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Invoices */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {/* Total Users */}
+          <div className="group relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Invoices</h2>
-              <Link
-                to="/admin/invoices"
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium flex items-center"
-              >
-                View All
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Link>
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Users</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.totalUsers}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Users className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <TrendingUp className="h-4 w-4 mr-1 text-emerald-500" />
+              <span>Active platform users</span>
             </div>
           </div>
-          <div className="p-4">
-            {dashboardData.invoices.length > 0 ? (
-              <div className="space-y-3">
-                {dashboardData.invoices.slice(0, 5).map((invoice: any) => (
-                  <div key={invoice.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mr-3">
-                        <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {invoice.client_name || invoice.client?.fullName || 'Unknown Client'}
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {invoice.description}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                        ${parseFloat(invoice.amount || invoice.total || '0').toLocaleString()}
-                      </div>
-                      <div className="flex items-center justify-end">
-                        {getStatusIcon(invoice.status)}
-                        <span className={`ml-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(invoice.status)}`}>
-                          {invoice.status}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+
+          {/* Total Revenue */}
+          <div className="group relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Revenue</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">${dashboardData.stats.totalRevenue.toLocaleString()}</p>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <FileText className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No invoices yet</p>
-                <button
-                  onClick={() => setShowAddInvoiceModal(true)}
-                  className="mt-3 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create First Invoice
-                </button>
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <DollarSign className="h-7 w-7 text-white" />
               </div>
-            )}
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <BarChart3 className="h-4 w-4 mr-1 text-emerald-500" />
+              <span>Lifetime earnings</span>
+            </div>
+          </div>
+
+          {/* Total Invoices */}
+          <div className="group relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Invoices</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.totalInvoices}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <FileText className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <Activity className="h-4 w-4 mr-1 text-purple-500" />
+              <span>Documents created</span>
+            </div>
+          </div>
+
+          {/* Active Agents */}
+          <div className="group relative bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Active Agents</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.activeAgents}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Briefcase className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <Shield className="h-4 w-4 mr-1 text-orange-500" />
+              <span>Team members</span>
+            </div>
           </div>
         </div>
 
-        {/* Recent Clients */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Clients</h2>
-              <Link
-                to="/admin/clients"
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium flex items-center"
-              >
-                View All
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Link>
+        {/* Detailed Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">User Breakdown</h3>
+              <Users className="h-5 w-5 text-slate-400" />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Total Users</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{dashboardData.stats.totalUsers}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Clients</span>
+                <span className="font-semibold text-blue-600 dark:text-blue-400">{dashboardData.stats.totalClients}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Agents</span>
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">{dashboardData.stats.totalAgents}</span>
+              </div>
             </div>
           </div>
-          <div className="p-4">
-            {dashboardData.users.filter(u => u.role === 'CLIENT').length > 0 ? (
-              <div className="space-y-3">
-                {dashboardData.users
-                  .filter(u => u.role === 'CLIENT')
-                  .slice(0, 5)
-                  .map((client: any) => (
-                    <div key={client.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors">
+
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Financial Overview</h3>
+              <DollarSign className="h-5 w-5 text-slate-400" />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Total Revenue</span>
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">${dashboardData.stats.totalRevenue.toLocaleString()}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Pending Payments</span>
+                <span className="font-semibold text-amber-600 dark:text-amber-400">{dashboardData.stats.pendingPayments}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Total Invoices</span>
+                <span className="font-semibold text-purple-600 dark:text-purple-400">{dashboardData.stats.totalInvoices}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Platform Health</h3>
+              <Activity className="h-5 w-5 text-slate-400" />
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Active Agents</span>
+                <span className="font-semibold text-orange-600 dark:text-orange-400">{dashboardData.stats.activeAgents}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600 dark:text-slate-400">System Status</span>
+                <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-800 rounded-full">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Operational
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-600 dark:text-slate-400">Last Updated</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{new Date().toLocaleTimeString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recent Invoices */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Recent Invoices</h3>
+                <Link to="/admin/invoices" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
+                  View All <ArrowRight className="h-4 w-4 inline ml-1" />
+                </Link>
+              </div>
+            </div>
+            <div className="p-4">
+              {dashboardData.invoices.length > 0 ? (
+                <div className="space-y-3">
+                  {dashboardData.invoices.slice(0, 5).map((invoice: any) => (
+                    <div key={invoice.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center mr-3">
-                          <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mr-3">
+                          <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {client.fullName || client.full_name}
+                          <div className="text-sm font-medium text-slate-900 dark:text-white">
+                            {invoice.invoice_number || invoice.id}
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
-                            {client.email}
+                          <div className="text-xs text-slate-500 dark:text-slate-400">
+                            ${parseFloat(invoice.amount || '0').toFixed(2)}
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          client.isActive || client.is_active
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                        }`}>
-                          {(client.isActive || client.is_active) ? 'Active' : 'Inactive'}
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(invoice.status)}`}>
+                          {getStatusIcon(invoice.status)}
+                          <span className="ml-1 capitalize">
+                            {invoice.status || 'Unknown'}
+                          </span>
                         </span>
                       </div>
                     </div>
                   ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <FileText className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" />
+                  <h3 className="mt-2 text-sm font-medium text-slate-900 dark:text-white">No invoices yet</h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Create your first invoice to get started.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Recent Clients */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Recent Clients</h3>
+                <Link to="/admin/users" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
+                  View All <ArrowRight className="h-4 w-4 inline ml-1" />
+                </Link>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No clients yet</p>
-                <button
-                  onClick={() => setShowAddClientModal(true)}
-                  className="mt-3 inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add First Client
-                </button>
+            </div>
+            <div className="p-4">
+              {dashboardData.users.filter(u => u.role === 'CLIENT').length > 0 ? (
+                <div className="space-y-3">
+                  {dashboardData.users
+                    .filter(u => u.role === 'CLIENT')
+                    .slice(0, 5)
+                    .map((client: any) => (
+                      <div key={client.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center mr-3">
+                            <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium text-slate-900 dark:text-white">
+                              {client.fullName || client.full_name}
+                            </div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                              {client.email}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
+                            client.isActive || client.is_active
+                              ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800'
+                              : 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
+                          }`}>
+                            {(client.isActive || client.is_active) ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Users className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" />
+                  <h3 className="mt-2 text-sm font-medium text-slate-900 dark:text-white">No clients yet</h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Add your first client to get started.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats Footer */}
+        <div className="mt-12 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                {dashboardData.stats.totalClients}
               </div>
-            )}
+              <div className="text-sm text-slate-600 dark:text-slate-400">Active Clients</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+                ${dashboardData.stats.totalRevenue.toLocaleString()}
+              </div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">Total Revenue</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                {dashboardData.stats.pendingPayments}
+              </div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">Pending Payments</div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Business Overview */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Business Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-              {dashboardData.stats.totalClients}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Active Clients</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-              ${dashboardData.stats.totalRevenue.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-              {dashboardData.stats.pendingPayments}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Pending Payments</div>
-          </div>
-        </div>
-      </div>
+      {/* Modals */}
+      {showAddClientModal && (
+        <AddClientModal
+          isOpen={showAddClientModal}
+          onClose={() => setShowAddClientModal(false)}
+          onSuccess={handleClientAdded}
+        />
+      )}
 
-      {/* Add Client Modal */}
-      <AddClientModal
-        isOpen={showAddClientModal}
-        onClose={() => setShowAddClientModal(false)}
-        onClientAdded={handleClientAdded}
-      />
-
-      {/* Add Invoice Modal */}
-      <AddInvoiceModal
-        isOpen={showAddInvoiceModal}
-        onClose={() => setShowAddInvoiceModal(false)}
-        onInvoiceAdded={handleInvoiceAdded}
-      />
+      {showAddInvoiceModal && (
+        <AddInvoiceModal
+          isOpen={showAddInvoiceModal}
+          onClose={() => setShowAddInvoiceModal(false)}
+          onSuccess={handleInvoiceAdded}
+        />
+      )}
     </div>
   );
 }

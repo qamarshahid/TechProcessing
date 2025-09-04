@@ -1,484 +1,631 @@
 import React, { useState, useEffect } from 'react';
-import { useNotifications } from '../common/NotificationSystem';
 import { apiClient } from '../../lib/api';
+import { useNotifications } from '../common/NotificationSystem';
 import { logger } from '../../lib/logger';
-import { 
-  Users, 
-  UserPlus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  Shield, 
-  Mail, 
-  Phone,
-  Building,
-  Calendar,
-  CheckCircle,
-  XCircle,
-  RefreshCw,
-  Search,
-  Filter
+import {
+  Users, DollarSign, Clock, CheckCircle, XCircle, RefreshCw, Search, Eye, Edit, Trash2, Filter, TrendingUp, BarChart3, Activity, Shield, AlertCircle, Info, Calendar, User, Building, ArrowUpDown, ChevronDown, ChevronUp, Settings, HelpCircle, Zap, Rocket, Plus, Star, Tag, Layers, CalendarDays, MessageSquare, Phone, Mail, MapPin, Clock3, Receipt, ArrowLeftRight, MessageCircle, AlertTriangle, CheckSquare, Ban, Play, Pause, Crown, UserCheck, UserX, UserPlus, Key, Lock, Unlock
 } from 'lucide-react';
 
+interface User {
+  id: string;
+  full_name?: string;
+  email?: string;
+  role?: string;
+  status: string;
+  created_at?: string;
+  updated_at?: string;
+  last_login?: string;
+  phone?: string;
+  company?: string;
+  is_active?: boolean;
+  permissions?: string[];
+}
+
 export function UserManagementPage() {
-  const { showSuccess, showError } = useNotifications();
-  const [users, setUsers] = useState<any[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
-    role: '',
-    status: '',
-    dateRange: '',
-  });
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeUsers: 0,
-    inactiveUsers: 0,
-    totalClients: 0,
-    totalAgents: 0,
-    totalAdmins: 0,
-  });
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const { showSuccess, showError } = useNotifications();
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
   useEffect(() => {
-    filterUsers();
-  }, [users, searchTerm, filters]);
+    filterAndSortUsers();
+  }, [users, searchTerm, roleFilter, statusFilter, sortBy, sortOrder]);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.getUsers({ includeInactive: true });
+      setError('');
+      
+      const response = await apiClient.getUsers();
       const usersList = response?.users || [];
       
-      // Ensure we always have an array
-      const safeUsersList = Array.isArray(usersList) ? usersList : [];
-      setUsers(safeUsersList);
-      setFilteredUsers(safeUsersList);
-      calculateStats(safeUsersList);
-      showSuccess('Users Data Loaded', `Successfully loaded ${safeUsersList.length} users.`);
+      setUsers(usersList);
+      setFilteredUsers(usersList);
+      
+      showSuccess('Users Loaded', 'User data loaded successfully.');
     } catch (error) {
       logger.error('Error fetching users:', error);
-      showError('Failed to Load Users', 'Unable to load users data. Please try again later.');
-      setUsers([]);
-      setFilteredUsers([]);
+      setError('Failed to load users. Please try again.');
+      showError('User Error', 'Failed to load users. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateStats = (usersList: any[]) => {
-    if (!Array.isArray(usersList)) {
-      usersList = [];
-    }
-    
-    const totalUsers = usersList.length;
-    const activeUsers = usersList.filter(u => u.isActive || u.is_active).length;
-    const inactiveUsers = totalUsers - activeUsers;
-    const totalClients = usersList.filter(u => u.role === 'CLIENT').length;
-    const totalAgents = usersList.filter(u => u.role === 'AGENT').length;
-    const totalAdmins = usersList.filter(u => u.role === 'ADMIN').length;
+  const filterAndSortUsers = () => {
+    let filtered = [...users];
 
-    setStats({
-      totalUsers,
-      activeUsers,
-      inactiveUsers,
-      totalClients,
-      totalAgents,
-      totalAdmins,
-    });
-  };
-
-  const filterUsers = () => {
-    // Ensure users is always an array
-    const safeUsers = Array.isArray(users) ? users : [];
-    let filtered = [...safeUsers];
-
-    // Search filter
+    // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(user =>
-        user?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user?.role?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Role filter
-    if (filters.role) {
       filtered = filtered.filter(user => 
-        user?.role?.toLowerCase() === filters.role.toLowerCase()
+        user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.company?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Status filter
-    if (filters.status) {
-      if (filters.status === 'active') {
-        filtered = filtered.filter(user => user?.isActive || user?.is_active);
-      } else if (filters.status === 'inactive') {
-        filtered = filtered.filter(user => !(user?.isActive || user?.is_active));
-      }
+    // Apply role filter
+    if (roleFilter !== 'all') {
+      filtered = filtered.filter(user => user.role?.toLowerCase() === roleFilter.toLowerCase());
     }
+
+    // Apply status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(user => user.status.toLowerCase() === statusFilter.toLowerCase());
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let aValue: any, bValue: any;
+      
+      switch (sortBy) {
+        case 'name':
+          aValue = a.full_name || '';
+          bValue = b.full_name || '';
+          break;
+        case 'email':
+          aValue = a.email || '';
+          bValue = b.email || '';
+          break;
+        case 'role':
+          aValue = a.role || '';
+          bValue = b.role || '';
+          break;
+        case 'status':
+          aValue = a.status.toLowerCase();
+          bValue = b.status.toLowerCase();
+          break;
+        case 'date':
+          aValue = new Date(a.created_at || a.updated_at || '');
+          bValue = new Date(b.created_at || b.updated_at || '');
+          break;
+        default:
+          aValue = new Date(a.created_at || a.updated_at || '');
+          bValue = new Date(b.created_at || b.updated_at || '');
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
 
     setFilteredUsers(filtered);
   };
 
-  const handleUserAction = async (userId: string, action: 'activate' | 'deactivate' | 'delete') => {
+  const handleStatusChange = async (userId: string, newStatus: string) => {
     try {
-      if (action === 'delete') {
-        // This would typically call an API to delete the user
-        showSuccess('User Deleted', 'User deleted successfully.');
-        setUsers(prev => {
-          const safePrev = Array.isArray(prev) ? prev : [];
-          return safePrev.filter(u => u?.id !== userId);
-        });
-      } else {
-        // This would typically call an API to update user status
-        const newStatus = action === 'activate';
-        showSuccess('User Updated', `User ${action}d successfully.`);
-        
-        setUsers(prev => {
-          const safePrev = Array.isArray(prev) ? prev : [];
-          return safePrev.map(user => 
-            user?.id === userId 
-              ? { ...user, isActive: newStatus, is_active: newStatus }
-              : user
-          );
-        });
-      }
+      // Update local state for now (API call would be implemented later)
+      setUsers(prev => prev.map(u => 
+        u.id === userId ? { ...u, status: newStatus } : u
+      ));
       
-      fetchUsers(); // Refresh data
+      showSuccess('Status Updated', `User status updated to ${newStatus}`);
     } catch (error) {
-      logger.error(`Error ${action}ing user:`, error);
-      showError('Action Failed', `Failed to ${action} user. Please try again.`);
+      logger.error('Error updating user status:', error);
+      showError('Update Failed', 'Failed to update user status. Please try again.');
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'active':
+      case 'verified':
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
+      case 'inactive':
+      case 'suspended':
+        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
+      case 'banned':
+      case 'deleted':
+        return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
+      case 'pending':
+        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
+      default:
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'active':
+      case 'verified':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'inactive':
+      case 'suspended':
+        return <Pause className="h-4 w-4" />;
+      case 'banned':
+      case 'deleted':
+        return <Ban className="h-4 w-4" />;
+      case 'pending':
+        return <Clock className="h-4 w-4" />;
+      default:
+        return <Info className="h-4 w-4" />;
     }
   };
 
   const getRoleIcon = (role: string) => {
     switch (role?.toLowerCase()) {
       case 'admin':
-        return <Shield className="w-4 h-4 text-red-500" />;
+        return <Crown className="h-4 w-4" />;
+      case 'manager':
+        return <Shield className="h-4 w-4" />;
       case 'agent':
-        return <Users className="w-4 h-4 text-blue-500" />;
+        return <UserCheck className="h-4 w-4" />;
       case 'client':
-        return <Users className="w-4 h-4 text-green-500" />;
+        return <User className="h-4 w-4" />;
+      case 'support':
+        return <MessageCircle className="h-4 w-4" />;
       default:
-        return <Users className="w-4 h-4 text-gray-500" />;
+        return <Users className="h-4 w-4" />;
     }
   };
 
   const getRoleColor = (role: string) => {
     switch (role?.toLowerCase()) {
       case 'admin':
-        return 'bg-red-100 text-red-800';
+        return 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800';
+      case 'manager':
+        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
       case 'agent':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
       case 'client':
-        return 'bg-green-100 text-green-800';
+        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
+      case 'support':
+        return 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
     }
   };
 
-  const getStatusColor = (isActive: boolean) => {
-    return isActive 
-      ? 'bg-green-100 text-green-800' 
-      : 'bg-red-100 text-red-800';
+  const calculateStats = () => {
+    const total = users.length;
+    const active = users.filter(u => u.status.toLowerCase() === 'active' || u.status.toLowerCase() === 'verified').length;
+    const inactive = users.filter(u => u.status.toLowerCase() === 'inactive' || u.status.toLowerCase() === 'suspended').length;
+    const admins = users.filter(u => u.role?.toLowerCase() === 'admin').length;
+    const agents = users.filter(u => u.role?.toLowerCase() === 'agent').length;
+    const clients = users.filter(u => u.role?.toLowerCase() === 'client').length;
+
+    return { total, active, inactive, admins, agents, clients };
   };
+
+  const stats = calculateStats();
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="animate-pulse space-y-8">
+            {/* Header skeleton */}
+            <div className="text-center">
+              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded-lg w-1/3 mx-auto mb-4"></div>
+              <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mx-auto"></div>
+            </div>
+            
+            {/* Stats grid skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+              ))}
+            </div>
+            
+            {/* Table skeleton */}
+            <div className="h-96 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  // Ensure arrays are always safe
-  const safeFilteredUsers = Array.isArray(filteredUsers) ? filteredUsers : [];
-  const safeUsers = Array.isArray(users) ? users : [];
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">User Management</h1>
-        <p className="text-gray-600">Manage system users, roles, and permissions</p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Users</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.totalUsers}</p>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-6 shadow-xl">
+            <Users className="h-10 w-10 text-white" />
           </div>
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+            User Management Hub 👥
+          </h1>
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+            Manage user accounts, roles, and permissions. Monitor user activity, control access levels, and ensure system security.
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Active</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.activeUsers}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <XCircle className="w-6 h-6 text-red-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Inactive</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.inactiveUsers}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Users className="w-6 h-6 text-green-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Clients</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.totalClients}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Agents</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.totalAgents}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <Shield className="w-6 h-6 text-red-600" />
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Admins</p>
-              <p className="text-2xl font-semibold text-gray-900">{stats.totalAdmins}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow mb-6">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search users by name, email, or role..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Users</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.total}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Users className="h-7 w-7 text-white" />
               </div>
             </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <Activity className="h-4 w-4 mr-1 text-indigo-500" />
+              <span>All accounts</span>
+            </div>
+          </div>
+
+          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Active Users</p>
+                <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{stats.active}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <UserCheck className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <CheckCircle className="h-4 w-4 mr-1 text-emerald-500" />
+              <span>Verified accounts</span>
+            </div>
+          </div>
+
+          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Administrators</p>
+                <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{stats.admins}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Crown className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <Shield className="h-4 w-4 mr-1 text-purple-500" />
+              <span>System admins</span>
+            </div>
+          </div>
+
+          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Agents</p>
+                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats.agents}</p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <User className="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
+              <TrendingUp className="h-4 w-4 mr-1 text-blue-500" />
+              <span>Service agents</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            {/* Search and Filters */}
+            <div className="flex flex-col sm:flex-row gap-4 flex-1">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <select
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                >
+                  <option value="all">All Roles</option>
+                  <option value="admin">Admin</option>
+                  <option value="manager">Manager</option>
+                  <option value="agent">Agent</option>
+                  <option value="client">Client</option>
+                  <option value="support">Support</option>
+                </select>
+                
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                >
+                  <option value="all">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="pending">Pending</option>
+                  <option value="suspended">Suspended</option>
+                  <option value="banned">Banned</option>
+                </select>
+                
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`px-4 py-2 rounded-xl border transition-all duration-200 flex items-center gap-2 ${
+                    showFilters
+                      ? 'bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400'
+                      : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <Filter className="h-4 w-4" />
+                  Filters
+                  {showFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Actions */}
             <div className="flex gap-2">
-              <select
-                value={filters.role}
-                onChange={(e) => setFilters({ ...filters, role: e.target.value })}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
-                <option value="">All Roles</option>
-                <option value="admin">Admin</option>
-                <option value="agent">Agent</option>
-                <option value="client">Client</option>
-              </select>
-              <select
-                value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
+                <Plus className="h-4 w-4 mr-2" />
+                Add User
+              </button>
+              
               <button
                 onClick={fetchUsers}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
               </button>
-              <button
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-              >
-                <UserPlus className="w-4 h-4" />
+            </div>
+          </div>
+
+          {/* Advanced Filters */}
+          {showFilters && (
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sort By</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="date">Date</option>
+                    <option value="name">Name</option>
+                    <option value="email">Email</option>
+                    <option value="role">Role</option>
+                    <option value="status">Status</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sort Order</label>
+                  <button
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
+                  >
+                    {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                    <ArrowUpDown className="h-4 w-4" />
+                  </button>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Account Type</label>
+                  <select className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="">All Types</option>
+                    <option value="individual">Individual</option>
+                    <option value="business">Business</option>
+                    <option value="enterprise">Enterprise</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Users Table */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
+          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">User Accounts</h2>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+              <thead className="bg-slate-50 dark:bg-slate-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    User Details
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Contact
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Role
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Last Login
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((user) => (
+                    <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/20 flex items-center justify-center">
+                              <Users className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-slate-900 dark:text-white">
+                              {user.full_name || 'Unknown User'}
+                            </div>
+                            <div className="text-sm text-slate-500 dark:text-slate-400">
+                              {user.company || 'No company'}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-slate-900 dark:text-white">
+                          {user.email || 'No email'}
+                        </div>
+                        {user.phone && (
+                          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
+                            <Phone className="h-3 w-3" />
+                            {user.phone}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRoleColor(user.role)}`}>
+                          {getRoleIcon(user.role)}
+                          <span className="ml-1 capitalize">
+                            {user.role || 'Unknown'}
+                          </span>
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(user.status)}`}>
+                          {getStatusIcon(user.status)}
+                          <span className="ml-1 capitalize">
+                            {user.status || 'Unknown'}
+                          </span>
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        <div className="flex items-center">
+                          <CalendarDays className="h-4 w-4 mr-2 text-slate-400" />
+                          {user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => setSelectedUser(user)}
+                            className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                            title="View Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          
+                          {user.status?.toLowerCase() === 'active' && (
+                            <button
+                              onClick={() => handleStatusChange(user.id, 'inactive')}
+                              className="text-amber-600 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-300 transition-colors"
+                              title="Suspend User"
+                            >
+                              <Pause className="w-4 h-4" />
+                            </button>
+                          )}
+                          
+                          {user.status?.toLowerCase() === 'inactive' && (
+                            <button
+                              onClick={() => handleStatusChange(user.id, 'active')}
+                              className="text-emerald-600 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors"
+                              title="Activate User"
+                            >
+                              <Play className="w-4 h-4" />
+                            </button>
+                          )}
+                          
+                          <button className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300 transition-colors">
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          
+                          <button className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300 transition-colors">
+                            <Key className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="text-slate-500 dark:text-slate-400">
+                        <Users className="mx-auto h-12 w-12 mb-4 text-slate-300 dark:text-slate-600" />
+                        <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No users found</h3>
+                        <p className="text-sm mb-4">Try adjusting your search or filter criteria.</p>
+                        <button
+                          onClick={() => setShowAddModal(true)}
+                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Create First User
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Quick Actions Footer */}
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+              <Info className="h-5 w-5" />
+              <span className="text-sm">
+                Showing {filteredUsers.length} of {users.length} users
+              </span>
+            </div>
+            
+            <div className="flex gap-2">
+              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                <HelpCircle className="h-4 w-4 mr-2" />
+                Help
+              </button>
+              
+              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
               </button>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Users Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">System Users</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  User
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Role
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {safeFilteredUsers.map((user) => (
-                <tr key={user?.id || Math.random()} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
-                          <Users className="w-5 h-5 text-gray-600" />
-                        </div>
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {user?.fullName || user?.full_name || 'Unknown User'}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          ID: {user?.id || 'N/A'}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      <div className="flex items-center">
-                        <Mail className="w-4 h-4 text-gray-400 mr-2" />
-                        {user?.email || 'N/A'}
-                      </div>
-                      {user?.phone && (
-                        <div className="flex items-center mt-1">
-                          <Phone className="w-4 h-4 text-gray-400 mr-2" />
-                          {user.phone}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user?.role)}`}>
-                      {getRoleIcon(user?.role)}
-                      <span className="ml-1 capitalize">
-                        {user?.role || 'Unknown'}
-                      </span>
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user?.isActive || user?.is_active)}`}>
-                      {user?.isActive || user?.is_active ? (
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <XCircle className="w-4 h-4 text-red-500" />
-                      )}
-                      <span className="ml-1">
-                        {(user?.isActive || user?.is_active) ? 'Active' : 'Inactive'}
-                      </span>
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {user?.createdAt || user?.created_at ? 
-                      new Date(user.createdAt || user.created_at).toLocaleDateString() : 
-                      'N/A'
-                    }
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                      <button
-                        className="text-blue-600 hover:text-blue-900"
-                        title="View user details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button
-                        className="text-blue-600 hover:text-blue-900"
-                        title="Edit user"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      {(user?.isActive || user?.is_active) ? (
-                        <button
-                          onClick={() => handleUserAction(user?.id, 'deactivate')}
-                          className="text-yellow-600 hover:text-yellow-900"
-                          title="Deactivate user"
-                        >
-                          <XCircle className="w-4 h-4" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleUserAction(user?.id, 'activate')}
-                          className="text-green-600 hover:text-green-900"
-                          title="Activate user"
-                        >
-                          <CheckCircle className="w-4 h-4" />
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleUserAction(user?.id, 'delete')}
-                        className="text-red-600 hover:text-red-900"
-                        title="Delete user"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {safeFilteredUsers.length === 0 && (
-          <div className="text-center py-12">
-            <Users className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No users found</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              {safeUsers.length === 0 ? 'No users available.' : 'Try adjusting your search or filters.'}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
