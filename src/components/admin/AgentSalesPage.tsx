@@ -81,6 +81,10 @@ export default function AgentSalesPage() {
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [selectedSale, setSelectedSale] = useState<AgentSale | null>(null);
   const [notesText, setNotesText] = useState('');
+  
+  // Revoke modal state
+  const [showRevokeModal, setShowRevokeModal] = useState(false);
+  const [revokeReason, setRevokeReason] = useState('');
 
   // Check if user has admin access
   const isAdmin = user?.role === 'ADMIN';
@@ -206,22 +210,30 @@ export default function AgentSalesPage() {
     }
   };
 
-  const handleRevokeSaleApproval = async (saleId: string) => {
-    const reason = prompt('Please provide a reason for revoking this approval:');
-    if (!reason || !reason.trim()) return;
+  const handleRevokeSaleApproval = (saleId: string) => {
+    setSelectedSale(agentSales.find(sale => sale.id === saleId) || null);
+    setRevokeReason('');
+    setShowRevokeModal(true);
+  };
+
+  const handleConfirmRevoke = async () => {
+    if (!selectedSale || !revokeReason.trim()) return;
     
-    setUpdatingSale(saleId);
+    setUpdatingSale(selectedSale.id);
     try {
-      await apiClient.revokeSaleApproval(saleId, reason.trim());
+      await apiClient.revokeSaleApproval(selectedSale.id, revokeReason.trim());
       
       // Update local state
       setAgentSales(prev => prev.map(sale => 
-        sale.id === saleId 
+        sale.id === selectedSale.id 
           ? { ...sale, saleStatus: 'REVOKED' }
           : sale
       ));
       
       showSuccess('Approval Revoked', 'Sale approval has been revoked successfully.');
+      setShowRevokeModal(false);
+      setSelectedSale(null);
+      setRevokeReason('');
     } catch (error) {
       logger.error('Error revoking sale approval:', error);
       showError('Revoke Failed', 'Failed to revoke sale approval. Please try again.');
@@ -695,6 +707,79 @@ export default function AgentSalesPage() {
                     className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {updatingSale === selectedSale.id ? 'Saving...' : 'Save Notes'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Revoke Approval Modal */}
+        {showRevokeModal && selectedSale && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Revoke Sale Approval
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowRevokeModal(false);
+                    setSelectedSale(null);
+                    setRevokeReason('');
+                  }}
+                  className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+                >
+                  <XCircle className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <div className="p-6">
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    You are about to revoke the approval for this sale:
+                  </p>
+                  <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {selectedSale.clientName}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Amount: ${(selectedSale.saleAmount || 0).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Reason for revocation *
+                  </label>
+                  <textarea
+                    value={revokeReason}
+                    onChange={(e) => setRevokeReason(e.target.value)}
+                    placeholder="Please provide a reason for revoking this approval..."
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-slate-700 dark:text-white resize-none"
+                    rows={3}
+                    required
+                  />
+                </div>
+                
+                <div className="flex space-x-3 mt-4">
+                  <button
+                    onClick={() => {
+                      setShowRevokeModal(false);
+                      setSelectedSale(null);
+                      setRevokeReason('');
+                    }}
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmRevoke}
+                    disabled={updatingSale === selectedSale.id || !revokeReason.trim()}
+                    className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {updatingSale === selectedSale.id ? 'Revoking...' : 'Revoke Approval'}
                   </button>
                 </div>
               </div>
