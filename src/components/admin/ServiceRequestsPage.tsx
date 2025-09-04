@@ -53,11 +53,14 @@ export function ServiceRequestsPage() {
     deadline: '',
     contact_email: '',
     contact_phone: '',
+    client_id: '',
   });
+  const [clients, setClients] = useState<any[]>([]);
   const { showSuccess, showError } = useNotifications();
 
   useEffect(() => {
     fetchRequests();
+    fetchClients();
   }, []);
 
   useEffect(() => {
@@ -82,6 +85,17 @@ export function ServiceRequestsPage() {
       showError('Request Error', 'Failed to load service requests. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchClients = async () => {
+    try {
+      const response = await apiClient.getUsers();
+      const clientsList = response?.users?.filter((user: any) => user.role === 'CLIENT') || [];
+      setClients(clientsList);
+    } catch (error) {
+      logger.error('Error fetching clients:', error);
+      showError('Client Error', 'Failed to load clients list.');
     }
   };
 
@@ -211,9 +225,10 @@ export function ServiceRequestsPage() {
         deadline: newRequestForm.deadline || undefined,
         contact_email: newRequestForm.contact_email || undefined,
         contact_phone: newRequestForm.contact_phone || undefined,
+        client_id: newRequestForm.client_id,
       };
 
-      await apiClient.createServiceRequest(requestData);
+      await apiClient.createServiceRequestAdmin(requestData);
       
       showSuccess('Service Request Created', 'The service request has been created successfully.');
       
@@ -227,6 +242,7 @@ export function ServiceRequestsPage() {
         deadline: '',
         contact_email: '',
         contact_phone: '',
+        client_id: '',
       });
       
       setShowAddModal(false);
@@ -1090,6 +1106,25 @@ export function ServiceRequestsPage() {
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                    Client *
+                  </label>
+                  <select
+                    value={newRequestForm.client_id}
+                    onChange={(e) => setNewRequestForm(prev => ({ ...prev, client_id: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    required
+                  >
+                    <option value="">Select a client</option>
+                    {clients.map((client) => (
+                      <option key={client.id} value={client.id}>
+                        {client.fullName || client.email} ({client.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Service Type

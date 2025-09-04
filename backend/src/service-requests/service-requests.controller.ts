@@ -32,6 +32,14 @@ export class ServiceRequestsController {
     return this.serviceRequestsService.create({ ...createServiceRequestDto }, req.user.id);
   }
 
+  @Post('admin')
+  @Roles(UserRole.ADMIN)
+  createForClient(@Body() createServiceRequestDto: CreateServiceRequestDto, @Request() req) {
+    // Admin can create service requests for any client
+    const clientId = createServiceRequestDto.clientId || req.user.id;
+    return this.serviceRequestsService.create({ ...createServiceRequestDto, clientId }, clientId);
+  }
+
   @Get()
   @Roles(UserRole.ADMIN)
   async findAll() {

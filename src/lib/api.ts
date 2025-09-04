@@ -366,6 +366,13 @@ class ApiClient {
     });
   }
 
+  async createServiceRequestAdmin(requestData: any) {
+    return this.request('/service-requests/admin', {
+      method: 'POST',
+      body: JSON.stringify(requestData),
+    });
+  }
+
   async updateServiceRequest(requestId: string, updateData: any) {
     return this.request(`/service-requests/${requestId}`, {
       method: 'PATCH',
