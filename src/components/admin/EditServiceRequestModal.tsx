@@ -84,13 +84,14 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
     try {
       const updateData = {
         description: formData.description,
-        budget: formData.estimated_cost ? parseFloat(formData.estimated_cost) : null,
-        timeline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
-        status: formData.status,
-        adminNotes: formData.priority ? `Priority: ${formData.priority}` : null,
-        assignedTo: formData.assigned_to || null,
+        budget: formData.estimated_cost && formData.estimated_cost.trim() !== '' ? parseFloat(formData.estimated_cost) : undefined,
+        timeline: formData.deadline ? new Date(formData.deadline).toISOString().split('T')[0] : undefined,
+        status: formData.status && formData.status.trim() !== '' ? formData.status : undefined,
+        adminNotes: formData.priority ? `Priority: ${formData.priority}` : undefined,
+        assignedTo: formData.assigned_to && formData.assigned_to.trim() !== '' ? formData.assigned_to : undefined,
       };
 
+      console.log('Sending update data:', updateData);
       await apiClient.updateServiceRequest(request.id, updateData);
       
       showSuccess('Request Updated', 'Service request has been updated successfully.');
