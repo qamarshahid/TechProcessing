@@ -26,6 +26,9 @@ interface CloserStats {
   totalSales: number;
   totalSalesValue: number;
   totalCommission: number;
+  approvedSales: number;
+  approvedSalesValue: number;
+  approvedCommission: number;
   paidCommission: number;
   pendingCommission: number;
 }
@@ -461,10 +464,15 @@ export function CloserManagementPage() {
                         <div className="text-sm text-gray-900 dark:text-white">
                           {stats ? (
                             <div>
-                              <div>{stats.totalSales} sales</div>
+                              <div>{stats.totalSales} total sales</div>
                               <div className="text-gray-500 dark:text-gray-400">
                                 ${stats.totalSalesValue.toLocaleString()}
                               </div>
+                              {stats.approvedSales !== stats.totalSales && (
+                                <div className="text-xs text-blue-600 dark:text-blue-400">
+                                  {stats.approvedSales} approved
+                                </div>
+                              )}
                             </div>
                           ) : (
                             <span className="text-gray-400">No data</span>
@@ -475,10 +483,15 @@ export function CloserManagementPage() {
                         <div className="text-sm text-gray-900 dark:text-white">
                           {stats ? (
                             <div>
-                              <div>${stats.totalCommission.toLocaleString()}</div>
+                              <div>${stats.totalCommission.toLocaleString()} total</div>
                               <div className="text-gray-500 dark:text-gray-400">
                                 ${stats.pendingCommission.toLocaleString()} pending
                               </div>
+                              {stats.approvedCommission !== stats.totalCommission && (
+                                <div className="text-xs text-green-600 dark:text-green-400">
+                                  ${stats.approvedCommission.toLocaleString()} approved
+                                </div>
+                              )}
                             </div>
                           ) : (
                             <span className="text-gray-400">No data</span>

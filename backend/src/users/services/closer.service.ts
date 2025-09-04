@@ -216,11 +216,79 @@ export class CloserService {
     const stats = [];
 
     for (const closer of closers) {
-      const closerStats = await this.getCloserStats(closer.id);
+      const closerStats = await this.getCloserStatsForManagement(closer.id);
       stats.push(closerStats);
     }
 
     return stats;
+  }
+
+  async getCloserStatsForManagement(closerId: string): Promise<any> {
+    const closer = await this.findOne(closerId);
+
+    // Count all sales (including pending) for management view
+    const totalSales = await this.agentSaleRepository.count({
+      where: { closerId },
+    });
+
+    const totalSalesValue = await this.agentSaleRepository
+      .createQueryBuilder('sale')
+      .select('SUM(sale.saleAmount)', 'total')
+      .where('sale.closerId = :closerId', { closerId })
+      .getRawOne();
+
+    const totalCommission = await this.agentSaleRepository
+      .createQueryBuilder('sale')
+      .select('SUM(sale.closerCommission)', 'total')
+      .where('sale.closerId = :closerId', { closerId })
+      .getRawOne();
+
+    // Only count approved sales for paid/pending commission
+    const approvedSales = await this.agentSaleRepository.count({
+      where: { closerId, saleStatus: SaleStatus.APPROVED },
+    });
+
+    const approvedSalesValue = await this.agentSaleRepository
+      .createQueryBuilder('sale')
+      .select('SUM(sale.saleAmount)', 'total')
+      .where('sale.closerId = :closerId', { closerId })
+      .andWhere('sale.saleStatus = :status', { status: SaleStatus.APPROVED })
+      .getRawOne();
+
+    const approvedCommission = await this.agentSaleRepository
+      .createQueryBuilder('sale')
+      .select('SUM(sale.closerCommission)', 'total')
+      .where('sale.closerId = :closerId', { closerId })
+      .andWhere('sale.saleStatus = :status', { status: SaleStatus.APPROVED })
+      .getRawOne();
+
+    const paidCommission = await this.agentSaleRepository
+      .createQueryBuilder('sale')
+      .select('SUM(sale.closerCommission)', 'total')
+      .where('sale.closerId = :closerId', { closerId })
+      .andWhere('sale.saleStatus = :status', { status: SaleStatus.APPROVED })
+      .andWhere('sale.commissionStatus = :commissionStatus', { commissionStatus: CommissionStatus.PAID })
+      .getRawOne();
+
+    const pendingCommission = await this.agentSaleRepository
+      .createQueryBuilder('sale')
+      .select('SUM(sale.closerCommission)', 'total')
+      .where('sale.closerId = :closerId', { closerId })
+      .andWhere('sale.saleStatus = :status', { status: SaleStatus.APPROVED })
+      .andWhere('sale.commissionStatus = :commissionStatus', { commissionStatus: CommissionStatus.PENDING })
+      .getRawOne();
+
+    return {
+      closer,
+      totalSales,
+      totalSalesValue: parseFloat(totalSalesValue.total || '0'),
+      totalCommission: parseFloat(totalCommission.total || '0'),
+      approvedSales,
+      approvedSalesValue: parseFloat(approvedSalesValue.total || '0'),
+      approvedCommission: parseFloat(approvedCommission.total || '0'),
+      paidCommission: parseFloat(paidCommission.total || '0'),
+      pendingCommission: parseFloat(pendingCommission.total || '0'),
+    };
   }
 
   async getFilteredCloserStats(filters: any): Promise<any> {
