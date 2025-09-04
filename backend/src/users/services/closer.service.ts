@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository, Between, Not } from 'typeorm';
 import { Closer, CloserStatus } from '../entities/closer.entity';
 import { AgentSale, SaleStatus, CommissionStatus } from '../entities/agent-sale.entity';
 import { CreateCloserDto } from '../dto/create-closer.dto';
@@ -226,21 +226,26 @@ export class CloserService {
   async getCloserStatsForManagement(closerId: string): Promise<any> {
     const closer = await this.findOne(closerId);
 
-    // Count all sales (including pending) for management view
+    // Count all sales (including pending) but exclude rejected sales
     const totalSales = await this.agentSaleRepository.count({
-      where: { closerId },
+      where: { 
+        closerId,
+        saleStatus: Not(SaleStatus.REJECTED)
+      },
     });
 
     const totalSalesValue = await this.agentSaleRepository
       .createQueryBuilder('sale')
       .select('SUM(sale.saleAmount)', 'total')
       .where('sale.closerId = :closerId', { closerId })
+      .andWhere('sale.saleStatus != :rejectedStatus', { rejectedStatus: SaleStatus.REJECTED })
       .getRawOne();
 
     const totalCommission = await this.agentSaleRepository
       .createQueryBuilder('sale')
       .select('SUM(sale.closerCommission)', 'total')
       .where('sale.closerId = :closerId', { closerId })
+      .andWhere('sale.saleStatus != :rejectedStatus', { rejectedStatus: SaleStatus.REJECTED })
       .getRawOne();
 
     // Only count approved sales for paid/pending commission

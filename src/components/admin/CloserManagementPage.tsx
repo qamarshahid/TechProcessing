@@ -265,7 +265,7 @@ export function CloserManagementPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Commission</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  ${closerStats.reduce((sum, stats) => sum + stats.totalCommission, 0).toLocaleString()}
+                  ${(closerStats.reduce((sum, stats) => sum + (stats.totalCommission || 0), 0)).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -279,7 +279,7 @@ export function CloserManagementPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending Commission</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  ${closerStats.reduce((sum, stats) => sum + stats.pendingCommission, 0).toLocaleString()}
+                  ${(closerStats.reduce((sum, stats) => sum + (stats.pendingCommission || 0), 0)).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -466,7 +466,7 @@ export function CloserManagementPage() {
                             <div>
                               <div>{stats.totalSales} total sales</div>
                               <div className="text-gray-500 dark:text-gray-400">
-                                ${stats.totalSalesValue.toLocaleString()}
+                                ${(stats.totalSalesValue || 0).toLocaleString()}
                               </div>
                               {stats.approvedSales !== stats.totalSales && (
                                 <div className="text-xs text-blue-600 dark:text-blue-400">
@@ -483,13 +483,13 @@ export function CloserManagementPage() {
                         <div className="text-sm text-gray-900 dark:text-white">
                           {stats ? (
                             <div>
-                              <div>${stats.totalCommission.toLocaleString()} total</div>
+                              <div>${(stats.totalCommission || 0).toLocaleString()} total</div>
                               <div className="text-gray-500 dark:text-gray-400">
-                                ${stats.pendingCommission.toLocaleString()} pending
+                                ${(stats.pendingCommission || 0).toLocaleString()} pending
                               </div>
                               {stats.approvedCommission !== stats.totalCommission && (
                                 <div className="text-xs text-green-600 dark:text-green-400">
-                                  ${stats.approvedCommission.toLocaleString()} approved
+                                  ${(stats.approvedCommission || 0).toLocaleString()} approved
                                 </div>
                               )}
                             </div>
