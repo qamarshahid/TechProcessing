@@ -537,9 +537,25 @@ export class ServiceRequestsService {
   }
 
   private async findAllWithRawSQL(): Promise<ServiceRequest[]> {
-    // Bypass RLS temporarily
+    // Bypass RLS temporarily and include related data
     const result = await this.serviceRequestRepository.query(
-      `SELECT * FROM service_requests ORDER BY created_at DESC`
+      `SELECT 
+        sr.*,
+        u.id as client_id,
+        u.email as client_email,
+        u.email as contact_email,
+        u.full_name as client_name,
+        u.company_name as client_company_name,
+        u.phone as contact_phone,
+        sp.id as service_id,
+        sp.name as service_type,
+        sp.description as service_description,
+        sp.price as service_price,
+        sp.category as service_category
+      FROM service_requests sr
+      LEFT JOIN users u ON sr.client_id = u.id
+      LEFT JOIN service_packages sp ON sr.service_id = sp.id
+      ORDER BY sr.created_at DESC`
     );
     return result as ServiceRequest[];
   }
