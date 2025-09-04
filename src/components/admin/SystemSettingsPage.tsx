@@ -147,8 +147,8 @@ export function SystemSettingsPage() {
     activeUsers: 0,
     activeUsersByRole: {
       total: 0,
-      byRole: { ADMIN: 0, AGENT: 0, CLIENT: 0 },
-      details: { admins: [], agents: [], clients: [] }
+      byRole: { ADMIN: 0, AGENT: 0, CLIENT: 0, CLOSER: 0 },
+      details: { admins: [], agents: [], clients: [], closers: [] }
     },
     databaseConnections: 0,
     // Enhanced system data
@@ -223,8 +223,8 @@ export function SystemSettingsPage() {
         activeUsers: status.activeUsers?.total || 0,
         activeUsersByRole: status.activeUsers || {
           total: 0,
-          byRole: { ADMIN: 0, AGENT: 0, CLIENT: 0 },
-          details: { admins: [], agents: [], clients: [] }
+          byRole: { ADMIN: 0, AGENT: 0, CLIENT: 0, CLOSER: 0 },
+          details: { admins: [], agents: [], clients: [], closers: [] }
         },
         databaseConnections: status.databaseConnections || 0,
         // Enhanced system data
@@ -476,6 +476,10 @@ export function SystemSettingsPage() {
                   <div className="flex items-center space-x-2">
                     <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                     <span>Client: {systemStatus.activeUsersByRole?.byRole?.CLIENT || 0}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    <span>Closer: {systemStatus.activeUsersByRole?.byRole?.CLOSER || 0}</span>
                   </div>
                 </div>
               </div>

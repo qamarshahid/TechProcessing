@@ -6,6 +6,10 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../common/enums/user-role.enum';
 import { Public } from '../common/decorators/public.decorator';
 import { SessionTrackingService } from '../common/services/session-tracking.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
+import { Closer } from '../users/entities/closer.entity';
 import * as os from 'os';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -13,12 +17,18 @@ import * as path from 'path';
 @ApiTags('system')
 @Controller('system')
 export class SystemController {
-  constructor(private sessionTrackingService: SessionTrackingService) {}
+  constructor(
+    private sessionTrackingService: SessionTrackingService,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(Closer)
+    private closerRepository: Repository<Closer>,
+  ) {}
   @Get('status')
   @Public()
   @ApiOperation({ summary: 'Get system status' })
   @ApiResponse({ status: 200, description: 'System status retrieved successfully' })
-  getStatus() {
+  async getStatus() {
     const uptime = process.uptime();
     const memoryUsage = process.memoryUsage();
     const totalMemory = os.totalmem();
@@ -92,7 +102,7 @@ export class SystemController {
         interfaces: Object.keys(os.networkInterfaces()).length,
         hostname: os.hostname(),
       },
-      activeUsers: this.getActiveUsersData(),
+      activeUsers: await this.getActiveUsersData(),
       databaseConnections: this.getDatabaseConnectionsCount(), // This would need to be implemented
     };
   }
@@ -118,13 +128,103 @@ export class SystemController {
     }
   }
 
-  private getActiveUsersData() {
-    const activeUsersData = this.sessionTrackingService.getActiveUsersByRole();
-    return {
-      total: activeUsersData.total,
-      byRole: activeUsersData.byRole,
-      details: activeUsersData.details,
-    };
+  private async getActiveUsersData() {
+    try {
+      // Get user counts by role from database
+      const userCounts = await this.userRepository
+        .createQueryBuilder('user')
+        .select('user.role', 'role')
+        .addSelect('COUNT(*)', 'count')
+        .where('user.isActive = :isActive', { isActive: true })
+        .groupBy('user.role')
+        .getRawMany();
+
+      // Get closer count from database
+      const closerCount = await this.closerRepository
+        .createQueryBuilder('closer')
+        .where('closer.status = :status', { status: 'ACTIVE' })
+        .getCount();
+
+      // Initialize counts
+      const byRole = {
+        ADMIN: 0,
+        AGENT: 0,
+        CLIENT: 0,
+        CLOSER: closerCount,
+      };
+
+      // Process user counts
+      userCounts.forEach((item) => {
+        byRole[item.role] = parseInt(item.count);
+      });
+
+      const total = byRole.ADMIN + byRole.AGENT + byRole.CLIENT + byRole.CLOSER;
+
+      return {
+        total,
+        byRole,
+        details: {
+          admins: await this.getUserDetailsByRole(UserRole.ADMIN),
+          agents: await this.getUserDetailsByRole(UserRole.AGENT),
+          clients: await this.getUserDetailsByRole(UserRole.CLIENT),
+          closers: await this.getCloserDetails(),
+        },
+      };
+    } catch (error) {
+      console.error('Error getting active users data:', error);
+      // Fallback to session tracking if database query fails
+      const activeUsersData = this.sessionTrackingService.getActiveUsersByRole();
+      return {
+        total: activeUsersData.total,
+        byRole: { ...activeUsersData.byRole, CLOSER: 0 },
+        details: { ...activeUsersData.details, closers: [] },
+      };
+    }
+  }
+
+  private async getUserDetailsByRole(role: UserRole) {
+    try {
+      const users = await this.userRepository
+        .createQueryBuilder('user')
+        .select(['user.email', 'user.fullName', 'user.lastLogin'])
+        .where('user.role = :role', { role })
+        .andWhere('user.isActive = :isActive', { isActive: true })
+        .orderBy('user.lastLogin', 'DESC')
+        .limit(10) // Limit to 10 most recent for performance
+        .getMany();
+
+      return users.map(user => ({
+        email: user.email,
+        fullName: user.fullName,
+        lastActivity: user.lastLogin || user.createdAt,
+        ipAddress: 'N/A', // Not stored in user table
+      }));
+    } catch (error) {
+      console.error(`Error getting ${role} user details:`, error);
+      return [];
+    }
+  }
+
+  private async getCloserDetails() {
+    try {
+      const closers = await this.closerRepository
+        .createQueryBuilder('closer')
+        .select(['closer.email', 'closer.closerName', 'closer.createdAt'])
+        .where('closer.status = :status', { status: 'ACTIVE' })
+        .orderBy('closer.createdAt', 'DESC')
+        .limit(10) // Limit to 10 most recent for performance
+        .getMany();
+
+      return closers.map(closer => ({
+        email: closer.email || 'N/A',
+        fullName: closer.closerName,
+        lastActivity: closer.createdAt,
+        ipAddress: 'N/A', // Not stored in closer table
+      }));
+    } catch (error) {
+      console.error('Error getting closer details:', error);
+      return [];
+    }
   }
 
   private getDatabaseConnectionsCount() {
