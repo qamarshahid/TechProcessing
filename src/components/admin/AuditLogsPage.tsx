@@ -69,6 +69,8 @@ interface AuditLog {
   requestId?: string;
   userAgent?: string;
   location?: string;
+  location_details?: any;
+  full_ip_address?: string;
   changes?: any;
   outcome?: string;
   riskLevel?: string;
@@ -881,8 +883,15 @@ export function AuditLogsPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                         <div className="flex items-center">
                           <Globe className="h-4 w-4 mr-2 text-slate-400" />
-                          <div className="max-w-32 truncate" title={log.ip_address || log.ipAddress || 'N/A'}>
-                            {formatIpAddress(log.ip_address || log.ipAddress)}
+                          <div className="max-w-32">
+                            <div className="truncate" title={`${log.full_ip_address || log.ip_address || 'N/A'} - ${log.location || 'Unknown Location'}`}>
+                              {formatIpAddress(log.ip_address || log.ipAddress)}
+                            </div>
+                            {log.location && log.location !== 'Unknown Location' && (
+                              <div className="text-xs text-slate-400 dark:text-slate-500 truncate" title={log.location}>
+                                📍 {log.location}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>

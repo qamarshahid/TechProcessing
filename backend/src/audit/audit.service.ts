@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuditLog } from './entities/audit-log.entity';
 import { User } from '../users/entities/user.entity';
+import { IpGeolocationService } from '../common/services/ip-geolocation.service';
 
 interface LogEntry {
   action: string;
@@ -19,6 +20,7 @@ export class AuditService {
   constructor(
     @InjectRepository(AuditLog)
     private auditLogRepository: Repository<AuditLog>,
+    private ipGeolocationService: IpGeolocationService,
   ) {}
 
   private getSeverityFromAction(action: string): string {
@@ -163,11 +165,26 @@ export class AuditService {
   }
 
   async log(entry: LogEntry): Promise<AuditLog> {
+    // Get location information for the IP address
+    let locationInfo = {};
+    if (entry.ipAddress && entry.ipAddress !== 'Unknown') {
+      try {
+        locationInfo = await this.ipGeolocationService.getLocationFromIp(entry.ipAddress);
+      } catch (error) {
+        console.error('Error getting location for IP:', entry.ipAddress, error);
+      }
+    }
+
     const auditLog = this.auditLogRepository.create({
       action: entry.action,
       entityType: entry.entityType,
       entityId: entry.entityId,
-      details: entry.details,
+      details: {
+        ...entry.details,
+        location: locationInfo,
+        ipAddress: entry.ipAddress,
+        userAgent: entry.userAgent,
+      },
       userId: entry.user?.id,
       ipAddress: entry.ipAddress,
       userAgent: entry.userAgent,
@@ -228,6 +245,11 @@ export class AuditService {
           log.entityId
         );
 
+        const location = log.details?.location || {};
+        const locationString = location.country && location.city 
+          ? `${location.city}, ${location.country}` 
+          : location.country || 'Unknown Location';
+
         return {
           id: log.id,
           timestamp: log.createdAt,
@@ -237,8 +259,9 @@ export class AuditService {
           user_name: log.user?.fullName || 'System',
           userName: log.user?.fullName || 'System',
           user_email: log.user?.email || null,
-          ip_address: log.ipAddress || 'N/A',
-          ipAddress: log.ipAddress || 'N/A',
+          ip_address: this.ipGeolocationService.formatIpForDisplay(log.ipAddress || 'N/A'),
+          ipAddress: this.ipGeolocationService.formatIpForDisplay(log.ipAddress || 'N/A'),
+          full_ip_address: log.ipAddress || 'N/A', // Keep full IP for reference
           severity: this.getSeverityFromAction(log.action),
           level: this.getSeverityFromAction(log.action),
           category: this.getCategoryFromAction(log.action),
@@ -254,7 +277,8 @@ export class AuditService {
           sessionId: log.details?.sessionId || null,
           requestId: log.details?.requestId || null,
           userAgent: log.details?.userAgent || null,
-          location: log.details?.location || 'Unknown',
+          location: locationString,
+          location_details: location,
           changes: log.details?.changes || null,
           outcome: log.details?.outcome || 'Success',
           riskLevel: this.getRiskLevel(log.action, log.details),
