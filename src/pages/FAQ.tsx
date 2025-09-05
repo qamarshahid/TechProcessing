@@ -78,44 +78,84 @@ const FAQ: React.FC = () => {
 
   const faqs = [
     {
-      question: 'What do TechProcessing provide?',
-      answer: 'TechProcessing is a digital marketing, web development, SEO, social media management and custom software solution provider to all types of businesses.'
+      question: 'What services does TechProcessing LLC offer?',
+      answer: 'TechProcessing LLC provides comprehensive digital solutions including SEO services, Google My Business optimization, social media marketing and management, LLC formation services, graphic design, local search optimization, and Google Ads management. We also offer web development and custom software solutions for businesses of all sizes.'
     },
     {
-      question: 'So, what to start with TechProcessing?',
-      answer: 'No need to do lots of research, just visit us through our site or schedule a free strategy session. We will be talking to your business about your desires and giving the best available solutions.'
+      question: 'How do I get started with TechProcessing LLC?',
+      answer: 'Getting started is easy! Simply visit our website, fill out our contact form, or call us directly. We offer a free consultation where we discuss your business goals and provide customized solutions that fit your needs and budget. No lengthy research required - we handle everything for you.'
     },
     {
-      question: 'Would TechProcessing be appropriate to small enterprises and startups?',
-      answer: 'Yes! We are innovative to work with startups, small businesses, and big enterprises; we can provide you with a solution that fits your needs and budget, depending on them.'
+      question: 'Do you work with small businesses and startups?',
+      answer: 'Absolutely! We specialize in working with startups, small businesses, and large enterprises. Our flexible packages and pricing are designed to accommodate businesses at every stage of growth. We believe every business deserves professional digital marketing services.'
     },
     {
-      question: 'What steps does TechProcessing take in order to assure project quality?',
-      answer: 'Our procedure is open and transparent, we employ the latest technologies and provide an exceptional team of professionals who check each project in terms of quality and performance.'
+      question: 'How long does it take to see results from SEO services?',
+      answer: 'SEO is a long-term strategy, and results typically start showing within 3-6 months. However, some improvements like technical SEO fixes and local search optimization can show results within 4-8 weeks. We provide monthly reports to track progress and keep you informed of all improvements.'
     },
     {
-      question: 'Will I have access to the rating of the progress of my project?',
-      answer: 'Absolutely. We maintain frequent updates and deliver elaborate reports and even communicate with your project manager to keep you in touch with what is going on.'
+      question: 'What is included in your social media management packages?',
+      answer: 'Our social media management includes content creation, posting schedules, community management, engagement monitoring, performance analytics, and monthly strategy reviews. We manage all major platforms including Facebook, Instagram, LinkedIn, Twitter, and TikTok based on your target audience.'
     },
     {
-      question: 'Is there after-sales service and maintenance by TechProcessing?',
-      answer: 'Indeed, we also provide follow up services and maintenance of the websites and maintenance of your online marketing.'
+      question: 'How much do your services cost?',
+      answer: 'Our pricing varies based on the scope and scale of your project. We offer flexible packages starting from basic plans for small businesses to comprehensive enterprise solutions. Contact us for a personalized quote that fits your budget and business goals.'
     },
     {
-      question: 'Why is TechProcessing not another agency?',
-      answer: 'We are a team working in-house, we are honest in our reporting, our merchandising strategies are ROI-driven and we are client-oriented.'
+      question: 'Do you provide ongoing support and maintenance?',
+      answer: 'Yes! We provide comprehensive after-sales support including website maintenance, regular updates, performance monitoring, and ongoing optimization. Our support team is available to help with any questions or issues that may arise.'
     },
     {
-      question: 'What are the charges of your services?',
-      answer: 'The cost is pegged on the size and scale of your project. Get in touch with us to get a personalised quote or learn about our flexible packages.'
+      question: 'Can you help with both paid and organic marketing?',
+      answer: 'Absolutely! We offer a complete digital marketing suite including both organic strategies (SEO, content marketing, social media) and paid advertising (Google Ads, Facebook Ads, LinkedIn Ads). We can create integrated campaigns that maximize your ROI across all channels.'
     },
     {
-      question: 'Is it possible to use TechProcessing to help in paid and organic marketing?',
-      answer: 'Yes! We provide a full package of digital marketing services, with the involvement of SEO, content marketing, social media management, and paid advertising campaigns.'
+      question: 'How do you ensure project quality?',
+      answer: 'We maintain strict quality control through our transparent processes, use of latest technologies, and experienced team of professionals. Every project goes through multiple review stages, and we provide regular updates and detailed reports to ensure you\'re satisfied with the results.'
     },
     {
-      question: 'What is the way to contact TechProcessing in case of support or questions?',
-      answer: 'You can also contact us with the help of the contact form at our site, email, or call. We are also available to answer your questions or require any help.'
+      question: 'What makes TechProcessing LLC different from other agencies?',
+      answer: 'We are an in-house team that focuses on ROI-driven strategies, transparent reporting, and client-oriented service. Unlike many agencies, we provide honest assessments, realistic timelines, and personalized attention to each client. Our success is measured by your success.'
+    },
+    {
+      question: 'Do you offer Google My Business optimization?',
+      answer: 'Yes! Our Google My Business optimization services include profile setup and optimization, review management, local SEO, posting regular updates, managing photos and videos, and monitoring performance metrics. This helps improve your local search visibility and attract more customers.'
+    },
+    {
+      question: 'Can you help with LLC formation?',
+      answer: 'Absolutely! We provide complete LLC formation services including business name availability check, filing with the state, obtaining necessary permits and licenses, and ongoing compliance support. We make the process simple and stress-free so you can focus on growing your business.'
+    },
+    {
+      question: 'How often will I receive updates on my project?',
+      answer: 'We provide regular updates through multiple channels. You\'ll receive weekly progress reports, monthly strategy reviews, and have access to your dedicated project manager. We also use project management tools where you can track progress in real-time.'
+    },
+    {
+      question: 'Do you work with businesses outside the United States?',
+      answer: 'While we primarily serve US-based businesses, we do work with international clients for digital marketing services. However, our LLC formation services are specifically for US businesses. Contact us to discuss your specific needs and location.'
+    },
+    {
+      question: 'What if I\'m not satisfied with the results?',
+      answer: 'Your satisfaction is our priority. We work closely with you throughout the project to ensure expectations are met. If you\'re not satisfied, we\'ll work with you to make adjustments and improvements. We offer revision rounds and are committed to delivering results that exceed your expectations.'
+    },
+    {
+      question: 'How do I contact TechProcessing LLC for support?',
+      answer: 'You can reach us through multiple channels: call us directly, email us, use our contact form on the website, or schedule a consultation. Our support team is available during business hours and responds to inquiries within 24 hours. We\'re here to help with any questions or concerns.'
+    },
+    {
+      question: 'Do you provide custom web development services?',
+      answer: 'Yes! We offer custom web development services including responsive websites, e-commerce platforms, web applications, and mobile-responsive designs. Our development team uses the latest technologies and follows best practices to create fast, secure, and user-friendly websites.'
+    },
+    {
+      question: 'What is your typical project timeline?',
+      answer: 'Project timelines vary based on scope and complexity. SEO campaigns typically run 6-12 months, website development takes 4-12 weeks, and social media management is ongoing. We provide detailed timelines during the consultation phase and keep you updated on progress throughout the project.'
+    },
+    {
+      question: 'Do you offer graphic design services?',
+      answer: 'Yes! Our graphic design services include logo design, branding packages, marketing materials, social media graphics, website graphics, and print materials. We create visually appealing designs that align with your brand identity and marketing goals.'
+    },
+    {
+      question: 'Can you help improve my local search rankings?',
+      answer: 'Absolutely! Our local search optimization services include Google My Business optimization, local citation building, review management, local content creation, and local link building. We help businesses rank higher in local search results and attract more customers in their area.'
     }
   ];
 
