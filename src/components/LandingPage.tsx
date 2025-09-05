@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
-import { ArrowRight, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, MessageCircle, Clock, Rocket, Gauge, CheckCircle2, Sparkles, Share2, FileText, Palette, Users, Globe } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, MessageCircle, Clock, Rocket, Gauge, CheckCircle2, Sparkles, Megaphone, Settings, Briefcase, Brush, BarChart3, Map, Globe2, MousePointer } from 'lucide-react';
 import { ContactForm } from './ContactForm';
 import { AppointmentBooking } from './AppointmentBooking';
 import { MobileOptimized } from './MobileOptimized';
+import { CookieConsent } from './CookieConsent';
 import { appConfig } from '../config/app.config';
 
 export function LandingPage() {
@@ -21,90 +22,90 @@ export function LandingPage() {
       title: 'SEO Services',
       description: 'Search Engine Optimization',
       href: '/services/seo',
-      icon: Search
+      icon: BarChart3
     },
     {
       title: 'Google My Business',
       description: 'Local Business Optimization',
       href: '/services/google-my-business',
-      icon: MapPin
+      icon: Map
     },
     {
       title: 'Social Media Marketing',
       description: 'Build Your Brand Online',
       href: '/services/social-media-marketing',
-      icon: Share2
+      icon: Megaphone
     },
     {
       title: 'Social Media Management',
       description: 'Ongoing Social Success',
       href: '/services/social-media-management',
-      icon: Users
+      icon: Settings
     },
     {
       title: 'LLC Formation',
       description: 'Start Your Business Right',
       href: '/services/llc-formation',
-      icon: FileText
+      icon: Briefcase
     },
     {
       title: 'Graphic Design',
       description: 'Creative Visual Solutions',
       href: '/services/graphic-design',
-      icon: Palette
+      icon: Brush
     },
     {
       title: 'Local Search',
       description: 'Dominate Local Results',
       href: '/services/local-search',
-      icon: Globe
+      icon: Globe2
     },
     {
       title: 'Google Ads',
       description: 'Paid Search Advertising',
       href: '/services/google-ads',
-      icon: Target
+      icon: MousePointer
     }
   ];
 
   const services = [
     {
-      icon: Share2,
+      icon: Megaphone,
       title: 'Social Media Marketing',
       description: 'Develop a strong brand using the power of social channels',
       features: ['Brand Awareness', 'Lead Generation', 'ROI Maximization', 'Custom Campaigns'],
       outcome: 'Increase your online presence and reach your target audience'
     },
     {
-      icon: Users,
+      icon: Settings,
       title: 'Social Media Management',
       description: 'Non-stop management of your social success',
       features: ['Strategic Content', 'Community Management', 'Audience Engagement', 'Performance Monitoring'],
       outcome: 'Keep your brand active, relevant, and responsive'
     },
     {
-      icon: FileText,
+      icon: Briefcase,
       title: 'LLC Formation',
       description: 'Go into business intelligently and lawfully',
       features: ['Legal Formation', 'Documentation', 'Compliance', 'Ongoing Support'],
       outcome: 'Solid legal foundation for your business'
     },
     {
-      icon: Palette,
+      icon: Brush,
       title: 'Graphic Designing',
       description: 'Creative visuals that grab attention and communicate effectively',
       features: ['Logo Design', 'Branding Materials', 'Marketing Graphics', 'Digital Content'],
       outcome: 'Create memorable visual impressions'
     },
     {
-      icon: Search,
+      icon: BarChart3,
       title: 'SEO (Search Engine Optimization)',
       description: 'Improve your market presence and rise on search results',
       features: ['Technical SEO', 'Content Optimization', 'Keyword Research', 'Performance Tracking'],
       outcome: 'Increase search engine visibility and organic traffic'
     },
     {
-      icon: MapPin,
+      icon: Map,
       title: 'Google My Business (GMB)',
       description: 'Bring your business to the map, literally',
       features: ['Profile Optimization', 'Local Citations', 'Review Management', 'Local SEO'],
@@ -1405,6 +1406,22 @@ export function LandingPage() {
           </div>
         </footer>
       </div>
+      
+      {/* Cookie Consent Banner */}
+      <CookieConsent 
+        onAccept={() => {
+          console.log('All cookies accepted');
+          // Here you can initialize analytics, marketing tools, etc.
+        }}
+        onDecline={() => {
+          console.log('All cookies declined');
+          // Here you can ensure no tracking scripts are loaded
+        }}
+        onCustomize={() => {
+          console.log('Custom preferences saved');
+          // Here you can load only the selected cookie types
+        }}
+      />
     </MobileOptimized>
   );
 }
