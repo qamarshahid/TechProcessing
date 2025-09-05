@@ -419,15 +419,15 @@ export function LandingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <motion.div 
-                className="flex items-center space-x-3"
+                className="flex items-center space-x-2 sm:space-x-3"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
                   <div className="text-white font-black text-xs sm:text-sm">TP</div>
                 </div>
-                <div className="font-black text-lg sm:text-xl text-white">
+                <div className="font-black text-base sm:text-lg md:text-xl text-white">
                   <span className="tracking-wider hidden sm:inline">TECHPROCESSING</span>
                   <span className="tracking-wider sm:hidden">TECH</span>
                   <div className="text-xs text-emerald-400 font-bold tracking-[0.2em]">LLC</div>
@@ -507,8 +507,9 @@ export function LandingPage() {
                 <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Contact</a>
               </motion.div>
 
+              {/* Desktop CTA Buttons */}
               <motion.div
-                className="flex items-center space-x-4"
+                className="hidden md:flex items-center space-x-4"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
@@ -527,57 +528,81 @@ export function LandingPage() {
                 >
                   Get Free Quote
                 </a>
-                
-                {/* Mobile Menu Button */}
-                <button
-                  className="md:hidden text-gray-300 p-2 touch-manipulation"
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  aria-label="Toggle mobile menu"
-                >
-                  {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                </button>
               </motion.div>
+              
+              {/* Mobile Menu Button */}
+              <button
+                className="md:hidden text-gray-300 p-2 touch-manipulation rounded-lg hover:bg-slate-800 transition-colors"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label="Toggle mobile menu"
+              >
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
             </div>
 
             {/* Mobile Navigation */}
             {isMenuOpen && (
               <motion.div
-                className="md:hidden py-4 border-t border-slate-800"
+                className="md:hidden py-6 border-t border-slate-800"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
               >
-                <div className="flex flex-col space-y-4">
-                  <div className="space-y-2">
-                    <div className="text-gray-300 font-medium text-sm uppercase tracking-wider">Services</div>
-                    {servicesDropdown.map((service) => (
-                      <Link
-                        key={service.title}
-                        to={service.href}
-                        className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group ml-4 touch-manipulation"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
-                          <service.icon className="h-5 w-5 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium text-white group-hover:text-emerald-400 transition-colors text-sm">
-                            {service.title}
-                          </div>
-                          <div className="text-xs text-gray-400 truncate">
-                            {service.description}
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
+                <div className="flex flex-col space-y-6">
+                  {/* Mobile CTA Buttons */}
+                  <div className="flex flex-col space-y-3">
+                    <Link
+                      to="/login"
+                      className="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-3 rounded-lg font-medium transition-colors text-center touch-manipulation"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Client Login
+                    </Link>
+                    <a
+                      href="#contact"
+                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg text-center touch-manipulation"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        handleCTAClick('Get Free Quote');
+                      }}
+                    >
+                      Get Free Quote
+                    </a>
                   </div>
                   
-                  <div className="border-t border-slate-700 pt-4 space-y-3">
-                    <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-2 touch-manipulation">Portfolio</a>
-                    <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-2 touch-manipulation">Process</a>
-                    <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-2 touch-manipulation">About</a>
-                    <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-2 touch-manipulation">Contact</a>
-                    <Link to="/login" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-2 touch-manipulation">Client Login</Link>
+                  {/* Services Section */}
+                  <div className="space-y-3">
+                    <div className="text-gray-300 font-semibold text-sm uppercase tracking-wider px-2">Our Services</div>
+                    <div className="grid grid-cols-1 gap-2">
+                      {servicesDropdown.map((service) => (
+                        <Link
+                          key={service.title}
+                          to={service.href}
+                          className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group touch-manipulation"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                            <service.icon className="h-4 w-4 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-white group-hover:text-emerald-400 transition-colors text-sm">
+                              {service.title}
+                            </div>
+                            <div className="text-xs text-gray-400 truncate">
+                              {service.description}
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Navigation Links */}
+                  <div className="border-t border-slate-700 pt-4 space-y-2">
+                    <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">Portfolio</a>
+                    <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">Process</a>
+                    <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">About</a>
+                    <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">Contact</a>
                   </div>
                 </div>
               </motion.div>
