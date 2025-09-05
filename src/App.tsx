@@ -9,6 +9,9 @@ import { LoginForm } from './components/LoginForm';
 import { AdminRoutes } from './components/admin/AdminRoutes';
 import { AgentRoutes } from './components/agent/AgentRoutes';
 import { ClientRoutes } from './components/client/ClientRoutes';
+import { SEOPage } from './pages/services/SEO';
+import { GoogleMyBusinessPage } from './pages/services/GoogleMyBusiness';
+import { SocialMediaMarketingPage } from './pages/services/SocialMediaMarketing';
 
 function App() {
   // Determine base path for Router - use /TechProcessing in production, / in development
@@ -24,6 +27,11 @@ function App() {
                 {/* Public Routes */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginForm />} />
+                
+                {/* Service Pages */}
+                <Route path="/services/seo" element={<SEOPage />} />
+                <Route path="/services/google-my-business" element={<GoogleMyBusinessPage />} />
+                <Route path="/services/social-media-marketing" element={<SocialMediaMarketingPage />} />
                 
                 {/* Protected Dashboard Routes */}
                 <Route path="/dashboard" element={

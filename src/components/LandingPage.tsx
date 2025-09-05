@@ -623,7 +623,23 @@ export function LandingPage() {
                     <service.icon className="h-8 w-8 text-white" />
                   </div>
                   
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{service.title}</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    {service.title === 'SEO (Search Engine Optimization)' ? (
+                      <Link to="/services/seo" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                        {service.title}
+                      </Link>
+                    ) : service.title === 'Google My Business (GMB)' ? (
+                      <Link to="/services/google-my-business" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                        {service.title}
+                      </Link>
+                    ) : service.title === 'Social Media Marketing' ? (
+                      <Link to="/services/social-media-marketing" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                        {service.title}
+                      </Link>
+                    ) : (
+                      service.title
+                    )}
+                  </h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">{service.description}</p>
                   
                   <div className="space-y-3 mb-6">
@@ -677,7 +693,11 @@ export function LandingPage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                   <Search className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Search Engine Optimization</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                  <Link to="/services/seo" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                    Search Engine Optimization
+                  </Link>
+                </h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-6">Boost Your Visibility with Expert SEO</p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center">
@@ -745,7 +765,11 @@ export function LandingPage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                   <Facebook className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Social Media</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                  <Link to="/services/social-media-marketing" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                    Social Media
+                  </Link>
+                </h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-6">Build genuine relationships with the customers</p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center">
