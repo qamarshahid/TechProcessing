@@ -355,7 +355,7 @@ export function LoginForm() {
             >
               <p className="text-sm text-slate-500">
                 Need assistance?{' '}
-                <a href="mailto:support@techprocessing.com" className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors">
+                <a href="mailto:support@techprocessingllc.com" className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors">
                   Contact Support
                 </a>
               </p>

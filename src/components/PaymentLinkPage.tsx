@@ -590,7 +590,7 @@ export function PaymentLinkPage() {
             Powered by{' '}
             <span className="font-bold text-white">Tech Processing LLC</span>
             {' • '}
-            <a href="mailto:support@techprocessing.com" className="text-blue-400 hover:text-blue-300 transition-colors">
+            <a href="mailto:support@techprocessingllc.com" className="text-blue-400 hover:text-blue-300 transition-colors">
               Need help?
             </a>
           </p>

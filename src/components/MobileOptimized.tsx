@@ -172,7 +172,7 @@ function MobileEnhancements() {
         </motion.a>
         
         <motion.a
-          href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'admin@techprocessingllc.com'}`}
+          href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'support@techprocessingllc.com'}`}
           className="w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center touch-manipulation"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}

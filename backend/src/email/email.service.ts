@@ -38,7 +38,7 @@ export class EmailService {
       port: this.configService.get<number>('EMAIL_PORT', 587),
       secure: this.configService.get<boolean>('EMAIL_SECURE', false),
       auth: {
-        user: this.configService.get<string>('EMAIL_USER', 'admin@techprocessingllc.com'),
+        user: this.configService.get<string>('EMAIL_USER', 'support@techprocessingllc.com'),
         pass: this.configService.get<string>('EMAIL_PASS'),
       },
     };
@@ -59,7 +59,7 @@ export class EmailService {
     try {
       const mailOptions = {
         from: `"TechProcessing Contact Form" <${this.configService.get('EMAIL_USER')}>`,
-        to: this.configService.get<string>('EMAIL_RECIPIENT', 'admin@techprocessingllc.com'),
+        to: this.configService.get<string>('EMAIL_RECIPIENT', 'support@techprocessingllc.com'),
         replyTo: data.email,
         subject: `New Contact Form Submission from ${data.name}`,
         html: this.generateContactFormHTML(data),
@@ -86,7 +86,7 @@ export class EmailService {
     try {
       const mailOptions = {
         from: `"TechProcessing Appointment Request" <${this.configService.get('EMAIL_USER')}>`,
-        to: this.configService.get<string>('EMAIL_RECIPIENT', 'admin@techprocessingllc.com'),
+        to: this.configService.get<string>('EMAIL_RECIPIENT', 'support@techprocessingllc.com'),
         replyTo: data.email,
         subject: `New Appointment Request from ${data.name}`,
         html: this.generateAppointmentHTML(data),

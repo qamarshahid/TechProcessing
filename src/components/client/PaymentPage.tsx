@@ -22,7 +22,7 @@ export function PaymentPage() {
   const fetchInvoice = async () => {
     try {
       const response = await apiClient.getInvoices();
-      const foundInvoice = response.invoices.find(inv => inv.id === invoiceId);
+      const foundInvoice = response.invoices.find((inv: any) => inv.id === invoiceId);
       
       if (!foundInvoice) {
         setError('Invoice not found');
@@ -234,8 +234,8 @@ export function PaymentPage() {
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Need help? Contact us at{' '}
-            <a href="mailto:support@techprocessing.com" className="text-blue-600 dark:text-blue-400 hover:underline">
-              support@techprocessing.com
+            <a href="mailto:support@techprocessingllc.com" className="text-blue-600 dark:text-blue-400 hover:underline">
+              support@techprocessingllc.com
             </a>
           </p>
         </div>

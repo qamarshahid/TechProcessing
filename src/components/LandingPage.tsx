@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
-import { ArrowRight, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, MessageCircle, Clock, Rocket, Building, Gauge, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, MessageCircle, Clock, Rocket, Gauge, CheckCircle2, Sparkles, Share2, FileText, Palette, Users, Globe } from 'lucide-react';
 import { ContactForm } from './ContactForm';
 import { AppointmentBooking } from './AppointmentBooking';
 import { MobileOptimized } from './MobileOptimized';
@@ -33,31 +33,31 @@ export function LandingPage() {
       title: 'Social Media Marketing',
       description: 'Build Your Brand Online',
       href: '/services/social-media-marketing',
-      icon: Facebook
+      icon: Share2
     },
     {
       title: 'Social Media Management',
       description: 'Ongoing Social Success',
       href: '/services/social-media-management',
-      icon: MessageCircle
+      icon: Users
     },
     {
       title: 'LLC Formation',
       description: 'Start Your Business Right',
       href: '/services/llc-formation',
-      icon: Building
+      icon: FileText
     },
     {
       title: 'Graphic Design',
       description: 'Creative Visual Solutions',
       href: '/services/graphic-design',
-      icon: Sparkles
+      icon: Palette
     },
     {
       title: 'Local Search',
       description: 'Dominate Local Results',
       href: '/services/local-search',
-      icon: MapPin
+      icon: Globe
     },
     {
       title: 'Google Ads',
@@ -69,28 +69,28 @@ export function LandingPage() {
 
   const services = [
     {
-      icon: Facebook,
+      icon: Share2,
       title: 'Social Media Marketing',
       description: 'Develop a strong brand using the power of social channels',
       features: ['Brand Awareness', 'Lead Generation', 'ROI Maximization', 'Custom Campaigns'],
       outcome: 'Increase your online presence and reach your target audience'
     },
     {
-      icon: MessageCircle,
+      icon: Users,
       title: 'Social Media Management',
       description: 'Non-stop management of your social success',
       features: ['Strategic Content', 'Community Management', 'Audience Engagement', 'Performance Monitoring'],
       outcome: 'Keep your brand active, relevant, and responsive'
     },
     {
-      icon: Building,
+      icon: FileText,
       title: 'LLC Formation',
       description: 'Go into business intelligently and lawfully',
       features: ['Legal Formation', 'Documentation', 'Compliance', 'Ongoing Support'],
       outcome: 'Solid legal foundation for your business'
     },
     {
-      icon: Sparkles,
+      icon: Palette,
       title: 'Graphic Designing',
       description: 'Creative visuals that grab attention and communicate effectively',
       features: ['Logo Design', 'Branding Materials', 'Marketing Graphics', 'Digital Content'],
