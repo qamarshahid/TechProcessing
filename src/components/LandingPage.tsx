@@ -277,6 +277,24 @@ export function LandingPage() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.services-dropdown-container')) {
+        setIsServicesDropdownOpen(false);
+      }
+    };
+
+    if (isServicesDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isServicesDropdownOpen]);
+
   return (
     <MobileOptimized>
       {/* SEO Meta Tags */}
@@ -411,25 +429,36 @@ export function LandingPage() {
               >
                 {/* Services Dropdown */}
                 <div 
-                  className="relative"
+                  className="relative services-dropdown-container"
                   onMouseEnter={() => setIsServicesDropdownOpen(true)}
                   onMouseLeave={() => setIsServicesDropdownOpen(false)}
                 >
-                  <button className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium flex items-center">
+                  <button 
+                    className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium flex items-center py-2"
+                    onClick={() => setIsServicesDropdownOpen(!isServicesDropdownOpen)}
+                  >
                     Services
-                    <ArrowRight className="h-4 w-4 ml-1 transform rotate-90 transition-transform duration-200" />
+                    <ArrowRight className={`h-4 w-4 ml-1 transform transition-transform duration-200 ${isServicesDropdownOpen ? 'rotate-90' : 'rotate-0'}`} />
                   </button>
+                  
+                  {/* Invisible bridge to prevent dropdown from closing */}
+                  {isServicesDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 h-2 bg-transparent" />
+                  )}
                   
                   {/* Dropdown Menu */}
                   <motion.div
-                    className="absolute top-full left-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 z-50"
+                    className="absolute top-full left-0 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 z-50"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ 
                       opacity: isServicesDropdownOpen ? 1 : 0, 
                       y: isServicesDropdownOpen ? 0 : 10 
                     }}
                     transition={{ duration: 0.2 }}
-                    style={{ pointerEvents: isServicesDropdownOpen ? 'auto' : 'none' }}
+                    style={{ 
+                      pointerEvents: isServicesDropdownOpen ? 'auto' : 'none',
+                      marginTop: '8px'
+                    }}
                   >
                     <div className="p-4">
                       <div className="grid grid-cols-1 gap-2">
