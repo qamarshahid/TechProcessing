@@ -290,11 +290,10 @@ export function LoginPage() {
               <div className="mt-8 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
                 <div className="flex items-center mb-2">
                   <Sparkles className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mr-2" />
-                  <span className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Demo Access</span>
+                  <span className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Need Access?</span>
                 </div>
-                <div className="text-xs text-emerald-700 dark:text-emerald-400 space-y-1">
-                  <div><strong>Admin:</strong> admin@techprocessingllc.com / admin123</div>
-                  <div><strong>Client:</strong> client@example.com / client123</div>
+                <div className="text-xs text-emerald-700 dark:text-emerald-400">
+                  Contact your administrator for login credentials
                 </div>
               </div>
 

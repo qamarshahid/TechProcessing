@@ -138,7 +138,7 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
       console.error('Appointment booking error:', error);
       setSubmitStatus({ 
         type: 'error', 
-        message: 'An unexpected error occurred. Please try again or call us directly at (727) 201-2658.' 
+        message: 'An unexpected error occurred. Please try again or contact us directly.' 
       });
     } finally {
       setIsSubmitting(false);

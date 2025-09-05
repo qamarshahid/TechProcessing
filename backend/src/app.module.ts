@@ -44,8 +44,9 @@ const validationSchema = Joi.object({
   EMAIL_HOST: Joi.string().default('smtp.gmail.com'),
   EMAIL_PORT: Joi.number().default(587),
   EMAIL_SECURE: Joi.boolean().default(false),
-  EMAIL_USER: Joi.string().default('admin@techprocessingllc.com'),
+  EMAIL_USER: Joi.string().required(),
   EMAIL_PASS: Joi.string().required(),
+  EMAIL_RECIPIENT: Joi.string().email().required(),
   SKIP_DB: Joi.boolean().truthy('true').falsy('false').default(skipDb),
 });
 

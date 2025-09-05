@@ -97,7 +97,7 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
       console.error('Form submission error:', error);
       setSubmitStatus({ 
         type: 'error', 
-        message: 'An unexpected error occurred. Please try again or call us directly at (727) 201-2658.' 
+        message: 'An unexpected error occurred. Please try again or contact us directly.' 
       });
     } finally {
       setIsSubmitting(false);

@@ -59,7 +59,7 @@ export class EmailService {
     try {
       const mailOptions = {
         from: `"TechProcessing Contact Form" <${this.configService.get('EMAIL_USER')}>`,
-        to: 'admin@techprocessingllc.com',
+        to: this.configService.get<string>('EMAIL_RECIPIENT', 'admin@techprocessingllc.com'),
         replyTo: data.email,
         subject: `New Contact Form Submission from ${data.name}`,
         html: this.generateContactFormHTML(data),
@@ -86,7 +86,7 @@ export class EmailService {
     try {
       const mailOptions = {
         from: `"TechProcessing Appointment Request" <${this.configService.get('EMAIL_USER')}>`,
-        to: 'admin@techprocessingllc.com',
+        to: this.configService.get<string>('EMAIL_RECIPIENT', 'admin@techprocessingllc.com'),
         replyTo: data.email,
         subject: `New Appointment Request from ${data.name}`,
         html: this.generateAppointmentHTML(data),

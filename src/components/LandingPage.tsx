@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
-import { ArrowRight, BarChart3, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Settings, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, MessageCircle, Clock, Rocket, Building, Gauge, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, MessageCircle, Clock, Rocket, Building, Gauge, CheckCircle2, Sparkles } from 'lucide-react';
 import { ContactForm } from './ContactForm';
 import { AppointmentBooking } from './AppointmentBooking';
 import { MobileOptimized } from './MobileOptimized';
+import { appConfig } from '../config/app.config';
 
 export function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,48 +17,55 @@ export function LandingPage() {
 
   const services = [
     {
-      icon: Code,
-      title: 'Web Development',
-      description: 'Custom websites and applications that convert visitors into customers',
-      features: ['Responsive Design', 'E-commerce Solutions', 'CMS Development', 'Performance Optimization'],
-      outcome: 'Increase conversions by up to 300%'
+      icon: Facebook,
+      title: 'Social Media Marketing',
+      description: 'Develop a strong brand using the power of social channels',
+      features: ['Brand Awareness', 'Lead Generation', 'ROI Maximization', 'Custom Campaigns'],
+      outcome: 'Increase your online presence and reach your target audience'
     },
     {
-      icon: Search,
-      title: 'SEO & Digital Marketing',
-      description: 'Dominate search rankings and drive qualified traffic to your business',
-      features: ['Technical SEO', 'Content Strategy', 'Link Building', 'Local SEO'],
-      outcome: 'Achieve first-page Google rankings'
+      icon: MessageCircle,
+      title: 'Social Media Management',
+      description: 'Non-stop management of your social success',
+      features: ['Strategic Content', 'Community Management', 'Audience Engagement', 'Performance Monitoring'],
+      outcome: 'Keep your brand active, relevant, and responsive'
     },
     {
       icon: Building,
-      title: 'Google Business Profile',
-      description: 'Optimize your local presence and attract nearby customers',
-      features: ['Profile Optimization', 'Review Management', 'Local Citations', 'Map Rankings'],
-      outcome: 'Increase local visibility by 250%'
+      title: 'LLC Formation',
+      description: 'Go into business intelligently and lawfully',
+      features: ['Legal Formation', 'Documentation', 'Compliance', 'Ongoing Support'],
+      outcome: 'Solid legal foundation for your business'
     },
     {
-      icon: BarChart3,
-      title: 'Analytics & Tracking',
-      description: 'Data-driven insights to optimize your digital performance',
-      features: ['Conversion Tracking', 'Performance Analytics', 'ROI Measurement', 'Custom Dashboards'],
-      outcome: 'Make data-driven decisions'
+      icon: Sparkles,
+      title: 'Graphic Designing',
+      description: 'Creative visuals that grab attention and communicate effectively',
+      features: ['Logo Design', 'Branding Materials', 'Marketing Graphics', 'Digital Content'],
+      outcome: 'Create memorable visual impressions'
     },
     {
-      icon: Settings,
-      title: 'Maintenance & Support',
-      description: '24/7 monitoring and maintenance to keep your systems running smoothly',
-      features: ['Security Updates', 'Performance Monitoring', 'Backup Management', 'Technical Support'],
-      outcome: '99.9% uptime guarantee'
+      icon: Search,
+      title: 'SEO (Search Engine Optimization)',
+      description: 'Improve your market presence and rise on search results',
+      features: ['Technical SEO', 'Content Optimization', 'Keyword Research', 'Performance Tracking'],
+      outcome: 'Increase search engine visibility and organic traffic'
+    },
+    {
+      icon: MapPin,
+      title: 'Google My Business (GMB)',
+      description: 'Bring your business to the map, literally',
+      features: ['Profile Optimization', 'Local Citations', 'Review Management', 'Local SEO'],
+      outcome: 'Attract more local customers and increase visibility'
     }
   ];
 
   const caseStudies = [
     {
-      client: 'TechStart Inc.',
-      industry: 'Technology',
-      challenge: 'Needed modern website and SEO strategy',
-      solution: 'Complete digital transformation with custom website and SEO optimization',
+      client: 'SAPPHIRE OCEAN LLC',
+      industry: 'Business Services',
+      challenge: 'Needed comprehensive digital marketing strategy',
+      solution: 'Complete digital transformation with SEO, social media, and GMB optimization',
       results: {
         traffic: '+300%',
         leads: '+250%',
@@ -67,10 +75,10 @@ export function LandingPage() {
       image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=600'
     },
     {
-      client: 'HealthTech Corp',
-      industry: 'Healthcare',
-      challenge: 'Poor local search visibility',
-      solution: 'Google Business Profile optimization and local SEO campaign',
+      client: 'Softowel Inc',
+      industry: 'Technology',
+      challenge: 'Poor local search visibility and brand awareness',
+      solution: 'Google Business Profile optimization and social media management campaign',
       results: {
         visibility: '+400%',
         calls: '+220%',
@@ -80,10 +88,10 @@ export function LandingPage() {
       image: 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=600'
     },
     {
-      client: 'E-commerce Plus',
+      client: 'Almas',
       industry: 'Retail',
-      challenge: 'Low conversion rates on existing website',
-      solution: 'Website redesign with conversion optimization and analytics setup',
+      challenge: 'Low conversion rates and poor online presence',
+      solution: 'Graphic design overhaul, SEO optimization, and social media strategy',
       results: {
         conversions: '+350%',
         revenue: '+280%',
@@ -97,7 +105,7 @@ export function LandingPage() {
   const testimonials = [
     {
       name: 'Daniel Smith',
-      company: 'TechStart Inc.',
+      company: 'SAPPHIRE OCEAN LLC',
       role: 'CEO',
       content: 'TechProcessing transformed our digital presence completely. Their strategic approach and technical expertise delivered results beyond our expectations.',
       rating: 5,
@@ -106,7 +114,7 @@ export function LandingPage() {
     },
     {
       name: 'Sarah Johnson',
-      company: 'Digital Solutions',
+      company: 'Softowel Inc',
       role: 'Marketing Director',
       content: 'The team at TechProcessing doesn\'t just deliver projects—they deliver business growth. Our ROI has been exceptional.',
       rating: 5,
@@ -115,7 +123,7 @@ export function LandingPage() {
     },
     {
       name: 'Martin Chen',
-      company: 'HealthTech Corp',
+      company: 'Almas',
       role: 'CTO',
       content: 'Professional, reliable, and results-driven. TechProcessing helped us dominate our local market with their Google Business optimization.',
       rating: 5,
@@ -157,28 +165,44 @@ export function LandingPage() {
 
   const faqs = [
     {
-      question: 'How long does a typical web development project take?',
-      answer: 'Most projects are completed within 2-6 weeks, depending on complexity. We provide detailed timelines during our initial consultation and keep you updated throughout the process.'
+      question: 'What do TechProcessing provide?',
+      answer: 'TechProcessing is a digital marketing, web development, SEO, social media management and custom software solution provider to all types of businesses.'
     },
     {
-      question: 'Do you provide ongoing maintenance and support?',
-      answer: 'Yes! We offer comprehensive maintenance packages including security updates, performance monitoring, content updates, and 24/7 technical support to keep your website running smoothly.'
+      question: 'So, what to start with TechProcessing?',
+      answer: 'No need to do lots of research, just visit us through our site or schedule a free strategy session. We will be talking to your business about your desires and giving the best available solutions.'
     },
     {
-      question: 'Can you help improve my existing website\'s search rankings?',
-      answer: 'Absolutely. Our SEO experts can audit your current site and implement proven strategies to improve your search rankings, increase organic traffic, and drive more qualified leads to your business.'
+      question: 'Would TechProcessing be appropriate to small enterprises and startups?',
+      answer: 'Yes! We are innovative to work with startups, small businesses, and big enterprises; we can provide you with a solution that fits your needs and budget, depending on them.'
     },
     {
-      question: 'What makes TechProcessing different from other agencies?',
-      answer: 'We focus on measurable business outcomes, not just pretty designs. Our data-driven approach, combined with cutting-edge technology and personalized service, ensures your investment delivers real ROI.'
+      question: 'What steps does TechProcessing take in order to assure project quality?',
+      answer: 'Our procedure is open and transparent, we employ the latest technologies and provide an exceptional team of professionals who check each project in terms of quality and performance.'
     },
     {
-      question: 'Do you work with businesses outside of Florida?',
-      answer: 'Yes! While we\'re based in St. Petersburg, FL, we serve clients nationwide. Our remote collaboration tools and proven processes ensure seamless project delivery regardless of location.'
+      question: 'Will I have access to the rating of the progress of my project?',
+      answer: 'Absolutely. We maintain frequent updates and deliver elaborate reports and even communicate with your project manager to keep you in touch with what is going on.'
     },
     {
-      question: 'How do you measure project success?',
-      answer: 'We establish clear KPIs upfront—whether it\'s increased traffic, higher conversion rates, or improved search rankings. You\'ll receive detailed analytics reports showing exactly how your investment is performing.'
+      question: 'Is there after-sales service and maintenance by TechProcessing?',
+      answer: 'Indeed, we also provide follow up services and maintenance of the websites and maintenance of your online marketing.'
+    },
+    {
+      question: 'Why is TechProcessing not another agency?',
+      answer: 'We are a team working in-house, we are honest in our reporting, our merchandising strategies are ROI-driven and we are client-oriented.'
+    },
+    {
+      question: 'What are the charges of your services?',
+      answer: 'The cost is pegged on the size and scale of your project. Get in touch with us to get a personalised quote or learn about our flexible packages.'
+    },
+    {
+      question: 'Is it possible to use TechProcessing to help in paid and organic marketing?',
+      answer: 'Yes! We provide a full package of digital marketing services, with the involvement of SEO, content marketing, social media management, and paid advertising campaigns.'
+    },
+    {
+      question: 'What is the way to contact TechProcessing in case of support or questions?',
+      answer: 'You can also contact us with the help of the contact form at our site, email, or call. We are also available to answer your questions or require any help.'
     }
   ];
 
@@ -217,8 +241,8 @@ export function LandingPage() {
     <MobileOptimized>
       {/* SEO Meta Tags */}
       <head>
-        <title>TechProcessing LLC - Web Development & Digital Marketing | St. Petersburg, FL</title>
-        <meta name="description" content="Professional web development, SEO, and digital marketing services in St. Petersburg, FL. Design. Develop. Dominate. Get your free quote today!" />
+        <title>TechProcessing LLC - Digital Creative Agency & Transformation Partners</title>
+        <meta name="description" content="The Tech Processing LLC is a digital creative agency that provides creative design, digital marketing, and technical solutions which are innovative. Our brand-building solutions enable brands to develop online through a unique approach and effective digital experiences." />
         <meta name="keywords" content="web development, SEO, digital marketing, Google Business Profile, St. Petersburg FL, website design" />
         <meta name="author" content="TechProcessing LLC" />
         <meta name="robots" content="index, follow" />
@@ -252,14 +276,14 @@ export function LandingPage() {
                 "logo": "https://techprocessingllc.com/logo.png",
                 "contactPoint": {
                   "@type": "ContactPoint",
-                  "telephone": "+1-727-201-2658",
+                  "telephone": appConfig.contact.phone,
                   "contactType": "customer service",
                   "email": "support@techprocessingllc.com",
                   "availableLanguage": "English"
                 },
                 "address": {
                   "@type": "PostalAddress",
-                  "streetAddress": "7901 4th St N",
+                  "streetAddress": appConfig.contact.address,
                   "addressLocality": "St. Petersburg",
                   "addressRegion": "FL",
                   "postalCode": "33702",
@@ -277,11 +301,11 @@ export function LandingPage() {
                 "name": "TechProcessing LLC",
                 "description": "Professional web development, SEO, and digital marketing services",
                 "url": "https://techprocessingllc.com",
-                "telephone": "+1-727-201-2658",
+                "telephone": appConfig.contact.phone,
                 "email": "support@techprocessingllc.com",
                 "address": {
                   "@type": "PostalAddress",
-                  "streetAddress": "7901 4th St N",
+                  "streetAddress": appConfig.contact.address,
                   "addressLocality": "St. Petersburg",
                   "addressRegion": "FL",
                   "postalCode": "33702",
@@ -429,16 +453,15 @@ export function LandingPage() {
                 </div>
                 
                 <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white mb-6 leading-tight">
-                  <span className="block">DESIGN.</span>
-                  <span className="block">DEVELOP.</span>
+                  <span className="block">IDEAS INTO</span>
+                  <span className="block">LIFE BY</span>
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
-                    DOMINATE.
+                    CREATIVITY.
                   </span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl leading-relaxed">
-                  Your success is our mission. Let's design your future, develop your strategy, 
-                  and dominate your market together.
+                  The Tech Processing LLC is the place where ideas are put into life by relying on creativity and the latest digital solutions. We do not simply work as a creative agency but we are your transformation partners.
                 </p>
 
                 <div className="mb-8">
@@ -470,12 +493,12 @@ export function LandingPage() {
                   </a>
                   
                   <a
-                    href="tel:+17272012658"
+                    href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
                     className="border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
                     onClick={() => handleCTAClick('Contact Us')}
                   >
                     <Phone className="h-5 w-5 mr-2" />
-                    (727) 201-2658
+                    {appConfig.contact.phone}
                   </a>
                 </div>
 
@@ -579,10 +602,10 @@ export function LandingPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                Services That Drive Results
+                Our Services
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                We don't just build websites—we build digital empires that dominate your competition
+                From social media marketing to LLC formation, we provide comprehensive digital solutions that transform your business
               </p>
             </motion.div>
 
@@ -624,6 +647,164 @@ export function LandingPage() {
           </div>
         </section>
 
+        {/* Marketing Services Section */}
+        <section className="py-20 bg-gray-50 dark:bg-slate-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                Our Marketing Services
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Comprehensive digital marketing solutions to boost your online presence and drive results
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Search Engine Optimization */}
+              <motion.div
+                className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-8"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                viewport={{ once: true }}
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <Search className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Search Engine Optimization</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">Boost Your Visibility with Expert SEO</p>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Optimize your website for higher search engine rankings</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Develop targeted content strategies to attract and engage your audience</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Implement technical SEO improvements to enhance site performance</span>
+                  </li>
+                </ul>
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
+                  <p className="text-emerald-800 dark:text-emerald-300 text-sm">
+                    Our Search Engine Optimization (SEO) services are aimed at ensuring that your business has found its way up the staging posts, more quality traffic is drawn to the business and that the business converts the visitors into customers.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Local Search */}
+              <motion.div
+                className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-8"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.1 }}
+                viewport={{ once: true }}
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <MapPin className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Local Search</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">Increase Your Online Presence in your area</p>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Please draw Nearby, Ready-to-Buy Customers</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Be More Prominent in Google Maps</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Generate More Calls and store visits</span>
+                  </li>
+                </ul>
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
+                  <p className="text-emerald-800 dark:text-emerald-300 text-sm">
+                    Our Local Search services at Tech Processing LLC are aimed at ensuring that your business is put in the frontline, whenever your products or services are being sought locally.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Social Media */}
+              <motion.div
+                className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-8"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <Facebook className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Social Media</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">Build genuine relationships with the customers</p>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Increase brand recognition and brand loyalty</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Promote interaction with innovative contents</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Monitor success in real-time analytics</span>
+                  </li>
+                </ul>
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
+                  <p className="text-emerald-800 dark:text-emerald-300 text-sm">
+                    Our social media specialists develop custom-made plans in social platforms such as Facebook, Instagram, LinkedIn, Twitter, among others.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Google Ads */}
+              <motion.div
+                className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-8"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <Target className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Google ADS</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">Go straight to your customers directly</p>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Max ROI-wise advertising maximization</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Be the first result in the search outcomes</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-300">Monitor, measure and tune performance</span>
+                  </li>
+                </ul>
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
+                  <p className="text-emerald-800 dark:text-emerald-300 text-sm">
+                    In Tech Processing LLC, we excel in the development and management of Google Ads campaigns that provide quantifiable results and actual business development.
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
         {/* Portfolio/Case Studies Section */}
         <section id="portfolio" className="py-20 bg-gray-50 dark:bg-slate-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -635,10 +816,10 @@ export function LandingPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                Proven Results for Real Businesses
+                We have worked with some of the biggest names in USA
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                See how we've helped businesses like yours achieve extraordinary growth
+                See how we've helped businesses like SAPPHIRE OCEAN LLC, Softowel Inc, and Almas achieve extraordinary growth
               </p>
             </motion.div>
 
@@ -879,10 +1060,10 @@ export function LandingPage() {
                 viewport={{ once: true }}
               >
                 <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                  Ready to Dominate Your Market?
+                  Are you ready to put your digital potential to unforgettable impact?
                 </h2>
                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-                  Let's discuss how we can transform your digital presence and drive real business results.
+                  Join us and take your business to the next level and be unique in the digital world. Pixel by pixel?
                 </p>
 
                 <div className="space-y-6 mb-8">
@@ -892,8 +1073,8 @@ export function LandingPage() {
                     </div>
                     <div>
                       <div className="font-semibold text-gray-900 dark:text-white">Call Us</div>
-                      <a href="tel:+17272012658" className="text-emerald-600 dark:text-emerald-400 hover:underline">
-                        +1 (727) 201-2658
+                      <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                        {appConfig.contact.phone}
                       </a>
                     </div>
                   </div>
@@ -904,8 +1085,8 @@ export function LandingPage() {
                     </div>
                     <div>
                       <div className="font-semibold text-gray-900 dark:text-white">Email Us</div>
-                      <a href="mailto:admin@techprocessingllc.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">
-                        admin@techprocessingllc.com
+                      <a href={`mailto:${appConfig.contact.email}`} className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                        {appConfig.contact.email}
                       </a>
                     </div>
                   </div>
@@ -917,8 +1098,7 @@ export function LandingPage() {
                     <div>
                       <div className="font-semibold text-gray-900 dark:text-white">Visit Us</div>
                       <div className="text-gray-600 dark:text-gray-300">
-                        7901 4th St N<br />
-                        St. Petersburg, FL 33702
+                        {appConfig.contact.address}
                       </div>
                     </div>
                   </div>
@@ -997,7 +1177,7 @@ export function LandingPage() {
                   </div>
                 </div>
                 <p className="text-gray-300 mb-6 max-w-md">
-                  Your success is our mission. We design, develop, and help you dominate your market with cutting-edge digital solutions.
+                  The Tech Processing LLC is a digital creative agency that provides creative design, digital marketing, and technical solutions which are innovative. Our brand-building solutions enable brands to develop online through a unique approach and effective digital experiences.
                 </p>
                 <div className="flex space-x-4">
                   <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="Facebook">
@@ -1018,11 +1198,11 @@ export function LandingPage() {
               <div>
                 <h3 className="text-lg font-bold mb-4">Services</h3>
                 <ul className="space-y-2 text-gray-300">
-                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Web Development</a></li>
-                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">SEO & Marketing</a></li>
-                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Google Business Profile</a></li>
-                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Analytics & Tracking</a></li>
-                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Maintenance & Support</a></li>
+                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Social Media Marketing</a></li>
+                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Social Media Management</a></li>
+                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">LLC Formation</a></li>
+                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Graphic Designing</a></li>
+                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">SEO & GMB</a></li>
                 </ul>
               </div>
 
@@ -1031,21 +1211,20 @@ export function LandingPage() {
                 <div className="space-y-3 text-gray-300">
                   <div className="flex items-center">
                     <Phone className="h-4 w-4 mr-2 text-emerald-400" />
-                    <a href="tel:+17272012658" className="hover:text-emerald-400 transition-colors">
-                      +1 (727) 201-2658
+                    <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="hover:text-emerald-400 transition-colors">
+                      {appConfig.contact.phone}
                     </a>
                   </div>
                   <div className="flex items-center">
                     <Mail className="h-4 w-4 mr-2 text-emerald-400" />
-                    <a href="mailto:admin@techprocessingllc.com" className="hover:text-emerald-400 transition-colors">
-                      admin@techprocessingllc.com
+                    <a href={`mailto:${appConfig.contact.email}`} className="hover:text-emerald-400 transition-colors">
+                      {appConfig.contact.email}
                     </a>
                   </div>
                   <div className="flex items-start">
                     <MapPin className="h-4 w-4 mr-2 text-emerald-400 mt-1" />
                     <div>
-                      7901 4th St N<br />
-                      St. Petersburg, FL 33702
+                      {appConfig.contact.address}
                     </div>
                   </div>
                 </div>

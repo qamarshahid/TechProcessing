@@ -24,7 +24,7 @@ class BackendEmailService {
       console.error('Backend email service error:', error);
       return {
         success: false,
-        message: 'Sorry, there was an error sending your message. Please try again or call us directly at (727) 201-2658.'
+        message: 'Sorry, there was an error sending your message. Please try again or contact us directly.'
       };
     }
   }
