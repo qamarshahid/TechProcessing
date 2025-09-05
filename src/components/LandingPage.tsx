@@ -11,9 +11,49 @@ export function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeTab, setActiveTab] = useState<'contact' | 'appointment'>('contact');
+  const [isServicesDropdownOpen, setIsServicesDropdownOpen] = useState(false);
 
   const heroRef = useRef(null);
   const isHeroInView = useInView(heroRef, { once: true });
+
+  const servicesDropdown = [
+    {
+      title: 'SEO Services',
+      description: 'Search Engine Optimization',
+      href: '/services/seo',
+      icon: Search
+    },
+    {
+      title: 'Google My Business',
+      description: 'Local Business Optimization',
+      href: '/services/google-my-business',
+      icon: MapPin
+    },
+    {
+      title: 'Social Media Marketing',
+      description: 'Build Your Brand Online',
+      href: '/services/social-media-marketing',
+      icon: Facebook
+    },
+    {
+      title: 'Social Media Management',
+      description: 'Ongoing Social Success',
+      href: '#services',
+      icon: MessageCircle
+    },
+    {
+      title: 'LLC Formation',
+      description: 'Start Your Business Right',
+      href: '#services',
+      icon: Building
+    },
+    {
+      title: 'Graphic Design',
+      description: 'Creative Visual Solutions',
+      href: '#services',
+      icon: Sparkles
+    }
+  ];
 
   const services = [
     {
@@ -369,7 +409,55 @@ export function LandingPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                <a href="#services" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Services</a>
+                {/* Services Dropdown */}
+                <div 
+                  className="relative"
+                  onMouseEnter={() => setIsServicesDropdownOpen(true)}
+                  onMouseLeave={() => setIsServicesDropdownOpen(false)}
+                >
+                  <button className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium flex items-center">
+                    Services
+                    <ArrowRight className="h-4 w-4 ml-1 transform rotate-90 transition-transform duration-200" />
+                  </button>
+                  
+                  {/* Dropdown Menu */}
+                  <motion.div
+                    className="absolute top-full left-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 z-50"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ 
+                      opacity: isServicesDropdownOpen ? 1 : 0, 
+                      y: isServicesDropdownOpen ? 0 : 10 
+                    }}
+                    transition={{ duration: 0.2 }}
+                    style={{ pointerEvents: isServicesDropdownOpen ? 'auto' : 'none' }}
+                  >
+                    <div className="p-4">
+                      <div className="grid grid-cols-1 gap-2">
+                        {servicesDropdown.map((service) => (
+                          <Link
+                            key={service.title}
+                            to={service.href}
+                            className="flex items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors group"
+                            onClick={() => setIsServicesDropdownOpen(false)}
+                          >
+                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
+                              <service.icon className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                {service.title}
+                              </div>
+                              <div className="text-sm text-gray-600 dark:text-gray-400">
+                                {service.description}
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+                
                 <a href="#portfolio" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
                 <a href="#process" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Process</a>
                 <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">About</a>
@@ -417,12 +505,37 @@ export function LandingPage() {
                 exit={{ opacity: 0, height: 0 }}
               >
                 <div className="flex flex-col space-y-4">
-                  <a href="#services" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Services</a>
-                  <a href="#portfolio" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
-                  <a href="#process" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Process</a>
-                  <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">About</a>
-                  <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Contact</a>
-                  <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Client Login</Link>
+                  <div className="space-y-2">
+                    <div className="text-gray-600 dark:text-gray-300 font-medium text-sm uppercase tracking-wider">Services</div>
+                    {servicesDropdown.map((service) => (
+                      <Link
+                        key={service.title}
+                        to={service.href}
+                        className="flex items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors group ml-4"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3">
+                          <service.icon className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                            {service.title}
+                          </div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                            {service.description}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  
+                  <div className="border-t border-gray-200 dark:border-slate-700 pt-4">
+                    <a href="#portfolio" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
+                    <a href="#process" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium block mt-2">Process</a>
+                    <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium block mt-2">About</a>
+                    <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium block mt-2">Contact</a>
+                    <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium block mt-2">Client Login</Link>
+                  </div>
                 </div>
               </motion.div>
             )}
