@@ -607,15 +607,15 @@ export function LandingPage() {
                 </div>
                 
                 <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white mb-6 leading-tight">
-                  <span className="block">IDEAS INTO</span>
-                  <span className="block">LIFE BY</span>
+                  <span className="block">TRANSFORM YOUR</span>
+                  <span className="block">BUSINESS WITH</span>
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
-                    CREATIVITY.
+                    DIGITAL EXCELLENCE.
                   </span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl leading-relaxed">
-                  The Tech Processing LLC is the place where ideas are put into life by relying on creativity and the latest digital solutions. We do not simply work as a creative agency but we are your transformation partners.
+                  We're your digital transformation partners, combining strategic expertise with cutting-edge technology to drive measurable results. From SEO and social media to business formation and design, we deliver solutions that grow your business.
                 </p>
 
                 <div className="mb-8">
@@ -679,7 +679,7 @@ export function LandingPage() {
                 transition={{ duration: 1, delay: 0.2 }}
               >
                 <div className="relative">
-                  {/* Main Dashboard Mockup */}
+                  {/* Simplified Dashboard Mockup */}
                   <div className="w-full h-96 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 shadow-2xl border border-slate-700">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex space-x-2">
@@ -687,7 +687,7 @@ export function LandingPage() {
                         <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                         <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                       </div>
-                      <div className="text-emerald-400 text-sm font-mono">Analytics Dashboard</div>
+                      <div className="text-emerald-400 text-sm font-mono">Business Dashboard</div>
                     </div>
                     
                     {/* Chart Area */}
@@ -710,35 +710,18 @@ export function LandingPage() {
                     <div className="grid grid-cols-3 gap-4">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-emerald-400">300%</div>
-                        <div className="text-xs text-gray-400">Traffic Growth</div>
+                        <div className="text-xs text-gray-400">Growth</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-teal-400">99%</div>
-                        <div className="text-xs text-gray-400">Uptime</div>
+                        <div className="text-xs text-gray-400">Satisfaction</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-cyan-400">#1</div>
-                        <div className="text-xs text-gray-400">Rankings</div>
+                        <div className="text-2xl font-bold text-cyan-400">24/7</div>
+                        <div className="text-xs text-gray-400">Support</div>
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Floating Elements */}
-                  <motion.div
-                    className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  >
-                    <TrendingUp className="h-8 w-8 text-white" />
-                  </motion.div>
-                  
-                  <motion.div
-                    className="absolute -bottom-4 -left-4 w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"
-                    animate={{ y: [-10, 10, -10] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <Target className="h-6 w-6 text-white" />
-                  </motion.div>
                 </div>
               </motion.div>
             </div>
@@ -1238,10 +1221,10 @@ export function LandingPage() {
                 viewport={{ once: true }}
               >
                 <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                  Are you ready to put your digital potential to unforgettable impact?
+                  Ready to Transform Your Business?
                 </h2>
                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-                  Join us and take your business to the next level and be unique in the digital world. Pixel by pixel?
+                  Let's work together to take your business to the next level with our proven digital solutions and expert team.
                 </p>
 
                 <div className="space-y-6 mb-8">
@@ -1355,7 +1338,7 @@ export function LandingPage() {
                   </div>
                 </div>
                 <p className="text-gray-300 mb-6 max-w-md">
-                  The Tech Processing LLC is a digital creative agency that provides creative design, digital marketing, and technical solutions which are innovative. Our brand-building solutions enable brands to develop online through a unique approach and effective digital experiences.
+                  Your digital transformation partners, delivering innovative solutions in design, marketing, and technology to help your business grow and succeed online.
                 </p>
                 <div className="flex space-x-4">
                   <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="Facebook">
