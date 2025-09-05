@@ -12,6 +12,11 @@ import { ClientRoutes } from './components/client/ClientRoutes';
 import { SEOPage } from './pages/services/SEO';
 import { GoogleMyBusinessPage } from './pages/services/GoogleMyBusiness';
 import { SocialMediaMarketingPage } from './pages/services/SocialMediaMarketing';
+import { SocialMediaManagementPage } from './pages/services/SocialMediaManagement';
+import { LLCFormationPage } from './pages/services/LLCFormation';
+import { GraphicDesignPage } from './pages/services/GraphicDesign';
+import { LocalSearchPage } from './pages/services/LocalSearch';
+import { GoogleAdsPage } from './pages/services/GoogleAds';
 
 function App() {
   // Determine base path for Router - use /TechProcessing in production, / in development
@@ -32,6 +37,11 @@ function App() {
                 <Route path="/services/seo" element={<SEOPage />} />
                 <Route path="/services/google-my-business" element={<GoogleMyBusinessPage />} />
                 <Route path="/services/social-media-marketing" element={<SocialMediaMarketingPage />} />
+                <Route path="/services/social-media-management" element={<SocialMediaManagementPage />} />
+                <Route path="/services/llc-formation" element={<LLCFormationPage />} />
+                <Route path="/services/graphic-design" element={<GraphicDesignPage />} />
+                <Route path="/services/local-search" element={<LocalSearchPage />} />
+                <Route path="/services/google-ads" element={<GoogleAdsPage />} />
                 
                 {/* Protected Dashboard Routes */}
                 <Route path="/dashboard" element={

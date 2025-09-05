@@ -38,20 +38,32 @@ export function LandingPage() {
     {
       title: 'Social Media Management',
       description: 'Ongoing Social Success',
-      href: '#services',
+      href: '/services/social-media-management',
       icon: MessageCircle
     },
     {
       title: 'LLC Formation',
       description: 'Start Your Business Right',
-      href: '#services',
+      href: '/services/llc-formation',
       icon: Building
     },
     {
       title: 'Graphic Design',
       description: 'Creative Visual Solutions',
-      href: '#services',
+      href: '/services/graphic-design',
       icon: Sparkles
+    },
+    {
+      title: 'Local Search',
+      description: 'Dominate Local Results',
+      href: '/services/local-search',
+      icon: MapPin
+    },
+    {
+      title: 'Google Ads',
+      description: 'Paid Search Advertising',
+      href: '/services/google-ads',
+      icon: Target
     }
   ];
 
