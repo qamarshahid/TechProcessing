@@ -91,7 +91,7 @@ export function GoogleAdsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       {/* SEO Meta Tags */}
       <head>
         <title>Google Ads Services | TechProcessing LLC</title>
@@ -102,15 +102,15 @@ export function GoogleAdsPage() {
       </head>
 
       {/* Navigation Bar */}
-      <nav className="sticky top-0 z-50 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-gray-200 dark:border-slate-800">
+      <nav className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
+            <Link to="/" className="flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 transition-colors">
               <ArrowLeft className="h-5 w-5" />
               <span className="font-semibold">Back to Home</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-gray-300 hover:text-emerald-400 transition-colors">
                 <Phone className="h-5 w-5" />
               </a>
               <a href="#contact" className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
@@ -122,7 +122,7 @@ export function GoogleAdsPage() {
       </nav>
 
       {/* Hero Section - Simplified */}
-      <section className="py-16 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20">
+      <section className="py-16 bg-gradient-to-br from-emerald-900/20 to-teal-900/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -130,17 +130,17 @@ export function GoogleAdsPage() {
             transition={{ duration: 0.8 }}
           >
             <div className="mb-6">
-              <span className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-semibold">
+              <span className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
                 <Target className="h-4 w-4 mr-2" />
                 Google Ads
               </span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               Go Straight to Your Customers Directly
             </h1>
             
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               When you are dealing with the rat race of the online marketplace, having your business noticed by the correct viewer at the correct moment is of the essence. One of the best techniques to get instant visibility and transport high-quality traffic to your site is to make use of Google Ads.
             </p>
 
@@ -156,7 +156,7 @@ export function GoogleAdsPage() {
               
               <a
                 href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
+                className="border-2 border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
               >
                 <Phone className="h-5 w-5 mr-2" />
                 {appConfig.contact.phone}
@@ -165,16 +165,16 @@ export function GoogleAdsPage() {
 
             <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
               <div className="text-center">
-                <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">300%</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">ROI Increase</div>
+                <div className="text-3xl font-bold text-emerald-400">300%</div>
+                <div className="text-sm text-gray-400 font-medium">ROI Increase</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-teal-600 dark:text-teal-400">#1</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Search Results</div>
+                <div className="text-3xl font-bold text-teal-400">#1</div>
+                <div className="text-sm text-gray-400 font-medium">Search Results</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">24/7</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Monitoring</div>
+                <div className="text-3xl font-bold text-cyan-400">24/7</div>
+                <div className="text-sm text-gray-400 font-medium">Monitoring</div>
               </div>
             </div>
           </motion.div>
@@ -192,15 +192,15 @@ export function GoogleAdsPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">What We Do</h2>
-            <div className="prose prose-lg dark:prose-invert max-w-none">
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+            <h2 className="text-3xl font-bold text-white mb-8">What We Do</h2>
+            <div className="prose prose-lg prose-invert max-w-none">
+              <p className="text-gray-300 leading-relaxed mb-6">
                 In Tech Processing LLC, we excel in the development and management of Google Ads campaigns that provide quantifiable results and actual business development. We begin our work by learning more about your business objectives and the target audience.
               </p>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+              <p className="text-gray-300 leading-relaxed mb-6">
                 We carry out extensive keyword research to make sure your advertisements are shown by most relevant searches. Our well phased ad copy and bidding will enable you to target potential customers when they want to search the use of your products or services.
               </p>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+              <p className="text-gray-300 leading-relaxed">
                 However we do not just leave with launching your campaign. We constantly observe and evaluate performance and data and make modifications to give you the best returns on investment. Our Google Ads specialists customize each campaign as per your specific needs whether you are trying to increase your website visits, leads, or even make more online sales.
               </p>
             </div>
@@ -215,12 +215,12 @@ export function GoogleAdsPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Our Google Ads Services</h2>
+            <h2 className="text-3xl font-bold text-white mb-8">Our Google Ads Services</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {features.map((feature, index) => (
                 <motion.div
                   key={feature.title}
-                  className="flex items-start space-x-4 p-6 bg-gray-50 dark:bg-slate-800 rounded-xl"
+                  className="flex items-start space-x-4 p-6 bg-slate-800 rounded-xl"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -230,8 +230,8 @@ export function GoogleAdsPage() {
                     <feature.icon className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{feature.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{feature.description}</p>
+                    <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
+                    <p className="text-gray-300 leading-relaxed">{feature.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -247,9 +247,9 @@ export function GoogleAdsPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Why Choose Google Ads?</h2>
-            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-8">
-              <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
+            <h2 className="text-3xl font-bold text-white mb-8">Why Choose Google Ads?</h2>
+            <div className="bg-emerald-900/20 rounded-xl p-8">
+              <p className="text-lg text-gray-300 mb-6">
                 Google Ads is one where you can spend money only when your commercial is clicked, so it is a way to expand your company without wasting a lot of money. On top of that, we use transparent reporting to keep you updated at all times. Here's what you can expect:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -262,8 +262,8 @@ export function GoogleAdsPage() {
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">{benefit}</span>
+                    <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                    <span className="text-gray-300">{benefit}</span>
                   </motion.div>
                 ))}
               </div>
@@ -279,8 +279,8 @@ export function GoogleAdsPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Our Google Ads Process</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+            <h2 className="text-3xl font-bold text-white mb-8">Our Google Ads Process</h2>
+            <p className="text-lg text-gray-300 mb-8">
               A proven methodology for achieving Google Ads success
             </p>
             
@@ -288,7 +288,7 @@ export function GoogleAdsPage() {
               {processSteps.map((step, index) => (
                 <motion.div
                   key={step.step}
-                  className="flex items-start space-x-6 p-6 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700"
+                  className="flex items-start space-x-6 p-6 bg-slate-800 rounded-xl border border-slate-700"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -299,13 +299,13 @@ export function GoogleAdsPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{step.title}</h3>
-                      <div className="inline-flex items-center px-3 py-1 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-medium">
+                      <h3 className="text-xl font-semibold text-white">{step.title}</h3>
+                      <div className="inline-flex items-center px-3 py-1 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-medium">
                         <Clock className="h-4 w-4 mr-2" />
                         {step.duration}
                       </div>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{step.description}</p>
+                    <p className="text-gray-300 leading-relaxed">{step.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -315,7 +315,7 @@ export function GoogleAdsPage() {
       </main>
 
       {/* Testimonials Section */}
-      <section className="py-16 bg-gray-50 dark:bg-slate-800">
+      <section className="py-16 bg-slate-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -323,8 +323,8 @@ export function GoogleAdsPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">What Our Clients Say</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-12 text-center">
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">What Our Clients Say</h2>
+            <p className="text-lg text-gray-300 mb-12 text-center">
               Don't just take our word for it—hear from businesses we've helped achieve Google Ads success
             </p>
 
@@ -332,7 +332,7 @@ export function GoogleAdsPage() {
               {testimonials.map((testimonial, index) => (
                 <motion.div
                   key={index}
-                  className="bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-slate-700"
+                  className="bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-700"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.2 }}
@@ -343,15 +343,15 @@ export function GoogleAdsPage() {
                       <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  <blockquote className="text-lg text-gray-700 dark:text-gray-300 italic mb-6 leading-relaxed text-center">
+                  <blockquote className="text-lg text-gray-300 italic mb-6 leading-relaxed text-center">
                     "{testimonial.content}"
                   </blockquote>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-bold text-gray-900 dark:text-white">{testimonial.name}</div>
-                      <div className="text-gray-600 dark:text-gray-400">{testimonial.company}</div>
+                      <div className="font-bold text-white">{testimonial.name}</div>
+                      <div className="text-gray-400">{testimonial.company}</div>
                     </div>
-                    <div className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-semibold">
+                    <div className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
                       <Award className="h-4 w-4 mr-2" />
                       {testimonial.results}
                     </div>
@@ -364,7 +364,7 @@ export function GoogleAdsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20">
+      <section className="py-16 bg-gradient-to-br from-emerald-900/20 to-teal-900/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -372,10 +372,10 @@ export function GoogleAdsPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl font-bold text-white mb-6">
               Ready to Dominate Google Ads?
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+            <p className="text-lg text-gray-300 mb-8">
               Do not allow your competitors to have an upper hand. Collaborate with Tech Processing LLC on Google Ads marketing and see your company on the first list of search results.
             </p>
             
@@ -391,7 +391,7 @@ export function GoogleAdsPage() {
               
               <a
                 href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
+                className="border-2 border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
               >
                 <Phone className="h-5 w-5 mr-2" />
                 {appConfig.contact.phone}
@@ -402,7 +402,7 @@ export function GoogleAdsPage() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 bg-white dark:bg-slate-900">
+      <section id="contact" className="py-16 bg-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -410,29 +410,29 @@ export function GoogleAdsPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">
               Get Your Free Google Ads Consultation
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-12 text-center">
+            <p className="text-lg text-gray-300 mb-12 text-center">
               Book a free Google Ads consultation at any given time and achieve your target customer base.
             </p>
 
-            <div className="bg-gray-50 dark:bg-slate-800 rounded-2xl p-8">
+            <div className="bg-slate-800 rounded-2xl p-8">
               <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Name</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Business Name</label>
                     <input
                       type="text"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                      className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white"
                       placeholder="Your business name"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
                     <input
                       type="email"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                      className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -440,16 +440,16 @@ export function GoogleAdsPage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Website URL</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Website URL</label>
                     <input
                       type="url"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                      className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white"
                       placeholder="https://yourwebsite.com"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Monthly Ad Budget</label>
-                    <select className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Monthly Ad Budget</label>
+                    <select className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white">
                       <option>$1,000 - $5,000</option>
                       <option>$5,000 - $10,000</option>
                       <option>$10,000 - $25,000</option>
@@ -460,10 +460,10 @@ export function GoogleAdsPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Google Ads Goals</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Google Ads Goals</label>
                   <textarea
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                    className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white"
                     placeholder="Tell us about your Google Ads goals and current challenges..."
                   />
                 </div>

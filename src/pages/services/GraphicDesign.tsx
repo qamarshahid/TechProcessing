@@ -91,7 +91,7 @@ export function GraphicDesignPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       {/* SEO Meta Tags */}
       <head>
         <title>Graphic Design Services | TechProcessing LLC</title>
@@ -102,15 +102,15 @@ export function GraphicDesignPage() {
       </head>
 
       {/* Navigation Bar */}
-      <nav className="sticky top-0 z-50 bg-white/90 dark:bg-slate-950/90 backdrop-blur-md border-b border-gray-200 dark:border-slate-800">
+      <nav className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
+            <Link to="/" className="flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 transition-colors">
               <ArrowLeft className="h-5 w-5" />
               <span className="font-semibold">Back to Home</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-gray-300 hover:text-emerald-400 transition-colors">
                 <Phone className="h-5 w-5" />
               </a>
               <a href="#contact" className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
@@ -122,7 +122,7 @@ export function GraphicDesignPage() {
       </nav>
 
       {/* Hero Section - Simplified */}
-      <section className="py-16 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20">
+      <section className="py-16 bg-gradient-to-br from-emerald-900/20 to-teal-900/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -130,17 +130,17 @@ export function GraphicDesignPage() {
             transition={{ duration: 0.8 }}
           >
             <div className="mb-6">
-              <span className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-semibold">
+              <span className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
                 <Sparkles className="h-4 w-4 mr-2" />
                 Graphic Design
               </span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               Creative Visual Solutions That Grab and Communicate
             </h1>
             
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               Our Graphic Designing solutions create your ideas into life as interactive visuals perfect for your business. Logos and branding, marketing materials, and digital content both look creative and attract attention, which creates a memorable impression.
             </p>
 
@@ -156,7 +156,7 @@ export function GraphicDesignPage() {
               
               <a
                 href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
+                className="border-2 border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
               >
                 <Phone className="h-5 w-5 mr-2" />
                 {appConfig.contact.phone}
@@ -165,16 +165,16 @@ export function GraphicDesignPage() {
 
             <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
               <div className="text-center">
-                <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">100%</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Custom Design</div>
+                <div className="text-3xl font-bold text-emerald-400">100%</div>
+                <div className="text-sm text-gray-400 font-medium">Custom Design</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-teal-600 dark:text-teal-400">24/7</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Support</div>
+                <div className="text-3xl font-bold text-teal-400">24/7</div>
+                <div className="text-sm text-gray-400 font-medium">Support</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-cyan-600 dark:text-cyan-400">5+</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">Revisions</div>
+                <div className="text-3xl font-bold text-cyan-400">5+</div>
+                <div className="text-sm text-gray-400 font-medium">Revisions</div>
               </div>
             </div>
           </motion.div>
@@ -192,15 +192,15 @@ export function GraphicDesignPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">What We Do</h2>
-            <div className="prose prose-lg dark:prose-invert max-w-none">
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+            <h2 className="text-3xl font-bold text-white mb-8">What We Do</h2>
+            <div className="prose prose-lg prose-invert max-w-none">
+              <p className="text-gray-300 leading-relaxed mb-6">
                 Great design is more than just aesthetics - it's about creating visual solutions that communicate your message effectively and leave a lasting impression. Our graphic design services transform your ideas into compelling visual content that resonates with your audience.
               </p>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+              <p className="text-gray-300 leading-relaxed mb-6">
                 From logo design and brand identity to marketing materials and digital content, we create designs that not only look great but also drive results. Every design we create is tailored to your brand, target audience, and business objectives.
               </p>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+              <p className="text-gray-300 leading-relaxed">
                 Our creative team combines artistic vision with strategic thinking to deliver designs that grab attention, communicate clearly, and create memorable impressions that help your business stand out from the competition.
               </p>
             </div>
@@ -215,12 +215,12 @@ export function GraphicDesignPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Our Graphic Design Services</h2>
+            <h2 className="text-3xl font-bold text-white mb-8">Our Graphic Design Services</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {features.map((feature, index) => (
                 <motion.div
                   key={feature.title}
-                  className="flex items-start space-x-4 p-6 bg-gray-50 dark:bg-slate-800 rounded-xl"
+                  className="flex items-start space-x-4 p-6 bg-slate-800 rounded-xl"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -230,8 +230,8 @@ export function GraphicDesignPage() {
                     <feature.icon className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{feature.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{feature.description}</p>
+                    <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
+                    <p className="text-gray-300 leading-relaxed">{feature.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -247,9 +247,9 @@ export function GraphicDesignPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Why Choose Our Graphic Design Services?</h2>
-            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-8">
-              <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
+            <h2 className="text-3xl font-bold text-white mb-8">Why Choose Our Graphic Design Services?</h2>
+            <div className="bg-emerald-900/20 rounded-xl p-8">
+              <p className="text-lg text-gray-300 mb-6">
                 Professional graphic design is essential for building a strong brand presence and connecting with your audience. Here's what you can expect:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -262,8 +262,8 @@ export function GraphicDesignPage() {
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">{benefit}</span>
+                    <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                    <span className="text-gray-300">{benefit}</span>
                   </motion.div>
                 ))}
               </div>
@@ -279,8 +279,8 @@ export function GraphicDesignPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Our Design Process</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+            <h2 className="text-3xl font-bold text-white mb-8">Our Design Process</h2>
+            <p className="text-lg text-gray-300 mb-8">
               A proven methodology for creating exceptional visual designs
             </p>
             
@@ -288,7 +288,7 @@ export function GraphicDesignPage() {
               {processSteps.map((step, index) => (
                 <motion.div
                   key={step.step}
-                  className="flex items-start space-x-6 p-6 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700"
+                  className="flex items-start space-x-6 p-6 bg-slate-800 rounded-xl border border-slate-700"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -299,13 +299,13 @@ export function GraphicDesignPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{step.title}</h3>
-                      <div className="inline-flex items-center px-3 py-1 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-medium">
+                      <h3 className="text-xl font-semibold text-white">{step.title}</h3>
+                      <div className="inline-flex items-center px-3 py-1 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-medium">
                         <Clock className="h-4 w-4 mr-2" />
                         {step.duration}
                       </div>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{step.description}</p>
+                    <p className="text-gray-300 leading-relaxed">{step.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -315,7 +315,7 @@ export function GraphicDesignPage() {
       </main>
 
       {/* Testimonials Section */}
-      <section className="py-16 bg-gray-50 dark:bg-slate-800">
+      <section className="py-16 bg-slate-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -323,8 +323,8 @@ export function GraphicDesignPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">What Our Clients Say</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-12 text-center">
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">What Our Clients Say</h2>
+            <p className="text-lg text-gray-300 mb-12 text-center">
               Don't just take our word for it—hear from businesses we've helped with exceptional design
             </p>
 
@@ -332,7 +332,7 @@ export function GraphicDesignPage() {
               {testimonials.map((testimonial, index) => (
                 <motion.div
                   key={index}
-                  className="bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-slate-700"
+                  className="bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-700"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.2 }}
@@ -343,15 +343,15 @@ export function GraphicDesignPage() {
                       <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  <blockquote className="text-lg text-gray-700 dark:text-gray-300 italic mb-6 leading-relaxed text-center">
+                  <blockquote className="text-lg text-gray-300 italic mb-6 leading-relaxed text-center">
                     "{testimonial.content}"
                   </blockquote>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-bold text-gray-900 dark:text-white">{testimonial.name}</div>
-                      <div className="text-gray-600 dark:text-gray-400">{testimonial.company}</div>
+                      <div className="font-bold text-white">{testimonial.name}</div>
+                      <div className="text-gray-400">{testimonial.company}</div>
                     </div>
-                    <div className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-semibold">
+                    <div className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
                       <Award className="h-4 w-4 mr-2" />
                       {testimonial.results}
                     </div>
@@ -364,7 +364,7 @@ export function GraphicDesignPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20">
+      <section className="py-16 bg-gradient-to-br from-emerald-900/20 to-teal-900/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -372,10 +372,10 @@ export function GraphicDesignPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl font-bold text-white mb-6">
               Ready to Transform Your Visual Identity?
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+            <p className="text-lg text-gray-300 mb-8">
               Let us create compelling visual designs that grab attention, communicate your message effectively, and create memorable impressions that help your business stand out.
             </p>
             
@@ -391,7 +391,7 @@ export function GraphicDesignPage() {
               
               <a
                 href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
+                className="border-2 border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
               >
                 <Phone className="h-5 w-5 mr-2" />
                 {appConfig.contact.phone}
@@ -402,7 +402,7 @@ export function GraphicDesignPage() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 bg-white dark:bg-slate-900">
+      <section id="contact" className="py-16 bg-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -410,29 +410,29 @@ export function GraphicDesignPage() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">
               Get Your Free Design Consultation
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-12 text-center">
+            <p className="text-lg text-gray-300 mb-12 text-center">
               Let us understand your design needs and create a custom solution that perfectly represents your brand.
             </p>
 
-            <div className="bg-gray-50 dark:bg-slate-800 rounded-2xl p-8">
+            <div className="bg-slate-800 rounded-2xl p-8">
               <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Name</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Business Name</label>
                     <input
                       type="text"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                      className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white"
                       placeholder="Your business name"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
                     <input
                       type="email"
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                      className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white"
                       placeholder="your@email.com"
                     />
                   </div>
@@ -440,8 +440,8 @@ export function GraphicDesignPage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Design Type</label>
-                    <select className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Design Type</label>
+                    <select className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white">
                       <option>Logo Design</option>
                       <option>Brand Identity</option>
                       <option>Marketing Materials</option>
@@ -451,8 +451,8 @@ export function GraphicDesignPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Type</label>
-                    <select className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Business Type</label>
+                    <select className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white">
                       <option>E-commerce</option>
                       <option>Professional Services</option>
                       <option>Healthcare</option>
@@ -464,10 +464,10 @@ export function GraphicDesignPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Design Requirements</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Design Requirements</label>
                   <textarea
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                    className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white"
                     placeholder="Tell us about your design needs, style preferences, and project goals..."
                   />
                 </div>

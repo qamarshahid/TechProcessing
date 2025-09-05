@@ -413,9 +413,9 @@ export function LandingPage() {
         </script>
       </head>
 
-      <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-white">
+      <div className="min-h-screen bg-slate-950 text-white">
         {/* Navigation */}
-        <nav className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-sm border-b border-gray-200/50 dark:border-slate-800/50 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
+        <nav className="bg-slate-900/95 backdrop-blur-xl shadow-sm border-b border-slate-800/50 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <motion.div 
@@ -427,9 +427,9 @@ export function LandingPage() {
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center shadow-lg">
                   <div className="text-white font-black text-sm">TP</div>
                 </div>
-                <div className="font-black text-xl text-gray-900 dark:text-white">
+                <div className="font-black text-xl text-white">
                   <span className="tracking-wider">TECHPROCESSING</span>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 font-bold tracking-[0.2em]">LLC</div>
+                  <div className="text-xs text-emerald-400 font-bold tracking-[0.2em]">LLC</div>
                 </div>
               </motion.div>
 
@@ -447,7 +447,7 @@ export function LandingPage() {
                   onMouseLeave={() => setIsServicesDropdownOpen(false)}
                 >
                   <button 
-                    className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium flex items-center py-2"
+                    className="text-gray-300 hover:text-emerald-400 transition-colors font-medium flex items-center py-2"
                     onClick={() => setIsServicesDropdownOpen(!isServicesDropdownOpen)}
                   >
                     Services
@@ -461,7 +461,7 @@ export function LandingPage() {
                   
                   {/* Dropdown Menu */}
                   <motion.div
-                    className="absolute top-full left-0 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-200 dark:border-slate-700 z-50"
+                    className="absolute top-full left-0 w-80 bg-slate-800 rounded-xl shadow-xl border border-slate-700 z-50"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ 
                       opacity: isServicesDropdownOpen ? 1 : 0, 
@@ -479,17 +479,17 @@ export function LandingPage() {
                           <Link
                             key={service.title}
                             to={service.href}
-                            className="flex items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors group"
+                            className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group"
                             onClick={() => setIsServicesDropdownOpen(false)}
                           >
                             <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
                               <service.icon className="h-5 w-5 text-white" />
                             </div>
                             <div>
-                              <div className="font-semibold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                              <div className="font-semibold text-white group-hover:text-emerald-400 transition-colors">
                                 {service.title}
                               </div>
-                              <div className="text-sm text-gray-600 dark:text-gray-400">
+                              <div className="text-sm text-gray-400">
                                 {service.description}
                               </div>
                             </div>
@@ -500,10 +500,10 @@ export function LandingPage() {
                   </motion.div>
                 </div>
                 
-                <a href="#portfolio" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
-                <a href="#process" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Process</a>
-                <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">About</a>
-                <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Contact</a>
+                <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
+                <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Process</a>
+                <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">About</a>
+                <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Contact</a>
               </motion.div>
 
               <motion.div
@@ -514,7 +514,7 @@ export function LandingPage() {
               >
                 <Link
                   to="/login"
-                  className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium"
+                  className="text-gray-300 hover:text-emerald-400 transition-colors font-medium"
                   onClick={() => handleCTAClick('Client Login')}
                 >
                   Client Login
@@ -529,7 +529,7 @@ export function LandingPage() {
                 
                 {/* Mobile Menu Button */}
                 <button
-                  className="md:hidden text-gray-600 dark:text-gray-300"
+                  className="md:hidden text-gray-300"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   aria-label="Toggle mobile menu"
                 >
@@ -541,29 +541,29 @@ export function LandingPage() {
             {/* Mobile Navigation */}
             {isMenuOpen && (
               <motion.div
-                className="md:hidden py-4 border-t border-gray-200 dark:border-slate-800"
+                className="md:hidden py-4 border-t border-slate-800"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
               >
                 <div className="flex flex-col space-y-4">
                   <div className="space-y-2">
-                    <div className="text-gray-600 dark:text-gray-300 font-medium text-sm uppercase tracking-wider">Services</div>
+                    <div className="text-gray-300 font-medium text-sm uppercase tracking-wider">Services</div>
                     {servicesDropdown.map((service) => (
                       <Link
                         key={service.title}
                         to={service.href}
-                        className="flex items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors group ml-4"
+                        className="flex items-center p-2 rounded-lg hover:bg-slate-700 transition-colors group ml-4"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3">
                           <service.icon className="h-4 w-4 text-white" />
                         </div>
                         <div>
-                          <div className="font-medium text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                          <div className="font-medium text-white group-hover:text-emerald-400 transition-colors">
                             {service.title}
                           </div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                          <div className="text-xs text-gray-400">
                             {service.description}
                           </div>
                         </div>
@@ -571,12 +571,12 @@ export function LandingPage() {
                     ))}
                   </div>
                   
-                  <div className="border-t border-gray-200 dark:border-slate-700 pt-4">
-                    <a href="#portfolio" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
-                    <a href="#process" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium block mt-2">Process</a>
-                    <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium block mt-2">About</a>
-                    <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium block mt-2">Contact</a>
-                    <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium block mt-2">Client Login</Link>
+                  <div className="border-t border-slate-700 pt-4">
+                    <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
+                    <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block mt-2">Process</a>
+                    <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block mt-2">About</a>
+                    <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block mt-2">Contact</a>
+                    <Link to="/login" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block mt-2">Client Login</Link>
                   </div>
                 </div>
               </motion.div>
@@ -585,7 +585,7 @@ export function LandingPage() {
         </nav>
 
         {/* Hero Section */}
-        <section ref={heroRef} className="relative py-20 lg:py-32 bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 overflow-hidden">
+        <section ref={heroRef} className="relative py-20 lg:py-32 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 overflow-hidden">
           {/* Background Elements */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-20 left-20 w-32 h-32 border-4 border-emerald-400/20 transform rotate-45 hidden lg:block"></div>
@@ -601,13 +601,13 @@ export function LandingPage() {
                 transition={{ duration: 1 }}
               >
                 <div className="mb-6">
-                  <span className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-semibold">
+                  <span className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
                     <Sparkles className="h-4 w-4 mr-2" />
                     Trusted by 500+ Businesses
                   </span>
                 </div>
                 
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white mb-6 leading-tight">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
                   <span className="block">TRANSFORM YOUR</span>
                   <span className="block">BUSINESS WITH</span>
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
@@ -615,23 +615,23 @@ export function LandingPage() {
                   </span>
                 </h1>
                 
-                <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl leading-relaxed">
+                <p className="text-xl lg:text-2xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
                   We're your digital transformation partners, combining strategic expertise with cutting-edge technology to drive measurable results. From SEO and social media to business formation and design, we deliver solutions that grow your business.
                 </p>
 
                 <div className="mb-8">
                   <div className="grid grid-cols-3 gap-6 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">300%</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Avg Traffic Increase</div>
+                      <div className="text-2xl font-bold text-emerald-400">300%</div>
+                      <div className="text-sm text-gray-400">Avg Traffic Increase</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">99%</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Client Satisfaction</div>
+                      <div className="text-2xl font-bold text-teal-400">99%</div>
+                      <div className="text-sm text-gray-400">Client Satisfaction</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">24/7</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">Support Available</div>
+                      <div className="text-2xl font-bold text-cyan-400">24/7</div>
+                      <div className="text-sm text-gray-400">Support Available</div>
                     </div>
                   </div>
                 </div>
@@ -649,7 +649,7 @@ export function LandingPage() {
                   
                   <a
                     href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                    className="border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
+                    className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
                     onClick={() => handleCTAClick('Contact Us')}
                   >
                     <Phone className="h-5 w-5 mr-2" />
@@ -657,7 +657,7 @@ export function LandingPage() {
                   </a>
                 </div>
 
-                <div className="mt-8 flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400">
+                <div className="mt-8 flex items-center space-x-6 text-sm text-gray-400">
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-emerald-500 mr-2" />
                     <span>Free Consultation</span>
@@ -730,7 +730,7 @@ export function LandingPage() {
         </section>
 
         {/* Services Section */}
-        <section id="services" className="py-20 bg-white dark:bg-slate-900">
+        <section id="services" className="py-20 bg-slate-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -739,10 +739,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
                 Our Services
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
                 From social media marketing to LLC formation, we provide comprehensive digital solutions that transform your business
               </p>
             </motion.div>
@@ -751,7 +751,7 @@ export function LandingPage() {
               {services.map((service, index) => (
                 <motion.div
                   key={service.title}
-                  className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                  className="bg-slate-800 rounded-2xl shadow-lg border border-slate-700 p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
@@ -761,38 +761,38 @@ export function LandingPage() {
                     <service.icon className="h-8 w-8 text-white" />
                   </div>
                   
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-2xl font-bold text-white mb-4">
                     {service.title === 'SEO (Search Engine Optimization)' ? (
-                      <Link to="/services/seo" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                      <Link to="/services/seo" className="hover:text-emerald-400 transition-colors">
                         {service.title}
                       </Link>
                     ) : service.title === 'Google My Business (GMB)' ? (
-                      <Link to="/services/google-my-business" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                      <Link to="/services/google-my-business" className="hover:text-emerald-400 transition-colors">
                         {service.title}
                       </Link>
                     ) : service.title === 'Social Media Marketing' ? (
-                      <Link to="/services/social-media-marketing" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                      <Link to="/services/social-media-marketing" className="hover:text-emerald-400 transition-colors">
                         {service.title}
                       </Link>
                     ) : (
                       service.title
                     )}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">{service.description}</p>
+                  <p className="text-gray-300 mb-6 leading-relaxed">{service.description}</p>
                   
                   <div className="space-y-3 mb-6">
                     {service.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-center">
                         <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                        <span className="text-gray-300">{feature}</span>
                       </div>
                     ))}
                   </div>
                   
-                  <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
+                  <div className="bg-emerald-900/20 rounded-lg p-4 border border-emerald-800">
                     <div className="flex items-center">
-                      <Target className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-2" />
-                      <span className="text-emerald-800 dark:text-emerald-300 font-semibold">{service.outcome}</span>
+                      <Target className="h-5 w-5 text-emerald-400 mr-2" />
+                      <span className="text-emerald-300 font-semibold">{service.outcome}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -802,7 +802,7 @@ export function LandingPage() {
         </section>
 
         {/* Marketing Services Section */}
-        <section className="py-20 bg-gray-50 dark:bg-slate-800">
+        <section className="py-20 bg-slate-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -811,10 +811,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
                 Our Marketing Services
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
                 Comprehensive digital marketing solutions to boost your online presence and drive results
               </p>
             </motion.div>
@@ -822,7 +822,7 @@ export function LandingPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Search Engine Optimization */}
               <motion.div
-                className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-8"
+                className="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 p-8"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
@@ -831,28 +831,28 @@ export function LandingPage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                   <Search className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  <Link to="/services/seo" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <h3 className="text-2xl font-bold text-white mb-4">
+                  <Link to="/services/seo" className="hover:text-emerald-400 transition-colors">
                     Search Engine Optimization
                   </Link>
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-6">Boost Your Visibility with Expert SEO</p>
+                <p className="text-gray-300 mb-6">Boost Your Visibility with Expert SEO</p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Optimize your website for higher search engine rankings</span>
+                    <span className="text-gray-300">Optimize your website for higher search engine rankings</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Develop targeted content strategies to attract and engage your audience</span>
+                    <span className="text-gray-300">Develop targeted content strategies to attract and engage your audience</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Implement technical SEO improvements to enhance site performance</span>
+                    <span className="text-gray-300">Implement technical SEO improvements to enhance site performance</span>
                   </li>
                 </ul>
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
-                  <p className="text-emerald-800 dark:text-emerald-300 text-sm">
+                <div className="bg-emerald-900/20 rounded-lg p-4 border border-emerald-800">
+                  <p className="text-emerald-300 text-sm">
                     Our Search Engine Optimization (SEO) services are aimed at ensuring that your business has found its way up the staging posts, more quality traffic is drawn to the business and that the business converts the visitors into customers.
                   </p>
                 </div>
@@ -860,7 +860,7 @@ export function LandingPage() {
 
               {/* Local Search */}
               <motion.div
-                className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-8"
+                className="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 p-8"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
@@ -869,24 +869,24 @@ export function LandingPage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                   <MapPin className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Local Search</h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-6">Increase Your Online Presence in your area</p>
+                <h3 className="text-2xl font-bold text-white mb-4">Local Search</h3>
+                <p className="text-gray-300 mb-6">Increase Your Online Presence in your area</p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Please draw Nearby, Ready-to-Buy Customers</span>
+                    <span className="text-gray-300">Please draw Nearby, Ready-to-Buy Customers</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Be More Prominent in Google Maps</span>
+                    <span className="text-gray-300">Be More Prominent in Google Maps</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Generate More Calls and store visits</span>
+                    <span className="text-gray-300">Generate More Calls and store visits</span>
                   </li>
                 </ul>
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
-                  <p className="text-emerald-800 dark:text-emerald-300 text-sm">
+                <div className="bg-emerald-900/20 rounded-lg p-4 border border-emerald-800">
+                  <p className="text-emerald-300 text-sm">
                     Our Local Search services at Tech Processing LLC are aimed at ensuring that your business is put in the frontline, whenever your products or services are being sought locally.
                   </p>
                 </div>
@@ -894,7 +894,7 @@ export function LandingPage() {
 
               {/* Social Media */}
               <motion.div
-                className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-8"
+                className="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 p-8"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -903,28 +903,28 @@ export function LandingPage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                   <Facebook className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  <Link to="/services/social-media-marketing" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                <h3 className="text-2xl font-bold text-white mb-4">
+                  <Link to="/services/social-media-marketing" className="hover:text-emerald-400 transition-colors">
                     Social Media
                   </Link>
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-6">Build genuine relationships with the customers</p>
+                <p className="text-gray-300 mb-6">Build genuine relationships with the customers</p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Increase brand recognition and brand loyalty</span>
+                    <span className="text-gray-300">Increase brand recognition and brand loyalty</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Promote interaction with innovative contents</span>
+                    <span className="text-gray-300">Promote interaction with innovative contents</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Monitor success in real-time analytics</span>
+                    <span className="text-gray-300">Monitor success in real-time analytics</span>
                   </li>
                 </ul>
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
-                  <p className="text-emerald-800 dark:text-emerald-300 text-sm">
+                <div className="bg-emerald-900/20 rounded-lg p-4 border border-emerald-800">
+                  <p className="text-emerald-300 text-sm">
                     Our social media specialists develop custom-made plans in social platforms such as Facebook, Instagram, LinkedIn, Twitter, among others.
                   </p>
                 </div>
@@ -932,7 +932,7 @@ export function LandingPage() {
 
               {/* Google Ads */}
               <motion.div
-                className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-8"
+                className="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 p-8"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
@@ -941,24 +941,24 @@ export function LandingPage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
                   <Target className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Google ADS</h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-6">Go straight to your customers directly</p>
+                <h3 className="text-2xl font-bold text-white mb-4">Google ADS</h3>
+                <p className="text-gray-300 mb-6">Go straight to your customers directly</p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Max ROI-wise advertising maximization</span>
+                    <span className="text-gray-300">Max ROI-wise advertising maximization</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Be the first result in the search outcomes</span>
+                    <span className="text-gray-300">Be the first result in the search outcomes</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-700 dark:text-gray-300">Monitor, measure and tune performance</span>
+                    <span className="text-gray-300">Monitor, measure and tune performance</span>
                   </li>
                 </ul>
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
-                  <p className="text-emerald-800 dark:text-emerald-300 text-sm">
+                <div className="bg-emerald-900/20 rounded-lg p-4 border border-emerald-800">
+                  <p className="text-emerald-300 text-sm">
                     In Tech Processing LLC, we excel in the development and management of Google Ads campaigns that provide quantifiable results and actual business development.
                   </p>
                 </div>
@@ -968,7 +968,7 @@ export function LandingPage() {
         </section>
 
         {/* Portfolio/Case Studies Section */}
-        <section id="portfolio" className="py-20 bg-gray-50 dark:bg-slate-800">
+        <section id="portfolio" className="py-20 bg-slate-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -977,10 +977,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
                 We have worked with some of the biggest names in USA
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
                 See how we've helped businesses like SAPPHIRE OCEAN LLC, Softowel Inc, and Almas achieve extraordinary growth
               </p>
             </motion.div>
@@ -989,7 +989,7 @@ export function LandingPage() {
               {caseStudies.map((study, index) => (
                 <motion.div
                   key={study.client}
-                  className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300"
+                  className="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.2 }}
@@ -1010,17 +1010,17 @@ export function LandingPage() {
                   </div>
                   
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">The Challenge</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">{study.challenge}</p>
+                    <h3 className="text-xl font-bold text-white mb-3">The Challenge</h3>
+                    <p className="text-gray-300 mb-4">{study.challenge}</p>
                     
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Our Solution</h4>
-                    <p className="text-gray-600 dark:text-gray-300 mb-6">{study.solution}</p>
+                    <h4 className="text-lg font-semibold text-white mb-3">Our Solution</h4>
+                    <p className="text-gray-300 mb-6">{study.solution}</p>
                     
                     <div className="grid grid-cols-2 gap-4">
                       {Object.entries(study.results).map(([key, value]) => (
-                        <div key={key} className="text-center p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
-                          <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{value}</div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                        <div key={key} className="text-center p-3 bg-slate-800 rounded-lg">
+                          <div className="text-lg font-bold text-emerald-400">{value}</div>
+                          <div className="text-xs text-gray-400 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
                         </div>
                       ))}
                     </div>
@@ -1032,7 +1032,7 @@ export function LandingPage() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="py-20 bg-white dark:bg-slate-900">
+        <section className="py-20 bg-slate-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -1041,10 +1041,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
                 What Our Clients Say
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
                 Don't just take our word for it—hear from businesses we've helped succeed
               </p>
             </motion.div>
@@ -1057,7 +1057,7 @@ export function LandingPage() {
                 >
                   {testimonials.map((testimonial, index) => (
                     <div key={index} className="w-full flex-shrink-0 px-4">
-                      <div className="bg-gray-50 dark:bg-slate-800 rounded-2xl p-8 max-w-4xl mx-auto">
+                      <div className="bg-slate-800 rounded-2xl p-8 max-w-4xl mx-auto">
                         <div className="flex flex-col md:flex-row items-center gap-8">
                           <div className="flex-shrink-0">
                             <img
@@ -1073,16 +1073,16 @@ export function LandingPage() {
                                 <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                               ))}
                             </div>
-                            <blockquote className="text-lg lg:text-xl text-gray-700 dark:text-gray-300 italic mb-6 leading-relaxed">
+                            <blockquote className="text-lg lg:text-xl text-gray-300 italic mb-6 leading-relaxed">
                               "{testimonial.content}"
                             </blockquote>
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                               <div>
-                                <div className="font-bold text-gray-900 dark:text-white">{testimonial.name}</div>
-                                <div className="text-gray-600 dark:text-gray-400">{testimonial.role}, {testimonial.company}</div>
+                                <div className="font-bold text-white">{testimonial.name}</div>
+                                <div className="text-gray-400">{testimonial.role}, {testimonial.company}</div>
                               </div>
                               <div className="mt-4 md:mt-0">
-                                <div className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-semibold">
+                                <div className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
                                   <TrendingUp className="h-4 w-4 mr-2" />
                                   {testimonial.results}
                                 </div>
@@ -1103,7 +1103,7 @@ export function LandingPage() {
                     key={index}
                     onClick={() => setActiveTestimonial(index)}
                     className={`w-3 h-3 rounded-full transition-colors ${
-                      index === activeTestimonial ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-gray-600'
+                      index === activeTestimonial ? 'bg-emerald-600' : 'bg-gray-600'
                     }`}
                     aria-label={`View testimonial ${index + 1}`}
                   />
@@ -1114,7 +1114,7 @@ export function LandingPage() {
         </section>
 
         {/* Process Section */}
-        <section id="process" className="py-20 bg-gray-50 dark:bg-slate-800">
+        <section id="process" className="py-20 bg-slate-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -1123,10 +1123,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
                 Our Proven Process
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
                 A streamlined approach that delivers exceptional results every time
               </p>
             </motion.div>
@@ -1141,7 +1141,7 @@ export function LandingPage() {
                   transition={{ duration: 0.8, delay: index * 0.2 }}
                   viewport={{ once: true }}
                 >
-                  <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-slate-700 text-center relative">
+                  <div className="bg-slate-900 rounded-2xl p-6 shadow-lg border border-slate-700 text-center relative">
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                       <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                         {step.step}
@@ -1152,10 +1152,10 @@ export function LandingPage() {
                       <step.icon className="h-8 w-8 text-white" />
                     </div>
                     
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{step.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">{step.description}</p>
+                    <h3 className="text-xl font-bold text-white mb-4">{step.title}</h3>
+                    <p className="text-gray-300 mb-4">{step.description}</p>
                     
-                    <div className="inline-flex items-center px-3 py-1 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-medium">
+                    <div className="inline-flex items-center px-3 py-1 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-medium">
                       <Clock className="h-4 w-4 mr-2" />
                       {step.duration}
                     </div>
@@ -1172,7 +1172,7 @@ export function LandingPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="py-20 bg-white dark:bg-slate-900">
+        <section className="py-20 bg-slate-900">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -1181,10 +1181,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
                 Frequently Asked Questions
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
+              <p className="text-xl text-gray-300">
                 Get answers to common questions about our services and process
               </p>
             </motion.div>
@@ -1193,17 +1193,17 @@ export function LandingPage() {
               {faqs.map((faq, index) => (
                 <motion.div
                   key={index}
-                  className="bg-gray-50 dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-700"
+                  className="bg-slate-800 rounded-xl p-6 border border-slate-700"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center">
-                    <MessageCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-3" />
+                  <h3 className="text-lg font-bold text-white mb-3 flex items-center">
+                    <MessageCircle className="h-5 w-5 text-emerald-400 mr-3" />
                     {faq.question}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.answer}</p>
+                  <p className="text-gray-300 leading-relaxed">{faq.answer}</p>
                 </motion.div>
               ))}
             </div>
@@ -1211,7 +1211,7 @@ export function LandingPage() {
         </section>
 
         {/* Contact/Lead Form Section */}
-        <section id="contact" className="py-20 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20">
+        <section id="contact" className="py-20 bg-gradient-to-br from-emerald-900/20 to-teal-900/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               {/* Contact Information */}
@@ -1221,10 +1221,10 @@ export function LandingPage() {
                 transition={{ duration: 1 }}
                 viewport={{ once: true }}
               >
-                <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
                   Ready to Transform Your Business?
                 </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+                <p className="text-xl text-gray-300 mb-8">
                   Let's work together to take your business to the next level with our proven digital solutions and expert team.
                 </p>
 
@@ -1234,8 +1234,8 @@ export function LandingPage() {
                       <Phone className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900 dark:text-white">Call Us</div>
-                      <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                      <div className="font-semibold text-white">Call Us</div>
+                      <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-emerald-400 hover:underline">
                         {appConfig.contact.phone}
                       </a>
                     </div>
@@ -1246,8 +1246,8 @@ export function LandingPage() {
                       <Mail className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900 dark:text-white">Email Us</div>
-                      <a href={`mailto:${appConfig.contact.email}`} className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                      <div className="font-semibold text-white">Email Us</div>
+                      <a href={`mailto:${appConfig.contact.email}`} className="text-emerald-400 hover:underline">
                         {appConfig.contact.email}
                       </a>
                     </div>
@@ -1258,8 +1258,8 @@ export function LandingPage() {
                       <MapPin className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900 dark:text-white">Visit Us</div>
-                      <div className="text-gray-600 dark:text-gray-300">
+                      <div className="font-semibold text-white">Visit Us</div>
+                      <div className="text-gray-300">
                         {appConfig.contact.address}
                       </div>
                     </div>
@@ -1267,16 +1267,16 @@ export function LandingPage() {
                 </div>
 
                 <div className="flex space-x-4">
-                  <a href="#" className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Facebook">
+                  <a href="#" className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Facebook">
                     <Facebook className="h-5 w-5" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Twitter">
+                  <a href="#" className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Twitter">
                     <Twitter className="h-5 w-5" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="LinkedIn">
+                  <a href="#" className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="LinkedIn">
                     <LinkedIn className="h-5 w-5" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Instagram">
+                  <a href="#" className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Instagram">
                     <Instagram className="h-5 w-5" />
                   </a>
                 </div>
@@ -1290,13 +1290,13 @@ export function LandingPage() {
                 viewport={{ once: true }}
               >
                 {/* Tab Navigation */}
-                <div className="flex mb-6 bg-gray-100 dark:bg-slate-800 rounded-lg p-1">
+                <div className="flex mb-6 bg-slate-800 rounded-lg p-1">
                   <button
                     onClick={() => setActiveTab('contact')}
                     className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
                       activeTab === 'contact'
-                        ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                        ? 'bg-slate-700 text-emerald-400 shadow-sm'
+                        : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'
                     }`}
                   >
                     Get Quote
@@ -1305,8 +1305,8 @@ export function LandingPage() {
                     onClick={() => setActiveTab('appointment')}
                     className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
                       activeTab === 'appointment'
-                        ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                        ? 'bg-slate-700 text-emerald-400 shadow-sm'
+                        : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'
                     }`}
                   >
                     Book Call
@@ -1325,7 +1325,7 @@ export function LandingPage() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-gray-900 dark:bg-slate-950 text-white py-16">
+        <footer className="bg-slate-950 text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div className="col-span-1 md:col-span-2">
