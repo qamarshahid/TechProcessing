@@ -105,15 +105,15 @@ export function SocialMediaMarketingPage() {
       <nav className="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 transition-colors">
-              <ArrowLeft className="h-5 w-5" />
+            <Link to="/" className="flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 transition-colors touch-manipulation">
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="font-semibold">Back to Home</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-gray-300 hover:text-emerald-400 transition-colors">
-                <Phone className="h-5 w-5" />
+              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-gray-300 hover:text-emerald-400 transition-colors touch-manipulation">
+                <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
               </a>
-              <a href="#contact" className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+              <a href="#contact" className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors touch-manipulation">
                 Get Started
               </a>
             </div>
@@ -130,51 +130,51 @@ export function SocialMediaMarketingPage() {
             transition={{ duration: 0.8 }}
           >
             <div className="mb-6">
-              <span className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
+              <span className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-xs sm:text-sm font-semibold">
                 <Facebook className="h-4 w-4 mr-2" />
                 Social Media Marketing
               </span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6 leading-tight">
               Develop a Strong Brand Using the Power of Social Channels
             </h1>
             
-            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               Our Social Media Marketing services are intended to increase your presence online, reach your target audience and an increase in results that matter in your business. We develop customized campaigns to attract brand awareness, lead generation, and ROI maximization on all the mainstream social networks.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12">
               <a
                 href="#contact"
-                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
+                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
               >
-                <Facebook className="h-5 w-5 mr-2 group-hover:animate-pulse" />
+                <Facebook className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
                 Get Free Social Media Audit
-                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </a>
               
               <a
                 href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="border-2 border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
+                className="border-2 border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center"
               >
-                <Phone className="h-5 w-5 mr-2" />
+                <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 {appConfig.contact.phone}
               </a>
             </div>
 
-            <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto">
               <div className="text-center">
                 <div className="text-3xl font-bold text-emerald-400">500%</div>
-                <div className="text-sm text-gray-400 font-medium">More Reach</div>
+                <div className="text-xs sm:text-sm text-gray-400 font-medium">More Reach</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-teal-400">300%</div>
-                <div className="text-sm text-gray-400 font-medium">Engagement</div>
+                <div className="text-xs sm:text-sm text-gray-400 font-medium">Engagement</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-cyan-400">5+</div>
-                <div className="text-sm text-gray-400 font-medium">Platforms</div>
+                <div className="text-xs sm:text-sm text-gray-400 font-medium">Platforms</div>
               </div>
             </div>
           </motion.div>
@@ -216,7 +216,7 @@ export function SocialMediaMarketingPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl font-bold text-white mb-8">Our Social Media Marketing Services</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
               {features.map((feature, index) => (
                 <motion.div
                   key={feature.title}
@@ -230,7 +230,7 @@ export function SocialMediaMarketingPage() {
                     <feature.icon className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
+                    <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">{feature.title}</h3>
                     <p className="text-gray-300 leading-relaxed">{feature.description}</p>
                   </div>
                 </motion.div>
@@ -249,10 +249,10 @@ export function SocialMediaMarketingPage() {
           >
             <h2 className="text-3xl font-bold text-white mb-8">Why Choose Social Media Marketing?</h2>
             <div className="bg-emerald-900/20 rounded-xl p-8">
-              <p className="text-lg text-gray-300 mb-6">
+              <p className="text-base sm:text-lg text-gray-300 mb-6">
                 Our social media marketing services can help you meet your objectives whether it is to create brand awareness, get leads, or more sales and are measurable to give you tangible growth. Here's what you can expect:
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 {benefits.map((benefit, index) => (
                   <motion.div
                     key={benefit}
@@ -262,7 +262,7 @@ export function SocialMediaMarketingPage() {
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-400 flex-shrink-0" />
                     <span className="text-gray-300">{benefit}</span>
                   </motion.div>
                 ))}
@@ -280,7 +280,7 @@ export function SocialMediaMarketingPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl font-bold text-white mb-8">Our Social Media Marketing Process</h2>
-            <p className="text-lg text-gray-300 mb-8">
+            <p className="text-base sm:text-lg text-gray-300 mb-8">
               A proven methodology for achieving social media marketing success
             </p>
             
@@ -294,13 +294,13 @@ export function SocialMediaMarketingPage() {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg flex-shrink-0">
                     {step.step}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-semibold text-white">{step.title}</h3>
-                      <div className="inline-flex items-center px-3 py-1 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-medium">
+                      <h3 className="text-lg sm:text-xl font-semibold text-white">{step.title}</h3>
+                      <div className="inline-flex items-center px-3 py-1 bg-emerald-900/20 text-emerald-300 rounded-full text-xs sm:text-sm font-medium">
                         <Clock className="h-4 w-4 mr-2" />
                         {step.duration}
                       </div>
@@ -324,7 +324,7 @@ export function SocialMediaMarketingPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl font-bold text-white mb-8 text-center">What Our Clients Say</h2>
-            <p className="text-lg text-gray-300 mb-12 text-center">
+            <p className="text-base sm:text-lg text-gray-300 mb-8 sm:mb-12 text-center">
               Don't just take our word for it—hear from businesses we've helped achieve social media success
             </p>
 
@@ -340,10 +340,10 @@ export function SocialMediaMarketingPage() {
                 >
                   <div className="flex justify-center mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                      <Star key={i} className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  <blockquote className="text-lg text-gray-300 italic mb-6 leading-relaxed text-center">
+                  <blockquote className="text-base sm:text-lg text-gray-300 italic mb-6 leading-relaxed text-center">
                     "{testimonial.content}"
                   </blockquote>
                   <div className="flex items-center justify-between">
@@ -351,7 +351,7 @@ export function SocialMediaMarketingPage() {
                       <div className="font-bold text-white">{testimonial.name}</div>
                       <div className="text-gray-400">{testimonial.company}</div>
                     </div>
-                    <div className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
+                    <div className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-xs sm:text-sm font-semibold">
                       <Award className="h-4 w-4 mr-2" />
                       {testimonial.results}
                     </div>
@@ -375,25 +375,25 @@ export function SocialMediaMarketingPage() {
             <h2 className="text-3xl font-bold text-white mb-6">
               Ready to Transform Your Social Media?
             </h2>
-            <p className="text-lg text-gray-300 mb-8">
+            <p className="text-base sm:text-lg text-gray-300 mb-8">
               You don not have to cede the discussion to your competitors. Join Tech Processing LLC and transform your social outlets into effective tools of audience engagement and expansion.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <a
                 href="#contact"
-                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
+                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
               >
-                <Facebook className="h-5 w-5 mr-2 group-hover:animate-pulse" />
+                <Facebook className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
                 Get Free Social Media Audit
-                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </a>
               
               <a
                 href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="border-2 border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
+                className="border-2 border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center"
               >
-                <Phone className="h-5 w-5 mr-2" />
+                <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 {appConfig.contact.phone}
               </a>
             </div>
@@ -413,7 +413,7 @@ export function SocialMediaMarketingPage() {
             <h2 className="text-3xl font-bold text-white mb-8 text-center">
               Get Your Free Social Media Audit
             </h2>
-            <p className="text-lg text-gray-300 mb-12 text-center">
+            <p className="text-base sm:text-lg text-gray-300 mb-8 sm:mb-12 text-center">
               Read through our blog and understand how we can wrap your brand on the Internet, and drop us a line today to get a free social media audit!
             </p>
 
@@ -421,7 +421,7 @@ export function SocialMediaMarketingPage() {
               <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Business Name</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">Business Name</label>
                     <input
                       type="text"
                       className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white"
@@ -429,7 +429,7 @@ export function SocialMediaMarketingPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">Email</label>
                     <input
                       type="email"
                       className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white"
@@ -440,7 +440,7 @@ export function SocialMediaMarketingPage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Current Social Media Platforms</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">Current Social Media Platforms</label>
                     <select className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white">
                       <option>Facebook</option>
                       <option>Instagram</option>
@@ -451,7 +451,7 @@ export function SocialMediaMarketingPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Business Type</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">Business Type</label>
                     <select className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white">
                       <option>E-commerce</option>
                       <option>Professional Services</option>
@@ -464,7 +464,7 @@ export function SocialMediaMarketingPage() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Social Media Goals</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-300 mb-2">Social Media Goals</label>
                   <textarea
                     rows={4}
                     className="w-full px-4 py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-700 text-white"
@@ -474,11 +474,11 @@ export function SocialMediaMarketingPage() {
                 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
                 >
-                  <Facebook className="h-5 w-5 mr-2 group-hover:animate-pulse" />
+                  <Facebook className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
                   Get Free Social Media Audit
-                  <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </button>
               </form>
             </div>

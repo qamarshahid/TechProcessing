@@ -424,11 +424,12 @@ export function LandingPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center shadow-lg">
-                  <div className="text-white font-black text-sm">TP</div>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="text-white font-black text-xs sm:text-sm">TP</div>
                 </div>
-                <div className="font-black text-xl text-white">
-                  <span className="tracking-wider">TECHPROCESSING</span>
+                <div className="font-black text-lg sm:text-xl text-white">
+                  <span className="tracking-wider hidden sm:inline">TECHPROCESSING</span>
+                  <span className="tracking-wider sm:hidden">TECH</span>
                   <div className="text-xs text-emerald-400 font-bold tracking-[0.2em]">LLC</div>
                 </div>
               </motion.div>
@@ -529,11 +530,11 @@ export function LandingPage() {
                 
                 {/* Mobile Menu Button */}
                 <button
-                  className="md:hidden text-gray-300"
+                  className="md:hidden text-gray-300 p-2 touch-manipulation"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                   aria-label="Toggle mobile menu"
                 >
-                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                  {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </button>
               </motion.div>
             </div>
@@ -553,17 +554,17 @@ export function LandingPage() {
                       <Link
                         key={service.title}
                         to={service.href}
-                        className="flex items-center p-2 rounded-lg hover:bg-slate-700 transition-colors group ml-4"
+                        className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group ml-4 touch-manipulation"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3">
-                          <service.icon className="h-4 w-4 text-white" />
+                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                          <service.icon className="h-5 w-5 text-white" />
                         </div>
-                        <div>
-                          <div className="font-medium text-white group-hover:text-emerald-400 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-white group-hover:text-emerald-400 transition-colors text-sm">
                             {service.title}
                           </div>
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-gray-400 truncate">
                             {service.description}
                           </div>
                         </div>
@@ -571,12 +572,12 @@ export function LandingPage() {
                     ))}
                   </div>
                   
-                  <div className="border-t border-slate-700 pt-4">
-                    <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
-                    <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block mt-2">Process</a>
-                    <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block mt-2">About</a>
-                    <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block mt-2">Contact</a>
-                    <Link to="/login" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block mt-2">Client Login</Link>
+                  <div className="border-t border-slate-700 pt-4 space-y-3">
+                    <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-2 touch-manipulation">Portfolio</a>
+                    <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-2 touch-manipulation">Process</a>
+                    <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-2 touch-manipulation">About</a>
+                    <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-2 touch-manipulation">Contact</a>
+                    <Link to="/login" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-2 touch-manipulation">Client Login</Link>
                   </div>
                 </div>
               </motion.div>
@@ -607,7 +608,7 @@ export function LandingPage() {
                   </span>
                 </div>
                 
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white mb-6 leading-tight">
                   <span className="block">TRANSFORM YOUR</span>
                   <span className="block">BUSINESS WITH</span>
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
@@ -615,59 +616,61 @@ export function LandingPage() {
                   </span>
                 </h1>
                 
-                <p className="text-xl lg:text-2xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
+                <p className="text-lg sm:text-xl lg:text-2xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
                   We're your digital transformation partners, combining strategic expertise with cutting-edge technology to drive measurable results. From SEO and social media to business formation and design, we deliver solutions that grow your business.
                 </p>
 
                 <div className="mb-8">
-                  <div className="grid grid-cols-3 gap-6 text-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-emerald-400">300%</div>
-                      <div className="text-sm text-gray-400">Avg Traffic Increase</div>
+                      <div className="text-xl sm:text-2xl font-bold text-emerald-400">300%</div>
+                      <div className="text-xs sm:text-sm text-gray-400">Avg Traffic Increase</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-teal-400">99%</div>
-                      <div className="text-sm text-gray-400">Client Satisfaction</div>
+                      <div className="text-xl sm:text-2xl font-bold text-teal-400">99%</div>
+                      <div className="text-xs sm:text-sm text-gray-400">Client Satisfaction</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-cyan-400">24/7</div>
-                      <div className="text-sm text-gray-400">Support Available</div>
+                      <div className="text-xl sm:text-2xl font-bold text-cyan-400">24/7</div>
+                      <div className="text-xs sm:text-sm text-gray-400">Support Available</div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <a
                     href="#contact"
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group touch-manipulation"
                     onClick={() => handleCTAClick('Get My Free Quote')}
                   >
-                    <Rocket className="h-5 w-5 mr-2 group-hover:animate-pulse" />
-                    Get My Free Quote
-                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <Rocket className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
+                    <span className="hidden sm:inline">Get My Free Quote</span>
+                    <span className="sm:hidden">Free Quote</span>
+                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </a>
                   
                   <a
                     href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                    className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
+                    className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center touch-manipulation"
                     onClick={() => handleCTAClick('Contact Us')}
                   >
-                    <Phone className="h-5 w-5 mr-2" />
-                    {appConfig.contact.phone}
+                    <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                    <span className="hidden sm:inline">{appConfig.contact.phone}</span>
+                    <span className="sm:hidden">Call Now</span>
                   </a>
                 </div>
 
-                <div className="mt-8 flex items-center space-x-6 text-sm text-gray-400">
+                <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-xs sm:text-sm text-gray-400">
                   <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-emerald-500 mr-2" />
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 mr-2 flex-shrink-0" />
                     <span>Free Consultation</span>
                   </div>
                   <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-emerald-500 mr-2" />
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 mr-2 flex-shrink-0" />
                     <span>No Long-term Contracts</span>
                   </div>
                   <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-emerald-500 mr-2" />
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 mr-2 flex-shrink-0" />
                     <span>Results Guaranteed</span>
                   </div>
                 </div>
@@ -681,18 +684,18 @@ export function LandingPage() {
               >
                 <div className="relative">
                   {/* Simplified Dashboard Mockup */}
-                  <div className="w-full h-96 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 shadow-2xl border border-slate-700">
+                  <div className="w-full h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl border border-slate-700">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex space-x-2">
                         <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                         <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                         <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                       </div>
-                      <div className="text-emerald-400 text-sm font-mono">Business Dashboard</div>
+                      <div className="text-emerald-400 text-xs sm:text-sm font-mono">Business Dashboard</div>
                     </div>
                     
                     {/* Chart Area */}
-                    <div className="h-32 bg-slate-800 rounded-lg mb-4 relative overflow-hidden">
+                    <div className="h-20 sm:h-24 lg:h-32 bg-slate-800 rounded-lg mb-3 sm:mb-4 relative overflow-hidden">
                       <div className="absolute inset-0 flex items-end justify-between px-4 pb-2">
                         {[40, 65, 45, 80, 60, 90, 75, 95].map((height, i) => (
                           <motion.div
@@ -708,17 +711,17 @@ export function LandingPage() {
                     </div>
                     
                     {/* Stats */}
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-4">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-emerald-400">300%</div>
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-emerald-400">300%</div>
                         <div className="text-xs text-gray-400">Growth</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-teal-400">99%</div>
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-teal-400">99%</div>
                         <div className="text-xs text-gray-400">Satisfaction</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-cyan-400">24/7</div>
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-cyan-400">24/7</div>
                         <div className="text-xs text-gray-400">Support</div>
                       </div>
                     </div>
@@ -739,29 +742,29 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
                 Our Services
               </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto">
                 From social media marketing to LLC formation, we provide comprehensive digital solutions that transform your business
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {services.map((service, index) => (
                 <motion.div
                   key={service.title}
-                  className="bg-slate-800 rounded-2xl shadow-lg border border-slate-700 p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                  className="bg-slate-800 rounded-2xl shadow-lg border border-slate-700 p-6 sm:p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                    <service.icon className="h-8 w-8 text-white" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg">
+                    <service.icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                   </div>
                   
-                  <h3 className="text-2xl font-bold text-white mb-4">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
                     {service.title === 'SEO (Search Engine Optimization)' ? (
                       <Link to="/services/seo" className="hover:text-emerald-400 transition-colors">
                         {service.title}
@@ -778,21 +781,21 @@ export function LandingPage() {
                       service.title
                     )}
                   </h3>
-                  <p className="text-gray-300 mb-6 leading-relaxed">{service.description}</p>
+                  <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6 leading-relaxed">{service.description}</p>
                   
-                  <div className="space-y-3 mb-6">
+                  <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                     {service.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-center">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                        <span className="text-gray-300">{feature}</span>
+                        <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 mr-2 sm:mr-3 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-gray-300">{feature}</span>
                       </div>
                     ))}
                   </div>
                   
-                  <div className="bg-emerald-900/20 rounded-lg p-4 border border-emerald-800">
+                  <div className="bg-emerald-900/20 rounded-lg p-3 sm:p-4 border border-emerald-800">
                     <div className="flex items-center">
-                      <Target className="h-5 w-5 text-emerald-400 mr-2" />
-                      <span className="text-emerald-300 font-semibold">{service.outcome}</span>
+                      <Target className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-400 mr-2 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm text-emerald-300 font-semibold">{service.outcome}</span>
                     </div>
                   </div>
                 </motion.div>

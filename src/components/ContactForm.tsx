@@ -110,12 +110,12 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
   };
 
   return (
-    <div className={`bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-6 md:p-8 ${className}`}>
+    <div className={`bg-slate-900 rounded-2xl shadow-xl border border-slate-700 p-4 sm:p-6 md:p-8 ${className}`}>
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
           Get Your Free Quote
         </h3>
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="text-gray-300">
           Tell us about your project and we'll provide a custom solution
         </p>
       </div>
@@ -128,9 +128,9 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
             : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
         }`}>
           {submitStatus.type === 'success' ? (
-            <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-3 mt-0.5 flex-shrink-0" />
+            <CheckCircle className="h-5 w-5 text-emerald-400 mr-3 mt-0.5 flex-shrink-0" />
           ) : (
-            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mr-3 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="h-5 w-5 text-red-400 mr-3 mt-0.5 flex-shrink-0" />
           )}
           <p className={`text-sm ${
             submitStatus.type === 'success' 
@@ -142,11 +142,11 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
         {/* Name and Business */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
               Full Name *
             </label>
             <div className="relative">
@@ -157,19 +157,19 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
                 type="text"
                 id="name"
                 {...register('name')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
                   errors.name 
-                    ? 'border-red-300 dark:border-red-600' 
+                    ? 'border-red-600' 
                     : isFieldValid('name')
-                    ? 'border-emerald-300 dark:border-emerald-600'
-                    : 'border-gray-300 dark:border-slate-600'
+                    ? 'border-emerald-600'
+                    : 'border-slate-600'
                 }`}
                 placeholder="Your full name"
                 disabled={isSubmitting}
               />
             </div>
             {errors.name && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <p className="mt-1 text-sm text-red-400 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {errors.name.message}
               </p>
@@ -177,7 +177,7 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
           </div>
 
           <div>
-            <label htmlFor="business" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="business" className="block text-sm font-medium text-gray-300 mb-2">
               Business Name *
             </label>
             <div className="relative">
@@ -188,19 +188,19 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
                 type="text"
                 id="business"
                 {...register('business')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
                   errors.business 
-                    ? 'border-red-300 dark:border-red-600' 
+                    ? 'border-red-600' 
                     : isFieldValid('business')
-                    ? 'border-emerald-300 dark:border-emerald-600'
-                    : 'border-gray-300 dark:border-slate-600'
+                    ? 'border-emerald-600'
+                    : 'border-slate-600'
                 }`}
                 placeholder="Your business name"
                 disabled={isSubmitting}
               />
             </div>
             {errors.business && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <p className="mt-1 text-sm text-red-400 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {errors.business.message}
               </p>
@@ -209,9 +209,9 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
         </div>
 
         {/* Email and Phone */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
               Email Address *
             </label>
             <div className="relative">
@@ -222,19 +222,19 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
                 type="email"
                 id="email"
                 {...register('email')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
                   errors.email 
-                    ? 'border-red-300 dark:border-red-600' 
+                    ? 'border-red-600' 
                     : isFieldValid('email')
-                    ? 'border-emerald-300 dark:border-emerald-600'
-                    : 'border-gray-300 dark:border-slate-600'
+                    ? 'border-emerald-600'
+                    : 'border-slate-600'
                 }`}
                 placeholder="your@email.com"
                 disabled={isSubmitting}
               />
             </div>
             {errors.email && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <p className="mt-1 text-sm text-red-400 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {errors.email.message}
               </p>
@@ -242,7 +242,7 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
               Phone Number *
             </label>
             <div className="relative">
@@ -253,19 +253,19 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
                 type="tel"
                 id="phone"
                 {...register('phone')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
                   errors.phone 
-                    ? 'border-red-300 dark:border-red-600' 
+                    ? 'border-red-600' 
                     : isFieldValid('phone')
-                    ? 'border-emerald-300 dark:border-emerald-600'
-                    : 'border-gray-300 dark:border-slate-600'
+                    ? 'border-emerald-600'
+                    : 'border-slate-600'
                 }`}
                 placeholder="(727) 555-0123"
                 disabled={isSubmitting}
               />
             </div>
             {errors.phone && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <p className="mt-1 text-sm text-red-400 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {errors.phone.message}
               </p>
@@ -274,9 +274,9 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
         </div>
 
         {/* Project Type and Timeline */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <label htmlFor="projectType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="projectType" className="block text-sm font-medium text-gray-300 mb-2">
               Project Type *
             </label>
             <div className="relative">
@@ -286,12 +286,12 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
               <select
                 id="projectType"
                 {...register('projectType')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
                   errors.projectType 
-                    ? 'border-red-300 dark:border-red-600' 
+                    ? 'border-red-600' 
                     : isFieldValid('projectType')
-                    ? 'border-emerald-300 dark:border-emerald-600'
-                    : 'border-gray-300 dark:border-slate-600'
+                    ? 'border-emerald-600'
+                    : 'border-slate-600'
                 }`}
                 disabled={isSubmitting}
               >
@@ -305,7 +305,7 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
               </select>
             </div>
             {errors.projectType && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <p className="mt-1 text-sm text-red-400 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {errors.projectType.message}
               </p>
@@ -313,7 +313,7 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
           </div>
 
           <div>
-            <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="timeline" className="block text-sm font-medium text-gray-300 mb-2">
               Timeline *
             </label>
             <div className="relative">
@@ -323,12 +323,12 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
               <select
                 id="timeline"
                 {...register('timeline')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
                   errors.timeline 
-                    ? 'border-red-300 dark:border-red-600' 
+                    ? 'border-red-600' 
                     : isFieldValid('timeline')
-                    ? 'border-emerald-300 dark:border-emerald-600'
-                    : 'border-gray-300 dark:border-slate-600'
+                    ? 'border-emerald-600'
+                    : 'border-slate-600'
                 }`}
                 disabled={isSubmitting}
               >
@@ -341,7 +341,7 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
               </select>
             </div>
             {errors.timeline && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <p className="mt-1 text-sm text-red-400 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {errors.timeline.message}
               </p>
@@ -351,7 +351,7 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
 
         {/* Message */}
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
             Project Details
           </label>
           <div className="relative">
@@ -360,13 +360,13 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
               id="message"
               rows={4}
               {...register('message')}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white resize-none transition-colors"
+              className="w-full pl-10 pr-4 py-2 sm:py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white resize-none transition-colors"
               placeholder="Tell us about your project goals, current challenges, and what success looks like for your business..."
               disabled={isSubmitting}
             />
           </div>
           {errors.message && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+            <p className="mt-1 text-sm text-red-400 flex items-center">
               <AlertCircle className="h-4 w-4 mr-1" />
               {errors.message.message}
             </p>
@@ -385,11 +385,11 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
             />
           </div>
           <div className="ml-3 text-sm">
-            <label htmlFor="consent" className="text-gray-700 dark:text-gray-300">
+            <label htmlFor="consent" className="text-gray-300">
               I agree to receive communications from TechProcessing LLC and understand that I can unsubscribe at any time. *
             </label>
             {errors.consent && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
+              <p className="mt-1 text-sm text-red-400 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {errors.consent.message}
               </p>
