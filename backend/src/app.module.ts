@@ -13,6 +13,7 @@ import { ServicePackagesModule } from './service-packages/service-packages.modul
 import { HealthModule } from './health/health.module';
 import { SystemModule } from './system/system.module';
 import { DatabaseModule } from './database/database.module';
+import { EmailModule } from './email/email.module';
 
 // Determine whether to skip database initialization (useful for tests)
 const skipDb = process.env.SKIP_DB === 'true' || process.env.NODE_ENV === 'test';
@@ -40,6 +41,11 @@ const validationSchema = Joi.object({
   AUTHORIZENET_API_LOGIN_ID: Joi.string().optional(),
   AUTHORIZENET_TRANSACTION_KEY: Joi.string().optional(),
   AUTHORIZENET_ENVIRONMENT: Joi.string().optional(),
+  EMAIL_HOST: Joi.string().default('smtp.gmail.com'),
+  EMAIL_PORT: Joi.number().default(587),
+  EMAIL_SECURE: Joi.boolean().default(false),
+  EMAIL_USER: Joi.string().default('admin@techprocessingllc.com'),
+  EMAIL_PASS: Joi.string().required(),
   SKIP_DB: Joi.boolean().truthy('true').falsy('false').default(skipDb),
 });
 
@@ -68,6 +74,7 @@ if (skipDb) {
   appImports = [
     DatabaseModule,
     ...baseImports,
+    EmailModule,
     AuthModule,
     UsersModule,
     AuditModule,

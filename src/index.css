@@ -48,3 +48,46 @@
     }
   }
 }
+
+/* Mobile Optimizations */
+.mobile-optimized {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.mobile-optimized input,
+.mobile-optimized textarea,
+.mobile-optimized select {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+@media (max-width: 768px) {
+  .mobile-optimized button,
+  .mobile-optimized a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .mobile-optimized input,
+  .mobile-optimized textarea,
+  .mobile-optimized select {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .mobile-optimized .form-input {
+    padding: 12px 16px;
+  }
+}

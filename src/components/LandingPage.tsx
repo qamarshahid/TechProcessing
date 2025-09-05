@@ -1,22 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { ArrowRight, Shield, Zap, Users, BarChart3, CheckCircle, Star, Globe, Target, Award, TrendingUp, DollarSign, Phone, Mail, MapPin, Code, Search, Monitor, Settings, ChevronRight, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, MessageCircle, ChevronDown, Play, Clock, Rocket, Building, Eye, MousePointer, Layers, PieChart, Activity, Gauge, CheckCircle2, ArrowUpRight, Quote, Calendar, User, Briefcase, FileText, Send, Sparkles } from 'lucide-react';
+import { motion, useInView } from 'framer-motion';
+import { ArrowRight, BarChart3, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Settings, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, MessageCircle, Clock, Rocket, Building, Gauge, CheckCircle2, Sparkles } from 'lucide-react';
+import { ContactForm } from './ContactForm';
+import { AppointmentBooking } from './AppointmentBooking';
+import { MobileOptimized } from './MobileOptimized';
 
 export function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
-  const [formStep, setFormStep] = useState(1);
-  const [formData, setFormData] = useState({
-    name: '',
-    business: '',
-    email: '',
-    phone: '',
-    projectType: '',
-    timeline: '',
-    message: '',
-    consent: false
-  });
+  const [activeTab, setActiveTab] = useState<'contact' | 'appointment'>('contact');
 
   const heroRef = useRef(null);
   const isHeroInView = useInView(heroRef, { once: true });
@@ -189,40 +182,21 @@ export function LandingPage() {
     }
   ];
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleFormSuccess = () => {
     // Analytics tracking
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'form_submit', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'form_submit_success', {
         event_category: 'Lead Generation',
         event_label: 'Contact Form',
         value: 1
       });
     }
-
-    // Simulate form submission
-    console.log('Form submitted:', formData);
-    alert('Thank you for your interest! We\'ll contact you within 24 hours.');
-    
-    // Reset form
-    setFormData({
-      name: '',
-      business: '',
-      email: '',
-      phone: '',
-      projectType: '',
-      timeline: '',
-      message: '',
-      consent: false
-    });
-    setFormStep(1);
   };
 
   const handleCTAClick = (ctaType: string) => {
     // Analytics tracking
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'cta_click', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'cta_click', {
         event_category: 'Engagement',
         event_label: ctaType,
         value: 1
@@ -240,7 +214,7 @@ export function LandingPage() {
   }, []);
 
   return (
-    <>
+    <MobileOptimized>
       {/* SEO Meta Tags */}
       <head>
         <title>TechProcessing LLC - Web Development & Digital Marketing | St. Petersburg, FL</title>
@@ -930,8 +904,8 @@ export function LandingPage() {
                     </div>
                     <div>
                       <div className="font-semibold text-gray-900 dark:text-white">Email Us</div>
-                      <a href="mailto:support@techprocessingllc.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">
-                        support@techprocessingllc.com
+                      <a href="mailto:admin@techprocessingllc.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                        admin@techprocessingllc.com
                       </a>
                     </div>
                   </div>
@@ -966,194 +940,43 @@ export function LandingPage() {
                 </div>
               </motion.div>
 
-              {/* Lead Form */}
+              {/* Form Tabs and Content */}
               <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 1 }}
                 viewport={{ once: true }}
               >
-                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8">
-                  <div className="text-center mb-6">
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                      Get Your Free Quote
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      Tell us about your project and we'll provide a custom solution
-                    </p>
-                  </div>
-
-                  <form onSubmit={handleFormSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Full Name *
-                        </label>
-                        <div className="relative">
-                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                          <input
-                            type="text"
-                            id="name"
-                            required
-                            value={formData.name}
-                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
-                            placeholder="Your full name"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label htmlFor="business" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Business Name *
-                        </label>
-                        <div className="relative">
-                          <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                          <input
-                            type="text"
-                            id="business"
-                            required
-                            value={formData.business}
-                            onChange={(e) => setFormData(prev => ({ ...prev, business: e.target.value }))}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
-                            placeholder="Your business name"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Email Address *
-                        </label>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                          <input
-                            type="email"
-                            id="email"
-                            required
-                            value={formData.email}
-                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
-                            placeholder="your@email.com"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Phone Number *
-                        </label>
-                        <div className="relative">
-                          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                          <input
-                            type="tel"
-                            id="phone"
-                            required
-                            value={formData.phone}
-                            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
-                            placeholder="(727) 555-0123"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="projectType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Project Type *
-                        </label>
-                        <div className="relative">
-                          <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                          <select
-                            id="projectType"
-                            required
-                            value={formData.projectType}
-                            onChange={(e) => setFormData(prev => ({ ...prev, projectType: e.target.value }))}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
-                          >
-                            <option value="">Select project type</option>
-                            <option value="web-development">Web Development</option>
-                            <option value="seo">SEO & Digital Marketing</option>
-                            <option value="google-business">Google Business Profile</option>
-                            <option value="analytics">Analytics & Tracking</option>
-                            <option value="maintenance">Maintenance & Support</option>
-                            <option value="other">Other</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Timeline *
-                        </label>
-                        <div className="relative">
-                          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                          <select
-                            id="timeline"
-                            required
-                            value={formData.timeline}
-                            onChange={(e) => setFormData(prev => ({ ...prev, timeline: e.target.value }))}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
-                          >
-                            <option value="">Select timeline</option>
-                            <option value="asap">ASAP</option>
-                            <option value="1-month">Within 1 month</option>
-                            <option value="2-3-months">2-3 months</option>
-                            <option value="3-6-months">3-6 months</option>
-                            <option value="6-months-plus">6+ months</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Project Details
-                      </label>
-                      <div className="relative">
-                        <FileText className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                        <textarea
-                          id="message"
-                          rows={4}
-                          value={formData.message}
-                          onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                          className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white resize-none"
-                          placeholder="Tell us about your project goals, current challenges, and what success looks like for your business..."
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex items-start">
-                      <div className="flex items-center h-5">
-                        <input
-                          id="consent"
-                          type="checkbox"
-                          required
-                          checked={formData.consent}
-                          onChange={(e) => setFormData(prev => ({ ...prev, consent: e.target.checked }))}
-                          className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        />
-                      </div>
-                      <div className="ml-3 text-sm">
-                        <label htmlFor="consent" className="text-gray-700 dark:text-gray-300">
-                          I agree to receive communications from TechProcessing LLC and understand that I can unsubscribe at any time. *
-                        </label>
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
-                    >
-                      <Send className="h-5 w-5 mr-2 group-hover:translate-x-1 transition-transform" />
-                      Get My Free Quote
-                      <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </form>
+                {/* Tab Navigation */}
+                <div className="flex mb-6 bg-gray-100 dark:bg-slate-800 rounded-lg p-1">
+                  <button
+                    onClick={() => setActiveTab('contact')}
+                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
+                      activeTab === 'contact'
+                        ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                    }`}
+                  >
+                    Get Quote
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('appointment')}
+                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
+                      activeTab === 'appointment'
+                        ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                    }`}
+                  >
+                    Book Call
+                  </button>
                 </div>
+
+                {/* Form Content */}
+                {activeTab === 'contact' ? (
+                  <ContactForm onSuccess={handleFormSuccess} />
+                ) : (
+                  <AppointmentBooking onSuccess={handleFormSuccess} />
+                )}
               </motion.div>
             </div>
           </div>
@@ -1214,8 +1037,8 @@ export function LandingPage() {
                   </div>
                   <div className="flex items-center">
                     <Mail className="h-4 w-4 mr-2 text-emerald-400" />
-                    <a href="mailto:support@techprocessingllc.com" className="hover:text-emerald-400 transition-colors">
-                      support@techprocessingllc.com
+                    <a href="mailto:admin@techprocessingllc.com" className="hover:text-emerald-400 transition-colors">
+                      admin@techprocessingllc.com
                     </a>
                   </div>
                   <div className="flex items-start">
@@ -1242,6 +1065,6 @@ export function LandingPage() {
           </div>
         </footer>
       </div>
-    </>
+    </MobileOptimized>
   );
 }
