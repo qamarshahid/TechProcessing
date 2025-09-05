@@ -26,148 +26,138 @@ import {
   Lock,
   Eye,
   Clock,
-  RefreshCw
+  RefreshCw,
+  Phone,
+  Mail,
+  MapPin,
+  Code,
+  Palette,
+  Database,
+  Cloud,
+  Smartphone,
+  Monitor,
+  Server,
+  Wrench,
+  Lightbulb,
+  ChevronRight
 } from 'lucide-react';
 
 export function LandingPage() {
-  const features = [
+  const services = [
     {
-      icon: Users,
-      title: 'Multi-Role Management',
-      description: 'Comprehensive role-based system for Admins, Agents, and Clients with secure access controls.',
-      color: 'from-blue-500 to-cyan-600'
-    },
-    {
-      icon: TrendingUp,
-      title: 'Agent Sales Tracking',
-      description: 'Complete sales pipeline management with commission tracking and performance analytics.',
+      icon: Code,
+      title: 'Web Development',
+      description: 'Custom websites and web applications built with modern technologies and best practices.',
+      features: ['Responsive Design', 'SEO Optimized', 'Fast Loading', 'Mobile First'],
       color: 'from-emerald-500 to-teal-600'
     },
     {
-      icon: DollarSign,
-      title: 'Advanced Billing',
-      description: 'Automated invoicing, payment processing, and subscription management with multiple payment methods.',
+      icon: Smartphone,
+      title: 'Mobile App Development',
+      description: 'Native and cross-platform mobile applications for iOS and Android devices.',
+      features: ['iOS & Android', 'Cross-Platform', 'App Store Ready', 'Performance Optimized'],
+      color: 'from-blue-500 to-cyan-600'
+    },
+    {
+      icon: Database,
+      title: 'Database Solutions',
+      description: 'Robust database design, optimization, and management for scalable applications.',
+      features: ['Database Design', 'Performance Tuning', 'Data Migration', 'Backup & Recovery'],
       color: 'from-purple-500 to-indigo-600'
     },
     {
-      icon: BarChart3,
-      title: 'Real-time Analytics',
-      description: 'Comprehensive dashboards with performance metrics, revenue tracking, and business insights.',
+      icon: Cloud,
+      title: 'Cloud Services',
+      description: 'Cloud infrastructure setup, migration, and management for modern businesses.',
+      features: ['AWS & Azure', 'Server Setup', 'Auto Scaling', '24/7 Monitoring'],
       color: 'from-orange-500 to-red-600'
     },
     {
       icon: Shield,
-      title: 'Enterprise Security',
-      description: 'Bank-grade security with JWT authentication, audit logging, and role-based permissions.',
+      title: 'Cybersecurity',
+      description: 'Comprehensive security solutions to protect your business from cyber threats.',
+      features: ['Security Audit', 'Penetration Testing', 'Compliance', 'Incident Response'],
       color: 'from-gray-600 to-gray-800'
     },
     {
-      icon: RefreshCw,
-      title: 'Automated Workflows',
-      description: 'Streamlined processes from quote requests to project delivery with automated notifications.',
+      icon: Wrench,
+      title: 'IT Support',
+      description: 'Professional IT support and maintenance services for your business operations.',
+      features: ['24/7 Support', 'Remote Assistance', 'System Maintenance', 'Troubleshooting'],
       color: 'from-pink-500 to-rose-600'
     }
   ];
 
-  const roles = [
+  const portfolio = [
     {
-      title: 'Admin Dashboard',
-      description: 'Complete system control with user management, sales oversight, and business analytics.',
-      features: [
-        'User & Agent Management',
-        'Sales & Commission Tracking',
-        'Invoice & Payment Control',
-        'System Analytics & Audit Logs',
-        'Service Package Management',
-        'Client Relationship Management'
-      ],
-      icon: Settings,
-      color: 'from-purple-600 to-indigo-700',
-      role: 'ADMIN'
+      title: 'E-Commerce Platform',
+      description: 'Full-stack e-commerce solution with payment integration and inventory management.',
+      image: '🛒',
+      category: 'Web Development',
+      technologies: ['React', 'Node.js', 'MongoDB', 'Stripe']
     },
     {
-      title: 'Agent Portal',
-      description: 'Sales-focused interface for managing leads, tracking commissions, and performance metrics.',
-      features: [
-        'Sales Entry & Tracking',
-        'Commission Dashboard',
-        'Performance Analytics',
-        'Client Lead Management',
-        'Closer Collaboration',
-        'Monthly Performance Reports'
-      ],
-      icon: Target,
-      color: 'from-emerald-600 to-teal-700',
-      role: 'AGENT'
+      title: 'Healthcare Management System',
+      description: 'Comprehensive patient management system with appointment scheduling and records.',
+      image: '🏥',
+      category: 'Web Application',
+      technologies: ['Vue.js', 'PostgreSQL', 'Express', 'JWT']
     },
     {
-      title: 'Client Portal',
-      description: 'Streamlined client experience for project management and service requests.',
-      features: [
-        'Service Request Submission',
-        'Custom Quote Requests',
-        'Invoice Management',
-        'Payment Processing',
-        'Project Status Tracking',
-        'Subscription Management'
-      ],
-      icon: UserCheck,
-      color: 'from-blue-600 to-cyan-700',
-      role: 'CLIENT'
+      title: 'Mobile Banking App',
+      description: 'Secure mobile banking application with biometric authentication and real-time transactions.',
+      image: '🏦',
+      category: 'Mobile Development',
+      technologies: ['React Native', 'Firebase', 'Node.js', 'AWS']
+    },
+    {
+      title: 'IoT Dashboard',
+      description: 'Real-time monitoring dashboard for IoT devices with data visualization and alerts.',
+      image: '📊',
+      category: 'IoT Solutions',
+      technologies: ['Angular', 'Python', 'MQTT', 'Chart.js']
+    }
+  ];
+
+  const testimonials = [
+    {
+      name: 'Sarah Johnson',
+      company: 'TechStart Inc.',
+      role: 'CEO',
+      content: 'Tech Processing LLC transformed our business with their innovative solutions. Their team delivered exceptional results and exceeded our expectations.',
+      rating: 5,
+      avatar: '👩‍💼'
+    },
+    {
+      name: 'Michael Chen',
+      company: 'Digital Solutions',
+      role: 'CTO',
+      content: 'Professional, reliable, and incredibly skilled. They helped us scale our infrastructure and improve our system performance significantly.',
+      rating: 5,
+      avatar: '👨‍💻'
+    },
+    {
+      name: 'Emily Rodriguez',
+      company: 'HealthTech Corp',
+      role: 'Operations Director',
+      content: 'Outstanding service and support. Their cybersecurity solutions gave us peace of mind and protected our sensitive data effectively.',
+      rating: 5,
+      avatar: '👩‍⚕️'
     }
   ];
 
   const stats = [
-    { label: 'Active Clients', value: '500+', icon: Users },
-    { label: 'Projects Completed', value: '1,200+', icon: CheckCircle },
-    { label: 'Revenue Processed', value: '$2.5M+', icon: DollarSign },
-    { label: 'System Uptime', value: '99.9%', icon: Shield }
+    { label: 'Projects Completed', value: '500+', icon: CheckCircle },
+    { label: 'Happy Clients', value: '200+', icon: Users },
+    { label: 'Years Experience', value: '10+', icon: Award },
+    { label: 'Support Hours', value: '24/7', icon: Clock }
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"></div>
-        
-        {/* Floating Orbs */}
-        <motion.div
-          className="absolute w-96 h-96 bg-gradient-to-r from-emerald-500/10 to-teal-600/10 rounded-full blur-3xl"
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          style={{ top: '10%', left: '10%' }}
-        />
-        <motion.div
-          className="absolute w-80 h-80 bg-gradient-to-r from-blue-500/10 to-purple-600/10 rounded-full blur-3xl"
-          animate={{
-            x: [0, -80, 0],
-            y: [0, 60, 0],
-            scale: [1, 0.8, 1],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 5
-          }}
-          style={{ top: '60%', right: '10%' }}
-        />
-
-        {/* Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-      </div>
-
+    <div className="min-h-screen bg-white text-gray-900">
       {/* Navigation */}
-      <nav className="relative z-10 bg-slate-900/50 backdrop-blur-xl border-b border-slate-800/50">
-        <div className="max-w-7xl mx-auto px-6">
+      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <motion.div 
               className="flex items-center space-x-3"
@@ -175,33 +165,34 @@ export function LandingPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-2xl flex items-center justify-center shadow-2xl">
-                  <div className="text-white font-black text-lg">TP</div>
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse"></div>
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg flex items-center justify-center">
+                <div className="text-white font-bold text-sm">TP</div>
               </div>
-              <div className="flex flex-col">
-                <div className="font-black text-xl bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600 bg-clip-text text-transparent leading-tight">
-                  TECH PROCESSING
-                </div>
-                <div className="text-xs text-emerald-400 font-bold tracking-[0.2em] leading-tight">
-                  LLC
-                </div>
-              </div>
+              <div className="font-bold text-xl text-gray-900">Tech Processing LLC</div>
             </motion.div>
 
             <motion.div
-              className="flex items-center space-x-4"
+              className="hidden md:flex items-center space-x-8"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
+              <a href="#services" className="text-gray-600 hover:text-emerald-600 transition-colors">Services</a>
+              <a href="#portfolio" className="text-gray-600 hover:text-emerald-600 transition-colors">Portfolio</a>
+              <a href="#testimonials" className="text-gray-600 hover:text-emerald-600 transition-colors">Testimonials</a>
+              <a href="#contact" className="text-gray-600 hover:text-emerald-600 transition-colors">Contact</a>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
               <Link
                 to="/login"
-                className="px-6 py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:via-teal-400 hover:to-cyan-400 text-white rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 border border-emerald-500/30"
+                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
               >
-                Access Portal
+                Get Started
               </Link>
             </motion.div>
           </div>
@@ -209,64 +200,51 @@ export function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 pt-20 pb-32">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <div className="inline-flex items-center px-6 py-3 bg-emerald-500/10 backdrop-blur-md text-emerald-400 rounded-full text-sm font-semibold mb-8 border border-emerald-500/20 shadow-lg">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Next-Generation IT Services Platform
-            </div>
-            
-            <h1 className="text-6xl md:text-7xl font-black mb-8 leading-tight">
-              <span className="bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
-                DESIGN
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600 bg-clip-text text-transparent">
-                DEVELOP
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
-                DOMINATE
-              </span>
-            </h1>
-            
-            <p className="text-xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Revolutionary IT services management platform with advanced agent sales tracking, 
-              automated billing, and intelligent client management. Built for the future of business.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/login"
-                className="group relative overflow-hidden bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:via-teal-400 hover:to-cyan-400 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 border border-emerald-500/30"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                <span className="relative flex items-center">
-                  <Rocket className="h-5 w-5 mr-2" />
-                  Launch Platform
-                  <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </Link>
+      <section className="bg-gradient-to-br from-gray-50 to-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                Professional IT Services
+                <br />
+                <span className="text-emerald-600">That Drive Results</span>
+              </h1>
               
-              <a
-                href="#features"
-                className="px-8 py-4 bg-slate-800/50 backdrop-blur-xl text-white rounded-xl font-bold text-lg transition-all duration-300 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50"
-              >
-                Explore Features
-              </a>
-            </div>
-          </motion.div>
+              <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                We provide comprehensive technology solutions to help your business grow, 
+                scale, and succeed in the digital world.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  to="/login"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center"
+                >
+                  <Rocket className="h-5 w-5 mr-2" />
+                  Start Your Project
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Link>
+                
+                <a
+                  href="#services"
+                  className="border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center"
+                >
+                  <Eye className="h-5 w-5 mr-2" />
+                  View Our Services
+                </a>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="relative z-10 py-20">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <motion.div
@@ -276,200 +254,270 @@ export function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
-                  <stat.icon className="h-8 w-8 text-emerald-400" />
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-teal-600/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <stat.icon className="h-8 w-8 text-emerald-600" />
                 </div>
-                <div className="text-3xl font-black text-white mb-2">{stat.value}</div>
-                <div className="text-slate-400 font-medium">{stat.label}</div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
+                <div className="text-gray-600 font-medium">{stat.label}</div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Role-Based Dashboards */}
-      <section id="features" className="relative z-10 py-32">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* Services Section */}
+      <section id="services" className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            className="text-center mb-20"
+            className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <h2 className="text-5xl font-black mb-6">
-              <span className="bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
-                Intelligent Role-Based
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600 bg-clip-text text-transparent">
-                Dashboard System
-              </span>
-            </h2>
-            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
-              Tailored experiences for every user type with advanced permissions and workflow automation
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Services</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Comprehensive technology solutions tailored to meet your business needs
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {roles.map((role, index) => (
-              <motion.div
-                key={role.title}
-                className="relative group"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl backdrop-blur-xl border border-slate-700/50 group-hover:border-emerald-500/30 transition-all duration-500"></div>
-                <div className="relative p-8">
-                  <div className="flex items-center mb-6">
-                    <div className={`w-16 h-16 bg-gradient-to-br ${role.color} rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300`}>
-                      <role.icon className="h-8 w-8 text-white" />
-                    </div>
-                    <div className="ml-4">
-                      <h3 className="text-2xl font-bold text-white mb-1">{role.title}</h3>
-                      <span className="text-emerald-400 font-semibold text-sm tracking-wider uppercase">
-                        {role.role}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <p className="text-slate-400 mb-8 leading-relaxed">
-                    {role.description}
-                  </p>
-                  
-                  <div className="space-y-3">
-                    {role.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-center">
-                        <CheckCircle className="h-5 w-5 text-emerald-400 mr-3 flex-shrink-0" />
-                        <span className="text-slate-300 font-medium">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-8 pt-6 border-t border-slate-700/50">
-                    <Link
-                      to="/login"
-                      className={`w-full bg-gradient-to-r ${role.color} hover:shadow-lg hover:shadow-emerald-500/25 text-white py-3 px-6 rounded-xl font-bold transition-all duration-300 flex items-center justify-center group-hover:scale-105`}
-                    >
-                      Access {role.role} Portal
-                      <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section className="relative z-10 py-32">
-        <div className="max-w-7xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-20"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <h2 className="text-5xl font-black mb-6">
-              <span className="bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
-                Advanced Platform
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600 bg-clip-text text-transparent">
-                Features
-              </span>
-            </h2>
-          </motion.div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
+            {services.map((service, index) => (
               <motion.div
-                key={feature.title}
-                className="relative group"
+                key={service.title}
+                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 group"
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-800/30 to-slate-900/30 rounded-2xl backdrop-blur-xl border border-slate-700/30 group-hover:border-emerald-500/30 transition-all duration-500"></div>
-                <div className="relative p-8">
-                  <div className={`w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center shadow-xl mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <feature.icon className="h-7 w-7 text-white" />
-                  </div>
-                  
-                  <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
-                  <p className="text-slate-400 leading-relaxed">{feature.description}</p>
+                <div className={`w-16 h-16 bg-gradient-to-br ${service.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <service.icon className="h-8 w-8 text-white" />
                 </div>
+                
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
+                <p className="text-gray-600 mb-6">{service.description}</p>
+                
+                <div className="space-y-2 mb-6">
+                  {service.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-emerald-500 mr-2 flex-shrink-0" />
+                      <span className="text-sm text-gray-600">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <Link
+                  to="/login"
+                  className={`w-full bg-gradient-to-r ${service.color} hover:shadow-lg text-white py-3 px-6 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center group-hover:scale-105`}
+                >
+                  Get Started
+                  <ChevronRight className="h-4 w-4 ml-2" />
+                </Link>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative z-10 py-32">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+      {/* Portfolio Section */}
+      <section id="portfolio" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
+            className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <h2 className="text-5xl font-black mb-8">
-              <span className="bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
-                Ready to Transform
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600 bg-clip-text text-transparent">
-                Your Business?
-              </span>
-            </h2>
-            
-            <p className="text-xl text-slate-400 mb-12 leading-relaxed">
-              Join the future of IT services management with our comprehensive platform designed for modern businesses.
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Portfolio</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Showcasing our successful projects and the technologies we use
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link
-                to="/login"
-                className="group relative overflow-hidden bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:via-teal-400 hover:to-cyan-400 text-white px-10 py-5 rounded-xl font-bold text-xl transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 border border-emerald-500/30"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                <span className="relative flex items-center">
-                  <Shield className="h-6 w-6 mr-3" />
-                  Start Your Journey
-                  <ArrowRight className="h-6 w-6 ml-3 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </Link>
-              
-              <a
-                href="mailto:contact@techprocessing.com"
-                className="px-10 py-5 bg-slate-800/50 backdrop-blur-xl text-white rounded-xl font-bold text-xl transition-all duration-300 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50 flex items-center justify-center"
-              >
-                <Globe className="h-6 w-6 mr-3" />
-                Contact Sales
-              </a>
-            </div>
           </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {portfolio.map((project, index) => (
+              <motion.div
+                key={project.title}
+                className="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-all duration-300 group"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.2 }}
+              >
+                <div className="text-6xl mb-4">{project.image}</div>
+                <div className="text-sm text-emerald-600 font-semibold mb-2">{project.category}</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{project.title}</h3>
+                <p className="text-gray-600 mb-6">{project.description}</p>
+                
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {project.technologies.map((tech, techIndex) => (
+                    <span key={techIndex} className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+                
+                <Link
+                  to="/login"
+                  className="text-emerald-600 hover:text-emerald-700 font-semibold flex items-center group-hover:translate-x-2 transition-transform duration-300"
+                >
+                  View Details
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Client Testimonials</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              What our clients say about working with us
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={testimonial.name}
+                className="bg-white rounded-xl shadow-lg p-8"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.2 }}
+              >
+                <div className="flex items-center mb-4">
+                  <div className="text-4xl mr-4">{testimonial.avatar}</div>
+                  <div>
+                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
+                    <p className="text-sm text-gray-600">{testimonial.role}, {testimonial.company}</p>
+                  </div>
+                </div>
+                
+                <div className="flex mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                
+                <p className="text-gray-600 italic">"{testimonial.content}"</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Get In Touch</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Ready to start your next project? Contact us today for a free consultation.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <h3 className="text-2xl font-bold text-gray-900 mb-8">Contact Information</h3>
+              
+              <div className="space-y-6">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-4">
+                    <Phone className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Phone</p>
+                    <p className="text-gray-600">+1 (555) 123-4567</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-4">
+                    <Mail className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Email</p>
+                    <p className="text-gray-600">contact@techprocessing.com</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-4">
+                    <MapPin className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Address</p>
+                    <p className="text-gray-600">123 Tech Street, Innovation City, IC 12345</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="bg-gray-50 rounded-xl p-8"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <h3 className="text-2xl font-bold text-gray-900 mb-8">Start Your Project</h3>
+              
+              <div className="space-y-6">
+                <Link
+                  to="/login"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center"
+                >
+                  <Rocket className="h-5 w-5 mr-2" />
+                  Get Started Now
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Link>
+                
+                <div className="text-center">
+                  <p className="text-gray-600 mb-4">Or call us directly</p>
+                  <a
+                    href="tel:+15551234567"
+                    className="text-emerald-600 hover:text-emerald-700 font-semibold text-lg flex items-center justify-center"
+                  >
+                    <Phone className="h-5 w-5 mr-2" />
+                    +1 (555) 123-4567
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-slate-800/50 bg-slate-900/30 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-12">
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center">
-                <div className="text-white font-black text-sm">TP</div>
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg flex items-center justify-center">
+                <div className="text-white font-bold text-sm">TP</div>
               </div>
               <div>
-                <div className="font-black text-lg text-white">TECH PROCESSING LLC</div>
-                <div className="text-xs text-emerald-400 font-bold tracking-wider">
-                  DESIGN • DEVELOP • DOMINATE
-                </div>
+                <div className="font-bold text-lg">Tech Processing LLC</div>
+                <div className="text-sm text-gray-400">Professional IT Services</div>
               </div>
             </div>
             
-            <div className="flex items-center space-x-8 text-sm text-slate-400">
+            <div className="flex items-center space-x-8 text-sm text-gray-400">
               <a href="mailto:contact@techprocessing.com" className="hover:text-emerald-400 transition-colors">
                 Contact
               </a>
