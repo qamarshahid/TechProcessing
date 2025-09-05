@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Menu, 
   X, 
   Phone, 
   Mail, 
-  MapPin, 
   ChevronUp,
-  Touch,
-  SwipeUp,
-  Tap
+  Hand,
+  ArrowUp,
+  MousePointer
 } from 'lucide-react';
 
 interface MobileOptimizedProps {
@@ -137,7 +135,7 @@ function MobileEnhancements() {
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
-                <Touch className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+                <Hand className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-2" />
                 <h3 className="font-semibold text-gray-900 dark:text-white">Mobile Tips</h3>
               </div>
               <button
@@ -149,11 +147,11 @@ function MobileEnhancements() {
             </div>
             <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
               <div className="flex items-center">
-                <SwipeUp className="h-4 w-4 mr-2 text-emerald-500" />
+                <ArrowUp className="h-4 w-4 mr-2 text-emerald-500" />
                 <span>Swipe up to scroll faster</span>
               </div>
               <div className="flex items-center">
-                <Tap className="h-4 w-4 mr-2 text-emerald-500" />
+                <MousePointer className="h-4 w-4 mr-2 text-emerald-500" />
                 <span>Tap buttons for quick actions</span>
               </div>
             </div>
