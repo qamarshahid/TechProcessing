@@ -17,6 +17,7 @@ import { LLCFormationPage } from './pages/services/LLCFormation';
 import { GraphicDesignPage } from './pages/services/GraphicDesign';
 import { LocalSearchPage } from './pages/services/LocalSearch';
 import { GoogleAdsPage } from './pages/services/GoogleAds';
+import FAQ from './pages/FAQ';
 
 function App() {
   // Determine base path for Router - use /TechProcessing in production, / in development
@@ -32,6 +33,7 @@ function App() {
                 {/* Public Routes */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginForm />} />
+                <Route path="/faq" element={<FAQ />} />
                 
                 {/* Service Pages */}
                 <Route path="/services/seo" element={<SEOPage />} />

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
-import { ArrowRight, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, MessageCircle, Clock, Rocket, Gauge, CheckCircle2, Sparkles, Megaphone, Settings, Briefcase, Brush, BarChart3, Map, Globe2, MousePointer } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, Clock, Rocket, Gauge, CheckCircle2, Sparkles, Megaphone, Settings, Briefcase, Brush, BarChart3, Map, Globe2, MousePointer } from 'lucide-react';
 import { ContactForm } from './ContactForm';
 import { AppointmentBooking } from './AppointmentBooking';
 import { MobileOptimized } from './MobileOptimized';
@@ -216,48 +216,6 @@ export function LandingPage() {
     }
   ];
 
-  const faqs = [
-    {
-      question: 'What do TechProcessing provide?',
-      answer: 'TechProcessing is a digital marketing, web development, SEO, social media management and custom software solution provider to all types of businesses.'
-    },
-    {
-      question: 'So, what to start with TechProcessing?',
-      answer: 'No need to do lots of research, just visit us through our site or schedule a free strategy session. We will be talking to your business about your desires and giving the best available solutions.'
-    },
-    {
-      question: 'Would TechProcessing be appropriate to small enterprises and startups?',
-      answer: 'Yes! We are innovative to work with startups, small businesses, and big enterprises; we can provide you with a solution that fits your needs and budget, depending on them.'
-    },
-    {
-      question: 'What steps does TechProcessing take in order to assure project quality?',
-      answer: 'Our procedure is open and transparent, we employ the latest technologies and provide an exceptional team of professionals who check each project in terms of quality and performance.'
-    },
-    {
-      question: 'Will I have access to the rating of the progress of my project?',
-      answer: 'Absolutely. We maintain frequent updates and deliver elaborate reports and even communicate with your project manager to keep you in touch with what is going on.'
-    },
-    {
-      question: 'Is there after-sales service and maintenance by TechProcessing?',
-      answer: 'Indeed, we also provide follow up services and maintenance of the websites and maintenance of your online marketing.'
-    },
-    {
-      question: 'Why is TechProcessing not another agency?',
-      answer: 'We are a team working in-house, we are honest in our reporting, our merchandising strategies are ROI-driven and we are client-oriented.'
-    },
-    {
-      question: 'What are the charges of your services?',
-      answer: 'The cost is pegged on the size and scale of your project. Get in touch with us to get a personalised quote or learn about our flexible packages.'
-    },
-    {
-      question: 'Is it possible to use TechProcessing to help in paid and organic marketing?',
-      answer: 'Yes! We provide a full package of digital marketing services, with the involvement of SEO, content marketing, social media management, and paid advertising campaigns.'
-    },
-    {
-      question: 'What is the way to contact TechProcessing in case of support or questions?',
-      answer: 'You can also contact us with the help of the contact form at our site, email, or call. We are also available to answer your questions or require any help.'
-    }
-  ];
 
   const handleFormSuccess = () => {
     // Analytics tracking
@@ -397,17 +355,6 @@ export function LandingPage() {
                 "openingHours": "Mo-Fr 09:00-18:00",
                 "priceRange": "$$"
               },
-              {
-                "@type": "FAQPage",
-                "mainEntity": faqs.map(faq => ({
-                  "@type": "Question",
-                  "name": faq.question,
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": faq.answer
-                  }
-                }))
-              }
             ]
           })}
         </script>
@@ -504,6 +451,7 @@ export function LandingPage() {
                 <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
                 <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Process</a>
                 <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">About</a>
+                <Link to="/faq" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">FAQ</Link>
                 <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Contact</a>
               </motion.div>
 
@@ -602,6 +550,7 @@ export function LandingPage() {
                     <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">Portfolio</a>
                     <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">Process</a>
                     <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">About</a>
+                    <Link to="/faq" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation" onClick={() => setIsMenuOpen(false)}>FAQ</Link>
                     <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">Contact</a>
                   </div>
                 </div>
@@ -1199,44 +1148,6 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* FAQ Section */}
-        <section className="py-20 bg-slate-900">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-xl text-gray-300">
-                Get answers to common questions about our services and process
-              </p>
-            </motion.div>
-
-            <div className="space-y-6">
-              {faqs.map((faq, index) => (
-                <motion.div
-                  key={index}
-                  className="bg-slate-800 rounded-xl p-6 border border-slate-700"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <h3 className="text-lg font-bold text-white mb-3 flex items-center">
-                    <MessageCircle className="h-5 w-5 text-emerald-400 mr-3" />
-                    {faq.question}
-                  </h3>
-                  <p className="text-gray-300 leading-relaxed">{faq.answer}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* Contact/Lead Form Section */}
         <section id="contact" className="py-20 bg-gradient-to-br from-emerald-900/20 to-teal-900/20">
