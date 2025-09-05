@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -39,124 +39,103 @@ import {
   Server,
   Wrench,
   Lightbulb,
-  ChevronRight
+  ChevronRight,
+  Facebook,
+  Twitter,
+  Instagram,
+  Menu,
+  X,
+  Search,
+  MessageCircle,
+  ChevronDown
 } from 'lucide-react';
 
 export function LandingPage() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const services = [
     {
+      icon: Palette,
+      title: 'Branding Design',
+      percentage: '88%',
+      description: 'Creative brand identity and visual design solutions'
+    },
+    {
+      icon: Search,
+      title: 'SEO',
+      percentage: '85%',
+      description: 'Search engine optimization for better visibility'
+    },
+    {
       icon: Code,
-      title: 'Web Development',
-      description: 'Custom websites and web applications built with modern technologies and best practices.',
-      features: ['Responsive Design', 'SEO Optimized', 'Fast Loading', 'Mobile First'],
-      color: 'from-emerald-500 to-teal-600'
+      title: 'Web Design',
+      percentage: '96%',
+      description: 'Modern, responsive website design and development'
     },
     {
-      icon: Smartphone,
-      title: 'Mobile App Development',
-      description: 'Native and cross-platform mobile applications for iOS and Android devices.',
-      features: ['iOS & Android', 'Cross-Platform', 'App Store Ready', 'Performance Optimized'],
-      color: 'from-blue-500 to-cyan-600'
-    },
-    {
-      icon: Database,
-      title: 'Database Solutions',
-      description: 'Robust database design, optimization, and management for scalable applications.',
-      features: ['Database Design', 'Performance Tuning', 'Data Migration', 'Backup & Recovery'],
-      color: 'from-purple-500 to-indigo-600'
-    },
-    {
-      icon: Cloud,
-      title: 'Cloud Services',
-      description: 'Cloud infrastructure setup, migration, and management for modern businesses.',
-      features: ['AWS & Azure', 'Server Setup', 'Auto Scaling', '24/7 Monitoring'],
-      color: 'from-orange-500 to-red-600'
+      icon: TrendingUp,
+      title: 'Digital Marketing',
+      percentage: '99%',
+      description: 'Comprehensive digital marketing strategies'
     },
     {
       icon: Shield,
-      title: 'Cybersecurity',
-      description: 'Comprehensive security solutions to protect your business from cyber threats.',
-      features: ['Security Audit', 'Penetration Testing', 'Compliance', 'Incident Response'],
-      color: 'from-gray-600 to-gray-800'
-    },
-    {
-      icon: Wrench,
-      title: 'IT Support',
-      description: 'Professional IT support and maintenance services for your business operations.',
-      features: ['24/7 Support', 'Remote Assistance', 'System Maintenance', 'Troubleshooting'],
-      color: 'from-pink-500 to-rose-600'
-    }
-  ];
-
-  const portfolio = [
-    {
-      title: 'E-Commerce Platform',
-      description: 'Full-stack e-commerce solution with payment integration and inventory management.',
-      image: '🛒',
-      category: 'Web Development',
-      technologies: ['React', 'Node.js', 'MongoDB', 'Stripe']
-    },
-    {
-      title: 'Healthcare Management System',
-      description: 'Comprehensive patient management system with appointment scheduling and records.',
-      image: '🏥',
-      category: 'Web Application',
-      technologies: ['Vue.js', 'PostgreSQL', 'Express', 'JWT']
-    },
-    {
-      title: 'Mobile Banking App',
-      description: 'Secure mobile banking application with biometric authentication and real-time transactions.',
-      image: '🏦',
-      category: 'Mobile Development',
-      technologies: ['React Native', 'Firebase', 'Node.js', 'AWS']
-    },
-    {
-      title: 'IoT Dashboard',
-      description: 'Real-time monitoring dashboard for IoT devices with data visualization and alerts.',
-      image: '📊',
-      category: 'IoT Solutions',
-      technologies: ['Angular', 'Python', 'MQTT', 'Chart.js']
+      title: 'Google Guarantee',
+      percentage: '97%',
+      description: 'Google-certified advertising and marketing services'
     }
   ];
 
   const testimonials = [
     {
-      name: 'Sarah Johnson',
-      company: 'TechStart Inc.',
-      role: 'CEO',
-      content: 'Tech Processing LLC transformed our business with their innovative solutions. Their team delivered exceptional results and exceeded our expectations.',
-      rating: 5,
+      name: 'Daniel Smith',
+      content: 'Working with Tech Processing LLC was an absolute game-changer for our business! Their team took the time to understand our brand and delivered a stunning, user-friendly website that perfectly represents our vision. The attention to detail, fast turnaround, and ongoing support have been incredible. Our online presence has never been stronger, and we\'ve already seen a significant boost in engagement. Highly recommend their web design expertise!',
+      avatar: '👨‍💼'
+    },
+    {
+      name: 'Sarah',
+      content: 'From start to finish, Tech Processing LLC exceeded our expectations. They transformed our outdated website into a modern, responsive, and conversion-focused masterpiece. Their creative approach, seamless communication, and technical skills made the entire process stress-free. Our customers love the new design, and we\'ve seen a noticeable increase in leads. If you want a website that stands out and delivers results, look no further!',
       avatar: '👩‍💼'
     },
     {
-      name: 'Michael Chen',
-      company: 'Digital Solutions',
-      role: 'CTO',
-      content: 'Professional, reliable, and incredibly skilled. They helped us scale our infrastructure and improve our system performance significantly.',
-      rating: 5,
+      name: 'Martin',
+      content: 'Tech Processing LLC took our vague vision and turned it into a stunning, functional reality. The process was collaborative from start to finish, and their team went above and beyond to ensure every detail was perfect. Our bounce rate has dropped, and our conversion rate has never been higher. Truly top-notch service!',
       avatar: '👨‍💻'
     },
     {
-      name: 'Emily Rodriguez',
-      company: 'HealthTech Corp',
-      role: 'Operations Director',
-      content: 'Outstanding service and support. Their cybersecurity solutions gave us peace of mind and protected our sensitive data effectively.',
-      rating: 5,
-      avatar: '👩‍⚕️'
+      name: 'Amelia',
+      content: 'I can\'t say enough good things about Tech Processing LLC. They were organized, insightful, and completely dedicated to our project. They made complex tasks look effortless, and the end result is a website that not only looks amazing but also performs beautifully. We\'ve already received countless compliments from clients and partners.',
+      avatar: '👩‍🎨'
     }
   ];
 
-  const stats = [
-    { label: 'Projects Completed', value: '500+', icon: CheckCircle },
-    { label: 'Happy Clients', value: '200+', icon: Users },
-    { label: 'Years Experience', value: '10+', icon: Award },
-    { label: 'Support Hours', value: '24/7', icon: Clock }
+  const faqs = [
+    {
+      question: 'What types of websites do you develop?',
+      answer: 'We build a wide range of websites, including business sites, e-commerce stores, landing pages, and custom platforms. Our development process is tailored to meet your goals, whether you need a simple informational site or a full-featured web application.'
+    },
+    {
+      question: 'How does your graphic design process work?',
+      answer: 'Our design process starts with understanding your brand, audience, and goals. We then present initial concepts, gather feedback, and refine the designs until you\'re satisfied. We can create everything from logos and branding kits to brochures and social media visuals.'
+    },
+    {
+      question: 'Can you manage our Google Ads campaigns?',
+      answer: 'Absolutely. We offer full-service Google Ads management, including keyword research, ad copywriting, campaign setup, A/B testing, and performance optimization. Our goal is to help you get the highest ROI for your ad spend.'
+    },
+    {
+      question: 'What\'s included in your digital marketing services?',
+      answer: 'Our digital marketing services include SEO, social media marketing, content creation, email campaigns, analytics tracking, and more. We customize strategies to align with your business objectives and industry trends.'
+    },
+    {
+      question: 'How long does it take to see results from your services?',
+      answer: 'Timeframes vary based on the service. For web development, most projects take 2–6 weeks depending on complexity. Marketing results, such as increased traffic or conversions, can take 1–3 months, but we focus on long-term sustainable growth.'
+    }
   ];
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-white">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <nav className="bg-white dark:bg-slate-900 shadow-sm border-b border-gray-200 dark:border-slate-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <motion.div 
@@ -168,22 +147,29 @@ export function LandingPage() {
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg flex items-center justify-center">
                 <div className="text-white font-bold text-sm">TP</div>
               </div>
-              <div className="font-bold text-xl text-gray-900">Tech Processing LLC</div>
+              <div className="font-bold text-xl text-gray-900 dark:text-white">
+                <span className="tracking-widest">T E C H P R O C E S S I N G</span>
+                <br />
+                <span className="text-sm text-emerald-600 dark:text-emerald-400">LLC</span>
+              </div>
             </motion.div>
 
+            {/* Desktop Navigation */}
             <motion.div
               className="hidden md:flex items-center space-x-8"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <a href="#services" className="text-gray-600 hover:text-emerald-600 transition-colors">Services</a>
-              <a href="#portfolio" className="text-gray-600 hover:text-emerald-600 transition-colors">Portfolio</a>
-              <a href="#testimonials" className="text-gray-600 hover:text-emerald-600 transition-colors">Testimonials</a>
-              <a href="#contact" className="text-gray-600 hover:text-emerald-600 transition-colors">Contact</a>
+              <a href="#home" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Home</a>
+              <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">About Us</a>
+              <a href="#services" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Services</a>
+              <a href="#testimonials" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Blog</a>
+              <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Contact Us</a>
             </motion.div>
 
             <motion.div
+              className="flex items-center space-x-4"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -192,184 +178,180 @@ export function LandingPage() {
                 to="/login"
                 className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
               >
-                Get Started
+                Get In Touch
               </Link>
+              
+              {/* Mobile Menu Button */}
+              <button
+                className="md:hidden text-gray-600 dark:text-gray-300"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
             </motion.div>
           </div>
+
+          {/* Mobile Navigation */}
+          {isMenuOpen && (
+            <motion.div
+              className="md:hidden py-4 border-t border-gray-200 dark:border-slate-800"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <div className="flex flex-col space-y-4">
+                <a href="#home" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Home</a>
+                <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">About Us</a>
+                <a href="#services" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Services</a>
+                <a href="#testimonials" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Blog</a>
+                <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Contact Us</a>
+              </div>
+            </motion.div>
+          )}
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-gray-50 to-white py-20">
+      <section id="home" className="py-20 bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1 }}
             >
-              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                Professional IT Services
+              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+                We Are Creative
                 <br />
-                <span className="text-emerald-600">That Drive Results</span>
+                <span className="text-emerald-600 dark:text-emerald-400">Digital Agency</span>
               </h1>
               
-              <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                We provide comprehensive technology solutions to help your business grow, 
-                scale, and succeed in the digital world.
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+                Your success is our mission. Let's design your future, develop your strategy, 
+                and dominate your market together.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/login"
                   className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center"
                 >
                   <Rocket className="h-5 w-5 mr-2" />
-                  Start Your Project
+                  Get Started
                   <ArrowRight className="h-5 w-5 ml-2" />
                 </Link>
                 
                 <a
-                  href="#services"
-                  className="border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center"
+                  href="#contact"
+                  className="border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center"
                 >
-                  <Eye className="h-5 w-5 mr-2" />
-                  View Our Services
+                  <MessageCircle className="h-5 w-5 mr-2" />
+                  Let's Talk
                 </a>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.2 }}
+            >
+              <div className="relative">
+                <div className="w-full h-96 bg-gradient-to-br from-emerald-500/20 to-teal-600/20 rounded-2xl flex items-center justify-center">
+                  <div className="text-8xl">🚀</div>
+                </div>
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-full flex items-center justify-center">
+                  <div className="text-4xl">💡</div>
+                </div>
+                <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-gradient-to-br from-orange-500/20 to-red-600/20 rounded-full flex items-center justify-center">
+                  <div className="text-3xl">🎨</div>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-white">
+      {/* Social Media & Contact Bar */}
+      <section className="py-4 bg-emerald-600 dark:bg-emerald-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                className="text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-              >
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/10 to-teal-600/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <stat.icon className="h-8 w-8 text-emerald-600" />
-                </div>
-                <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
-                <div className="text-gray-600 font-medium">{stat.label}</div>
-              </motion.div>
-            ))}
+          <div className="flex flex-col md:flex-row items-center justify-between text-white">
+            <div className="flex items-center space-x-6 mb-4 md:mb-0">
+              <a href="#" className="hover:text-emerald-200 transition-colors">
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a href="#" className="hover:text-emerald-200 transition-colors">
+                <Twitter className="h-5 w-5" />
+              </a>
+              <a href="#" className="hover:text-emerald-200 transition-colors">
+                <Instagram className="h-5 w-5" />
+              </a>
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-8 text-sm">
+              <div className="flex items-center">
+                <Phone className="h-4 w-4 mr-2" />
+                <span>Call: +1 (727) 201-2658</span>
+              </div>
+              <div className="flex items-center">
+                <Mail className="h-4 w-4 mr-2" />
+                <span>support@techprocessingllc.com</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" className="py-20 bg-gray-50">
+      {/* About Section */}
+      <section id="about" className="py-20 bg-white dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Services</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Comprehensive technology solutions tailored to meet your business needs
-            </p>
-          </motion.div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <div className="text-6xl mb-6">🎨</div>
+              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                To Create Artistic & Creative Design
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+                Your success is our mission. Let's design your future, develop your strategy, 
+                and dominate your market together.
+              </p>
+            </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <motion.div
-                key={service.title}
-                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-8 group"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-              >
-                <div className={`w-16 h-16 bg-gradient-to-br ${service.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <service.icon className="h-8 w-8 text-white" />
-                </div>
-                
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{service.title}</h3>
-                <p className="text-gray-600 mb-6">{service.description}</p>
-                
-                <div className="space-y-2 mb-6">
-                  {service.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-emerald-500 mr-2 flex-shrink-0" />
-                      <span className="text-sm text-gray-600">{feature}</span>
+            <motion.div
+              className="space-y-6"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.2 }}
+            >
+              {services.map((service, index) => (
+                <div key={service.title} className="bg-gray-50 dark:bg-slate-800 rounded-lg p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <service.icon className="h-6 w-6 text-emerald-600 dark:text-emerald-400 mr-3" />
+                      <span className="font-semibold text-gray-900 dark:text-white">{service.title}</span>
                     </div>
-                  ))}
+                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">{service.percentage}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-1000"
+                      style={{ width: service.percentage }}
+                    ></div>
+                  </div>
                 </div>
-                
-                <Link
-                  to="/login"
-                  className={`w-full bg-gradient-to-r ${service.color} hover:shadow-lg text-white py-3 px-6 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center group-hover:scale-105`}
-                >
-                  Get Started
-                  <ChevronRight className="h-4 w-4 ml-2" />
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Portfolio Section */}
-      <section id="portfolio" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Portfolio</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Showcasing our successful projects and the technologies we use
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {portfolio.map((project, index) => (
-              <motion.div
-                key={project.title}
-                className="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition-all duration-300 group"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-              >
-                <div className="text-6xl mb-4">{project.image}</div>
-                <div className="text-sm text-emerald-600 font-semibold mb-2">{project.category}</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">{project.title}</h3>
-                <p className="text-gray-600 mb-6">{project.description}</p>
-                
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.technologies.map((tech, techIndex) => (
-                    <span key={techIndex} className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                
-                <Link
-                  to="/login"
-                  className="text-emerald-600 hover:text-emerald-700 font-semibold flex items-center group-hover:translate-x-2 transition-transform duration-300"
-                >
-                  View Details
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Link>
-              </motion.div>
-            ))}
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-gray-50">
+      <section id="testimonials" className="py-20 bg-gray-50 dark:bg-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center mb-16"
@@ -377,17 +359,14 @@ export function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Client Testimonials</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              What our clients say about working with us
-            </p>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Client's Testimonial</h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={testimonial.name}
-                className="bg-white rounded-xl shadow-lg p-8"
+                className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8"
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.2 }}
@@ -395,18 +374,40 @@ export function LandingPage() {
                 <div className="flex items-center mb-4">
                   <div className="text-4xl mr-4">{testimonial.avatar}</div>
                   <div>
-                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
-                    <p className="text-sm text-gray-600">{testimonial.role}, {testimonial.company}</p>
+                    <h4 className="font-bold text-gray-900 dark:text-white">{testimonial.name}</h4>
                   </div>
                 </div>
                 
-                <div className="flex mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-                
-                <p className="text-gray-600 italic">"{testimonial.content}"</p>
+                <p className="text-gray-600 dark:text-gray-300 italic">"{testimonial.content}"</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-white dark:bg-slate-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h2>
+          </motion.div>
+
+          <div className="space-y-6">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                className="bg-gray-50 dark:bg-slate-800 rounded-lg p-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+              >
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{faq.question}</h3>
+                <p className="text-gray-600 dark:text-gray-300">{faq.answer}</p>
               </motion.div>
             ))}
           </div>
@@ -414,7 +415,7 @@ export function LandingPage() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-white">
+      <section id="contact" className="py-20 bg-gray-50 dark:bg-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center mb-16"
@@ -422,110 +423,129 @@ export function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Get In Touch</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Ready to start your next project? Contact us today for a free consultation.
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Let's Talk!</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300">
+              Ready to start your project? Get in touch with us today.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1 }}
+              className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8 text-center"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              <h3 className="text-2xl font-bold text-gray-900 mb-8">Contact Information</h3>
-              
-              <div className="space-y-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-4">
-                    <Phone className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Phone</p>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-4">
-                    <Mail className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Email</p>
-                    <p className="text-gray-600">contact@techprocessing.com</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-4">
-                    <MapPin className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Address</p>
-                    <p className="text-gray-600">123 Tech Street, Innovation City, IC 12345</p>
-                  </div>
-                </div>
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Phone className="h-8 w-8 text-white" />
               </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Phone & Fax</h3>
+              <p className="text-gray-600 dark:text-gray-300">Mobile: (727) 201-2658</p>
             </motion.div>
 
             <motion.div
-              className="bg-gray-50 rounded-xl p-8"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1 }}
+              className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8 text-center"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
             >
-              <h3 className="text-2xl font-bold text-gray-900 mb-8">Start Your Project</h3>
-              
-              <div className="space-y-6">
-                <Link
-                  to="/login"
-                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center"
-                >
-                  <Rocket className="h-5 w-5 mr-2" />
-                  Get Started Now
-                  <ArrowRight className="h-5 w-5 ml-2" />
-                </Link>
-                
-                <div className="text-center">
-                  <p className="text-gray-600 mb-4">Or call us directly</p>
-                  <a
-                    href="tel:+15551234567"
-                    className="text-emerald-600 hover:text-emerald-700 font-semibold text-lg flex items-center justify-center"
-                  >
-                    <Phone className="h-5 w-5 mr-2" />
-                    +1 (555) 123-4567
-                  </a>
-                </div>
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Mail className="h-8 w-8 text-white" />
               </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Mail Address</h3>
+              <p className="text-gray-600 dark:text-gray-300">support@techprocessingllc.com</p>
+            </motion.div>
+
+            <motion.div
+              className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8 text-center"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MapPin className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Our Location</h3>
+              <p className="text-gray-600 dark:text-gray-300">7901 4TH ST N, PETERSBURG, FL 33702</p>
+            </motion.div>
+
+            <motion.div
+              className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8 text-center"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Clock className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Office Hours</h3>
+              <p className="text-gray-600 dark:text-gray-300">Mon - Fri 09 am - 06pm</p>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-gray-900 dark:bg-slate-950 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg flex items-center justify-center">
-                <div className="text-white font-bold text-sm">TP</div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg flex items-center justify-center">
+                  <div className="text-white font-bold text-sm">TP</div>
+                </div>
+                <div>
+                  <div className="font-bold text-lg">Tech Processing LLC</div>
+                </div>
               </div>
-              <div>
-                <div className="font-bold text-lg">Tech Processing LLC</div>
-                <div className="text-sm text-gray-400">Professional IT Services</div>
+              <p className="text-gray-400 text-sm">
+                At Tech Processing LLC, we don't just build brands, we empower them to thrive in the digital world. 
+                Rooted in innovation and fueled by creativity, we're a full-service agency dedicated to transforming 
+                your vision into a powerful online presence.
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="#about" className="hover:text-emerald-400 transition-colors">About Us</a></li>
+                <li><a href="#" className="hover:text-emerald-400 transition-colors">Terms & Conditions</a></li>
+                <li><a href="#" className="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
+                <li><a href="#contact" className="hover:text-emerald-400 transition-colors">Contact Us</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg mb-4">Services</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><a href="#services" className="hover:text-emerald-400 transition-colors">Graphic Designing</a></li>
+                <li><a href="#services" className="hover:text-emerald-400 transition-colors">Web Development</a></li>
+                <li><a href="#services" className="hover:text-emerald-400 transition-colors">Digital Marketing</a></li>
+                <li><a href="#services" className="hover:text-emerald-400 transition-colors">SEO Optimization</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg mb-4">Contact Info</h3>
+              <div className="space-y-2 text-sm text-gray-400">
+                <div className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-2 text-emerald-400" />
+                  <span>7901 4th St N St. Petersburg, FL 33702, USA</span>
+                </div>
+                <div className="flex items-center">
+                  <Mail className="h-4 w-4 mr-2 text-emerald-400" />
+                  <span>Support@techprocessingllc.com</span>
+                </div>
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 mr-2 text-emerald-400" />
+                  <span>+1 (727) 201-2658</span>
+                </div>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-8 text-sm text-gray-400">
-              <a href="mailto:contact@techprocessing.com" className="hover:text-emerald-400 transition-colors">
-                Contact
-              </a>
-              <a href="mailto:support@techprocessing.com" className="hover:text-emerald-400 transition-colors">
-                Support
-              </a>
-              <span>© 2025 Tech Processing LLC</span>
-            </div>
+          </div>
+
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+            <p>© All Copyright 2025 by Tech Processing LLC</p>
           </div>
         </div>
       </footer>
