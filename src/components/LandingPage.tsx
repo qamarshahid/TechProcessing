@@ -1,55 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import {
-  ArrowRight,
-  Shield,
-  Zap,
-  Users,
-  BarChart3,
-  CheckCircle,
-  Star,
-  Globe,
-  Target,
-  Award,
-  TrendingUp,
-  DollarSign,
-  Phone,
-  Mail,
-  MapPin,
-  Code,
-  Search,
-  Monitor,
-  Settings,
-  ChevronRight,
-  Facebook,
-  Twitter,
-  Instagram,
-  LinkedIn,
-  Menu,
-  X,
-  MessageCircle,
-  ChevronDown,
-  Play,
-  Clock,
-  Rocket,
-  Building,
-  Eye,
-  MousePointer,
-  Layers,
-  PieChart,
-  Activity,
-  Gauge,
-  CheckCircle2,
-  ArrowUpRight,
-  Quote,
-  Calendar,
-  User,
-  Briefcase,
-  FileText,
-  Send,
-  Sparkles
-} from 'lucide-react';
+import { ArrowRight, Shield, Zap, Users, BarChart3, CheckCircle, Star, Globe, Target, Award, TrendingUp, DollarSign, Phone, Mail, MapPin, Code, Search, Monitor, Settings, ChevronRight, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, MessageCircle, ChevronDown, Play, Clock, Rocket, Building, Eye, MousePointer, Layers, PieChart, Activity, Gauge, CheckCircle2, ArrowUpRight, Quote, Calendar, User, Briefcase, FileText, Send, Sparkles } from 'lucide-react';
 
 export function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
