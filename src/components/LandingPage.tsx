@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import {
   ArrowRight,
   Shield,
@@ -10,102 +10,142 @@ import {
   CheckCircle,
   Star,
   Globe,
-  Cpu,
-  Brain,
-  Sparkles,
-  Rocket,
   Target,
   Award,
   TrendingUp,
   DollarSign,
-  CreditCard,
-  FileText,
-  Package,
-  UserCheck,
-  Settings,
-  Lock,
-  Eye,
-  Clock,
-  RefreshCw,
   Phone,
   Mail,
   MapPin,
   Code,
-  Palette,
-  Database,
-  Cloud,
-  Smartphone,
+  Search,
   Monitor,
-  Server,
-  Wrench,
-  Lightbulb,
+  Settings,
   ChevronRight,
   Facebook,
   Twitter,
   Instagram,
+  LinkedIn,
   Menu,
   X,
-  Search,
   MessageCircle,
   ChevronDown,
-  Search as SearchIcon,
-  MapPin as LocationIcon,
-  Building2,
+  Play,
+  Clock,
+  Rocket,
+  Building,
+  Eye,
   MousePointer,
   Layers,
   PieChart,
   Activity,
   Gauge,
-  Target as TargetIcon,
-  Award as AwardIcon,
-  TrendingUp as TrendingUpIcon,
-  Users as UsersIcon,
   CheckCircle2,
   ArrowUpRight,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX
+  Quote,
+  Calendar,
+  User,
+  Briefcase,
+  FileText,
+  Send,
+  Sparkles
 } from 'lucide-react';
 
 export function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [formStep, setFormStep] = useState(1);
+  const [formData, setFormData] = useState({
+    name: '',
+    business: '',
+    email: '',
+    phone: '',
+    projectType: '',
+    timeline: '',
+    message: '',
+    consent: false
+  });
+
+  const heroRef = useRef(null);
+  const isHeroInView = useInView(heroRef, { once: true });
 
   const services = [
     {
-      icon: LocationIcon,
-      title: 'Google My Business',
-      percentage: '99%',
-      description: 'Complete GMB optimization, management, and local SEO dominance',
-      features: ['Profile Optimization', 'Review Management', 'Local Rankings', 'Business Insights']
-    },
-    {
-      icon: SearchIcon,
-      title: 'SEO & Citations',
-      percentage: '97%',
-      description: 'Advanced search engine optimization and citation building',
-      features: ['Technical SEO', 'Citation Building', 'Link Building', 'Ranking Analysis']
-    },
-    {
       icon: Code,
       title: 'Web Development',
-      percentage: '98%',
-      description: 'Custom websites and web applications that convert',
-      features: ['Responsive Design', 'E-commerce', 'CMS Development', 'Performance Optimization']
+      description: 'Custom websites and applications that convert visitors into customers',
+      features: ['Responsive Design', 'E-commerce Solutions', 'CMS Development', 'Performance Optimization'],
+      outcome: 'Increase conversions by up to 300%'
     },
     {
-      icon: TrendingUp,
-      title: 'Digital Marketing',
-      percentage: '96%',
-      description: 'Comprehensive digital marketing strategies that drive results',
-      features: ['PPC Campaigns', 'Social Media', 'Content Marketing', 'Analytics']
+      icon: Search,
+      title: 'SEO & Digital Marketing',
+      description: 'Dominate search rankings and drive qualified traffic to your business',
+      features: ['Technical SEO', 'Content Strategy', 'Link Building', 'Local SEO'],
+      outcome: 'Achieve first-page Google rankings'
     },
     {
-      icon: Building2,
-      title: 'Business Solutions',
-      percentage: '95%',
-      description: 'Complete business digital transformation services',
-      features: ['Brand Strategy', 'Lead Generation', 'Conversion Optimization', 'Growth Hacking']
+      icon: Building,
+      title: 'Google Business Profile',
+      description: 'Optimize your local presence and attract nearby customers',
+      features: ['Profile Optimization', 'Review Management', 'Local Citations', 'Map Rankings'],
+      outcome: 'Increase local visibility by 250%'
+    },
+    {
+      icon: BarChart3,
+      title: 'Analytics & Tracking',
+      description: 'Data-driven insights to optimize your digital performance',
+      features: ['Conversion Tracking', 'Performance Analytics', 'ROI Measurement', 'Custom Dashboards'],
+      outcome: 'Make data-driven decisions'
+    },
+    {
+      icon: Settings,
+      title: 'Maintenance & Support',
+      description: '24/7 monitoring and maintenance to keep your systems running smoothly',
+      features: ['Security Updates', 'Performance Monitoring', 'Backup Management', 'Technical Support'],
+      outcome: '99.9% uptime guarantee'
+    }
+  ];
+
+  const caseStudies = [
+    {
+      client: 'TechStart Inc.',
+      industry: 'Technology',
+      challenge: 'Needed modern website and SEO strategy',
+      solution: 'Complete digital transformation with custom website and SEO optimization',
+      results: {
+        traffic: '+300%',
+        leads: '+250%',
+        revenue: '+180%',
+        timeline: '3 months'
+      },
+      image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=600'
+    },
+    {
+      client: 'HealthTech Corp',
+      industry: 'Healthcare',
+      challenge: 'Poor local search visibility',
+      solution: 'Google Business Profile optimization and local SEO campaign',
+      results: {
+        visibility: '+400%',
+        calls: '+220%',
+        appointments: '+190%',
+        timeline: '2 months'
+      },
+      image: 'https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=600'
+    },
+    {
+      client: 'E-commerce Plus',
+      industry: 'Retail',
+      challenge: 'Low conversion rates on existing website',
+      solution: 'Website redesign with conversion optimization and analytics setup',
+      results: {
+        conversions: '+350%',
+        revenue: '+280%',
+        pageSpeed: '+150%',
+        timeline: '6 weeks'
+      },
+      image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600'
     }
   ];
 
@@ -114,602 +154,1142 @@ export function LandingPage() {
       name: 'Daniel Smith',
       company: 'TechStart Inc.',
       role: 'CEO',
-      content: 'Working with Tech Processing LLC was an absolute game-changer for our business! Their team took the time to understand our brand and delivered a stunning, user-friendly website that perfectly represents our vision. The attention to detail, fast turnaround, and ongoing support have been incredible. Our online presence has never been stronger, and we\'ve already seen a significant boost in engagement. Highly recommend their web design expertise!',
+      content: 'TechProcessing transformed our digital presence completely. Their strategic approach and technical expertise delivered results beyond our expectations.',
       rating: 5,
-      results: '+300% Traffic Increase'
+      results: '+300% Traffic Growth',
+      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150'
     },
     {
       name: 'Sarah Johnson',
       company: 'Digital Solutions',
       role: 'Marketing Director',
-      content: 'From start to finish, Tech Processing LLC exceeded our expectations. They transformed our outdated website into a modern, responsive, and conversion-focused masterpiece. Their creative approach, seamless communication, and technical skills made the entire process stress-free. Our customers love the new design, and we\'ve seen a noticeable increase in leads. If you want a website that stands out and delivers results, look no further!',
+      content: 'The team at TechProcessing doesn\'t just deliver projects—they deliver business growth. Our ROI has been exceptional.',
       rating: 5,
-      results: '+250% Lead Generation'
+      results: '+250% Lead Generation',
+      image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150'
     },
     {
       name: 'Martin Chen',
       company: 'HealthTech Corp',
       role: 'CTO',
-      content: 'Tech Processing LLC took our vague vision and turned it into a stunning, functional reality. The process was collaborative from start to finish, and their team went above and beyond to ensure every detail was perfect. Our bounce rate has dropped, and our conversion rate has never been higher. Truly top-notch service!',
+      content: 'Professional, reliable, and results-driven. TechProcessing helped us dominate our local market with their Google Business optimization.',
       rating: 5,
-      results: '+180% Conversion Rate'
+      results: '+400% Local Visibility',
+      image: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150'
+    }
+  ];
+
+  const processSteps = [
+    {
+      step: 1,
+      title: 'Discovery & Strategy',
+      description: 'We analyze your business, competitors, and market to create a winning strategy.',
+      icon: Target,
+      duration: '1-2 days'
     },
     {
-      name: 'Amelia Rodriguez',
-      company: 'E-commerce Plus',
-      role: 'Operations Manager',
-      content: 'I can\'t say enough good things about Tech Processing LLC. They were organized, insightful, and completely dedicated to our project. They made complex tasks look effortless, and the end result is a website that not only looks amazing but also performs beautifully. We\'ve already received countless compliments from clients and partners.',
-      rating: 5,
-      results: '+400% Revenue Growth'
+      step: 2,
+      title: 'Design & Development',
+      description: 'Our expert team brings your vision to life with cutting-edge technology.',
+      icon: Code,
+      duration: '2-4 weeks'
+    },
+    {
+      step: 3,
+      title: 'Testing & Optimization',
+      description: 'Rigorous testing ensures perfect performance across all devices and browsers.',
+      icon: Gauge,
+      duration: '3-5 days'
+    },
+    {
+      step: 4,
+      title: 'Launch & Growth',
+      description: 'We launch your project and provide ongoing support to ensure continued success.',
+      icon: Rocket,
+      duration: 'Ongoing'
     }
   ];
 
   const faqs = [
     {
-      question: 'What types of websites do you develop?',
-      answer: 'We build a wide range of websites, including business sites, e-commerce stores, landing pages, and custom platforms. Our development process is tailored to meet your goals, whether you need a simple informational site or a full-featured web application.'
+      question: 'How long does a typical web development project take?',
+      answer: 'Most projects are completed within 2-6 weeks, depending on complexity. We provide detailed timelines during our initial consultation and keep you updated throughout the process.'
     },
     {
-      question: 'How does your graphic design process work?',
-      answer: 'Our design process starts with understanding your brand, audience, and goals. We then present initial concepts, gather feedback, and refine the designs until you\'re satisfied. We can create everything from logos and branding kits to brochures and social media visuals.'
+      question: 'Do you provide ongoing maintenance and support?',
+      answer: 'Yes! We offer comprehensive maintenance packages including security updates, performance monitoring, content updates, and 24/7 technical support to keep your website running smoothly.'
     },
     {
-      question: 'Can you manage our Google Ads campaigns?',
-      answer: 'Absolutely. We offer full-service Google Ads management, including keyword research, ad copywriting, campaign setup, A/B testing, and performance optimization. Our goal is to help you get the highest ROI for your ad spend.'
+      question: 'Can you help improve my existing website\'s search rankings?',
+      answer: 'Absolutely. Our SEO experts can audit your current site and implement proven strategies to improve your search rankings, increase organic traffic, and drive more qualified leads to your business.'
     },
     {
-      question: 'What\'s included in your digital marketing services?',
-      answer: 'Our digital marketing services include SEO, social media marketing, content creation, email campaigns, analytics tracking, and more. We customize strategies to align with your business objectives and industry trends.'
+      question: 'What makes TechProcessing different from other agencies?',
+      answer: 'We focus on measurable business outcomes, not just pretty designs. Our data-driven approach, combined with cutting-edge technology and personalized service, ensures your investment delivers real ROI.'
     },
     {
-      question: 'How long does it take to see results from your services?',
-      answer: 'Timeframes vary based on the service. For web development, most projects take 2–6 weeks depending on complexity. Marketing results, such as increased traffic or conversions, can take 1–3 months, but we focus on long-term sustainable growth.'
+      question: 'Do you work with businesses outside of Florida?',
+      answer: 'Yes! While we\'re based in St. Petersburg, FL, we serve clients nationwide. Our remote collaboration tools and proven processes ensure seamless project delivery regardless of location.'
+    },
+    {
+      question: 'How do you measure project success?',
+      answer: 'We establish clear KPIs upfront—whether it\'s increased traffic, higher conversion rates, or improved search rankings. You\'ll receive detailed analytics reports showing exactly how your investment is performing.'
     }
   ];
 
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Analytics tracking
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'form_submit', {
+        event_category: 'Lead Generation',
+        event_label: 'Contact Form',
+        value: 1
+      });
+    }
+
+    // Simulate form submission
+    console.log('Form submitted:', formData);
+    alert('Thank you for your interest! We\'ll contact you within 24 hours.');
+    
+    // Reset form
+    setFormData({
+      name: '',
+      business: '',
+      email: '',
+      phone: '',
+      projectType: '',
+      timeline: '',
+      message: '',
+      consent: false
+    });
+    setFormStep(1);
+  };
+
+  const handleCTAClick = (ctaType: string) => {
+    // Analytics tracking
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'cta_click', {
+        event_category: 'Engagement',
+        event_label: ctaType,
+        value: 1
+      });
+    }
+  };
+
+  useEffect(() => {
+    // Auto-rotate testimonials
+    const interval = setInterval(() => {
+      setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-white">
-      {/* Navigation */}
-      <nav className="bg-white dark:bg-slate-900 shadow-sm border-b border-gray-200 dark:border-slate-800 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <motion.div 
-              className="flex items-center space-x-3"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg flex items-center justify-center">
-                <div className="text-white font-bold text-sm">TP</div>
-              </div>
-              <div className="font-bold text-xl text-gray-900 dark:text-white">
-                <span className="tracking-widest">T E C H P R O C E S S I N G</span>
-                <br />
-                <span className="text-sm text-emerald-600 dark:text-emerald-400">LLC</span>
-              </div>
-            </motion.div>
+    <>
+      {/* SEO Meta Tags */}
+      <head>
+        <title>TechProcessing LLC - Web Development & Digital Marketing | St. Petersburg, FL</title>
+        <meta name="description" content="Professional web development, SEO, and digital marketing services in St. Petersburg, FL. Design. Develop. Dominate. Get your free quote today!" />
+        <meta name="keywords" content="web development, SEO, digital marketing, Google Business Profile, St. Petersburg FL, website design" />
+        <meta name="author" content="TechProcessing LLC" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://techprocessingllc.com" />
+        
+        {/* Open Graph */}
+        <meta property="og:title" content="TechProcessing LLC - Web Development & Digital Marketing" />
+        <meta property="og:description" content="Professional web development, SEO, and digital marketing services. Design. Develop. Dominate." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://techprocessingllc.com" />
+        <meta property="og:image" content="https://techprocessingllc.com/og-image.jpg" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:site_name" content="TechProcessing LLC" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="TechProcessing LLC - Web Development & Digital Marketing" />
+        <meta name="twitter:description" content="Professional web development, SEO, and digital marketing services. Design. Develop. Dominate." />
+        <meta name="twitter:image" content="https://techprocessingllc.com/twitter-image.jpg" />
+        
+        {/* JSON-LD Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": "https://techprocessingllc.com/#organization",
+                "name": "TechProcessing LLC",
+                "url": "https://techprocessingllc.com",
+                "logo": "https://techprocessingllc.com/logo.png",
+                "contactPoint": {
+                  "@type": "ContactPoint",
+                  "telephone": "+1-727-201-2658",
+                  "contactType": "customer service",
+                  "email": "support@techprocessingllc.com",
+                  "availableLanguage": "English"
+                },
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "7901 4th St N",
+                  "addressLocality": "St. Petersburg",
+                  "addressRegion": "FL",
+                  "postalCode": "33702",
+                  "addressCountry": "US"
+                },
+                "sameAs": [
+                  "https://facebook.com/techprocessingllc",
+                  "https://twitter.com/techprocessingllc",
+                  "https://linkedin.com/company/techprocessingllc"
+                ]
+              },
+              {
+                "@type": "LocalBusiness",
+                "@id": "https://techprocessingllc.com/#localbusiness",
+                "name": "TechProcessing LLC",
+                "description": "Professional web development, SEO, and digital marketing services",
+                "url": "https://techprocessingllc.com",
+                "telephone": "+1-727-201-2658",
+                "email": "support@techprocessingllc.com",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "7901 4th St N",
+                  "addressLocality": "St. Petersburg",
+                  "addressRegion": "FL",
+                  "postalCode": "33702",
+                  "addressCountry": "US"
+                },
+                "geo": {
+                  "@type": "GeoCoordinates",
+                  "latitude": "27.7676",
+                  "longitude": "-82.6403"
+                },
+                "areaServed": [
+                  "St. Petersburg, FL",
+                  "Tampa, FL",
+                  "Clearwater, FL",
+                  "Florida",
+                  "United States"
+                ],
+                "openingHours": "Mo-Fr 09:00-18:00",
+                "priceRange": "$$"
+              },
+              {
+                "@type": "FAQPage",
+                "mainEntity": faqs.map(faq => ({
+                  "@type": "Question",
+                  "name": faq.question,
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": faq.answer
+                  }
+                }))
+              }
+            ]
+          })}
+        </script>
+      </head>
 
-            {/* Desktop Navigation */}
-            <motion.div
-              className="hidden md:flex items-center space-x-8"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <a href="#home" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Home</a>
-              <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">About Us</a>
-              <a href="#services" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Services</a>
-              <a href="#testimonials" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Blog</a>
-              <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Contact Us</a>
-            </motion.div>
-
-            <motion.div
-              className="flex items-center space-x-4"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            >
-              <Link
-                to="/login"
-                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+      <div className="min-h-screen bg-white dark:bg-slate-950 text-gray-900 dark:text-white">
+        {/* Navigation */}
+        <nav className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-sm border-b border-gray-200/50 dark:border-slate-800/50 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <motion.div 
+                className="flex items-center space-x-3"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
               >
-                Get In Touch
-              </Link>
-              
-              {/* Mobile Menu Button */}
-              <button
-                className="md:hidden text-gray-600 dark:text-gray-300"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="text-white font-black text-sm">TP</div>
+                </div>
+                <div className="font-black text-xl text-gray-900 dark:text-white">
+                  <span className="tracking-wider">TECHPROCESSING</span>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400 font-bold tracking-[0.2em]">LLC</div>
+                </div>
+              </motion.div>
+
+              {/* Desktop Navigation */}
+              <motion.div
+                className="hidden md:flex items-center space-x-8"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </motion.div>
-          </div>
+                <a href="#services" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Services</a>
+                <a href="#portfolio" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
+                <a href="#process" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Process</a>
+                <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">About</a>
+                <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Contact</a>
+              </motion.div>
 
-          {/* Mobile Navigation */}
-          {isMenuOpen && (
-            <motion.div
-              className="md:hidden py-4 border-t border-gray-200 dark:border-slate-800"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              <div className="flex flex-col space-y-4">
-                <a href="#home" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Home</a>
-                <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">About Us</a>
-                <a href="#services" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Services</a>
-                <a href="#testimonials" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Blog</a>
-                <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Contact Us</a>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section id="home" className="py-20 bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1 }}
-            >
-              <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-6 leading-tight">
-                DOMINATE
-                <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
-                  GOOGLE
-                </span>
-                <br />
-                <span className="text-gray-600 dark:text-gray-300">RANKINGS</span>
-              </h1>
-              
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl">
-                We don't just build websites – we build digital empires. From Google My Business domination 
-                to SEO mastery, we make your competition irrelevant.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
+              <motion.div
+                className="flex items-center space-x-4"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
                 <Link
                   to="/login"
-                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center"
+                  className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium"
+                  onClick={() => handleCTAClick('Client Login')}
                 >
-                  <Rocket className="h-5 w-5 mr-2" />
-                  Get Started
-                  <ArrowRight className="h-5 w-5 ml-2" />
+                  Client Login
                 </Link>
-                
                 <a
                   href="#contact"
-                  className="border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 flex items-center justify-center"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+                  onClick={() => handleCTAClick('Get Free Quote')}
                 >
-                  <MessageCircle className="h-5 w-5 mr-2" />
-                  Let's Talk
+                  Get Free Quote
                 </a>
-              </div>
-            </motion.div>
+                
+                {/* Mobile Menu Button */}
+                <button
+                  className="md:hidden text-gray-600 dark:text-gray-300"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  aria-label="Toggle mobile menu"
+                >
+                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </button>
+              </motion.div>
+            </div>
 
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, delay: 0.2 }}
-            >
-              <div className="relative">
-                {/* Main Dashboard Mockup */}
-                <div className="w-full h-96 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 shadow-2xl border border-slate-700">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex space-x-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            {/* Mobile Navigation */}
+            {isMenuOpen && (
+              <motion.div
+                className="md:hidden py-4 border-t border-gray-200 dark:border-slate-800"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+              >
+                <div className="flex flex-col space-y-4">
+                  <a href="#services" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Services</a>
+                  <a href="#portfolio" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
+                  <a href="#process" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Process</a>
+                  <a href="#about" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">About</a>
+                  <a href="#contact" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Contact</a>
+                  <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium">Client Login</Link>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </nav>
+
+        {/* Hero Section */}
+        <section ref={heroRef} className="relative py-20 lg:py-32 bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 overflow-hidden">
+          {/* Background Elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-20 left-20 w-32 h-32 border-4 border-emerald-400/20 transform rotate-45 hidden lg:block"></div>
+            <div className="absolute bottom-20 right-20 w-24 h-24 border-4 border-teal-400/20 transform rotate-12 hidden lg:block"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={isHeroInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 1 }}
+              >
+                <div className="mb-6">
+                  <span className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-semibold">
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Trusted by 500+ Businesses
+                  </span>
+                </div>
+                
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white mb-6 leading-tight">
+                  <span className="block">DESIGN.</span>
+                  <span className="block">DEVELOP.</span>
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
+                    DOMINATE.
+                  </span>
+                </h1>
+                
+                <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl leading-relaxed">
+                  Your success is our mission. Let's design your future, develop your strategy, 
+                  and dominate your market together.
+                </p>
+
+                <div className="mb-8">
+                  <div className="grid grid-cols-3 gap-6 text-center">
+                    <div>
+                      <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">300%</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Avg Traffic Increase</div>
                     </div>
-                    <div className="text-emerald-400 text-sm font-mono">Google Analytics Dashboard</div>
-                  </div>
-                  
-                  {/* Chart Area */}
-                  <div className="h-32 bg-slate-800 rounded-lg mb-4 relative overflow-hidden">
-                    <div className="absolute inset-0 flex items-end justify-between px-4 pb-2">
-                      {[40, 65, 45, 80, 60, 90, 75].map((height, i) => (
-                        <motion.div
-                          key={i}
-                          className="bg-gradient-to-t from-emerald-500 to-teal-400 rounded-t"
-                          style={{ width: '12px', height: `${height}%` }}
-                          initial={{ height: 0 }}
-                          animate={{ height: `${height}%` }}
-                          transition={{ duration: 1, delay: 0.5 + i * 0.1 }}
-                        />
-                      ))}
+                    <div>
+                      <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">99%</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Client Satisfaction</div>
                     </div>
-                  </div>
-                  
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-emerald-400">99%</div>
-                      <div className="text-xs text-gray-400">GMB Rankings</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-teal-400">97%</div>
-                      <div className="text-xs text-gray-400">SEO Success</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-cyan-400">98%</div>
-                      <div className="text-xs text-gray-400">Web Performance</div>
+                    <div>
+                      <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">24/7</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">Support Available</div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Floating Elements */}
-                <motion.div
-                  className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                >
-                  <TrendingUp className="h-8 w-8 text-white" />
-                </motion.div>
-                
-                <motion.div
-                  className="absolute -bottom-4 -left-4 w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg"
-                  animate={{ y: [-10, 10, -10] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Target className="h-6 w-6 text-white" />
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <a
+                    href="#contact"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
+                    onClick={() => handleCTAClick('Get My Free Quote')}
+                  >
+                    <Rocket className="h-5 w-5 mr-2 group-hover:animate-pulse" />
+                    Get My Free Quote
+                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                  
+                  <a
+                    href="tel:+17272012658"
+                    className="border-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center"
+                    onClick={() => handleCTAClick('Contact Us')}
+                  >
+                    <Phone className="h-5 w-5 mr-2" />
+                    (727) 201-2658
+                  </a>
+                </div>
 
-      {/* Social Media & Contact Bar */}
-      <section className="py-4 bg-emerald-600 dark:bg-emerald-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between text-white">
-            <div className="flex items-center space-x-6 mb-4 md:mb-0">
-              <a href="#" className="hover:text-emerald-200 transition-colors">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="hover:text-emerald-200 transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="hover:text-emerald-200 transition-colors">
-                <Instagram className="h-5 w-5" />
-              </a>
-            </div>
-            
-            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-8 text-sm">
-              <div className="flex items-center">
-                <Phone className="h-4 w-4 mr-2" />
-                <span>Call: +1 (727) 201-2658</span>
-              </div>
-              <div className="flex items-center">
-                <Mail className="h-4 w-4 mr-2" />
-                <span>support@techprocessingllc.com</span>
-              </div>
+                <div className="mt-8 flex items-center space-x-6 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-emerald-500 mr-2" />
+                    <span>Free Consultation</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-emerald-500 mr-2" />
+                    <span>No Long-term Contracts</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-emerald-500 mr-2" />
+                    <span>Results Guaranteed</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0, x: 50 }}
+                animate={isHeroInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 1, delay: 0.2 }}
+              >
+                <div className="relative">
+                  {/* Main Dashboard Mockup */}
+                  <div className="w-full h-96 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 shadow-2xl border border-slate-700">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex space-x-2">
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      </div>
+                      <div className="text-emerald-400 text-sm font-mono">Analytics Dashboard</div>
+                    </div>
+                    
+                    {/* Chart Area */}
+                    <div className="h-32 bg-slate-800 rounded-lg mb-4 relative overflow-hidden">
+                      <div className="absolute inset-0 flex items-end justify-between px-4 pb-2">
+                        {[40, 65, 45, 80, 60, 90, 75, 95].map((height, i) => (
+                          <motion.div
+                            key={i}
+                            className="bg-gradient-to-t from-emerald-500 to-teal-400 rounded-t"
+                            style={{ width: '10px', height: `${height}%` }}
+                            initial={{ height: 0 }}
+                            animate={{ height: `${height}%` }}
+                            transition={{ duration: 1, delay: 0.5 + i * 0.1 }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Stats */}
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-emerald-400">300%</div>
+                        <div className="text-xs text-gray-400">Traffic Growth</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-teal-400">99%</div>
+                        <div className="text-xs text-gray-400">Uptime</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-cyan-400">#1</div>
+                        <div className="text-xs text-gray-400">Rankings</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Floating Elements */}
+                  <motion.div
+                    className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  >
+                    <TrendingUp className="h-8 w-8 text-white" />
+                  </motion.div>
+                  
+                  <motion.div
+                    className="absolute -bottom-4 -left-4 w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"
+                    animate={{ y: [-10, 10, -10] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Target className="h-6 w-6 text-white" />
+                  </motion.div>
+                </div>
+              </motion.div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* About Section */}
-      <section id="about" className="py-20 bg-white dark:bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        {/* Services Section */}
+        <section id="services" className="py-20 bg-white dark:bg-slate-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
+              viewport={{ once: true }}
             >
-              <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                <Target className="h-10 w-10 text-white" />
-              </div>
-              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                Digital Domination
-                <br />
-                <span className="text-emerald-600 dark:text-emerald-400">That Actually Works</span>
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                Services That Drive Results
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-                We don't just promise results – we deliver them. Our data-driven approach 
-                ensures your business dominates Google rankings and crushes the competition.
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                We don't just build websites—we build digital empires that dominate your competition
               </p>
-              
-              <div className="grid grid-cols-2 gap-6 mb-8">
-                <div className="flex items-center">
-                  <CheckCircle className="h-6 w-6 text-emerald-500 mr-3" />
-                  <span className="text-gray-700 dark:text-gray-300 font-semibold">Google Certified</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="h-6 w-6 text-emerald-500 mr-3" />
-                  <span className="text-gray-700 dark:text-gray-300 font-semibold">Results Guaranteed</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="h-6 w-6 text-emerald-500 mr-3" />
-                  <span className="text-gray-700 dark:text-gray-300 font-semibold">24/7 Support</span>
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle className="h-6 w-6 text-emerald-500 mr-3" />
-                  <span className="text-gray-700 dark:text-gray-300 font-semibold">ROI Focused</span>
-                </div>
-              </div>
             </motion.div>
 
-            <motion.div
-              className="space-y-6"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, delay: 0.2 }}
-            >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map((service, index) => (
-                <motion.div 
-                  key={service.title} 
-                  className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-700 rounded-xl p-6 border border-gray-200 dark:border-slate-600 hover:shadow-lg transition-all duration-300"
-                  whileHover={{ scale: 1.02 }}
+                <motion.div
+                  key={service.title}
+                  className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  viewport={{ once: true }}
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center">
-                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-4">
-                        <service.icon className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <span className="font-bold text-gray-900 dark:text-white text-lg">{service.title}</span>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{service.description}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{service.percentage}</span>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">Success Rate</div>
-                    </div>
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                    <service.icon className="h-8 w-8 text-white" />
                   </div>
                   
-                  <div className="w-full bg-gray-200 dark:bg-slate-600 rounded-full h-3 mb-4">
-                    <motion.div 
-                      className="bg-gradient-to-r from-emerald-500 to-teal-600 h-3 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: service.percentage }}
-                      transition={{ duration: 2, delay: 0.5 + index * 0.2 }}
-                    />
-                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{service.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">{service.description}</p>
                   
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-3 mb-6">
                     {service.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-center text-sm">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-2 flex-shrink-0" />
+                      <div key={featureIndex} className="flex items-center">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
                         <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                       </div>
                     ))}
                   </div>
+                  
+                  <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
+                    <div className="flex items-center">
+                      <Target className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+                      <span className="text-emerald-800 dark:text-emerald-300 font-semibold">{service.outcome}</span>
+                    </div>
+                  </div>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-gray-50 dark:bg-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Client's Testimonial</h2>
-          </motion.div>
+        {/* Portfolio/Case Studies Section */}
+        <section id="portfolio" className="py-20 bg-gray-50 dark:bg-slate-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                Proven Results for Real Businesses
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                See how we've helped businesses like yours achieve extraordinary growth
+              </p>
+            </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={testimonial.name}
-                className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300"
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-                whileHover={{ scale: 1.02 }}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mr-4">
-                      <span className="text-white font-bold text-xl">{testimonial.name.charAt(0)}</span>
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-gray-900 dark:text-white text-lg">{testimonial.name}</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{testimonial.role}, {testimonial.company}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {caseStudies.map((study, index) => (
+                <motion.div
+                  key={study.client}
+                  className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300"
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: index * 0.2 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="aspect-video bg-gradient-to-br from-emerald-500 to-teal-600 relative overflow-hidden">
+                    <img 
+                      src={study.image} 
+                      alt={`${study.client} case study`}
+                      className="w-full h-full object-cover opacity-80"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <div className="text-lg font-bold">{study.client}</div>
+                      <div className="text-sm opacity-90">{study.industry}</div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="flex mb-2">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                  
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">The Challenge</h3>
+                    <p className="text-gray-600 dark:text-gray-300 mb-4">{study.challenge}</p>
+                    
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Our Solution</h4>
+                    <p className="text-gray-600 dark:text-gray-300 mb-6">{study.solution}</p>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      {Object.entries(study.results).map(([key, value]) => (
+                        <div key={key} className="text-center p-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+                          <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{value}</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                        </div>
                       ))}
                     </div>
-                    <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{testimonial.results}</div>
                   </div>
-                </div>
-                
-                <p className="text-gray-600 dark:text-gray-300 italic leading-relaxed">"{testimonial.content}"</p>
-                
-                <div className="mt-6 pt-4 border-t border-gray-200 dark:border-slate-700">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">Verified Client</div>
-                    <div className="flex items-center text-emerald-600 dark:text-emerald-400">
-                      <CheckCircle className="h-4 w-4 mr-1" />
-                      <span className="text-sm font-medium">Success Story</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="py-20 bg-white dark:bg-slate-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                What Our Clients Say
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Don't just take our word for it—hear from businesses we've helped succeed
+              </p>
+            </motion.div>
+
+            <div className="relative">
+              <div className="overflow-hidden">
+                <motion.div
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}
+                >
+                  {testimonials.map((testimonial, index) => (
+                    <div key={index} className="w-full flex-shrink-0 px-4">
+                      <div className="bg-gray-50 dark:bg-slate-800 rounded-2xl p-8 max-w-4xl mx-auto">
+                        <div className="flex flex-col md:flex-row items-center gap-8">
+                          <div className="flex-shrink-0">
+                            <img
+                              src={testimonial.image}
+                              alt={testimonial.name}
+                              className="w-24 h-24 rounded-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                          <div className="flex-1 text-center md:text-left">
+                            <div className="flex justify-center md:justify-start mb-4">
+                              {[...Array(testimonial.rating)].map((_, i) => (
+                                <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                              ))}
+                            </div>
+                            <blockquote className="text-lg lg:text-xl text-gray-700 dark:text-gray-300 italic mb-6 leading-relaxed">
+                              "{testimonial.content}"
+                            </blockquote>
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                              <div>
+                                <div className="font-bold text-gray-900 dark:text-white">{testimonial.name}</div>
+                                <div className="text-gray-600 dark:text-gray-400">{testimonial.role}, {testimonial.company}</div>
+                              </div>
+                              <div className="mt-4 md:mt-0">
+                                <div className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-semibold">
+                                  <TrendingUp className="h-4 w-4 mr-2" />
+                                  {testimonial.results}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              </div>
+              
+              {/* Testimonial Navigation */}
+              <div className="flex justify-center mt-8 space-x-2">
+                {testimonials.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveTestimonial(index)}
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      index === activeTestimonial ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                    aria-label={`View testimonial ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Process Section */}
+        <section id="process" className="py-20 bg-gray-50 dark:bg-slate-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                Our Proven Process
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                A streamlined approach that delivers exceptional results every time
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {processSteps.map((step, index) => (
+                <motion.div
+                  key={step.step}
+                  className="relative"
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: index * 0.2 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-slate-700 text-center relative">
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        {step.step}
+                      </div>
+                    </div>
+                    
+                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 mt-4">
+                      <step.icon className="h-8 w-8 text-white" />
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{step.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-300 mb-4">{step.description}</p>
+                    
+                    <div className="inline-flex items-center px-3 py-1 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 rounded-full text-sm font-medium">
+                      <Clock className="h-4 w-4 mr-2" />
+                      {step.duration}
+                    </div>
+                  </div>
+                  
+                  {/* Connector Line */}
+                  {index < processSteps.length - 1 && (
+                    <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-600 transform -translate-y-1/2"></div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-20 bg-white dark:bg-slate-900">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300">
+                Get answers to common questions about our services and process
+              </p>
+            </motion.div>
+
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <motion.div
+                  key={index}
+                  className="bg-gray-50 dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-700"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center">
+                    <MessageCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-3" />
+                    {faq.question}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.answer}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Contact/Lead Form Section */}
+        <section id="contact" className="py-20 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              {/* Contact Information */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1 }}
+                viewport={{ once: true }}
+              >
+                <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+                  Ready to Dominate Your Market?
+                </h2>
+                <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+                  Let's discuss how we can transform your digital presence and drive real business results.
+                </p>
+
+                <div className="space-y-6 mb-8">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mr-4">
+                      <Phone className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-white">Call Us</div>
+                      <a href="tel:+17272012658" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                        +1 (727) 201-2658
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mr-4">
+                      <Mail className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-white">Email Us</div>
+                      <a href="mailto:support@techprocessingllc.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                        support@techprocessingllc.com
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mr-4">
+                      <MapPin className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-white">Visit Us</div>
+                      <div className="text-gray-600 dark:text-gray-300">
+                        7901 4th St N<br />
+                        St. Petersburg, FL 33702
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                <div className="flex space-x-4">
+                  <a href="#" className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Facebook">
+                    <Facebook className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Twitter">
+                    <Twitter className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="LinkedIn">
+                    <LinkedIn className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 bg-gray-200 dark:bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Instagram">
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                </div>
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* FAQ Section */}
-      <section className="py-20 bg-white dark:bg-slate-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h2>
-          </motion.div>
-
-          <div className="space-y-6">
-            {faqs.map((faq, index) => (
+              {/* Lead Form */}
               <motion.div
-                key={index}
-                className="bg-gray-50 dark:bg-slate-800 rounded-lg p-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1 }}
+                viewport={{ once: true }}
               >
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{faq.question}</h3>
-                <p className="text-gray-600 dark:text-gray-300">{faq.answer}</p>
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8">
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                      Get Your Free Quote
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      Tell us about your project and we'll provide a custom solution
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleFormSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Full Name *
+                        </label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <input
+                            type="text"
+                            id="name"
+                            required
+                            value={formData.name}
+                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
+                            placeholder="Your full name"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label htmlFor="business" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Business Name *
+                        </label>
+                        <div className="relative">
+                          <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <input
+                            type="text"
+                            id="business"
+                            required
+                            value={formData.business}
+                            onChange={(e) => setFormData(prev => ({ ...prev, business: e.target.value }))}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
+                            placeholder="Your business name"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Email Address *
+                        </label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <input
+                            type="email"
+                            id="email"
+                            required
+                            value={formData.email}
+                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
+                            placeholder="your@email.com"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Phone Number *
+                        </label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <input
+                            type="tel"
+                            id="phone"
+                            required
+                            value={formData.phone}
+                            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
+                            placeholder="(727) 555-0123"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="projectType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Project Type *
+                        </label>
+                        <div className="relative">
+                          <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <select
+                            id="projectType"
+                            required
+                            value={formData.projectType}
+                            onChange={(e) => setFormData(prev => ({ ...prev, projectType: e.target.value }))}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
+                          >
+                            <option value="">Select project type</option>
+                            <option value="web-development">Web Development</option>
+                            <option value="seo">SEO & Digital Marketing</option>
+                            <option value="google-business">Google Business Profile</option>
+                            <option value="analytics">Analytics & Tracking</option>
+                            <option value="maintenance">Maintenance & Support</option>
+                            <option value="other">Other</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Timeline *
+                        </label>
+                        <div className="relative">
+                          <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <select
+                            id="timeline"
+                            required
+                            value={formData.timeline}
+                            onChange={(e) => setFormData(prev => ({ ...prev, timeline: e.target.value }))}
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white"
+                          >
+                            <option value="">Select timeline</option>
+                            <option value="asap">ASAP</option>
+                            <option value="1-month">Within 1 month</option>
+                            <option value="2-3-months">2-3 months</option>
+                            <option value="3-6-months">3-6 months</option>
+                            <option value="6-months-plus">6+ months</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Project Details
+                      </label>
+                      <div className="relative">
+                        <FileText className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                        <textarea
+                          id="message"
+                          rows={4}
+                          value={formData.message}
+                          onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                          className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white resize-none"
+                          placeholder="Tell us about your project goals, current challenges, and what success looks like for your business..."
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-start">
+                      <div className="flex items-center h-5">
+                        <input
+                          id="consent"
+                          type="checkbox"
+                          required
+                          checked={formData.consent}
+                          onChange={(e) => setFormData(prev => ({ ...prev, consent: e.target.checked }))}
+                          className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                      </div>
+                      <div className="ml-3 text-sm">
+                        <label htmlFor="consent" className="text-gray-700 dark:text-gray-300">
+                          I agree to receive communications from TechProcessing LLC and understand that I can unsubscribe at any time. *
+                        </label>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
+                    >
+                      <Send className="h-5 w-5 mr-2 group-hover:translate-x-1 transition-transform" />
+                      Get My Free Quote
+                      <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </form>
+                </div>
               </motion.div>
-            ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-20 bg-gray-50 dark:bg-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Let's Talk!</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              Ready to start your project? Get in touch with us today.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <motion.div
-              className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8 text-center"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Phone className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Phone & Fax</h3>
-              <p className="text-gray-600 dark:text-gray-300">Mobile: (727) 201-2658</p>
-            </motion.div>
-
-            <motion.div
-              className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8 text-center"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-            >
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Mail className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Mail Address</h3>
-              <p className="text-gray-600 dark:text-gray-300">support@techprocessingllc.com</p>
-            </motion.div>
-
-            <motion.div
-              className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8 text-center"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MapPin className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Our Location</h3>
-              <p className="text-gray-600 dark:text-gray-300">7901 4TH ST N, PETERSBURG, FL 33702</p>
-            </motion.div>
-
-            <motion.div
-              className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-8 text-center"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Office Hours</h3>
-              <p className="text-gray-600 dark:text-gray-300">Mon - Fri 09 am - 06pm</p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 dark:bg-slate-950 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg flex items-center justify-center">
-                  <div className="text-white font-bold text-sm">TP</div>
+        {/* Footer */}
+        <footer className="bg-gray-900 dark:bg-slate-950 text-white py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              <div className="col-span-1 md:col-span-2">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center shadow-lg">
+                    <div className="text-white font-black text-lg">TP</div>
+                  </div>
+                  <div className="font-black text-2xl">
+                    <span className="tracking-wider">TECHPROCESSING</span>
+                    <div className="text-xs text-emerald-400 font-bold tracking-[0.2em]">LLC</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-bold text-lg">Tech Processing LLC</div>
+                <p className="text-gray-300 mb-6 max-w-md">
+                  Your success is our mission. We design, develop, and help you dominate your market with cutting-edge digital solutions.
+                </p>
+                <div className="flex space-x-4">
+                  <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="Facebook">
+                    <Facebook className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="Twitter">
+                    <Twitter className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="LinkedIn">
+                    <LinkedIn className="h-5 w-5" />
+                  </a>
+                  <a href="#" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="Instagram">
+                    <Instagram className="h-5 w-5" />
+                  </a>
                 </div>
               </div>
-              <p className="text-gray-400 text-sm">
-                At Tech Processing LLC, we don't just build brands, we empower them to thrive in the digital world. 
-                Rooted in innovation and fueled by creativity, we're a full-service agency dedicated to transforming 
-                your vision into a powerful online presence.
-              </p>
-            </div>
 
-            <div>
-              <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#about" className="hover:text-emerald-400 transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">Terms & Conditions</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
-                <li><a href="#contact" className="hover:text-emerald-400 transition-colors">Contact Us</a></li>
-              </ul>
-            </div>
+              <div>
+                <h3 className="text-lg font-bold mb-4">Services</h3>
+                <ul className="space-y-2 text-gray-300">
+                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Web Development</a></li>
+                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">SEO & Marketing</a></li>
+                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Google Business Profile</a></li>
+                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Analytics & Tracking</a></li>
+                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Maintenance & Support</a></li>
+                </ul>
+              </div>
 
-            <div>
-              <h3 className="font-semibold text-lg mb-4">Services</h3>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#services" className="hover:text-emerald-400 transition-colors">Graphic Designing</a></li>
-                <li><a href="#services" className="hover:text-emerald-400 transition-colors">Web Development</a></li>
-                <li><a href="#services" className="hover:text-emerald-400 transition-colors">Digital Marketing</a></li>
-                <li><a href="#services" className="hover:text-emerald-400 transition-colors">SEO Optimization</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg mb-4">Contact Info</h3>
-              <div className="space-y-2 text-sm text-gray-400">
-                <div className="flex items-center">
-                  <MapPin className="h-4 w-4 mr-2 text-emerald-400" />
-                  <span>7901 4th St N St. Petersburg, FL 33702, USA</span>
-                </div>
-                <div className="flex items-center">
-                  <Mail className="h-4 w-4 mr-2 text-emerald-400" />
-                  <span>Support@techprocessingllc.com</span>
-                </div>
-                <div className="flex items-center">
-                  <Phone className="h-4 w-4 mr-2 text-emerald-400" />
-                  <span>+1 (727) 201-2658</span>
+              <div>
+                <h3 className="text-lg font-bold mb-4">Contact Info</h3>
+                <div className="space-y-3 text-gray-300">
+                  <div className="flex items-center">
+                    <Phone className="h-4 w-4 mr-2 text-emerald-400" />
+                    <a href="tel:+17272012658" className="hover:text-emerald-400 transition-colors">
+                      +1 (727) 201-2658
+                    </a>
+                  </div>
+                  <div className="flex items-center">
+                    <Mail className="h-4 w-4 mr-2 text-emerald-400" />
+                    <a href="mailto:support@techprocessingllc.com" className="hover:text-emerald-400 transition-colors">
+                      support@techprocessingllc.com
+                    </a>
+                  </div>
+                  <div className="flex items-start">
+                    <MapPin className="h-4 w-4 mr-2 text-emerald-400 mt-1" />
+                    <div>
+                      7901 4th St N<br />
+                      St. Petersburg, FL 33702
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>© All Copyright 2025 by Tech Processing LLC</p>
+            <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+              <div className="text-gray-400 text-sm">
+                © 2024 TechProcessing LLC. All rights reserved.
+              </div>
+              <div className="flex space-x-6 mt-4 md:mt-0">
+                <a href="#" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Privacy Policy</a>
+                <a href="#" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Terms of Service</a>
+                <Link to="/login" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Client Login</Link>
+              </div>
+            </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+      </div>
+    </>
   );
 }
