@@ -43,11 +43,21 @@ async function bootstrap() {
   logger.log(`🔧 CORS Configuration: ${origins.length} origins configured`);
   logger.log(`🔧 Environment: ${isProd ? 'production' : 'development'}`);
 
-  // Apply custom CORS middleware FIRST - before any other middleware
+  // Enable built-in CORS with proper configuration
+  app.enableCors({
+    origin: origins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  });
+
+  // Apply custom CORS middleware as backup
   const corsMiddleware = new CorsMiddleware();
   app.use(corsMiddleware.use.bind(corsMiddleware));
 
-  logger.log('✅ Custom CORS middleware applied for GitHub Pages and localhost development');
+  logger.log('✅ CORS enabled with built-in and custom middleware for GitHub Pages and localhost development');
 
   // Security headers
   app.use(helmet({ contentSecurityPolicy: isProd }));
