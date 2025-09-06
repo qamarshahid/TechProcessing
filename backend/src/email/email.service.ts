@@ -82,7 +82,7 @@ export class EmailService {
     }
   }
 
-  async sendEmail(data: { to: string; subject: string; html: string; text?: string; template?: string }): Promise<{ success: boolean; message: string }> {
+  async sendEmail(data: { to: string; subject: string; html: string; text?: string; template?: string; context?: any }): Promise<{ success: boolean; message: string }> {
     try {
       const mailOptions = {
         from: this.configService.get<string>('EMAIL_USER', 'support@techprocessingllc.com'),
