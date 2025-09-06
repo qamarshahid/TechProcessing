@@ -73,6 +73,7 @@ export const searchAddresses = async (query: string): Promise<AddressSuggestion[
         'Content-Type': 'application/json',
       },
       mode: 'cors', // Explicitly set CORS mode
+      cache: 'no-cache', // Force fresh request
     });
 
     if (!response.ok) {
