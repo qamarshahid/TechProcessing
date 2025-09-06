@@ -15,10 +15,10 @@ export function AdminDashboard() {
   const { showSuccess, showError } = useNotifications();
   
   const [dashboardData, setDashboardData] = useState({
-    users: [],
-    invoices: [],
-    payments: [],
-    agents: [],
+    users: [] as any[],
+    invoices: [] as any[],
+    payments: [] as any[],
+    agents: [] as any[],
     stats: {
       totalUsers: 0,
       totalAgents: 0,
@@ -153,7 +153,7 @@ export function AdminDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
           <div className="animate-pulse space-y-8">
             {/* Header skeleton */}
             <div className="text-center">
@@ -182,13 +182,13 @@ export function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Welcome Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-semibold text-slate-900 dark:text-white mb-1">
-                Welcome back, {user?.fullName || user?.full_name || 'Admin'}
+              <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-white mb-1">
+                Welcome back, {user?.fullName || 'Admin'}
               </h1>
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 Platform overview and management dashboard
@@ -202,24 +202,24 @@ export function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-3 mb-8">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6 sm:mb-8">
           <button
             onClick={() => setShowAddClientModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+            className="inline-flex items-center justify-center px-4 py-3 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 touch-manipulation"
           >
             <UserPlus className="h-4 w-4 mr-2" />
             Add Client
           </button>
           <button
             onClick={() => setShowAddInvoiceModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+            className="inline-flex items-center justify-center px-4 py-3 sm:py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 touch-manipulation"
           >
             <FileText className="h-4 w-4 mr-2" />
             Create Invoice
           </button>
           <button
             onClick={fetchDashboardData}
-            className="inline-flex items-center px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+            className="inline-flex items-center justify-center px-4 py-3 sm:py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 touch-manipulation"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -227,9 +227,9 @@ export function AdminDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Total Users */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center mb-1">
@@ -249,7 +249,7 @@ export function AdminDashboard() {
           </div>
 
           {/* Total Revenue */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center mb-1">
@@ -269,7 +269,7 @@ export function AdminDashboard() {
           </div>
 
           {/* Total Invoices */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center mb-1">
@@ -289,7 +289,7 @@ export function AdminDashboard() {
           </div>
 
           {/* Active Agents */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center mb-1">
@@ -310,8 +310,8 @@ export function AdminDashboard() {
         </div>
 
         {/* Detailed Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
@@ -335,7 +335,7 @@ export function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
@@ -359,7 +359,7 @@ export function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
