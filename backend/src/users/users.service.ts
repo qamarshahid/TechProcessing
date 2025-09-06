@@ -36,6 +36,7 @@ export class UsersService {
       fullName: createUserDto.fullName,
       role: createUserDto.role || UserRole.CLIENT,
       companyName: createUserDto.companyName,
+      phoneNumber: createUserDto.phoneNumber,
       address: createUserDto.address,
       communicationDetails: createUserDto.communicationDetails,
     });

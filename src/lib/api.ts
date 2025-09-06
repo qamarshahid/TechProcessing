@@ -66,12 +66,26 @@ class ApiClient {
     return response;
   }
 
-  async register(email: string, password: string, fullName: string, role: string) {
+  async register(registrationData: {
+    email: string;
+    password: string;
+    fullName: string;
+    role: string;
+    companyName?: string;
+    phoneNumber?: string;
+    address?: {
+      street: string;
+      city: string;
+      state: string;
+      postalCode: string;
+      country: string;
+    };
+  }) {
     const response = await this.request('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ email, password, fullName, role }),
+      body: JSON.stringify(registrationData),
     });
-    this.setToken(response.access_token);
+    // Don't set token immediately as registration now requires email verification
     return response;
   }
 

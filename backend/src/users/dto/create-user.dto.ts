@@ -71,6 +71,11 @@ export class CreateUserDto {
   @IsString()
   companyName?: string;
 
+  @ApiProperty({ example: '+1-555-123-4567', required: false })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
   @ApiProperty({ type: AddressDto, required: false })
   @IsOptional()
   @ValidateNested()

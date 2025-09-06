@@ -20,7 +20,8 @@ import {
   Brain,
   ShieldCheck,
   Smartphone,
-  Key
+  Key,
+  MapPin
 } from 'lucide-react';
 import { MfaVerification } from './auth/MfaVerification';
 import { EmailVerification } from './auth/EmailVerification';
@@ -32,6 +33,15 @@ export function LoginForm() {
   const [password, setPassword] = useState('');
   const [showRegister, setShowRegister] = useState(false);
   const [fullName, setFullName] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [address, setAddress] = useState({
+    street: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'United States'
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -57,7 +67,31 @@ export function LoginForm() {
           return;
         }
         
-        const response = await signUp(email, password, fullName, 'CLIENT');
+        if (!companyName.trim()) {
+          setError('Company name is required');
+          showError('Registration Error', 'Company name is required');
+          setLoading(false);
+          return;
+        }
+        
+        if (!phoneNumber.trim()) {
+          setError('Phone number is required');
+          showError('Registration Error', 'Phone number is required');
+          setLoading(false);
+          return;
+        }
+        
+        const registrationData = {
+          email,
+          password,
+          fullName,
+          role: 'CLIENT',
+          companyName,
+          phoneNumber,
+          address
+        };
+        
+        const response = await signUp(registrationData);
         setRegistrationEmail(email);
         setShowEmailVerification(true);
         showSuccess('Registration Successful', 'Please check your email to verify your account.');
@@ -289,6 +323,174 @@ export function LoginForm() {
                         className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
                         placeholder="Enter your full name"
                       />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Company Name Field (only for registration) */}
+              <AnimatePresence>
+                {showRegister && (
+                  <motion.div
+                    className="space-y-2"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                  >
+                    <label htmlFor="companyName" className="block text-sm font-bold text-slate-300">
+                      Company Name *
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <Globe className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                      </div>
+                      <input
+                        id="companyName"
+                        name="companyName"
+                        type="text"
+                        required={showRegister}
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                        className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                        placeholder="Enter your company name"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Phone Number Field (only for registration) */}
+              <AnimatePresence>
+                {showRegister && (
+                  <motion.div
+                    className="space-y-2"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                  >
+                    <label htmlFor="phoneNumber" className="block text-sm font-bold text-slate-300">
+                      Phone Number *
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <MessageSquare className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                      </div>
+                      <input
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        type="tel"
+                        required={showRegister}
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                        placeholder="Enter your phone number"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Address Fields (only for registration) */}
+              <AnimatePresence>
+                {showRegister && (
+                  <motion.div
+                    className="space-y-4"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, delay: 0.3 }}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="h-5 w-5 text-emerald-400" />
+                      <h3 className="text-lg font-semibold text-white">Address Information</h3>
+                    </div>
+                    
+                    {/* Street Address */}
+                    <div className="space-y-2">
+                      <label htmlFor="street" className="block text-sm font-bold text-slate-300">
+                        Street Address
+                      </label>
+                      <input
+                        id="street"
+                        name="street"
+                        type="text"
+                        value={address.street}
+                        onChange={(e) => setAddress({...address, street: e.target.value})}
+                        className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                        placeholder="Enter street address"
+                      />
+                    </div>
+
+                    {/* City and State */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label htmlFor="city" className="block text-sm font-bold text-slate-300">
+                          City
+                        </label>
+                        <input
+                          id="city"
+                          name="city"
+                          type="text"
+                          value={address.city}
+                          onChange={(e) => setAddress({...address, city: e.target.value})}
+                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                          placeholder="Enter city"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor="state" className="block text-sm font-bold text-slate-300">
+                          State
+                        </label>
+                        <input
+                          id="state"
+                          name="state"
+                          type="text"
+                          value={address.state}
+                          onChange={(e) => setAddress({...address, state: e.target.value})}
+                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                          placeholder="Enter state"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Postal Code and Country */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label htmlFor="postalCode" className="block text-sm font-bold text-slate-300">
+                          Postal Code
+                        </label>
+                        <input
+                          id="postalCode"
+                          name="postalCode"
+                          type="text"
+                          value={address.postalCode}
+                          onChange={(e) => setAddress({...address, postalCode: e.target.value})}
+                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                          placeholder="Enter postal code"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor="country" className="block text-sm font-bold text-slate-300">
+                          Country
+                        </label>
+                        <select
+                          id="country"
+                          name="country"
+                          value={address.country}
+                          onChange={(e) => setAddress({...address, country: e.target.value})}
+                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                        >
+                          <option value="United States">United States</option>
+                          <option value="Canada">Canada</option>
+                          <option value="United Kingdom">United Kingdom</option>
+                          <option value="Australia">Australia</option>
+                          <option value="Germany">Germany</option>
+                          <option value="France">France</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
                     </div>
                   </motion.div>
                 )}

@@ -73,9 +73,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, fullName: string, role: 'ADMIN' | 'CLIENT' | 'AGENT') => {
+  const signUp = async (registrationData: {
+    email: string;
+    password: string;
+    fullName: string;
+    role: 'ADMIN' | 'CLIENT' | 'AGENT';
+    companyName?: string;
+    phoneNumber?: string;
+    address?: {
+      street: string;
+      city: string;
+      state: string;
+      postalCode: string;
+      country: string;
+    };
+  }) => {
     try {
-      const response = await apiClient.register(email, password, fullName, role);
+      const response = await apiClient.register(registrationData);
       
       // Registration now requires email verification, so don't set token immediately
       return response;

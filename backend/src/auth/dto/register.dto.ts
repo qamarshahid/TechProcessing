@@ -1,6 +1,34 @@
-import { IsEmail, IsString, MinLength, IsEnum, IsOptional } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsEnum, IsOptional, ValidateNested, IsPhoneNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { UserRole } from '../../common/enums/user-role.enum';
+
+class AddressDto {
+  @ApiProperty({ example: '123 Main Street', required: false })
+  @IsString()
+  @IsOptional()
+  street?: string;
+
+  @ApiProperty({ example: 'New York', required: false })
+  @IsString()
+  @IsOptional()
+  city?: string;
+
+  @ApiProperty({ example: 'NY', required: false })
+  @IsString()
+  @IsOptional()
+  state?: string;
+
+  @ApiProperty({ example: '10001', required: false })
+  @IsString()
+  @IsOptional()
+  postalCode?: string;
+
+  @ApiProperty({ example: 'United States', required: false })
+  @IsString()
+  @IsOptional()
+  country?: string;
+}
 
 export class RegisterDto {
   @ApiProperty({ example: 'john.doe@example.com' })
@@ -9,7 +37,7 @@ export class RegisterDto {
 
   @ApiProperty({ example: 'securePassword123' })
   @IsString()
-  @MinLength(6)
+  @MinLength(8)
   password: string;
 
   @ApiProperty({ example: 'John Doe' })
@@ -21,4 +49,20 @@ export class RegisterDto {
   @IsEnum(UserRole)
   @IsOptional()
   role?: UserRole = UserRole.CLIENT;
+
+  @ApiProperty({ example: 'Acme Corporation', required: false })
+  @IsString()
+  @IsOptional()
+  companyName?: string;
+
+  @ApiProperty({ example: '+1-555-123-4567', required: false })
+  @IsString()
+  @IsOptional()
+  phoneNumber?: string;
+
+  @ApiProperty({ type: AddressDto, required: false })
+  @ValidateNested()
+  @Type(() => AddressDto)
+  @IsOptional()
+  address?: AddressDto;
 }
