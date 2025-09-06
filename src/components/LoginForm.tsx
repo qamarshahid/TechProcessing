@@ -18,8 +18,13 @@ import {
   Globe,
   ArrowLeft,
   Brain,
-  ShieldCheck
+  ShieldCheck,
+  Smartphone,
+  Key
 } from 'lucide-react';
+import { MfaVerification } from './auth/MfaVerification';
+import { EmailVerification } from './auth/EmailVerification';
+import { PasswordReset } from './auth/PasswordReset';
 
 export function LoginForm() {
   const { showSuccess, showError } = useNotifications();
@@ -30,6 +35,11 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mfaRequired, setMfaRequired] = useState(false);
+  const [mfaData, setMfaData] = useState<any>(null);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [registrationEmail, setRegistrationEmail] = useState('');
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -46,17 +56,34 @@ export function LoginForm() {
           setLoading(false);
           return;
         }
-        await signUp(email, password, fullName, 'CLIENT');
-        showSuccess('Registration Successful', 'Account created successfully! Welcome to Tech Processing.');
+        
+        const response = await signUp(email, password, fullName, 'CLIENT');
+        setRegistrationEmail(email);
+        setShowEmailVerification(true);
+        showSuccess('Registration Successful', 'Please check your email to verify your account.');
       } else {
-        await signIn(email, password);
-        showSuccess('Login Successful', 'Welcome back!');
+        const response = await signIn(email, password);
+        
+        // Check if MFA is required
+        if (response.requires_mfa) {
+          setMfaData(response);
+          setMfaRequired(true);
+        } else {
+          showSuccess('Login Successful', 'Welcome back!');
+          navigate('/dashboard');
+        }
       }
-      navigate('/dashboard');
     } catch (err: any) {
       // Enhanced error handling for login/register
       if (err instanceof Error && err.message) {
         setError(err.message);
+        
+        // Handle specific error cases
+        if (err.message.includes('verify your email')) {
+          setShowEmailVerification(true);
+          setRegistrationEmail(email);
+        }
+        
         showError(showRegister ? 'Registration Failed' : 'Login Failed', err.message);
       } else {
         const errorMessage = showRegister ? 'Registration failed. Please try again.' : 'Invalid email or password';
@@ -66,6 +93,23 @@ export function LoginForm() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleMfaSuccess = (token: string, user: any) => {
+    localStorage.setItem('auth_token', token);
+    showSuccess('Login Successful', 'Welcome back!');
+    navigate('/dashboard');
+  };
+
+  const handleEmailVerified = () => {
+    setShowEmailVerification(false);
+    showSuccess('Email Verified', 'Your email has been verified successfully!');
+    navigate('/login');
+  };
+
+  const handlePasswordResetSuccess = () => {
+    setShowPasswordReset(false);
+    showSuccess('Password Reset', 'Your password has been reset successfully!');
   };
 
   return (
@@ -318,9 +362,13 @@ export function LoginForm() {
                     Remember me
                   </label>
                 </div>
-                <a href="#" className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors">
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordReset(true)}
+                  className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
+                >
                   Forgot password?
-                </a>
+                </button>
               </div>
 
               {/* Sign In Button */}
@@ -377,6 +425,38 @@ export function LoginForm() {
           </div>
         </motion.div>
       </div>
+
+      {/* MFA Verification Modal */}
+      {mfaRequired && mfaData && (
+        <MfaVerification
+          mfaMethod={mfaData.mfa_method}
+          tempToken={mfaData.temp_token}
+          onSuccess={handleMfaSuccess}
+          onBack={() => setMfaRequired(false)}
+          onCancel={() => {
+            setMfaRequired(false);
+            setMfaData(null);
+          }}
+        />
+      )}
+
+      {/* Email Verification Modal */}
+      {showEmailVerification && (
+        <EmailVerification
+          email={registrationEmail}
+          onVerified={handleEmailVerified}
+          onResend={() => {}}
+          onCancel={() => setShowEmailVerification(false)}
+        />
+      )}
+
+      {/* Password Reset Modal */}
+      {showPasswordReset && (
+        <PasswordReset
+          onSuccess={handlePasswordResetSuccess}
+          onCancel={() => setShowPasswordReset(false)}
+        />
+      )}
     </div>
   );
 }

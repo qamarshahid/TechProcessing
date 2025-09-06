@@ -57,7 +57,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       const response = await apiClient.login(email, password);
+      
+      // If MFA is required, return the response without setting token
+      if (response.requires_mfa) {
+        return response;
+      }
+      
+      // Normal login flow
       apiClient.setToken(response.access_token);
+      localStorage.setItem('auth_token', response.access_token);
       setUser(response.user as User);
       return response;
     } catch (error) {
@@ -68,8 +76,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, fullName: string, role: 'ADMIN' | 'CLIENT' | 'AGENT') => {
     try {
       const response = await apiClient.register(email, password, fullName, role);
-      apiClient.setToken(response.access_token);
-      setUser(response.user as User);
+      
+      // Registration now requires email verification, so don't set token immediately
       return response;
     } catch (error) {
       throw error;
