@@ -53,6 +53,8 @@ backend/.env.*
 *.cer
 secrets/
 .secrets/
+service-account-key.json
+backend/service-account-key.json
 
 # Test results and coverage
 test-results/

@@ -59,18 +59,36 @@ export const searchAddresses = async (query: string): Promise<AddressSuggestion[
     return [];
   }
 
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
+  try {
+    // Call our secure backend endpoint instead of Google directly
+    const response = await fetch(`/api/address/search?q=${encodeURIComponent(query)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  // Filter mock addresses based on query
-  const filtered = mockAddresses.filter(addr => 
-    addr.formatted.toLowerCase().includes(query.toLowerCase()) ||
-    addr.street.toLowerCase().includes(query.toLowerCase()) ||
-    addr.city.toLowerCase().includes(query.toLowerCase()) ||
-    addr.state.toLowerCase().includes(query.toLowerCase())
-  );
+    if (!response.ok) {
+      throw new Error(`Backend API error: ${response.status}`);
+    }
 
-  return filtered.slice(0, 5); // Return max 5 suggestions
+    const suggestions = await response.json();
+    return suggestions;
+  } catch (error) {
+    console.log('Backend address search failed, using mock data:', error);
+    
+    // Fallback to mock data if backend is unavailable
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const filtered = mockAddresses.filter(addr => 
+      addr.formatted.toLowerCase().includes(query.toLowerCase()) ||
+      addr.street.toLowerCase().includes(query.toLowerCase()) ||
+      addr.city.toLowerCase().includes(query.toLowerCase()) ||
+      addr.state.toLowerCase().includes(query.toLowerCase())
+    );
+
+    return filtered.slice(0, 5);
+  }
 };
 
 // For production, replace with actual API calls:

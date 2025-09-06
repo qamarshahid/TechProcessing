@@ -43,7 +43,7 @@ export class EmailService {
       },
     };
 
-    this.transporter = nodemailer.createTransporter(emailConfig);
+    this.transporter = nodemailer.createTransport(emailConfig);
     
     // Verify connection configuration
     this.transporter.verify((error, success) => {
@@ -80,6 +80,30 @@ export class EmailService {
         message: 'Sorry, there was an error sending your message. Please try again or call us directly at (727) 201-2658.'
       };
     }
+  }
+
+  async sendEmail(to: string, subject: string, html: string, text?: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const mailOptions = {
+        from: this.configService.get<string>('EMAIL_USER', 'support@techprocessingllc.com'),
+        to,
+        subject,
+        html,
+        text: text || html.replace(/<[^>]*>/g, ''), // Strip HTML tags for text version
+      };
+
+      await this.transporter.sendMail(mailOptions);
+      this.logger.log(`Email sent successfully to ${to}`);
+      return { success: true, message: 'Email sent successfully' };
+    } catch (error) {
+      this.logger.error('Failed to send email:', error);
+      return { success: false, message: 'Failed to send email' };
+    }
+  }
+
+  // Overloaded method for auth service compatibility
+  async sendEmail(data: { to: string; subject: string; html: string; text?: string }): Promise<{ success: boolean; message: string }> {
+    return this.sendEmail(data.to, data.subject, data.html, data.text);
   }
 
   async sendAppointmentRequest(data: AppointmentData): Promise<{ success: boolean; message: string }> {

@@ -14,6 +14,7 @@ import { HealthModule } from './health/health.module';
 import { SystemModule } from './system/system.module';
 import { DatabaseModule } from './database/database.module';
 import { EmailModule } from './email/email.module';
+import { AddressModule } from './address/address.module';
 
 // Determine whether to skip database initialization (useful for tests)
 const skipDb = process.env.SKIP_DB === 'true' || process.env.NODE_ENV === 'test';
@@ -47,6 +48,8 @@ const validationSchema = Joi.object({
   EMAIL_USER: Joi.string().required(),
   EMAIL_PASS: Joi.string().required(),
   EMAIL_RECIPIENT: Joi.string().email().required(),
+  GOOGLE_PLACES_API_KEY: Joi.string().optional(),
+  GCP_PROJECT_ID: Joi.string().optional(),
   SKIP_DB: Joi.boolean().truthy('true').falsy('false').default(skipDb),
 });
 
@@ -76,6 +79,7 @@ if (skipDb) {
     DatabaseModule,
     ...baseImports,
     EmailModule,
+    AddressModule,
     AuthModule,
     UsersModule,
     AuditModule,

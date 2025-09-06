@@ -192,9 +192,6 @@ export class UsersService {
     }
   }
 
-  async updateLastLogin(id: string): Promise<void> {
-    await this.usersRepository.update(id, { lastLogin: new Date() });
-  }
 
   async getStats(): Promise<any> {
     const totalUsers = await this.usersRepository.count();

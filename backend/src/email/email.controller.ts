@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, ThrottlerGuard } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { EmailService, ContactFormData, AppointmentData } from './email.service';
 import { IsString, IsEmail, IsOptional, IsBoolean, MinLength, MaxLength } from 'class-validator';
