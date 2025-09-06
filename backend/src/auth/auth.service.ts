@@ -1,11 +1,16 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { VerifyEmailDto, ResendVerificationDto } from './dto/verify-email.dto';
+import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
+import { VerifyMfaDto } from './dto/mfa.dto';
 import { AuditService } from '../audit/audit.service';
 import { SessionTrackingService } from '../common/services/session-tracking.service';
+import { MfaService } from './mfa.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +19,8 @@ export class AuthService {
     private jwtService: JwtService,
     private auditService: AuditService,
     private sessionTrackingService: SessionTrackingService,
+    private mfaService: MfaService,
+    private emailService: EmailService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -24,11 +31,26 @@ export class AuthService {
         throw new UnauthorizedException('Account is deactivated');
       }
 
+      if (user.isAccountLocked()) {
+        throw new UnauthorizedException('Account is temporarily locked due to too many failed login attempts');
+      }
+
       if (await user.validatePassword(password)) {
+        // Reset failed login attempts on successful login
+        user.resetFailedLoginAttempts();
+        await this.usersService.save(user);
+        
         const { password, ...result } = user;
         return result;
+      } else {
+        // Increment failed login attempts
+        user.incrementFailedLoginAttempts();
+        await this.usersService.save(user);
       }
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       return null;
     }
     return null;
@@ -41,14 +63,13 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { 
-      email: user.email, 
-      sub: user.id, 
-      role: user.role 
-    };
+    // Check if email is verified
+    if (!user.isEmailVerified) {
+      throw new UnauthorizedException('Please verify your email address before logging in');
+    }
 
     // Update last login
-    await this.usersService.updateLastLogin(user.id);
+    await this.usersService.updateLastLogin(user.id, ipAddress);
 
     // Audit log with IP and User Agent
     await this.auditService.log({
@@ -65,7 +86,38 @@ export class AuthService {
       userAgent,
     });
 
-    // Generate JWT token
+    // Check if MFA is enabled
+    if (user.mfaEnabled) {
+      // Return temporary token for MFA verification
+      const tempPayload = { 
+        email: user.email, 
+        sub: user.id, 
+        role: user.role,
+        mfaRequired: true,
+        temp: true
+      };
+      
+      const tempToken = this.jwtService.sign(tempPayload, { expiresIn: '5m' });
+      
+      return {
+        requires_mfa: true,
+        temp_token: tempToken,
+        mfa_method: user.twoFactorMethod,
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.fullName,
+          role: user.role,
+        },
+      };
+    }
+
+    // Generate full JWT token
+    const payload = { 
+      email: user.email, 
+      sub: user.id, 
+      role: user.role 
+    };
     const accessToken = this.jwtService.sign(payload);
     
     // Track active session
@@ -85,6 +137,8 @@ export class AuthService {
         email: user.email,
         fullName: user.fullName,
         role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        mfaEnabled: user.mfaEnabled,
       },
     };
   }
@@ -93,11 +147,21 @@ export class AuthService {
     try {
       const user = await this.usersService.create(registerDto);
       
-      const payload = { 
-        email: user.email, 
-        sub: user.id, 
-        role: user.role 
-      };
+      // Generate email verification token
+      const verificationToken = user.generateEmailVerificationToken();
+      await this.usersService.save(user);
+
+      // Send verification email
+      await this.emailService.sendEmail({
+        to: user.email,
+        subject: 'Verify Your TechProcessing Account',
+        template: 'email-verification',
+        context: {
+          name: user.fullName,
+          verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`,
+          company: 'TechProcessing LLC',
+        },
+      });
 
       // Audit log with IP and User Agent
       await this.auditService.log({
@@ -116,12 +180,13 @@ export class AuthService {
       });
 
       return {
-        access_token: this.jwtService.sign(payload),
+        message: 'Registration successful. Please check your email to verify your account.',
         user: {
           id: user.id,
           email: user.email,
           fullName: user.fullName,
           role: user.role,
+          isEmailVerified: user.isEmailVerified,
         },
       };
     } catch (error) {
@@ -136,5 +201,199 @@ export class AuthService {
     const user = await this.usersService.findOne(userId);
     const { password, ...profile } = user;
     return profile;
+  }
+
+  // Email verification methods
+  async verifyEmail(verifyEmailDto: VerifyEmailDto) {
+    const user = await this.usersService.findByEmailVerificationToken(verifyEmailDto.token);
+    
+    if (!user) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
+    if (user.emailVerificationExpires < new Date()) {
+      throw new BadRequestException('Verification token has expired');
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    
+    await this.usersService.save(user);
+
+    await this.auditService.log({
+      action: 'EMAIL_VERIFIED',
+      entityType: 'User',
+      entityId: user.id,
+      details: { email: user.email },
+      user: user,
+    });
+
+    return { message: 'Email verified successfully' };
+  }
+
+  async resendVerificationEmail(resendDto: ResendVerificationDto) {
+    const user = await this.usersService.findByEmail(resendDto.email);
+    
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (user.isEmailVerified) {
+      throw new BadRequestException('Email is already verified');
+    }
+
+    const verificationToken = user.generateEmailVerificationToken();
+    await this.usersService.save(user);
+
+    await this.emailService.sendEmail({
+      to: user.email,
+      subject: 'Verify Your TechProcessing Account',
+      template: 'email-verification',
+      context: {
+        name: user.fullName,
+        verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`,
+        company: 'TechProcessing LLC',
+      },
+    });
+
+    return { message: 'Verification email sent' };
+  }
+
+  // Password reset methods
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const user = await this.usersService.findByEmail(forgotPasswordDto.email);
+    
+    if (!user) {
+      // Don't reveal if user exists or not
+      return { message: 'If the email exists, a password reset link has been sent' };
+    }
+
+    const resetToken = user.generatePasswordResetToken();
+    await this.usersService.save(user);
+
+    await this.emailService.sendEmail({
+      to: user.email,
+      subject: 'Reset Your TechProcessing Password',
+      template: 'password-reset',
+      context: {
+        name: user.fullName,
+        resetUrl: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`,
+        company: 'TechProcessing LLC',
+      },
+    });
+
+    await this.auditService.log({
+      action: 'PASSWORD_RESET_REQUESTED',
+      entityType: 'User',
+      entityId: user.id,
+      details: { email: user.email },
+      user: user,
+    });
+
+    return { message: 'If the email exists, a password reset link has been sent' };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const user = await this.usersService.findByPasswordResetToken(resetPasswordDto.token);
+    
+    if (!user) {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+
+    if (user.passwordResetExpires < new Date()) {
+      throw new BadRequestException('Reset token has expired');
+    }
+
+    user.password = resetPasswordDto.newPassword;
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    user.resetFailedLoginAttempts();
+    
+    await this.usersService.save(user);
+
+    await this.auditService.log({
+      action: 'PASSWORD_RESET',
+      entityType: 'User',
+      entityId: user.id,
+      details: { email: user.email },
+      user: user,
+    });
+
+    return { message: 'Password reset successfully' };
+  }
+
+  // MFA verification for login
+  async verifyMfaAndLogin(verifyMfaDto: VerifyMfaDto, tempToken: string, ipAddress?: string, userAgent?: string) {
+    try {
+      const payload = this.jwtService.verify(tempToken);
+      
+      if (!payload.temp || !payload.mfaRequired) {
+        throw new UnauthorizedException('Invalid temporary token');
+      }
+
+      const user = await this.usersService.findOne(payload.sub);
+      
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      // Verify MFA token
+      const isValid = await this.mfaService.verifyMfaToken(user.id, verifyMfaDto.token);
+      
+      if (!isValid) {
+        throw new UnauthorizedException('Invalid MFA token');
+      }
+
+      // Generate full JWT token
+      const fullPayload = { 
+        email: user.email, 
+        sub: user.id, 
+        role: user.role 
+      };
+      const accessToken = this.jwtService.sign(fullPayload);
+      
+      // Track active session
+      const sessionId = `${user.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      this.sessionTrackingService.addSession(sessionId, {
+        id: user.id,
+        role: user.role,
+        email: user.email,
+        fullName: user.fullName,
+      }, ipAddress || 'Unknown', userAgent || 'Unknown');
+
+      await this.auditService.log({
+        action: 'MFA_VERIFIED',
+        entityType: 'User',
+        entityId: user.id,
+        details: { 
+          email: user.email,
+          mfaMethod: user.twoFactorMethod,
+          ipAddress,
+          userAgent,
+        },
+        user: user,
+        ipAddress,
+        userAgent,
+      });
+
+      return {
+        access_token: accessToken,
+        session_id: sessionId,
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.fullName,
+          role: user.role,
+          isEmailVerified: user.isEmailVerified,
+          mfaEnabled: user.mfaEnabled,
+        },
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException('Invalid MFA verification');
+    }
   }
 }

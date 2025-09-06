@@ -298,4 +298,27 @@ export class UsersService {
 
     return savedUser;
   }
+
+  async updateLastLogin(userId: string, ipAddress?: string): Promise<void> {
+    await this.usersRepository.update(userId, {
+      lastLogin: new Date(),
+      lastLoginIp: ipAddress,
+    });
+  }
+
+  async findByEmailVerificationToken(token: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { emailVerificationToken: token },
+    });
+  }
+
+  async findByPasswordResetToken(token: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { passwordResetToken: token },
+    });
+  }
+
+  async save(user: User): Promise<User> {
+    return this.usersRepository.save(user);
+  }
 }
