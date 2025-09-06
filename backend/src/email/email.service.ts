@@ -82,14 +82,14 @@ export class EmailService {
     }
   }
 
-  async sendEmail(data: { to: string; subject: string; html: string; text?: string; template?: string; context?: any }): Promise<{ success: boolean; message: string }> {
+  async sendEmail(data: { to: string; subject: string; html?: string; text?: string; template?: string; context?: any }): Promise<{ success: boolean; message: string }> {
     try {
       const mailOptions = {
         from: this.configService.get<string>('EMAIL_USER', 'support@techprocessingllc.com'),
         to: data.to,
         subject: data.subject,
-        html: data.html,
-        text: data.text || data.html.replace(/<[^>]*>/g, ''), // Strip HTML tags for text version
+        html: data.html || 'Email content not provided',
+        text: data.text || (data.html ? data.html.replace(/<[^>]*>/g, '') : 'Email content not provided'), // Strip HTML tags for text version
       };
 
       await this.transporter.sendMail(mailOptions);
