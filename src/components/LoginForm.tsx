@@ -21,7 +21,8 @@ import {
   ShieldCheck,
   Smartphone,
   Key,
-  MapPin
+  MapPin,
+  MessageSquare
 } from 'lucide-react';
 import { MfaVerification } from './auth/MfaVerification';
 import { EmailVerification } from './auth/EmailVerification';
