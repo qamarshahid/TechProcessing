@@ -60,8 +60,14 @@ export const searchAddresses = async (query: string): Promise<AddressSuggestion[
   }
 
   try {
+    // Use the same base URL logic as the API client
+    const baseURL = import.meta.env.VITE_API_URL || 
+      (window.location.hostname === 'qamarshahid.github.io' 
+        ? 'https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api'
+        : 'http://localhost:8081/api');
+    
     // Call our secure backend endpoint instead of Google directly
-    const response = await fetch(`/api/address/search?q=${encodeURIComponent(query)}`, {
+    const response = await fetch(`${baseURL}/address/search?q=${encodeURIComponent(query)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
