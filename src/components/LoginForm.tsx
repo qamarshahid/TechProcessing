@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { useNotifications } from './common/NotificationSystem';
@@ -27,6 +27,7 @@ import {
 import { MfaVerification } from './auth/MfaVerification';
 import { EmailVerification } from './auth/EmailVerification';
 import { PasswordReset } from './auth/PasswordReset';
+import { searchAddresses, AddressSuggestion } from '../lib/addressService';
 
 export function LoginForm() {
   const { showSuccess, showError } = useNotifications();
@@ -43,6 +44,10 @@ export function LoginForm() {
     postalCode: '',
     country: 'United States'
   });
+  const [addressSearch, setAddressSearch] = useState('');
+  const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const addressSearchRef = useRef<HTMLDivElement>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -146,6 +151,56 @@ export function LoginForm() {
     setShowPasswordReset(false);
     showSuccess('Password Reset', 'Your password has been reset successfully!');
   };
+
+  // Address autocomplete functionality
+  const searchAddress = async (query: string) => {
+    if (query.length < 2) {
+      setAddressSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    try {
+      const suggestions = await searchAddresses(query);
+      setAddressSuggestions(suggestions);
+      setShowSuggestions(suggestions.length > 0);
+    } catch (error) {
+      console.log('Address search error:', error);
+      setAddressSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const selectAddress = (suggestion: AddressSuggestion) => {
+    setAddress({
+      street: suggestion.street,
+      city: suggestion.city,
+      state: suggestion.state,
+      postalCode: suggestion.postalCode,
+      country: suggestion.country
+    });
+    setAddressSearch(suggestion.formatted);
+    setShowSuggestions(false);
+  };
+
+  const handleAddressSearchChange = (value: string) => {
+    setAddressSearch(value);
+    searchAddress(value);
+  };
+
+  // Handle click outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (addressSearchRef.current && !addressSearchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
@@ -408,6 +463,49 @@ export function LoginForm() {
                       <h3 className="text-lg font-semibold text-white">Address Information</h3>
                     </div>
                     
+                    {/* Address Search with Autocomplete */}
+                    <div className="space-y-2">
+                      <label htmlFor="addressSearch" className="block text-sm font-bold text-slate-300">
+                        Search Address
+                      </label>
+                      <div className="relative" ref={addressSearchRef}>
+                        <input
+                          id="addressSearch"
+                          name="addressSearch"
+                          type="text"
+                          value={addressSearch}
+                          onChange={(e) => handleAddressSearchChange(e.target.value)}
+                          onFocus={() => setShowSuggestions(addressSuggestions.length > 0)}
+                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                          placeholder="Start typing your address..."
+                        />
+                        
+                        {/* Address Suggestions Dropdown */}
+                        {showSuggestions && addressSuggestions.length > 0 && (
+                          <div className="absolute z-10 w-full mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                            {addressSuggestions.map((suggestion, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                onClick={() => selectAddress(suggestion)}
+                                className="w-full px-4 py-3 text-left text-white hover:bg-slate-700 transition-colors border-b border-slate-700 last:border-b-0"
+                              >
+                                <div className="font-medium">{suggestion.formatted}</div>
+                                <div className="text-sm text-gray-400">
+                                  {suggestion.city}, {suggestion.state} {suggestion.postalCode}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="text-xs text-gray-400 flex items-center space-x-1">
+                        <MapPin className="h-3 w-3" />
+                        <span>Or fill in the fields below manually</span>
+                      </div>
+                    </div>
+
                     {/* Street Address */}
                     <div className="space-y-2">
                       <label htmlFor="street" className="block text-sm font-bold text-slate-300">
