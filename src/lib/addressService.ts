@@ -66,12 +66,13 @@ export const searchAddresses = async (query: string): Promise<AddressSuggestion[
         ? 'https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api'
         : 'http://localhost:8081/api');
     
-    // Call our secure backend endpoint instead of Google directly
+    // Call our secure backend endpoint with proper CORS handling
     const response = await fetch(`${baseURL}/address/search?q=${encodeURIComponent(query)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
+      mode: 'cors', // Explicitly set CORS mode
     });
 
     if (!response.ok) {
