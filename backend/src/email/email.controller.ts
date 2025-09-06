@@ -69,7 +69,7 @@ export class AppointmentDto {
 
 @ApiTags('Email')
 @Controller('email')
-@UseGuards(ThrottlerGuard) // Rate limiting
+  // @UseGuards(ThrottlerGuard) // Rate limiting - commented out until throttler is properly configured
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}
 

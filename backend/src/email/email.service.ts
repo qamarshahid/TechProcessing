@@ -82,28 +82,23 @@ export class EmailService {
     }
   }
 
-  async sendEmail(to: string, subject: string, html: string, text?: string): Promise<{ success: boolean; message: string }> {
+  async sendEmail(data: { to: string; subject: string; html: string; text?: string }): Promise<{ success: boolean; message: string }> {
     try {
       const mailOptions = {
         from: this.configService.get<string>('EMAIL_USER', 'support@techprocessingllc.com'),
-        to,
-        subject,
-        html,
-        text: text || html.replace(/<[^>]*>/g, ''), // Strip HTML tags for text version
+        to: data.to,
+        subject: data.subject,
+        html: data.html,
+        text: data.text || data.html.replace(/<[^>]*>/g, ''), // Strip HTML tags for text version
       };
 
       await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Email sent successfully to ${to}`);
+      this.logger.log(`Email sent successfully to ${data.to}`);
       return { success: true, message: 'Email sent successfully' };
     } catch (error) {
       this.logger.error('Failed to send email:', error);
       return { success: false, message: 'Failed to send email' };
     }
-  }
-
-  // Overloaded method for auth service compatibility
-  async sendEmail(data: { to: string; subject: string; html: string; text?: string }): Promise<{ success: boolean; message: string }> {
-    return this.sendEmail(data.to, data.subject, data.html, data.text);
   }
 
   async sendAppointmentRequest(data: AppointmentData): Promise<{ success: boolean; message: string }> {
