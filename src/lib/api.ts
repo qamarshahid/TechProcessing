@@ -69,7 +69,9 @@ class ApiClient {
   async register(registrationData: {
     email: string;
     password: string;
-    fullName: string;
+    firstName: string;
+    middleName?: string;
+    lastName: string;
     role: string;
     companyName?: string;
     phoneNumber?: string;
@@ -95,6 +97,20 @@ class ApiClient {
 
   async getProfile() {
     return this.request('/auth/profile');
+  }
+
+  async verifyEmailCode(email: string, code: string) {
+    return this.request('/auth/verify-email-code', {
+      method: 'POST',
+      body: JSON.stringify({ email, code }),
+    });
+  }
+
+  async resendVerificationEmail(email: string) {
+    return this.request('/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
   }
 
   // Users Management (Admin only)
