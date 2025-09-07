@@ -9,19 +9,38 @@ export class SmsService {
 
   async sendSms(to: string, message: string): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-      // For now, we'll log the SMS instead of actually sending it
-      // In production, integrate with Twilio, AWS SNS, or another SMS provider
+      const twilioAccountSid = this.configService.get<string>('TWILIO_ACCOUNT_SID');
+      const twilioAuthToken = this.configService.get<string>('TWILIO_AUTH_TOKEN');
+      const twilioPhoneNumber = this.configService.get<string>('TWILIO_PHONE_NUMBER');
+
+      if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
+        this.logger.warn('Twilio credentials not configured, logging SMS instead');
+        this.logger.log(`SMS to ${to}: ${message}`);
+        
+        // Simulate SMS sending for development
+        const messageId = `sms_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        this.logger.log(`SMS sent successfully with ID: ${messageId}`);
+        
+        return {
+          success: true,
+          messageId: messageId,
+        };
+      }
+
+      // Use Twilio SDK to send SMS
+      const twilio = require('twilio')(twilioAccountSid, twilioAuthToken);
       
-      this.logger.log(`SMS to ${to}: ${message}`);
-      
-      // Simulate SMS sending
-      const messageId = `sms_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      this.logger.log(`SMS sent successfully with ID: ${messageId}`);
+      const result = await twilio.messages.create({
+        body: message,
+        from: twilioPhoneNumber,
+        to: to
+      });
+
+      this.logger.log(`SMS sent successfully via Twilio with SID: ${result.sid}`);
       
       return {
         success: true,
-        messageId: messageId,
+        messageId: result.sid,
       };
     } catch (error) {
       this.logger.error('Failed to send SMS:', error);

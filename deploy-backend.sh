@@ -28,6 +28,23 @@ read -s SENDGRID_API_KEY
 echo "$SENDGRID_API_KEY" | gcloud secrets create sendgrid-api-key --data-file=- --quiet 2>/dev/null || echo "Secret already exists, updating..."
 echo "$SENDGRID_API_KEY" | gcloud secrets versions add sendgrid-api-key --data-file=-
 
+# Create Twilio secrets if they don't exist
+echo "🔐 Creating Twilio secrets..."
+echo "Please enter your Twilio Account SID:"
+read -s TWILIO_ACCOUNT_SID
+echo "$TWILIO_ACCOUNT_SID" | gcloud secrets create twilio-account-sid --data-file=- --quiet 2>/dev/null || echo "Secret already exists, updating..."
+echo "$TWILIO_ACCOUNT_SID" | gcloud secrets versions add twilio-account-sid --data-file=-
+
+echo "Please enter your Twilio Auth Token:"
+read -s TWILIO_AUTH_TOKEN
+echo "$TWILIO_AUTH_TOKEN" | gcloud secrets create twilio-auth-token --data-file=- --quiet 2>/dev/null || echo "Secret already exists, updating..."
+echo "$TWILIO_AUTH_TOKEN" | gcloud secrets versions add twilio-auth-token --data-file=-
+
+echo "Please enter your Twilio Phone Number (e.g., +1234567890):"
+read -s TWILIO_PHONE_NUMBER
+echo "$TWILIO_PHONE_NUMBER" | gcloud secrets create twilio-phone-number --data-file=- --quiet 2>/dev/null || echo "Secret already exists, updating..."
+echo "$TWILIO_PHONE_NUMBER" | gcloud secrets versions add twilio-phone-number --data-file=-
+
 # Build and deploy
 echo "🔨 Building and deploying backend..."
 gcloud run deploy $SERVICE_NAME \
@@ -39,7 +56,7 @@ gcloud run deploy $SERVICE_NAME \
   --timeout 60s \
   --clear-base-image \
   --set-env-vars NODE_ENV=production,CORS_ORIGIN=https://qamarshahid.github.io,CORS_ORIGINS=https://qamarshahid.github.io,FRONTEND_URL=https://qamarshahid.github.io,DATABASE_HOST=/cloudsql/techprocessing:northamerica-northeast2:techprocessing-db,DATABASE_PORT=5432,DATABASE_NAME=techprocessing,DATABASE_USERNAME=techprocessing-user,DATABASE_SSL=false,JWT_EXPIRES_IN=24h,DEPLOYMENT_VERSION=v59,GCP_PROJECT_ID=techprocessing,EMAIL_HOST=smtp.gmail.com,EMAIL_PORT=587,EMAIL_SECURE=false,EMAIL_USER=support@techprocessingllc.com,EMAIL_RECIPIENT=support@techprocessingllc.com \
-  --set-secrets DATABASE_PASSWORD=db-password:1,JWT_SECRET=jwt-secret:latest,GOOGLE_APPLICATION_CREDENTIALS=service-account-key:latest,EMAIL_PASS=email-password:latest,GOOGLE_PLACES_API_KEY=google-places-api-key:latest,SENDGRID_API_KEY=sendgrid-api-key:latest \
+  --set-secrets DATABASE_PASSWORD=db-password:1,JWT_SECRET=jwt-secret:latest,GOOGLE_APPLICATION_CREDENTIALS=service-account-key:latest,EMAIL_PASS=email-password:latest,GOOGLE_PLACES_API_KEY=google-places-api-key:latest,SENDGRID_API_KEY=sendgrid-api-key:latest,TWILIO_ACCOUNT_SID=twilio-account-sid:latest,TWILIO_AUTH_TOKEN=twilio-auth-token:latest,TWILIO_PHONE_NUMBER=twilio-phone-number:latest \
   --add-cloudsql-instances techprocessing:northamerica-northeast2:techprocessing-db
 
 echo "✅ Deployment complete!"
