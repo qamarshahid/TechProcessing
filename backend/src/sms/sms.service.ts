@@ -9,12 +9,10 @@ export class SmsService {
 
   async sendSms(to: string, message: string): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-      const twilioAccountSid = this.configService.get<string>('TWILIO_ACCOUNT_SID');
-      const twilioAuthToken = this.configService.get<string>('TWILIO_AUTH_TOKEN');
-      const twilioPhoneNumber = this.configService.get<string>('TWILIO_PHONE_NUMBER');
-
-      if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
-        this.logger.warn('Twilio credentials not configured, logging SMS instead');
+      const firebaseServerKey = this.configService.get<string>('FIREBASE_SERVER_KEY');
+      
+      if (!firebaseServerKey) {
+        this.logger.warn('Firebase Server Key not configured, logging SMS instead');
         this.logger.log(`SMS to ${to}: ${message}`);
         
         // Simulate SMS sending for development
@@ -27,23 +25,39 @@ export class SmsService {
         };
       }
 
-      // Use Twilio SDK to send SMS
-      const twilio = require('twilio')(twilioAccountSid, twilioAuthToken);
-      
-      const result = await twilio.messages.create({
-        body: message,
-        from: twilioPhoneNumber,
-        to: to
+      // Use Firebase Cloud Messaging to send SMS
+      const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `key=${firebaseServerKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: to,
+          notification: {
+            title: 'TechProcessing LLC',
+            body: message,
+          },
+          data: {
+            type: 'sms',
+            message: message,
+          },
+        }),
       });
 
-      this.logger.log(`SMS sent successfully via Twilio with SID: ${result.sid}`);
+      const result = await response.json();
       
-      return {
-        success: true,
-        messageId: result.sid,
-      };
+      if (response.ok && result.success) {
+        this.logger.log(`SMS sent successfully via Firebase with MessageId: ${result.message_id}`);
+        return {
+          success: true,
+          messageId: result.message_id,
+        };
+      } else {
+        throw new Error(result.error || 'Failed to send SMS via Firebase');
+      }
     } catch (error) {
-      this.logger.error('Failed to send SMS:', error);
+      this.logger.error('Failed to send SMS via Firebase:', error);
       return {
         success: false,
         error: error.message,
@@ -52,80 +66,8 @@ export class SmsService {
   }
 
   async sendVerificationCode(phoneNumber: string, code: string): Promise<{ success: boolean; messageId?: string; error?: string }> {
-    try {
-      const twilioAccountSid = this.configService.get<string>('TWILIO_ACCOUNT_SID');
-      const twilioAuthToken = this.configService.get<string>('TWILIO_AUTH_TOKEN');
-      const twilioVerifyServiceSid = this.configService.get<string>('TWILIO_VERIFY_SERVICE_SID');
-
-      if (!twilioAccountSid || !twilioAuthToken || !twilioVerifyServiceSid) {
-        this.logger.warn('Twilio Verify credentials not configured, using fallback SMS');
-        return this.sendSms(phoneNumber, `Your TechProcessing verification code is: ${code}. This code expires in 10 minutes.`);
-      }
-
-      // Use Twilio Verify API for better deliverability
-      const twilio = require('twilio')(twilioAccountSid, twilioAuthToken);
-      
-      const verification = await twilio.verify.v2
-        .services(twilioVerifyServiceSid)
-        .verifications
-        .create({
-          to: phoneNumber,
-          channel: 'sms'
-        });
-
-      this.logger.log(`Verification code sent via Twilio Verify with SID: ${verification.sid}`);
-      
-      return {
-        success: true,
-        messageId: verification.sid,
-      };
-    } catch (error) {
-      this.logger.error('Failed to send verification code via Twilio Verify:', error);
-      // Fallback to regular SMS
-      return this.sendSms(phoneNumber, `Your TechProcessing verification code is: ${code}. This code expires in 10 minutes.`);
-    }
-  }
-
-  async verifyCode(phoneNumber: string, code: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      const twilioAccountSid = this.configService.get<string>('TWILIO_ACCOUNT_SID');
-      const twilioAuthToken = this.configService.get<string>('TWILIO_AUTH_TOKEN');
-      const twilioVerifyServiceSid = this.configService.get<string>('TWILIO_VERIFY_SERVICE_SID');
-
-      if (!twilioAccountSid || !twilioAuthToken || !twilioVerifyServiceSid) {
-        this.logger.warn('Twilio Verify credentials not configured, cannot verify code');
-        return {
-          success: false,
-          error: 'Verification service not configured'
-        };
-      }
-
-      // Use Twilio Verify API to verify the code
-      const twilio = require('twilio')(twilioAccountSid, twilioAuthToken);
-      
-      const verificationCheck = await twilio.verify.v2
-        .services(twilioVerifyServiceSid)
-        .verificationChecks
-        .create({
-          to: phoneNumber,
-          code: code
-        });
-
-      const isValid = verificationCheck.status === 'approved';
-      
-      this.logger.log(`Code verification result: ${verificationCheck.status} for ${phoneNumber}`);
-      
-      return {
-        success: isValid,
-        error: isValid ? undefined : 'Invalid or expired verification code'
-      };
-    } catch (error) {
-      this.logger.error('Failed to verify code via Twilio Verify:', error);
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
+    const message = `Your TechProcessing verification code is: ${code}. This code expires in 10 minutes.`;
+    return this.sendSms(phoneNumber, message);
   }
 
   async sendPasswordResetCode(phoneNumber: string, code: string): Promise<{ success: boolean; messageId?: string; error?: string }> {
