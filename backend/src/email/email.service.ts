@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import * as sgMail from '@sendgrid/mail';
 
 export interface ContactFormData {
   name: string;
@@ -30,6 +31,7 @@ export class EmailService {
 
   constructor(private configService: ConfigService) {
     this.initializeTransporter();
+    this.initializeSendGrid();
   }
 
   private initializeTransporter() {
@@ -66,6 +68,16 @@ export class EmailService {
         });
       }
     });
+  }
+
+  private initializeSendGrid() {
+    const sendGridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
+    if (sendGridApiKey) {
+      sgMail.setApiKey(sendGridApiKey);
+      this.logger.log('SendGrid initialized successfully');
+    } else {
+      this.logger.warn('SendGrid API key not found, falling back to SMTP');
+    }
   }
 
   async sendContactForm(data: ContactFormData): Promise<{ success: boolean; message: string }> {
@@ -111,21 +123,46 @@ export class EmailService {
         }
       }
 
-      const mailOptions = {
-        from: this.configService.get<string>('EMAIL_USER', 'support@techprocessingllc.com'),
-        to: data.to,
-        subject: data.subject,
-        html: htmlContent || 'Email content not provided',
-        text: textContent || (htmlContent ? htmlContent.replace(/<[^>]*>/g, '') : 'Email content not provided'),
-      };
+      const sendGridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
+      
+      if (sendGridApiKey) {
+        // Use SendGrid
+        const msg = {
+          to: data.to,
+          from: {
+            email: this.configService.get<string>('EMAIL_USER', 'support@techprocessingllc.com'),
+            name: 'TechProcessing LLC'
+          },
+          subject: data.subject,
+          html: htmlContent || 'Email content not provided',
+          text: textContent || (htmlContent ? htmlContent.replace(/<[^>]*>/g, '') : 'Email content not provided'),
+        };
 
-      const result = await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Email sent successfully to ${data.to}`, {
-        messageId: result.messageId,
-        subject: data.subject,
-        template: data.template
-      });
-      return { success: true, message: 'Email sent successfully' };
+        const result = await sgMail.send(msg);
+        this.logger.log(`Email sent successfully via SendGrid to ${data.to}`, {
+          messageId: result[0].headers['x-message-id'],
+          subject: data.subject,
+          template: data.template
+        });
+        return { success: true, message: 'Email sent successfully' };
+      } else {
+        // Fallback to SMTP
+        const mailOptions = {
+          from: this.configService.get<string>('EMAIL_USER', 'support@techprocessingllc.com'),
+          to: data.to,
+          subject: data.subject,
+          html: htmlContent || 'Email content not provided',
+          text: textContent || (htmlContent ? htmlContent.replace(/<[^>]*>/g, '') : 'Email content not provided'),
+        };
+
+        const result = await this.transporter.sendMail(mailOptions);
+        this.logger.log(`Email sent successfully via SMTP to ${data.to}`, {
+          messageId: result.messageId,
+          subject: data.subject,
+          template: data.template
+        });
+        return { success: true, message: 'Email sent successfully' };
+      }
     } catch (error) {
       this.logger.error('Failed to send email:', {
         error: error.message,
