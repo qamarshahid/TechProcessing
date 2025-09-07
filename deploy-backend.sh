@@ -18,6 +18,13 @@ echo "🔐 Creating service account key secret..."
 gcloud secrets create service-account-key --data-file=backend/service-account-key.json --quiet 2>/dev/null || echo "Secret already exists, updating..."
 gcloud secrets versions add service-account-key --data-file=backend/service-account-key.json
 
+# Create Google Places API key secret if it doesn't exist
+echo "🔐 Creating Google Places API key secret..."
+echo "Please enter your Google Places API key:"
+read -s GOOGLE_PLACES_API_KEY
+echo "$GOOGLE_PLACES_API_KEY" | gcloud secrets create google-places-api-key --data-file=- --quiet 2>/dev/null || echo "Secret already exists, updating..."
+echo "$GOOGLE_PLACES_API_KEY" | gcloud secrets versions add google-places-api-key --data-file=-
+
 # Build and deploy
 echo "🔨 Building and deploying backend..."
 gcloud run deploy $SERVICE_NAME \
@@ -28,8 +35,8 @@ gcloud run deploy $SERVICE_NAME \
   --max-instances 4 \
   --timeout 60s \
   --clear-base-image \
-  --set-env-vars NODE_ENV=production,CORS_ORIGIN=https://qamarshahid.github.io,CORS_ORIGINS=https://qamarshahid.github.io,DATABASE_HOST=/cloudsql/techprocessing:northamerica-northeast2:techprocessing-db,DATABASE_PORT=5432,DATABASE_NAME=techprocessing,DATABASE_USERNAME=techprocessing-user,DATABASE_SSL=false,JWT_EXPIRES_IN=24h,DEPLOYMENT_VERSION=v53,GCP_PROJECT_ID=techprocessing,EMAIL_HOST=smtp.gmail.com,EMAIL_PORT=587,EMAIL_SECURE=false,EMAIL_USER=support@techprocessingllc.com,EMAIL_RECIPIENT=support@techprocessingllc.com \
-  --set-secrets DATABASE_PASSWORD=db-password:1,JWT_SECRET=jwt-secret:latest,GOOGLE_APPLICATION_CREDENTIALS=service-account-key:latest,EMAIL_PASS=email-password:latest \
+  --set-env-vars NODE_ENV=production,CORS_ORIGIN=https://qamarshahid.github.io,CORS_ORIGINS=https://qamarshahid.github.io,DATABASE_HOST=/cloudsql/techprocessing:northamerica-northeast2:techprocessing-db,DATABASE_PORT=5432,DATABASE_NAME=techprocessing,DATABASE_USERNAME=techprocessing-user,DATABASE_SSL=false,JWT_EXPIRES_IN=24h,DEPLOYMENT_VERSION=v54,GCP_PROJECT_ID=techprocessing,EMAIL_HOST=smtp.gmail.com,EMAIL_PORT=587,EMAIL_SECURE=false,EMAIL_USER=support@techprocessingllc.com,EMAIL_RECIPIENT=support@techprocessingllc.com \
+  --set-secrets DATABASE_PASSWORD=db-password:1,JWT_SECRET=jwt-secret:latest,GOOGLE_APPLICATION_CREDENTIALS=service-account-key:latest,EMAIL_PASS=email-password:latest,GOOGLE_PLACES_API_KEY=google-places-api-key:latest \
   --add-cloudsql-instances techprocessing:northamerica-northeast2:techprocessing-db
 
 echo "✅ Deployment complete!"
