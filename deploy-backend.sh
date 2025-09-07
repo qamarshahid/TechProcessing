@@ -38,7 +38,7 @@ gcloud run deploy $SERVICE_NAME \
   --max-instances 4 \
   --timeout 60s \
   --clear-base-image \
-  --set-env-vars NODE_ENV=production,CORS_ORIGIN=https://qamarshahid.github.io,CORS_ORIGINS=https://qamarshahid.github.io,FRONTEND_URL=https://qamarshahid.github.io,DATABASE_HOST=/cloudsql/techprocessing:northamerica-northeast2:techprocessing-db,DATABASE_PORT=5432,DATABASE_NAME=techprocessing,DATABASE_USERNAME=techprocessing-user,DATABASE_SSL=false,JWT_EXPIRES_IN=24h,DEPLOYMENT_VERSION=v55,GCP_PROJECT_ID=techprocessing,EMAIL_HOST=smtp.gmail.com,EMAIL_PORT=587,EMAIL_SECURE=false,EMAIL_USER=support@techprocessingllc.com,EMAIL_RECIPIENT=support@techprocessingllc.com \
+  --set-env-vars NODE_ENV=production,CORS_ORIGIN=https://qamarshahid.github.io,CORS_ORIGINS=https://qamarshahid.github.io,FRONTEND_URL=https://qamarshahid.github.io,DATABASE_HOST=/cloudsql/techprocessing:northamerica-northeast2:techprocessing-db,DATABASE_PORT=5432,DATABASE_NAME=techprocessing,DATABASE_USERNAME=techprocessing-user,DATABASE_SSL=false,JWT_EXPIRES_IN=24h,DEPLOYMENT_VERSION=v59,GCP_PROJECT_ID=techprocessing,EMAIL_HOST=smtp.gmail.com,EMAIL_PORT=587,EMAIL_SECURE=false,EMAIL_USER=support@techprocessingllc.com,EMAIL_RECIPIENT=support@techprocessingllc.com \
   --set-secrets DATABASE_PASSWORD=db-password:1,JWT_SECRET=jwt-secret:latest,GOOGLE_APPLICATION_CREDENTIALS=service-account-key:latest,EMAIL_PASS=email-password:latest,GOOGLE_PLACES_API_KEY=google-places-api-key:latest,SENDGRID_API_KEY=sendgrid-api-key:latest \
   --add-cloudsql-instances techprocessing:northamerica-northeast2:techprocessing-db
 
