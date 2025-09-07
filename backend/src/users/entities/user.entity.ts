@@ -28,6 +28,15 @@ export class User {
   @Exclude()
   password: string;
 
+  @Column({ name: 'first_name' })
+  firstName: string;
+
+  @Column({ name: 'middle_name', nullable: true })
+  middleName: string;
+
+  @Column({ name: 'last_name' })
+  lastName: string;
+
   @Column({ name: 'full_name' })
   fullName: string;
 
@@ -134,6 +143,19 @@ export class User {
     if (this.password) {
       this.password = await bcrypt.hash(this.password, 12);
     }
+    // Construct fullName from separate fields
+    this.fullName = this.constructFullName();
+  }
+
+  private constructFullName(): string {
+    const parts = [this.firstName];
+    if (this.middleName && this.middleName.trim()) {
+      parts.push(this.middleName);
+    }
+    if (this.lastName && this.lastName.trim()) {
+      parts.push(this.lastName);
+    }
+    return parts.join(' ').trim();
   }
 
   async validatePassword(password: string): Promise<boolean> {

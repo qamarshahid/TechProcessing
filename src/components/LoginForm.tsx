@@ -34,7 +34,9 @@ export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showRegister, setShowRegister] = useState(false);
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [middleName, setMiddleName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState({
@@ -65,9 +67,15 @@ export function LoginForm() {
 
     try {
       if (showRegister) {
-        if (!fullName.trim()) {
-          setError('Full name is required');
-          showError('Registration Error', 'Full name is required');
+        if (!firstName.trim()) {
+          setError('First name is required');
+          showError('Registration Error', 'First name is required');
+          setLoading(false);
+          return;
+        }
+        if (!lastName.trim()) {
+          setError('Last name is required');
+          showError('Registration Error', 'Last name is required');
           setLoading(false);
           return;
         }
@@ -89,7 +97,9 @@ export function LoginForm() {
         const registrationData = {
           email,
           password,
-          fullName,
+          firstName,
+          middleName: middleName.trim() || undefined,
+          lastName,
           role: 'CLIENT',
           companyName,
           phoneNumber,
@@ -360,23 +370,68 @@ export function LoginForm() {
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <label htmlFor="fullName" className="block text-sm font-bold text-slate-300">
-                      Full Name
-                    </label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <User className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label htmlFor="firstName" className="block text-sm font-bold text-slate-300 mb-2">
+                          First Name *
+                        </label>
+                        <div className="relative group">
+                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <User className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                          </div>
+                          <input
+                            id="firstName"
+                            name="firstName"
+                            type="text"
+                            required={showRegister}
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                            placeholder="John"
+                          />
+                        </div>
                       </div>
-                      <input
-                        id="fullName"
-                        name="fullName"
-                        type="text"
-                        required={showRegister}
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
-                        placeholder="Enter your full name"
-                      />
+                      
+                      <div>
+                        <label htmlFor="middleName" className="block text-sm font-bold text-slate-300 mb-2">
+                          Middle Name
+                        </label>
+                        <div className="relative group">
+                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <User className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                          </div>
+                          <input
+                            id="middleName"
+                            name="middleName"
+                            type="text"
+                            value={middleName}
+                            onChange={(e) => setMiddleName(e.target.value)}
+                            className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                            placeholder="M"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label htmlFor="lastName" className="block text-sm font-bold text-slate-300 mb-2">
+                          Last Name *
+                        </label>
+                        <div className="relative group">
+                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <User className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                          </div>
+                          <input
+                            id="lastName"
+                            name="lastName"
+                            type="text"
+                            required={showRegister}
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                            placeholder="Doe"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 )}

@@ -70,10 +70,6 @@ const DISPOSABLE_EMAIL_DOMAINS = [
   'moncourrier.fr.nf',
   'monemail.fr.nf',
   'monmail.fr.nf',
-  'test.com',
-  'example.com',
-  'example.org',
-  'example.net',
   'invalid.com',
   'fake.com',
   'dummy.com'

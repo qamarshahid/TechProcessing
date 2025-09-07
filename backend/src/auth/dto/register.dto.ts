@@ -42,10 +42,20 @@ export class RegisterDto {
   @MinLength(8)
   password: string;
 
-  @ApiProperty({ example: 'John Doe' })
+  @ApiProperty({ example: 'John' })
   @IsString()
-  @MinLength(2)
-  fullName: string;
+  @MinLength(1)
+  firstName: string;
+
+  @ApiProperty({ example: 'M', required: false })
+  @IsString()
+  @IsOptional()
+  middleName?: string;
+
+  @ApiProperty({ example: 'Doe' })
+  @IsString()
+  @MinLength(1)
+  lastName: string;
 
   @ApiProperty({ enum: UserRole, example: UserRole.CLIENT })
   @IsEnum(UserRole)
