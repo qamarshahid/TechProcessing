@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
@@ -17,6 +18,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
     private auditService: AuditService,
     private sessionTrackingService: SessionTrackingService,
     private mfaService: MfaService,
@@ -158,7 +160,7 @@ export class AuthService {
         template: 'email-verification',
         context: {
           name: user.fullName,
-          verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`,
+          verificationUrl: `${this.configService.get<string>('FRONTEND_URL', 'https://qamarshahid.github.io')}/verify-email?token=${verificationToken}`,
           company: 'TechProcessing LLC',
         },
       });
@@ -250,11 +252,11 @@ export class AuthService {
       to: user.email,
       subject: 'Verify Your TechProcessing Account',
       template: 'email-verification',
-      context: {
-        name: user.fullName,
-        verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`,
-        company: 'TechProcessing LLC',
-      },
+        context: {
+          name: user.fullName,
+          verificationUrl: `${this.configService.get<string>('FRONTEND_URL', 'https://qamarshahid.github.io')}/verify-email?token=${verificationToken}`,
+          company: 'TechProcessing LLC',
+        },
     });
 
     return { message: 'Verification email sent' };
@@ -276,11 +278,11 @@ export class AuthService {
       to: user.email,
       subject: 'Reset Your TechProcessing Password',
       template: 'password-reset',
-      context: {
-        name: user.fullName,
-        resetUrl: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`,
-        company: 'TechProcessing LLC',
-      },
+        context: {
+          name: user.fullName,
+          resetUrl: `${this.configService.get<string>('FRONTEND_URL', 'https://qamarshahid.github.io')}/reset-password?token=${resetToken}`,
+          company: 'TechProcessing LLC',
+        },
     });
 
     await this.auditService.log({

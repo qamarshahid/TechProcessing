@@ -84,12 +84,26 @@ export class EmailService {
 
   async sendEmail(data: { to: string; subject: string; html?: string; text?: string; template?: string; context?: any }): Promise<{ success: boolean; message: string }> {
     try {
+      let htmlContent = data.html;
+      let textContent = data.text;
+
+      // Handle template-based emails
+      if (data.template && data.context) {
+        if (data.template === 'email-verification') {
+          htmlContent = this.generateEmailVerificationHTML(data.context);
+          textContent = this.generateEmailVerificationText(data.context);
+        } else if (data.template === 'password-reset') {
+          htmlContent = this.generatePasswordResetHTML(data.context);
+          textContent = this.generatePasswordResetText(data.context);
+        }
+      }
+
       const mailOptions = {
         from: this.configService.get<string>('EMAIL_USER', 'support@techprocessingllc.com'),
         to: data.to,
         subject: data.subject,
-        html: data.html || 'Email content not provided',
-        text: data.text || (data.html ? data.html.replace(/<[^>]*>/g, '') : 'Email content not provided'), // Strip HTML tags for text version
+        html: htmlContent || 'Email content not provided',
+        text: textContent || (htmlContent ? htmlContent.replace(/<[^>]*>/g, '') : 'Email content not provided'),
       };
 
       await this.transporter.sendMail(mailOptions);
@@ -303,6 +317,154 @@ Preferred Time: ${data.preferredTime}
 ${data.message ? `Additional Notes: ${data.message}` : ''}
 
 Reply to: ${data.email}
+    `.trim();
+  }
+
+  private generateEmailVerificationHTML(context: any): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Verify Your Email - TechProcessing LLC</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
+          .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+          .button { display: inline-block; background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
+          .button:hover { background: #059669; }
+          .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280; text-align: center; }
+          .warning { background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 15px; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🚀 Welcome to TechProcessing LLC</h1>
+            <p>Verify Your Email Address</p>
+          </div>
+          <div class="content">
+            <h2>Hello ${context.name}!</h2>
+            <p>Thank you for registering with TechProcessing LLC. To complete your account setup and start accessing our services, please verify your email address by clicking the button below:</p>
+            
+            <div style="text-align: center;">
+              <a href="${context.verificationUrl}" class="button">Verify Email Address</a>
+            </div>
+            
+            <div class="warning">
+              <strong>⚠️ Important:</strong> This verification link will expire in 24 hours for security reasons.
+            </div>
+            
+            <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; background: #e5e7eb; padding: 10px; border-radius: 4px; font-family: monospace;">${context.verificationUrl}</p>
+            
+            <p>If you didn't create an account with us, please ignore this email.</p>
+          </div>
+          <div class="footer">
+            <p><strong>${context.company}</strong></p>
+            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>Need help? Contact us at <a href="mailto:support@techprocessingllc.com">support@techprocessingllc.com</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private generateEmailVerificationText(context: any): string {
+    return `
+Welcome to TechProcessing LLC - Verify Your Email Address
+
+Hello ${context.name}!
+
+Thank you for registering with TechProcessing LLC. To complete your account setup and start accessing our services, please verify your email address by visiting this link:
+
+${context.verificationUrl}
+
+IMPORTANT: This verification link will expire in 24 hours for security reasons.
+
+If you didn't create an account with us, please ignore this email.
+
+Need help? Contact us at support@techprocessingllc.com
+
+---
+TechProcessing LLC
+This is an automated message. Please do not reply to this email.
+    `.trim();
+  }
+
+  private generatePasswordResetHTML(context: any): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Reset Your Password - TechProcessing LLC</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
+          .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+          .button { display: inline-block; background: #ef4444; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
+          .button:hover { background: #dc2626; }
+          .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280; text-align: center; }
+          .warning { background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px; padding: 15px; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🔒 Password Reset Request</h1>
+            <p>TechProcessing LLC</p>
+          </div>
+          <div class="content">
+            <h2>Hello ${context.name}!</h2>
+            <p>We received a request to reset your password for your TechProcessing LLC account. If you made this request, click the button below to reset your password:</p>
+            
+            <div style="text-align: center;">
+              <a href="${context.resetUrl}" class="button">Reset Password</a>
+            </div>
+            
+            <div class="warning">
+              <strong>⚠️ Security Notice:</strong> This password reset link will expire in 1 hour for security reasons.
+            </div>
+            
+            <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; background: #e5e7eb; padding: 10px; border-radius: 4px; font-family: monospace;">${context.resetUrl}</p>
+            
+            <p><strong>If you didn't request a password reset:</strong> Please ignore this email. Your password will remain unchanged.</p>
+          </div>
+          <div class="footer">
+            <p><strong>${context.company}</strong></p>
+            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>Need help? Contact us at <a href="mailto:support@techprocessingllc.com">support@techprocessingllc.com</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private generatePasswordResetText(context: any): string {
+    return `
+Password Reset Request - TechProcessing LLC
+
+Hello ${context.name}!
+
+We received a request to reset your password for your TechProcessing LLC account. If you made this request, visit this link to reset your password:
+
+${context.resetUrl}
+
+SECURITY NOTICE: This password reset link will expire in 1 hour for security reasons.
+
+If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
+
+Need help? Contact us at support@techprocessingllc.com
+
+---
+TechProcessing LLC
+This is an automated message. Please do not reply to this email.
     `.trim();
   }
 }
