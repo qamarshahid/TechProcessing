@@ -64,6 +64,7 @@ export class AddressService {
       return suggestions;
     } catch (error) {
       this.logger.error('Error searching addresses:', error);
+      this.logger.warn('Falling back to mock data due to API error');
       return this.getMockAddresses(query);
     }
   }
@@ -136,15 +137,34 @@ export class AddressService {
         state: "Illinois",
         postalCode: "60601",
         country: "United States"
+      },
+      {
+        formatted: "321 Elm Street, Houston, TX 77001, USA",
+        street: "321 Elm Street",
+        city: "Houston",
+        state: "Texas",
+        postalCode: "77001",
+        country: "United States"
+      },
+      {
+        formatted: "654 Maple Drive, Phoenix, AZ 85001, USA",
+        street: "654 Maple Drive",
+        city: "Phoenix",
+        state: "Arizona",
+        postalCode: "85001",
+        country: "United States"
       }
     ];
 
-    // Filter mock addresses based on query
-    return mockAddresses.filter(addr => 
+    // Filter mock addresses based on query, or return all if no match
+    const filtered = mockAddresses.filter(addr => 
       addr.formatted.toLowerCase().includes(query.toLowerCase()) ||
       addr.street.toLowerCase().includes(query.toLowerCase()) ||
       addr.city.toLowerCase().includes(query.toLowerCase()) ||
       addr.state.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 5);
+    );
+
+    // If no matches found, return the first few addresses as fallback
+    return filtered.length > 0 ? filtered.slice(0, 5) : mockAddresses.slice(0, 3);
   }
 }
