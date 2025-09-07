@@ -9,6 +9,7 @@ import { RegisterDto } from './dto/register.dto';
 import { VerifyEmailDto, VerifyEmailCodeDto, ResendVerificationDto } from './dto/verify-email.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { ForgotPasswordCodeDto, ResetPasswordCodeDto } from './dto/password-reset-code.dto';
+import { SendPhoneVerificationDto, VerifyPhoneCodeDto, SendPhonePasswordResetDto, ResetPasswordWithPhoneDto } from './dto/phone-otp.dto';
 import { 
   SetupTotpDto, 
   EnableMfaDto, 
@@ -137,6 +138,45 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Invalid or expired code' })
   async resetPasswordCode(@Body() resetPasswordCodeDto: ResetPasswordCodeDto) {
     return this.authService.resetPasswordCode(resetPasswordCodeDto);
+  }
+
+  // Phone OTP endpoints
+  @Post('send-phone-verification')
+  @Public()
+  @Throttle({ default: { limit: 3, ttl: 300000 } }) // 3 attempts per 5 minutes
+  @ApiOperation({ summary: 'Send phone verification code' })
+  @ApiResponse({ status: 200, description: 'Verification code sent' })
+  async sendPhoneVerification(@Body() sendPhoneVerificationDto: SendPhoneVerificationDto) {
+    return this.authService.sendPhoneVerification(sendPhoneVerificationDto);
+  }
+
+  @Post('verify-phone-code')
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @ApiOperation({ summary: 'Verify phone number with code' })
+  @ApiResponse({ status: 200, description: 'Phone verified successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired code' })
+  async verifyPhoneCode(@Body() verifyPhoneCodeDto: VerifyPhoneCodeDto) {
+    return this.authService.verifyPhoneCode(verifyPhoneCodeDto);
+  }
+
+  @Post('send-phone-password-reset')
+  @Public()
+  @Throttle({ default: { limit: 3, ttl: 300000 } }) // 3 attempts per 5 minutes
+  @ApiOperation({ summary: 'Send phone password reset code' })
+  @ApiResponse({ status: 200, description: 'Password reset code sent' })
+  async sendPhonePasswordReset(@Body() sendPhonePasswordResetDto: SendPhonePasswordResetDto) {
+    return this.authService.sendPhonePasswordReset(sendPhonePasswordResetDto);
+  }
+
+  @Post('reset-password-with-phone')
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @ApiOperation({ summary: 'Reset password with phone code' })
+  @ApiResponse({ status: 200, description: 'Password reset successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired code' })
+  async resetPasswordWithPhone(@Body() resetPasswordWithPhoneDto: ResetPasswordWithPhoneDto) {
+    return this.authService.resetPasswordWithPhone(resetPasswordWithPhoneDto);
   }
 
   // MFA verification for login

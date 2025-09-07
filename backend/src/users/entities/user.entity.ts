@@ -121,6 +121,20 @@ export class User {
   @Column({ name: 'is_phone_verified', default: false })
   isPhoneVerified: boolean;
 
+  @Column({ name: 'phone_verification_code', nullable: true })
+  @Exclude()
+  phoneVerificationCode: string;
+
+  @Column({ name: 'phone_verification_code_expires', nullable: true })
+  phoneVerificationCodeExpires: Date;
+
+  @Column({ name: 'phone_password_reset_code', nullable: true })
+  @Exclude()
+  phonePasswordResetCode: string;
+
+  @Column({ name: 'phone_password_reset_code_expires', nullable: true })
+  phonePasswordResetCodeExpires: Date;
+
   @Column({ name: 'failed_login_attempts', default: 0 })
   failedLoginAttempts: number;
 
@@ -226,6 +240,20 @@ export class User {
     const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
     this.passwordResetCode = code;
     this.passwordResetCodeExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    return code;
+  }
+
+  generatePhoneVerificationCode(): string {
+    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
+    this.phoneVerificationCode = code;
+    this.phoneVerificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    return code;
+  }
+
+  generatePhonePasswordResetCode(): string {
+    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
+    this.phonePasswordResetCode = code;
+    this.phonePasswordResetCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     return code;
   }
 

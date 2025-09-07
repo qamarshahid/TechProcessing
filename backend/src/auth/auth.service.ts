@@ -8,11 +8,13 @@ import { RegisterDto } from './dto/register.dto';
 import { VerifyEmailDto, VerifyEmailCodeDto, ResendVerificationDto } from './dto/verify-email.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { ForgotPasswordCodeDto, ResetPasswordCodeDto } from './dto/password-reset-code.dto';
+import { SendPhoneVerificationDto, VerifyPhoneCodeDto, SendPhonePasswordResetDto, ResetPasswordWithPhoneDto } from './dto/phone-otp.dto';
 import { VerifyMfaDto } from './dto/mfa.dto';
 import { AuditService } from '../audit/audit.service';
 import { SessionTrackingService } from '../common/services/session-tracking.service';
 import { MfaService } from './mfa.service';
 import { EmailService } from '../email/email.service';
+import { SmsService } from '../sms/sms.service';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +26,7 @@ export class AuthService {
     private sessionTrackingService: SessionTrackingService,
     private mfaService: MfaService,
     private emailService: EmailService,
+    private smsService: SmsService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -427,6 +430,128 @@ export class AuthService {
       entityType: 'User',
       entityId: user.id,
       details: { email: user.email },
+      user: user,
+    });
+
+    return { message: 'Password reset successfully' };
+  }
+
+  // Phone OTP methods
+  async sendPhoneVerification(sendPhoneVerificationDto: SendPhoneVerificationDto) {
+    const user = await this.usersService.findByPhoneNumber(sendPhoneVerificationDto.phoneNumber);
+    
+    if (!user) {
+      // Don't reveal if user exists or not
+      return { message: 'If the phone number exists, a verification code has been sent' };
+    }
+
+    const verificationCode = user.generatePhoneVerificationCode();
+    await this.usersService.save(user);
+
+    const smsResult = await this.smsService.sendVerificationCode(user.phoneNumber, verificationCode);
+    
+    if (!smsResult.success) {
+      throw new BadRequestException('Failed to send verification code');
+    }
+
+    await this.auditService.log({
+      action: 'PHONE_VERIFICATION_SENT',
+      entityType: 'User',
+      entityId: user.id,
+      details: { phoneNumber: user.phoneNumber },
+      user: user,
+    });
+
+    return { message: 'If the phone number exists, a verification code has been sent' };
+  }
+
+  async verifyPhoneCode(verifyPhoneCodeDto: VerifyPhoneCodeDto) {
+    const user = await this.usersService.findByPhoneNumber(verifyPhoneCodeDto.phoneNumber);
+    
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (!user.phoneVerificationCode || user.phoneVerificationCode !== verifyPhoneCodeDto.code) {
+      throw new BadRequestException('Invalid verification code');
+    }
+
+    if (!user.phoneVerificationCodeExpires || user.phoneVerificationCodeExpires < new Date()) {
+      throw new BadRequestException('Verification code has expired');
+    }
+
+    user.isPhoneVerified = true;
+    user.phoneVerificationCode = null;
+    user.phoneVerificationCodeExpires = null;
+    
+    await this.usersService.save(user);
+
+    await this.auditService.log({
+      action: 'PHONE_VERIFIED',
+      entityType: 'User',
+      entityId: user.id,
+      details: { phoneNumber: user.phoneNumber },
+      user: user,
+    });
+
+    return { message: 'Phone number verified successfully' };
+  }
+
+  async sendPhonePasswordReset(sendPhonePasswordResetDto: SendPhonePasswordResetDto) {
+    const user = await this.usersService.findByPhoneNumber(sendPhonePasswordResetDto.phoneNumber);
+    
+    if (!user) {
+      // Don't reveal if user exists or not
+      return { message: 'If the phone number exists, a password reset code has been sent' };
+    }
+
+    const resetCode = user.generatePhonePasswordResetCode();
+    await this.usersService.save(user);
+
+    const smsResult = await this.smsService.sendPasswordResetCode(user.phoneNumber, resetCode);
+    
+    if (!smsResult.success) {
+      throw new BadRequestException('Failed to send password reset code');
+    }
+
+    await this.auditService.log({
+      action: 'PHONE_PASSWORD_RESET_SENT',
+      entityType: 'User',
+      entityId: user.id,
+      details: { phoneNumber: user.phoneNumber },
+      user: user,
+    });
+
+    return { message: 'If the phone number exists, a password reset code has been sent' };
+  }
+
+  async resetPasswordWithPhone(resetPasswordWithPhoneDto: ResetPasswordWithPhoneDto) {
+    const user = await this.usersService.findByPhoneNumber(resetPasswordWithPhoneDto.phoneNumber);
+    
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (!user.phonePasswordResetCode || user.phonePasswordResetCode !== resetPasswordWithPhoneDto.code) {
+      throw new BadRequestException('Invalid reset code');
+    }
+
+    if (!user.phonePasswordResetCodeExpires || user.phonePasswordResetCodeExpires < new Date()) {
+      throw new BadRequestException('Reset code has expired');
+    }
+
+    user.password = resetPasswordWithPhoneDto.newPassword;
+    user.phonePasswordResetCode = null;
+    user.phonePasswordResetCodeExpires = null;
+    user.resetFailedLoginAttempts(); // Also unlock the account
+    
+    await this.usersService.save(user);
+
+    await this.auditService.log({
+      action: 'PASSWORD_RESET_WITH_PHONE',
+      entityType: 'User',
+      entityId: user.id,
+      details: { phoneNumber: user.phoneNumber },
       user: user,
     });
 

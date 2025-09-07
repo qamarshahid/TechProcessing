@@ -324,6 +324,24 @@ export class UsersService {
     });
   }
 
+  async findByPhoneVerificationCode(code: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { phoneVerificationCode: code },
+    });
+  }
+
+  async findByPhonePasswordResetCode(code: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { phonePasswordResetCode: code },
+    });
+  }
+
+  async findByPhoneNumber(phoneNumber: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { phoneNumber: phoneNumber },
+    });
+  }
+
   async save(user: User): Promise<User> {
     return this.usersRepository.save(user);
   }

@@ -10,6 +10,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { AuditModule } from '../audit/audit.module';
 import { EmailModule } from '../email/email.module';
+import { SmsModule } from '../sms/sms.module';
 import { SessionTrackingService } from '../common/services/session-tracking.service';
 
 @Module({
@@ -18,6 +19,7 @@ import { SessionTrackingService } from '../common/services/session-tracking.serv
     PassportModule,
     AuditModule,
     EmailModule,
+    SmsModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
