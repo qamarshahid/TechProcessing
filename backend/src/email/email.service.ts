@@ -49,8 +49,21 @@ export class EmailService {
     this.transporter.verify((error, success) => {
       if (error) {
         this.logger.error('Email service configuration error:', error);
+        this.logger.error('Email config:', {
+          host: emailConfig.host,
+          port: emailConfig.port,
+          secure: emailConfig.secure,
+          user: emailConfig.auth.user,
+          // Don't log password for security
+        });
       } else {
         this.logger.log('Email service is ready to send messages');
+        this.logger.log('Email config verified:', {
+          host: emailConfig.host,
+          port: emailConfig.port,
+          secure: emailConfig.secure,
+          user: emailConfig.auth.user,
+        });
       }
     });
   }
@@ -106,11 +119,21 @@ export class EmailService {
         text: textContent || (htmlContent ? htmlContent.replace(/<[^>]*>/g, '') : 'Email content not provided'),
       };
 
-      await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Email sent successfully to ${data.to}`);
+      const result = await this.transporter.sendMail(mailOptions);
+      this.logger.log(`Email sent successfully to ${data.to}`, {
+        messageId: result.messageId,
+        subject: data.subject,
+        template: data.template
+      });
       return { success: true, message: 'Email sent successfully' };
     } catch (error) {
-      this.logger.error('Failed to send email:', error);
+      this.logger.error('Failed to send email:', {
+        error: error.message,
+        to: data.to,
+        subject: data.subject,
+        template: data.template,
+        stack: error.stack
+      });
       return { success: false, message: 'Failed to send email' };
     }
   }
@@ -341,7 +364,7 @@ Reply to: ${data.email}
       <body>
         <div class="container">
           <div class="header">
-            <h1>🚀 Welcome to TechProcessing LLC</h1>
+            <h1> Welcome to TechProcessing LLC</h1>
             <p>Verify Your Email Address</p>
           </div>
           <div class="content">

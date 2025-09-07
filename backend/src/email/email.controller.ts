@@ -132,4 +132,30 @@ export class EmailController {
   async sendAppointmentRequest(@Body() appointmentData: AppointmentDto) {
     return await this.emailService.sendAppointmentRequest(appointmentData);
   }
+
+  @Post('test')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ 
+    summary: 'Test email service',
+    description: 'Sends a test email to verify the email service is working'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Test email sent successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        message: { type: 'string' }
+      }
+    }
+  })
+  async testEmail(@Body() data: { to: string }) {
+    return this.emailService.sendEmail({
+      to: data.to,
+      subject: 'Test Email from TechProcessing',
+      html: '<h1>Test Email</h1><p>This is a test email to verify the email service is working.</p>',
+      text: 'Test Email - This is a test email to verify the email service is working.'
+    });
+  }
 }
