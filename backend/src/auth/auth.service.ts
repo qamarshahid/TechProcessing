@@ -5,7 +5,7 @@ import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { VerifyEmailDto, ResendVerificationDto } from './dto/verify-email.dto';
+import { VerifyEmailDto, VerifyEmailCodeDto, ResendVerificationDto } from './dto/verify-email.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
 import { VerifyMfaDto } from './dto/mfa.dto';
 import { AuditService } from '../audit/audit.service';
@@ -68,6 +68,11 @@ export class AuthService {
     // Check if email is verified
     if (!user.isEmailVerified) {
       throw new UnauthorizedException('Please verify your email address before logging in');
+    }
+
+    // Check if account is active
+    if (user.accountStatus !== 'ACTIVE') {
+      throw new UnauthorizedException('Your account is not active. Please verify your email address.');
     }
 
     // Update last login
@@ -149,8 +154,8 @@ export class AuthService {
     try {
       const user = await this.usersService.create(registerDto);
       
-      // Generate email verification token
-      const verificationToken = user.generateEmailVerificationToken();
+      // Generate email verification code
+      const verificationCode = user.generateEmailVerificationCode();
       await this.usersService.save(user);
 
       // Send verification email
@@ -160,7 +165,7 @@ export class AuthService {
         template: 'email-verification',
         context: {
           name: user.fullName,
-          verificationUrl: `${this.configService.get<string>('FRONTEND_URL', 'https://qamarshahid.github.io')}/verify-email?token=${verificationToken}`,
+          verificationCode: verificationCode,
           company: 'TechProcessing LLC',
         },
       });
@@ -189,6 +194,7 @@ export class AuthService {
           fullName: user.fullName,
           role: user.role,
           isEmailVerified: user.isEmailVerified,
+          accountStatus: user.accountStatus,
         },
       };
     } catch (error) {
@@ -218,6 +224,7 @@ export class AuthService {
     }
 
     user.isEmailVerified = true;
+    user.accountStatus = 'ACTIVE';
     user.emailVerificationToken = null;
     user.emailVerificationExpires = null;
     
@@ -228,6 +235,39 @@ export class AuthService {
       entityType: 'User',
       entityId: user.id,
       details: { email: user.email },
+      user: user,
+    });
+
+    return { message: 'Email verified successfully' };
+  }
+
+  async verifyEmailCode(verifyEmailCodeDto: VerifyEmailCodeDto) {
+    const user = await this.usersService.findByEmail(verifyEmailCodeDto.email);
+    
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (!user.emailVerificationCode || user.emailVerificationCode !== verifyEmailCodeDto.code) {
+      throw new BadRequestException('Invalid verification code');
+    }
+
+    if (!user.emailVerificationCodeExpires || user.emailVerificationCodeExpires < new Date()) {
+      throw new BadRequestException('Verification code has expired');
+    }
+
+    user.isEmailVerified = true;
+    user.accountStatus = 'ACTIVE';
+    user.emailVerificationCode = null;
+    user.emailVerificationCodeExpires = null;
+    
+    await this.usersService.save(user);
+
+    await this.auditService.log({
+      action: 'EMAIL_VERIFIED',
+      entityType: 'User',
+      entityId: user.id,
+      details: { email: user.email, method: 'code' },
       user: user,
     });
 
@@ -245,7 +285,7 @@ export class AuthService {
       throw new BadRequestException('Email is already verified');
     }
 
-    const verificationToken = user.generateEmailVerificationToken();
+    const verificationCode = user.generateEmailVerificationCode();
     await this.usersService.save(user);
 
     await this.emailService.sendEmail({
@@ -254,7 +294,7 @@ export class AuthService {
       template: 'email-verification',
         context: {
           name: user.fullName,
-          verificationUrl: `${this.configService.get<string>('FRONTEND_URL', 'https://qamarshahid.github.io')}/verify-email?token=${verificationToken}`,
+          verificationCode: verificationCode,
           company: 'TechProcessing LLC',
         },
     });

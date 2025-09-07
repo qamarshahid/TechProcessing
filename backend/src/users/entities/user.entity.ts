@@ -73,12 +73,22 @@ export class User {
   @Column({ name: 'is_email_verified', default: false })
   isEmailVerified: boolean;
 
+  @Column({ name: 'account_status', type: 'enum', enum: ['PENDING', 'ACTIVE', 'SUSPENDED'], default: 'PENDING' })
+  accountStatus: 'PENDING' | 'ACTIVE' | 'SUSPENDED';
+
   @Column({ name: 'email_verification_token', nullable: true })
   @Exclude()
   emailVerificationToken: string;
 
   @Column({ name: 'email_verification_expires', nullable: true })
   emailVerificationExpires: Date;
+
+  @Column({ name: 'email_verification_code', nullable: true })
+  @Exclude()
+  emailVerificationCode: string;
+
+  @Column({ name: 'email_verification_code_expires', nullable: true })
+  emailVerificationCodeExpires: Date;
 
   @Column({ name: 'password_reset_token', nullable: true })
   @Exclude()
@@ -184,6 +194,13 @@ export class User {
     this.emailVerificationToken = token;
     this.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
     return token;
+  }
+
+  generateEmailVerificationCode(): string {
+    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
+    this.emailVerificationCode = code;
+    this.emailVerificationCodeExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    return code;
   }
 
   generatePasswordResetToken(): string {

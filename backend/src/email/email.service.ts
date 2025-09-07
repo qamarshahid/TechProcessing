@@ -408,32 +408,31 @@ Reply to: ${data.email}
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
           .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
-          .button { display: inline-block; background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
-          .button:hover { background: #059669; }
+          .code { background: #10b981; color: white; padding: 25px; text-align: center; font-size: 36px; font-weight: bold; letter-spacing: 8px; border-radius: 8px; margin: 25px 0; font-family: 'Courier New', monospace; }
           .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280; text-align: center; }
           .warning { background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 15px; margin: 20px 0; }
+          .instruction { background: #e0f2fe; border: 1px solid #0288d1; border-radius: 6px; padding: 15px; margin: 20px 0; text-align: center; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h1> Welcome to TechProcessing LLC</h1>
+            <h1>🚀 Welcome to TechProcessing LLC</h1>
             <p>Verify Your Email Address</p>
           </div>
           <div class="content">
             <h2>Hello ${context.name}!</h2>
-            <p>Thank you for registering with TechProcessing LLC. To complete your account setup and start accessing our services, please verify your email address by clicking the button below:</p>
+            <p>Thank you for registering with TechProcessing LLC. Your account has been created but is currently <strong>pending verification</strong>. To activate your account and start accessing our services, please use the verification code below:</p>
             
-            <div style="text-align: center;">
-              <a href="${context.verificationUrl}" class="button">Verify Email Address</a>
+            <div class="code">${context.verificationCode}</div>
+            
+            <div class="instruction">
+              <strong>📝 Enter this 6-digit code in the verification form on our website</strong>
             </div>
             
             <div class="warning">
-              <strong>⚠️ Important:</strong> This verification link will expire in 24 hours for security reasons.
+              <strong>⚠️ Important:</strong> This verification code will expire in 30 minutes for security reasons.
             </div>
-            
-            <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
-            <p style="word-break: break-all; background: #e5e7eb; padding: 10px; border-radius: 4px; font-family: monospace;">${context.verificationUrl}</p>
             
             <p>If you didn't create an account with us, please ignore this email.</p>
           </div>
@@ -454,11 +453,13 @@ Welcome to TechProcessing LLC - Verify Your Email Address
 
 Hello ${context.name}!
 
-Thank you for registering with TechProcessing LLC. To complete your account setup and start accessing our services, please verify your email address by visiting this link:
+Thank you for registering with TechProcessing LLC. Your account has been created but is currently PENDING VERIFICATION. To activate your account and start accessing our services, please use the verification code below:
 
-${context.verificationUrl}
+VERIFICATION CODE: ${context.verificationCode}
 
-IMPORTANT: This verification link will expire in 24 hours for security reasons.
+Enter this 6-digit code in the verification form on our website.
+
+IMPORTANT: This verification code will expire in 30 minutes for security reasons.
 
 If you didn't create an account with us, please ignore this email.
 
