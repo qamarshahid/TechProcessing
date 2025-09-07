@@ -124,6 +124,9 @@ export class EmailService {
         } else if (data.template === 'password-reset') {
           htmlContent = this.generatePasswordResetHTML(data.context);
           textContent = this.generatePasswordResetText(data.context);
+        } else if (data.template === 'password-reset-code') {
+          htmlContent = this.generatePasswordResetCodeHTML(data.context);
+          textContent = this.generatePasswordResetCodeText(data.context);
         }
       }
 
@@ -534,6 +537,84 @@ We received a request to reset your password for your TechProcessing LLC account
 ${context.resetUrl}
 
 SECURITY NOTICE: This password reset link will expire in 1 hour for security reasons.
+
+If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
+
+Need help? Contact us at support@techprocessingllc.com
+
+---
+TechProcessing LLC
+This is an automated message. Please do not reply to this email.
+    `.trim();
+  }
+
+  private generatePasswordResetCodeHTML(context: any): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Reset Code - TechProcessing LLC</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+          .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+          .header h1 { margin: 0; font-size: 24px; font-weight: 300; }
+          .content { padding: 30px; }
+          .content h2 { color: #333; margin-top: 0; }
+          .code { background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; font-size: 32px; font-weight: bold; color: #495057; letter-spacing: 4px; }
+          .instruction { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin: 20px 0; border-radius: 4px; }
+          .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px; }
+          .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+          .footer a { color: #007bff; text-decoration: none; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🔐 Password Reset Code</h1>
+          </div>
+          <div class="content">
+            <h2>Hello ${context.name}!</h2>
+            <p>We received a request to reset your password for your TechProcessing LLC account. To complete the password reset, please use the verification code below:</p>
+            
+            <div class="code">${context.resetCode}</div>
+            
+            <div class="instruction">
+              <strong>📝 Enter this 6-digit code in the password reset form on our website</strong>
+            </div>
+            
+            <div class="warning">
+              <strong>⚠️ Important:</strong> This verification code will expire in 30 minutes for security reasons.
+            </div>
+            
+            <p>If you didn't request a password reset, please ignore this email. Your password will remain unchanged.</p>
+          </div>
+          <div class="footer">
+            <p><strong>${context.company}</strong></p>
+            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>Need help? Contact us at <a href="mailto:support@techprocessingllc.com">support@techprocessingllc.com</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private generatePasswordResetCodeText(context: any): string {
+    return `
+Password Reset Code - TechProcessing LLC
+
+Hello ${context.name}!
+
+We received a request to reset your password for your TechProcessing LLC account. To complete the password reset, please use the verification code below:
+
+VERIFICATION CODE: ${context.resetCode}
+
+Enter this 6-digit code in the password reset form on our website.
+
+IMPORTANT: This verification code will expire in 30 minutes for security reasons.
 
 If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
 

@@ -25,8 +25,9 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
   token
 }) => {
   const { showSuccess, showError } = useNotifications();
-  const [step, setStep] = useState<'request' | 'reset'>('request');
+  const [step, setStep] = useState<'request' | 'code' | 'reset'>('request');
   const [email, setEmail] = useState('');
+  const [resetCode, setResetCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -85,11 +86,11 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
   const requestPasswordReset = async () => {
     setLoading(true);
     try {
-      await apiClient.forgotPassword(email);
-      showSuccess('Email Sent', 'If the email exists, a password reset link has been sent');
-      setStep('reset');
+      await apiClient.forgotPasswordCode(email);
+      showSuccess('Code Sent', 'If the email exists, a password reset code has been sent');
+      setStep('code');
     } catch (error) {
-      showError('Error', 'Failed to send password reset email. Please try again.');
+      showError('Error', 'Failed to send password reset code. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -108,15 +109,81 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
 
     setLoading(true);
     try {
-      await apiClient.resetPassword(token || '', newPassword);
+      await apiClient.resetPasswordCode(email, resetCode, newPassword);
       showSuccess('Success', 'Password reset successfully! You can now sign in with your new password.');
       onSuccess();
     } catch (error) {
-      showError('Error', 'Failed to reset password. Please try again.');
+      showError('Error', 'Failed to reset password. Please check your code and try again.');
     } finally {
       setLoading(false);
     }
   };
+
+  const renderCodeStep = () => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      <div className="text-center">
+        <CheckCircle className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-white mb-2">Enter Reset Code</h2>
+        <p className="text-gray-300">We sent a 6-digit code to {email}</p>
+      </div>
+
+      <div className="bg-slate-800 rounded-xl p-6">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Reset Code
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                value={resetCode}
+                onChange={(e) => setResetCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="Enter 6-digit code"
+                className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-center text-2xl tracking-widest"
+                maxLength={6}
+              />
+            </div>
+          </div>
+
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+            <div className="flex items-start space-x-3">
+              <AlertCircle className="h-5 w-5 text-blue-400 mt-0.5" />
+              <div className="text-sm text-blue-300">
+                <p className="font-medium mb-1">Code Information:</p>
+                <ul className="list-disc list-inside space-y-1 text-xs">
+                  <li>Check your email for the 6-digit code</li>
+                  <li>The code expires in 30 minutes</li>
+                  <li>Enter the code to proceed to password reset</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex space-x-4">
+        <button
+          onClick={() => setStep('request')}
+          className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back</span>
+        </button>
+        <button
+          onClick={() => setStep('reset')}
+          disabled={!resetCode || resetCode.length !== 6}
+          className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+        >
+          Continue
+        </button>
+      </div>
+    </motion.div>
+  );
 
   const renderRequestStep = () => (
     <motion.div
@@ -298,15 +365,13 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
       </div>
 
       <div className="flex space-x-4">
-        {!token && (
-          <button
-            onClick={() => setStep('request')}
-            className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back</span>
-          </button>
-        )}
+        <button
+          onClick={() => setStep('code')}
+          className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back</span>
+        </button>
         <button
           onClick={resetPassword}
           disabled={!newPassword || !confirmPassword || newPassword !== confirmPassword || passwordStrength < 3 || loading}
@@ -327,7 +392,7 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
         exit={{ opacity: 0, scale: 0.95 }}
         className="bg-slate-900 rounded-2xl p-6 w-full max-w-md"
       >
-        {step === 'request' ? renderRequestStep() : renderResetStep()}
+        {step === 'request' ? renderRequestStep() : step === 'code' ? renderCodeStep() : renderResetStep()}
       </motion.div>
     </div>
   );

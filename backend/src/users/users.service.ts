@@ -318,6 +318,12 @@ export class UsersService {
     });
   }
 
+  async findByPasswordResetCode(code: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { passwordResetCode: code },
+    });
+  }
+
   async save(user: User): Promise<User> {
     return this.usersRepository.save(user);
   }

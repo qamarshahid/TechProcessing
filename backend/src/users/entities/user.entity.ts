@@ -97,6 +97,13 @@ export class User {
   @Column({ name: 'password_reset_expires', nullable: true })
   passwordResetExpires: Date;
 
+  @Column({ name: 'password_reset_code', nullable: true })
+  @Exclude()
+  passwordResetCode: string;
+
+  @Column({ name: 'password_reset_code_expires', nullable: true })
+  passwordResetCodeExpires: Date;
+
   @Column({ name: 'mfa_enabled', default: false })
   mfaEnabled: boolean;
 
@@ -213,6 +220,13 @@ export class User {
     this.passwordResetToken = token;
     this.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
     return token;
+  }
+
+  generatePasswordResetCode(): string {
+    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
+    this.passwordResetCode = code;
+    this.passwordResetCodeExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    return code;
   }
 
   generateMfaBackupCodes(): string[] {

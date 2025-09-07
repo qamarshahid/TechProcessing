@@ -7,6 +7,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { VerifyEmailDto, VerifyEmailCodeDto, ResendVerificationDto } from './dto/verify-email.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
+import { ForgotPasswordCodeDto, ResetPasswordCodeDto } from './dto/password-reset-code.dto';
 import { VerifyMfaDto } from './dto/mfa.dto';
 import { AuditService } from '../audit/audit.service';
 import { SessionTrackingService } from '../common/services/session-tracking.service';
@@ -356,6 +357,73 @@ export class AuthService {
 
     await this.auditService.log({
       action: 'PASSWORD_RESET',
+      entityType: 'User',
+      entityId: user.id,
+      details: { email: user.email },
+      user: user,
+    });
+
+    return { message: 'Password reset successfully' };
+  }
+
+  // Code-based password reset methods
+  async forgotPasswordCode(forgotPasswordCodeDto: ForgotPasswordCodeDto) {
+    const user = await this.usersService.findByEmail(forgotPasswordCodeDto.email);
+    
+    if (!user) {
+      // Don't reveal if user exists or not
+      return { message: 'If the email exists, a password reset code has been sent' };
+    }
+
+    const resetCode = user.generatePasswordResetCode();
+    await this.usersService.save(user);
+
+    await this.emailService.sendEmail({
+      to: user.email,
+      subject: 'Reset Your TechProcessing Password',
+      template: 'password-reset-code',
+      context: {
+        name: user.fullName,
+        resetCode: resetCode,
+        company: 'TechProcessing LLC',
+      },
+    });
+
+    await this.auditService.log({
+      action: 'PASSWORD_RESET_CODE_REQUESTED',
+      entityType: 'User',
+      entityId: user.id,
+      details: { email: user.email },
+      user: user,
+    });
+
+    return { message: 'If the email exists, a password reset code has been sent' };
+  }
+
+  async resetPasswordCode(resetPasswordCodeDto: ResetPasswordCodeDto) {
+    const user = await this.usersService.findByEmail(resetPasswordCodeDto.email);
+    
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (!user.passwordResetCode || user.passwordResetCode !== resetPasswordCodeDto.code) {
+      throw new BadRequestException('Invalid reset code');
+    }
+
+    if (!user.passwordResetCodeExpires || user.passwordResetCodeExpires < new Date()) {
+      throw new BadRequestException('Reset code has expired');
+    }
+
+    user.password = resetPasswordCodeDto.newPassword;
+    user.passwordResetCode = null;
+    user.passwordResetCodeExpires = null;
+    user.resetFailedLoginAttempts(); // Also unlock the account
+    
+    await this.usersService.save(user);
+
+    await this.auditService.log({
+      action: 'PASSWORD_RESET_CODE_USED',
       entityType: 'User',
       entityId: user.id,
       details: { email: user.email },

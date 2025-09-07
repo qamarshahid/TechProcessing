@@ -8,6 +8,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { VerifyEmailDto, VerifyEmailCodeDto, ResendVerificationDto } from './dto/verify-email.dto';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-password.dto';
+import { ForgotPasswordCodeDto, ResetPasswordCodeDto } from './dto/password-reset-code.dto';
 import { 
   SetupTotpDto, 
   EnableMfaDto, 
@@ -116,6 +117,26 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Invalid or expired token' })
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  // Code-based password reset endpoints
+  @Post('forgot-password-code')
+  @Public()
+  @Throttle({ default: { limit: 3, ttl: 300000 } }) // 3 attempts per 5 minutes
+  @ApiOperation({ summary: 'Request password reset code' })
+  @ApiResponse({ status: 200, description: 'Password reset code sent' })
+  async forgotPasswordCode(@Body() forgotPasswordCodeDto: ForgotPasswordCodeDto) {
+    return this.authService.forgotPasswordCode(forgotPasswordCodeDto);
+  }
+
+  @Post('reset-password-code')
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @ApiOperation({ summary: 'Reset password with code' })
+  @ApiResponse({ status: 200, description: 'Password reset successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired code' })
+  async resetPasswordCode(@Body() resetPasswordCodeDto: ResetPasswordCodeDto) {
+    return this.authService.resetPasswordCode(resetPasswordCodeDto);
   }
 
   // MFA verification for login
