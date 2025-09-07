@@ -73,7 +73,11 @@ export class EmailService {
   private initializeSendGrid() {
     const sendGridApiKey = this.configService.get<string>('SENDGRID_API_KEY');
     if (sendGridApiKey) {
-      sgMail.setApiKey(sendGridApiKey);
+      // Clean the API key (remove any whitespace or newlines)
+      const cleanApiKey = sendGridApiKey.trim();
+      this.logger.log('SendGrid API key found, length:', cleanApiKey.length);
+      this.logger.log('SendGrid API key starts with:', cleanApiKey.substring(0, 10) + '...');
+      sgMail.setApiKey(cleanApiKey);
       this.logger.log('SendGrid initialized successfully');
     } else {
       this.logger.warn('SendGrid API key not found, falling back to SMTP');
@@ -127,6 +131,9 @@ export class EmailService {
       
       if (sendGridApiKey) {
         // Use SendGrid
+        const cleanApiKey = sendGridApiKey.trim();
+        this.logger.log('Using SendGrid with API key length:', cleanApiKey.length);
+        
         const msg = {
           to: data.to,
           from: {
@@ -138,13 +145,22 @@ export class EmailService {
           text: textContent || (htmlContent ? htmlContent.replace(/<[^>]*>/g, '') : 'Email content not provided'),
         };
 
-        const result = await sgMail.send(msg);
-        this.logger.log(`Email sent successfully via SendGrid to ${data.to}`, {
-          messageId: result[0].headers['x-message-id'],
-          subject: data.subject,
-          template: data.template
-        });
-        return { success: true, message: 'Email sent successfully' };
+        try {
+          const result = await sgMail.send(msg);
+          this.logger.log(`Email sent successfully via SendGrid to ${data.to}`, {
+            messageId: result[0].headers['x-message-id'],
+            subject: data.subject,
+            template: data.template
+          });
+          return { success: true, message: 'Email sent successfully' };
+        } catch (sendGridError) {
+          this.logger.error('SendGrid error:', {
+            error: sendGridError.message,
+            code: sendGridError.code,
+            response: sendGridError.response?.body
+          });
+          throw sendGridError;
+        }
       } else {
         // Fallback to SMTP
         const mailOptions = {
