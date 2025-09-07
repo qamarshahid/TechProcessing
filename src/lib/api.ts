@@ -113,6 +113,20 @@ class ApiClient {
     });
   }
 
+  async forgotPassword(email: string) {
+    return this.request('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    return this.request('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, newPassword }),
+    });
+  }
+
   // Users Management (Admin only)
   async getUsers(params?: { role?: string; includeInactive?: boolean }) {
     const searchParams = new URLSearchParams();

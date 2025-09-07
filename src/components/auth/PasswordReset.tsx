@@ -11,6 +11,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { useNotifications } from '../common/NotificationSystem';
+import { apiClient } from '../../lib/api';
 
 interface PasswordResetProps {
   onSuccess: () => void;
@@ -84,18 +85,7 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
   const requestPasswordReset = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send reset email');
-      }
-
+      await apiClient.forgotPassword(email);
       showSuccess('Email Sent', 'If the email exists, a password reset link has been sent');
       setStep('reset');
     } catch (error) {
@@ -118,21 +108,7 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
 
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          token: token || '', 
-          newPassword 
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to reset password');
-      }
-
+      await apiClient.resetPassword(token || '', newPassword);
       showSuccess('Success', 'Password reset successfully! You can now sign in with your new password.');
       onSuccess();
     } catch (error) {
