@@ -150,11 +150,16 @@ export class User {
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
-    if (this.password) {
+    if (this.password && !this.isPasswordHashed()) {
       this.password = await bcrypt.hash(this.password, 12);
     }
     // Construct fullName from separate fields
     this.fullName = this.constructFullName();
+  }
+
+  private isPasswordHashed(): boolean {
+    // Check if password is already hashed (bcrypt hashes start with $2a$, $2b$, etc.)
+    return this.password && this.password.startsWith('$2');
   }
 
   private constructFullName(): string {
