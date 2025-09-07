@@ -370,31 +370,54 @@ export function LoginForm() {
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <label htmlFor="firstName" className="block text-sm font-bold text-slate-300 mb-2">
-                          First Name *
-                        </label>
-                        <div className="relative group">
-                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <User className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="firstName" className="block text-sm font-bold text-slate-300 mb-2">
+                            First Name *
+                          </label>
+                          <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                              <User className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                            </div>
+                            <input
+                              id="firstName"
+                              name="firstName"
+                              type="text"
+                              required={showRegister}
+                              value={firstName}
+                              onChange={(e) => setFirstName(e.target.value)}
+                              className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                              placeholder="John"
+                            />
                           </div>
-                          <input
-                            id="firstName"
-                            name="firstName"
-                            type="text"
-                            required={showRegister}
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
-                            placeholder="John"
-                          />
+                        </div>
+                        
+                        <div>
+                          <label htmlFor="lastName" className="block text-sm font-bold text-slate-300 mb-2">
+                            Last Name *
+                          </label>
+                          <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                              <User className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                            </div>
+                            <input
+                              id="lastName"
+                              name="lastName"
+                              type="text"
+                              required={showRegister}
+                              value={lastName}
+                              onChange={(e) => setLastName(e.target.value)}
+                              className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                              placeholder="Doe"
+                            />
+                          </div>
                         </div>
                       </div>
                       
                       <div>
                         <label htmlFor="middleName" className="block text-sm font-bold text-slate-300 mb-2">
-                          Middle Name
+                          Middle Name (Optional)
                         </label>
                         <div className="relative group">
                           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -408,27 +431,6 @@ export function LoginForm() {
                             onChange={(e) => setMiddleName(e.target.value)}
                             className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
                             placeholder="M"
-                          />
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="lastName" className="block text-sm font-bold text-slate-300 mb-2">
-                          Last Name *
-                        </label>
-                        <div className="relative group">
-                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <User className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                          </div>
-                          <input
-                            id="lastName"
-                            name="lastName"
-                            type="text"
-                            required={showRegister}
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
-                            placeholder="Doe"
                           />
                         </div>
                       </div>
