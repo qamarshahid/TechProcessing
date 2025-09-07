@@ -1,6 +1,7 @@
 import { IsEmail, IsString, MinLength, IsEnum, IsOptional, ValidateNested, IsPhoneNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { IsNotDisposableEmail } from '../../common/validators/email-domain.validator';
 import { UserRole } from '../../common/enums/user-role.enum';
 
 class AddressDto {
@@ -33,6 +34,7 @@ class AddressDto {
 export class RegisterDto {
   @ApiProperty({ example: 'john.doe@example.com' })
   @IsEmail()
+  @IsNotDisposableEmail()
   email: string;
 
   @ApiProperty({ example: 'securePassword123' })
