@@ -9,6 +9,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { useNotifications } from '../common/NotificationSystem';
+import { apiClient } from '../../lib/api';
 
 interface EmailVerificationProps {
   email: string;
@@ -47,18 +48,7 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
   const verifyCode = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/verify-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: verificationCode }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Invalid verification code');
-      }
-
+      await apiClient.verifyEmailCode(email, verificationCode);
       showSuccess('Success', 'Email verified successfully!');
       onVerified();
     } catch (error) {
@@ -71,18 +61,7 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
   const resendVerification = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/resend-verification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to resend verification');
-      }
-
+      await apiClient.resendVerificationEmail(email);
       setTimeLeft(60);
       setCanResend(false);
       showSuccess('Code Sent', 'A new verification code has been sent to your email');
