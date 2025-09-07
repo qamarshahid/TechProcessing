@@ -18,12 +18,8 @@ echo "🔐 Creating service account key secret..."
 gcloud secrets create service-account-key --data-file=backend/service-account-key.json --quiet 2>/dev/null || echo "Secret already exists, updating..."
 gcloud secrets versions add service-account-key --data-file=backend/service-account-key.json
 
-# Create Google Places API key secret if it doesn't exist
-echo "🔐 Creating Google Places API key secret..."
-echo "Please enter your Google Places API key:"
-read -s GOOGLE_PLACES_API_KEY
-echo "$GOOGLE_PLACES_API_KEY" | gcloud secrets create google-places-api-key --data-file=- --quiet 2>/dev/null || echo "Secret already exists, updating..."
-echo "$GOOGLE_PLACES_API_KEY" | gcloud secrets versions add google-places-api-key --data-file=-
+# Google Places API key secret already exists - no need to recreate
+echo "🔐 Using existing Google Places API key secret..."
 
 # Build and deploy
 echo "🔨 Building and deploying backend..."
