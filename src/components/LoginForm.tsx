@@ -44,7 +44,6 @@ export function LoginForm() {
     postalCode: '',
     country: 'United States'
   });
-  const [addressSearch, setAddressSearch] = useState('');
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const addressSearchRef = useRef<HTMLDivElement>(null);
@@ -179,12 +178,11 @@ export function LoginForm() {
       postalCode: suggestion.postalCode,
       country: suggestion.country
     });
-    setAddressSearch(suggestion.formatted);
     setShowSuggestions(false);
   };
 
   const handleAddressSearchChange = (value: string) => {
-    setAddressSearch(value);
+    setAddress({...address, street: value});
     searchAddress(value);
   };
 
@@ -463,17 +461,17 @@ export function LoginForm() {
                       <h3 className="text-lg font-semibold text-white">Address Information</h3>
                     </div>
                     
-                    {/* Address Search with Autocomplete */}
+                    {/* Street Address with Autocomplete */}
                     <div className="space-y-2">
-                      <label htmlFor="addressSearch" className="block text-sm font-bold text-slate-300">
-                        Search Address
+                      <label htmlFor="street" className="block text-sm font-bold text-slate-300">
+                        Street Address
                       </label>
                       <div className="relative" ref={addressSearchRef}>
                         <input
-                          id="addressSearch"
-                          name="addressSearch"
+                          id="street"
+                          name="street"
                           type="text"
-                          value={addressSearch}
+                          value={address.street}
                           onChange={(e) => handleAddressSearchChange(e.target.value)}
                           onFocus={() => setShowSuggestions(addressSuggestions.length > 0)}
                           className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
@@ -502,24 +500,8 @@ export function LoginForm() {
                       
                       <div className="text-xs text-gray-400 flex items-center space-x-1">
                         <MapPin className="h-3 w-3" />
-                        <span>Or fill in the fields below manually</span>
+                        <span>Select from suggestions or continue typing manually</span>
                       </div>
-                    </div>
-
-                    {/* Street Address */}
-                    <div className="space-y-2">
-                      <label htmlFor="street" className="block text-sm font-bold text-slate-300">
-                        Street Address
-                      </label>
-                      <input
-                        id="street"
-                        name="street"
-                        type="text"
-                        value={address.street}
-                        onChange={(e) => setAddress({...address, street: e.target.value})}
-                        className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
-                        placeholder="Enter street address"
-                      />
                     </div>
 
                     {/* City and State */}

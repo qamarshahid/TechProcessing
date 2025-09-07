@@ -64,8 +64,8 @@ export class AddressService {
       return suggestions;
     } catch (error) {
       this.logger.error('Error searching addresses:', error);
-      this.logger.warn('Falling back to mock data due to API error');
-      return this.getMockAddresses(query);
+      this.logger.warn('Google Places API error, returning empty results');
+      return [];
     }
   }
 
@@ -112,59 +112,4 @@ export class AddressService {
     }
   }
 
-  private getMockAddresses(query: string): AddressSuggestion[] {
-    const mockAddresses: AddressSuggestion[] = [
-      {
-        formatted: "123 Main Street, New York, NY 10001, USA",
-        street: "123 Main Street",
-        city: "New York",
-        state: "New York",
-        postalCode: "10001",
-        country: "United States"
-      },
-      {
-        formatted: "456 Oak Avenue, Los Angeles, CA 90210, USA",
-        street: "456 Oak Avenue",
-        city: "Los Angeles",
-        state: "California",
-        postalCode: "90210",
-        country: "United States"
-      },
-      {
-        formatted: "789 Pine Road, Chicago, IL 60601, USA",
-        street: "789 Pine Road",
-        city: "Chicago",
-        state: "Illinois",
-        postalCode: "60601",
-        country: "United States"
-      },
-      {
-        formatted: "321 Elm Street, Houston, TX 77001, USA",
-        street: "321 Elm Street",
-        city: "Houston",
-        state: "Texas",
-        postalCode: "77001",
-        country: "United States"
-      },
-      {
-        formatted: "654 Maple Drive, Phoenix, AZ 85001, USA",
-        street: "654 Maple Drive",
-        city: "Phoenix",
-        state: "Arizona",
-        postalCode: "85001",
-        country: "United States"
-      }
-    ];
-
-    // Filter mock addresses based on query, or return all if no match
-    const filtered = mockAddresses.filter(addr => 
-      addr.formatted.toLowerCase().includes(query.toLowerCase()) ||
-      addr.street.toLowerCase().includes(query.toLowerCase()) ||
-      addr.city.toLowerCase().includes(query.toLowerCase()) ||
-      addr.state.toLowerCase().includes(query.toLowerCase())
-    );
-
-    // If no matches found, return the first few addresses as fallback
-    return filtered.length > 0 ? filtered.slice(0, 5) : mockAddresses.slice(0, 3);
-  }
 }
