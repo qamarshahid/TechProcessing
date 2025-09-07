@@ -445,10 +445,8 @@ export class AuthService {
       return { message: 'If the phone number exists, a verification code has been sent' };
     }
 
-    const verificationCode = user.generatePhoneVerificationCode();
-    await this.usersService.save(user);
-
-    const smsResult = await this.smsService.sendVerificationCode(user.phoneNumber, verificationCode);
+    // Use Twilio Verify API for better deliverability
+    const smsResult = await this.smsService.sendVerificationCode(user.phoneNumber, '');
     
     if (!smsResult.success) {
       throw new BadRequestException('Failed to send verification code');
@@ -472,12 +470,11 @@ export class AuthService {
       throw new BadRequestException('User not found');
     }
 
-    if (!user.phoneVerificationCode || user.phoneVerificationCode !== verifyPhoneCodeDto.code) {
-      throw new BadRequestException('Invalid verification code');
-    }
-
-    if (!user.phoneVerificationCodeExpires || user.phoneVerificationCodeExpires < new Date()) {
-      throw new BadRequestException('Verification code has expired');
+    // Use Twilio Verify API to verify the code
+    const verificationResult = await this.smsService.verifyCode(verifyPhoneCodeDto.phoneNumber, verifyPhoneCodeDto.code);
+    
+    if (!verificationResult.success) {
+      throw new BadRequestException(verificationResult.error || 'Invalid verification code');
     }
 
     user.isPhoneVerified = true;
