@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, Length, IsEmail } from 'class-validator';
+import { IsString, IsNotEmpty, Length, IsEmail, Matches } from 'class-validator';
 
 export class VerifyEmailDto {
   @IsString()
@@ -14,6 +14,7 @@ export class VerifyEmailCodeDto {
   @IsString()
   @IsNotEmpty()
   @Length(6, 6)
+  @Matches(/^\d{6}$/, { message: 'Code must contain exactly 6 digits' })
   code: string;
 }
 
