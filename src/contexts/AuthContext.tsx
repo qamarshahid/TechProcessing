@@ -76,7 +76,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (registrationData: {
     email: string;
     password: string;
-    fullName: string;
+    firstName: string;
+    middleName?: string;
+    lastName: string;
     role: 'ADMIN' | 'CLIENT' | 'AGENT';
     companyName?: string;
     phoneNumber?: string;
