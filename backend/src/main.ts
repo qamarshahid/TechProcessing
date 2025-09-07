@@ -7,7 +7,6 @@ import { ConfigService } from '@nestjs/config';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { RequestInfoInterceptor } from './common/interceptors/request-info.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { CorsMiddleware } from './common/middleware/cors.middleware';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 
@@ -53,11 +52,7 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  // Apply custom CORS middleware as backup
-  const corsMiddleware = new CorsMiddleware();
-  app.use(corsMiddleware.use.bind(corsMiddleware));
-
-  logger.log('✅ CORS enabled with built-in and custom middleware for GitHub Pages and localhost development');
+  logger.log('✅ CORS enabled with built-in middleware for GitHub Pages and localhost development');
 
   // Security headers
   app.use(helmet({ contentSecurityPolicy: isProd }));
