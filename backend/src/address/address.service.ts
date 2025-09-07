@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 
 export interface AddressSuggestion {
   formatted: string;
@@ -14,48 +13,15 @@ export interface AddressSuggestion {
 @Injectable()
 export class AddressService {
   private readonly logger = new Logger(AddressService.name);
-  private readonly projectId: string;
-  private readonly secretClient: SecretManagerServiceClient;
-  private cachedApiKey: string | null = null;
-  private keyCacheExpiry: number = 0;
 
-  constructor(private configService: ConfigService) {
-    this.projectId = this.configService.get<string>('GCP_PROJECT_ID') || 'your-project-id';
-    this.secretClient = new SecretManagerServiceClient();
-  }
+  constructor(private configService: ConfigService) {}
 
-  private async getGooglePlacesApiKey(): Promise<string> {
-    // Check if we have a cached key that's still valid (cache for 1 hour)
-    if (this.cachedApiKey && Date.now() < this.keyCacheExpiry) {
-      return this.cachedApiKey;
+  private getGooglePlacesApiKey(): string {
+    const apiKey = this.configService.get<string>('GOOGLE_PLACES_API_KEY');
+    if (!apiKey) {
+      throw new Error('Google Places API key not found in environment variables');
     }
-
-    try {
-      // Try to get from Secret Manager first
-      const [version] = await this.secretClient.accessSecretVersion({
-        name: `projects/${this.projectId}/secrets/google-places-api-key/versions/latest`,
-      });
-
-      const apiKey = version.payload?.data?.toString();
-      if (apiKey) {
-        this.cachedApiKey = apiKey;
-        this.keyCacheExpiry = Date.now() + (60 * 60 * 1000); // Cache for 1 hour
-        this.logger.log('Successfully retrieved API key from Secret Manager');
-        return apiKey;
-      }
-    } catch (error) {
-      this.logger.warn('Failed to retrieve API key from Secret Manager, falling back to environment variable:', error.message);
-    }
-
-    // Fallback to environment variable
-    const envApiKey = this.configService.get<string>('GOOGLE_PLACES_API_KEY');
-    if (!envApiKey) {
-      throw new Error('Google Places API key not found in Secret Manager or environment variables');
-    }
-
-    this.cachedApiKey = envApiKey;
-    this.keyCacheExpiry = Date.now() + (60 * 60 * 1000); // Cache for 1 hour
-    return envApiKey;
+    return apiKey;
   }
 
   async searchAddresses(query: string): Promise<AddressSuggestion[]> {
@@ -64,7 +30,7 @@ export class AddressService {
     }
 
     try {
-      const apiKey = await this.getGooglePlacesApiKey();
+      const apiKey = this.getGooglePlacesApiKey();
       
       // Use Google Places API Autocomplete
       const response = await fetch(
@@ -104,7 +70,7 @@ export class AddressService {
 
   private async getPlaceDetails(placeId: string): Promise<AddressSuggestion | null> {
     try {
-      const apiKey = await this.getGooglePlacesApiKey();
+      const apiKey = this.getGooglePlacesApiKey();
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=formatted_address,address_components&key=${apiKey}`
       );
