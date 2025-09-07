@@ -33,7 +33,9 @@ export class UsersService {
     const user = this.usersRepository.create({
       email: createUserDto.email,
       password: createUserDto.password,
-      fullName: createUserDto.fullName,
+      firstName: createUserDto.firstName,
+      middleName: createUserDto.middleName,
+      lastName: createUserDto.lastName,
       role: createUserDto.role || UserRole.CLIENT,
       companyName: createUserDto.companyName,
       phoneNumber: createUserDto.phoneNumber,
