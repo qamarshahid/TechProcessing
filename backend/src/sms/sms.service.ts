@@ -9,10 +9,12 @@ export class SmsService {
 
   async sendSms(to: string, message: string): Promise<{ success: boolean; messageId?: string; error?: string }> {
     try {
-      const firebaseServerKey = this.configService.get<string>('FIREBASE_SERVER_KEY');
-      
-      if (!firebaseServerKey) {
-        this.logger.warn('Firebase Server Key not configured, logging SMS instead');
+      const twilioAccountSid = this.configService.get<string>('TWILIO_ACCOUNT_SID');
+      const twilioAuthToken = this.configService.get<string>('TWILIO_AUTH_TOKEN');
+      const twilioPhoneNumber = this.configService.get<string>('TWILIO_PHONE_NUMBER');
+
+      if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
+        this.logger.warn('Twilio credentials not configured, logging SMS instead');
         this.logger.log(`SMS to ${to}: ${message}`);
         
         // Simulate SMS sending for development
@@ -25,39 +27,23 @@ export class SmsService {
         };
       }
 
-      // Use Firebase Cloud Messaging to send SMS
-      const response = await fetch('https://fcm.googleapis.com/fcm/send', {
-        method: 'POST',
-        headers: {
-          'Authorization': `key=${firebaseServerKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to: to,
-          notification: {
-            title: 'TechProcessing LLC',
-            body: message,
-          },
-          data: {
-            type: 'sms',
-            message: message,
-          },
-        }),
+      // Use Twilio SDK to send SMS
+      const twilio = require('twilio')(twilioAccountSid, twilioAuthToken);
+      
+      const result = await twilio.messages.create({
+        body: message,
+        from: twilioPhoneNumber,
+        to: to
       });
 
-      const result = await response.json();
+      this.logger.log(`SMS sent successfully via Twilio with SID: ${result.sid}`);
       
-      if (response.ok && result.success) {
-        this.logger.log(`SMS sent successfully via Firebase with MessageId: ${result.message_id}`);
-        return {
-          success: true,
-          messageId: result.message_id,
-        };
-      } else {
-        throw new Error(result.error || 'Failed to send SMS via Firebase');
-      }
+      return {
+        success: true,
+        messageId: result.sid,
+      };
     } catch (error) {
-      this.logger.error('Failed to send SMS via Firebase:', error);
+      this.logger.error('Failed to send SMS:', error);
       return {
         success: false,
         error: error.message,
