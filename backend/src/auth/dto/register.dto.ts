@@ -2,6 +2,7 @@ import { IsEmail, IsString, MinLength, IsEnum, IsOptional, ValidateNested, IsPho
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotDisposableEmail } from '../../common/validators/email-domain.validator';
+import { IsStrongPassword, IsNotUserInfo } from '../../common/validators/password.validator';
 import { UserRole } from '../../common/enums/user-role.enum';
 
 class AddressDto {
@@ -37,9 +38,22 @@ export class RegisterDto {
   @IsNotDisposableEmail()
   email: string;
 
-  @ApiProperty({ example: 'securePassword123' })
+  @ApiProperty({ 
+    example: 'SecurePass123!@#',
+    description: 'Password must be at least 12 characters long and contain uppercase, lowercase, numbers, and special characters'
+  })
   @IsString()
-  @MinLength(8)
+  @IsStrongPassword({
+    minLength: 12,
+    requireUppercase: true,
+    requireLowercase: true,
+    requireNumbers: true,
+    requireSpecialChars: true,
+    preventCommonPasswords: true,
+    preventUserInfo: true,
+    userInfoFields: ['firstName', 'lastName', 'email']
+  })
+  @IsNotUserInfo(['firstName', 'lastName', 'email'])
   password: string;
 
   @ApiProperty({ example: 'John' })

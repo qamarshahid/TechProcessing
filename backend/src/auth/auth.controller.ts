@@ -19,11 +19,14 @@ import {
   GenerateBackupCodesDto,
   SetTwoFactorMethodDto 
 } from './dto/mfa.dto';
+import { PasswordStrengthDto } from './dto/password-strength.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { IpAddress, UserAgent } from '../common/decorators/ip-address.decorator';
 import { User } from '../users/entities/user.entity';
+import { PasswordStrengthService } from '../common/services/password-strength.service';
+import { PasswordPolicyService } from '../common/services/password-policy.service';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -31,6 +34,8 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly mfaService: MfaService,
+    private readonly passwordStrengthService: PasswordStrengthService,
+    private readonly passwordPolicyService: PasswordPolicyService,
   ) {}
 
   @Post('login')
@@ -261,5 +266,89 @@ export class AuthController {
     // This would update the user's preferred 2FA method
     // Implementation depends on your specific requirements
     return { message: 'Two-factor method updated successfully' };
+  }
+
+  @Post('password/check-strength')
+  @Public()
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 checks per minute
+  @ApiOperation({ summary: 'Check password strength' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Password strength analysis',
+    schema: {
+      type: 'object',
+      properties: {
+        score: { type: 'number', description: 'Password strength score (0-100)' },
+        level: { type: 'string', enum: ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'] },
+        feedback: { type: 'array', items: { type: 'string' } },
+        requirements: {
+          type: 'object',
+          properties: {
+            length: { type: 'boolean' },
+            uppercase: { type: 'boolean' },
+            lowercase: { type: 'boolean' },
+            numbers: { type: 'boolean' },
+            specialChars: { type: 'boolean' },
+            notCommon: { type: 'boolean' },
+            notSequential: { type: 'boolean' },
+            notRepeated: { type: 'boolean' }
+          }
+        }
+      }
+    }
+  })
+  async checkPasswordStrength(@Body() passwordStrengthDto: PasswordStrengthDto) {
+    const result = this.passwordStrengthService.calculateStrength(
+      passwordStrengthDto.password,
+      passwordStrengthDto.userInfo || []
+    );
+    
+    return result;
+  }
+
+  @Get('password/policy')
+  @Public()
+  @ApiOperation({ summary: 'Get password policy requirements' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Password policy information',
+    schema: {
+      type: 'object',
+      properties: {
+        requirements: { type: 'array', items: { type: 'string' } },
+        description: { type: 'string' },
+        policy: {
+          type: 'object',
+          properties: {
+            minLength: { type: 'number' },
+            maxLength: { type: 'number' },
+            requireUppercase: { type: 'boolean' },
+            requireLowercase: { type: 'boolean' },
+            requireNumbers: { type: 'boolean' },
+            requireSpecialChars: { type: 'boolean' },
+            preventCommonPasswords: { type: 'boolean' },
+            preventUserInfo: { type: 'boolean' },
+            preventSequentialChars: { type: 'boolean' },
+            preventRepeatedChars: { type: 'boolean' },
+            maxRepeatedChars: { type: 'number' },
+            historyLimit: { type: 'number' },
+            expirationDays: { type: 'number' },
+            maxFailedAttempts: { type: 'number' },
+            lockoutDurationMinutes: { type: 'number' }
+          }
+        }
+      }
+    }
+  })
+  async getPasswordPolicy() {
+    const policy = this.passwordPolicyService.getPasswordPolicy();
+    const requirements = this.passwordPolicyService.getPasswordRequirements();
+    const description = this.passwordPolicyService.getPasswordPolicyDescription();
+    
+    return {
+      requirements,
+      description,
+      policy
+    };
   }
 }
