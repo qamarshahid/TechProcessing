@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
-import { ArrowRight, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, Clock, Rocket, Gauge, CheckCircle2, Sparkles, Megaphone, Settings, Briefcase, Brush, BarChart3, Map, Globe2, MousePointer } from 'lucide-react';
+import { ArrowRight, CheckCircle, Star, Target, TrendingUp, Phone, Mail, MapPin, Code, Search, Facebook, Twitter, Instagram, Linkedin as LinkedIn, Menu, X, Clock, Rocket, Gauge, CheckCircle2, Sparkles, Megaphone, Settings, Briefcase, Brush, BarChart3, Map, Globe2, MousePointer, Shield, FileText } from 'lucide-react';
 import { ContactForm } from './ContactForm';
 import { AppointmentBooking } from './AppointmentBooking';
 import { MobileOptimized } from './MobileOptimized';
@@ -13,6 +13,7 @@ export function LandingPage() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeTab, setActiveTab] = useState<'contact' | 'appointment'>('contact');
   const [isServicesDropdownOpen, setIsServicesDropdownOpen] = useState(false);
+  const [isLegalDropdownOpen, setIsLegalDropdownOpen] = useState(false);
 
   const heroRef = useRef(null);
   const isHeroInView = useInView(heroRef, { once: true });
@@ -65,6 +66,21 @@ export function LandingPage() {
       description: 'Paid Search Advertising',
       href: '/services/google-ads',
       icon: MousePointer
+    }
+  ];
+
+  const legalDropdown = [
+    {
+      title: 'Privacy Policy',
+      description: 'How we protect your data',
+      href: '/privacy-policy',
+      icon: Shield
+    },
+    {
+      title: 'Terms & Conditions',
+      description: 'Service terms and conditions',
+      href: '/terms-conditions',
+      icon: FileText
     }
   ];
 
@@ -447,6 +463,66 @@ export function LandingPage() {
                     </div>
                   </motion.div>
                 </div>
+
+                {/* Legal Dropdown */}
+                <div 
+                  className="relative legal-dropdown-container"
+                  onMouseEnter={() => setIsLegalDropdownOpen(true)}
+                  onMouseLeave={() => setIsLegalDropdownOpen(false)}
+                >
+                  <button 
+                    className="text-gray-300 hover:text-emerald-400 transition-colors font-medium flex items-center py-2"
+                    onClick={() => setIsLegalDropdownOpen(!isLegalDropdownOpen)}
+                  >
+                    Legal
+                    <ArrowRight className={`h-4 w-4 ml-1 transform transition-transform duration-200 ${isLegalDropdownOpen ? 'rotate-90' : 'rotate-0'}`} />
+                  </button>
+                  
+                  {/* Invisible bridge to prevent dropdown from closing */}
+                  {isLegalDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 h-2 bg-transparent" />
+                  )}
+                  
+                  {/* Dropdown Menu */}
+                  <motion.div
+                    className="absolute top-full left-0 w-64 bg-slate-800 rounded-xl shadow-xl border border-slate-700 z-50"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ 
+                      opacity: isLegalDropdownOpen ? 1 : 0, 
+                      y: isLegalDropdownOpen ? 0 : 10 
+                    }}
+                    transition={{ duration: 0.2 }}
+                    style={{ 
+                      pointerEvents: isLegalDropdownOpen ? 'auto' : 'none',
+                      marginTop: '8px'
+                    }}
+                  >
+                    <div className="p-4">
+                      <div className="grid grid-cols-1 gap-2">
+                        {legalDropdown.map((legal) => (
+                          <Link
+                            key={legal.title}
+                            to={legal.href}
+                            className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group"
+                            onClick={() => setIsLegalDropdownOpen(false)}
+                          >
+                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
+                              <legal.icon className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-white group-hover:text-emerald-400 transition-colors">
+                                {legal.title}
+                              </div>
+                              <div className="text-sm text-gray-400">
+                                {legal.description}
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
                 
                 <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
                 <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Process</a>
@@ -538,6 +614,33 @@ export function LandingPage() {
                             </div>
                             <div className="text-xs text-gray-400 truncate">
                               {service.description}
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Legal Section */}
+                  <div className="space-y-3">
+                    <div className="text-gray-300 font-semibold text-sm uppercase tracking-wider px-2">Legal</div>
+                    <div className="grid grid-cols-1 gap-2">
+                      {legalDropdown.map((legal) => (
+                        <Link
+                          key={legal.title}
+                          to={legal.href}
+                          className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group touch-manipulation"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                            <legal.icon className="h-4 w-4 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-white group-hover:text-emerald-400 transition-colors text-sm">
+                              {legal.title}
+                            </div>
+                            <div className="text-xs text-gray-400 truncate">
+                              {legal.description}
                             </div>
                           </div>
                         </Link>
