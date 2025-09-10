@@ -24,6 +24,7 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
   onResend,
   onCancel
 }) => {
+  console.log('EmailVerification component rendered with email:', email);
   const { showSuccess, showError } = useNotifications();
   const [verificationCode, setVerificationCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -48,10 +49,28 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
   const verifyCode = async () => {
     setLoading(true);
     try {
-      await apiClient.verifyEmailCode(email, verificationCode);
+      const response = await apiClient.verifyEmailCode(email, verificationCode);
+      
+      // Debug: Log the response to see what we're getting
+      console.log('Email verification response:', response);
+      
+      // If the response includes a token, automatically log the user in
+      if (response.access_token) {
+        localStorage.setItem('auth_token', response.access_token);
+        apiClient.setToken(response.access_token);
+        showSuccess('Success', 'Email verified successfully! You are now logged in.');
+        // Call onVerified to close modal and let parent handle redirect
+        onVerified();
+        // Navigate to dashboard
+        window.location.href = '/dashboard';
+        return;
+      }
+      
+      // If no token, show success but don't redirect
       showSuccess('Success', 'Email verified successfully!');
       onVerified();
     } catch (error) {
+      console.error('Email verification error:', error);
       showError('Verification Failed', 'Invalid verification code. Please try again.');
     } finally {
       setLoading(false);

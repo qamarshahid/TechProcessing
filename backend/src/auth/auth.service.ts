@@ -165,7 +165,7 @@ export class AuthService {
       // Send verification email
       await this.emailService.sendEmail({
         to: user.email,
-        subject: 'Verify Your TechProcessing Account',
+        subject: 'Complete Your TechProcessing Registration',
         template: 'email-verification',
         context: {
           name: user.fullName,
@@ -275,7 +275,31 @@ export class AuthService {
       user: user,
     });
 
-    return { message: 'Email verified successfully' };
+    // Generate JWT token for automatic login after verification
+    const payload = { 
+      sub: user.id, 
+      email: user.email, 
+      role: user.role,
+      isEmailVerified: user.isEmailVerified,
+      accountStatus: user.accountStatus,
+    };
+    
+    const access_token = this.jwtService.sign(payload);
+
+    return { 
+      message: 'Email verified successfully',
+      access_token,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        middleName: user.middleName,
+        lastName: user.lastName,
+        role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        accountStatus: user.accountStatus,
+      }
+    };
   }
 
   async resendVerificationEmail(resendDto: ResendVerificationDto) {

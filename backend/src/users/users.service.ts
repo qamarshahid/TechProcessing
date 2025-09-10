@@ -27,7 +27,11 @@ export class UsersService {
     });
 
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      if (!existingUser.isEmailVerified) {
+        throw new ConflictException('User with this email already exists but is not verified. Please check your email for the verification code or request a new one.');
+      } else {
+        throw new ConflictException('User with this email already exists');
+      }
     }
 
     const user = this.usersRepository.create({

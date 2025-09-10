@@ -127,6 +127,9 @@ export class EmailService {
         } else if (data.template === 'password-reset-code') {
           htmlContent = this.generatePasswordResetCodeHTML(data.context);
           textContent = this.generatePasswordResetCodeText(data.context);
+        } else if (data.template === 'welcome') {
+          htmlContent = this.generateWelcomeHTML(data.context);
+          textContent = this.generateWelcomeText(data.context);
         }
       }
 
@@ -143,9 +146,26 @@ export class EmailService {
             email: this.configService.get<string>('EMAIL_USER', 'support@techprocessingllc.com'),
             name: 'TechProcessing LLC'
           },
+          replyTo: {
+            email: 'support@techprocessingllc.com',
+            name: 'TechProcessing Support'
+          },
           subject: data.subject,
           html: htmlContent || 'Email content not provided',
           text: textContent || (htmlContent ? htmlContent.replace(/<[^>]*>/g, '') : 'Email content not provided'),
+          headers: {
+            'X-Mailer': 'TechProcessing-Platform',
+            'X-Priority': '3',
+            'X-MSMail-Priority': 'Normal',
+            'Importance': 'Normal',
+            'List-Unsubscribe': '<mailto:unsubscribe@techprocessingllc.com>',
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
+          },
+          categories: ['verification', 'transactional'],
+          customArgs: {
+            source: 'email-verification',
+            user_type: 'new_registration'
+          }
         };
 
         try {
@@ -405,39 +425,40 @@ Reply to: ${data.email}
       <html>
       <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Verify Your Email - TechProcessing LLC</title>
         <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
-          .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
-          .code { background: #10b981; color: white; padding: 25px; text-align: center; font-size: 36px; font-weight: bold; letter-spacing: 8px; border-radius: 8px; margin: 25px 0; font-family: 'Courier New', monospace; }
+          .header { background: #10b981; color: white; padding: 30px; text-align: center; }
+          .content { background: white; padding: 30px; }
+          .code { background: #f8f9fa; border: 2px solid #10b981; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 4px; margin: 25px 0; font-family: 'Courier New', monospace; color: #10b981; }
           .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280; text-align: center; }
-          .warning { background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 15px; margin: 20px 0; }
-          .instruction { background: #e0f2fe; border: 1px solid #0288d1; border-radius: 6px; padding: 15px; margin: 20px 0; text-align: center; }
+          .warning { background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 15px; margin: 20px 0; }
+          .instruction { background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: 15px; margin: 20px 0; text-align: center; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h1>🚀 Welcome to TechProcessing LLC</h1>
-            <p>Verify Your Email Address</p>
+            <h1>Welcome to TechProcessing LLC</h1>
+            <p>Email Verification Required</p>
           </div>
           <div class="content">
             <h2>Hello ${context.name}!</h2>
-            <p>Thank you for registering with TechProcessing LLC. Your account has been created but is currently <strong>pending verification</strong>. To activate your account and start accessing our services, please use the verification code below:</p>
+            <p>Thank you for registering with TechProcessing LLC. Your account has been created and is currently pending verification. To activate your account and start accessing our services, please use the verification code below:</p>
             
             <div class="code">${context.verificationCode}</div>
             
             <div class="instruction">
-              <strong>📝 Enter this 6-digit code in the verification form on our website</strong>
+              <strong>Enter this 6-digit code in the verification form on our website</strong>
             </div>
             
             <div class="warning">
-              <strong>⚠️ Important:</strong> This verification code will expire in 30 minutes for security reasons.
+              <strong>Important:</strong> This verification code will expire in 30 minutes for security reasons.
             </div>
             
-            <p>If you didn't create an account with us, please ignore this email.</p>
+            <p>If you did not create an account with us, please ignore this email.</p>
           </div>
           <div class="footer">
             <p><strong>${context.company}</strong></p>
@@ -452,19 +473,19 @@ Reply to: ${data.email}
 
   private generateEmailVerificationText(context: any): string {
     return `
-Welcome to TechProcessing LLC - Verify Your Email Address
+Welcome to TechProcessing LLC - Email Verification
 
 Hello ${context.name}!
 
-Thank you for registering with TechProcessing LLC. Your account has been created but is currently PENDING VERIFICATION. To activate your account and start accessing our services, please use the verification code below:
+Thank you for registering with TechProcessing LLC. Your account has been created and is currently pending verification. To activate your account and start accessing our services, please use the verification code below:
 
-VERIFICATION CODE: ${context.verificationCode}
+Verification Code: ${context.verificationCode}
 
 Enter this 6-digit code in the verification form on our website.
 
-IMPORTANT: This verification code will expire in 30 minutes for security reasons.
+Important: This verification code will expire in 30 minutes for security reasons.
 
-If you didn't create an account with us, please ignore this email.
+If you did not create an account with us, please ignore this email.
 
 Need help? Contact us at support@techprocessingllc.com
 
@@ -617,6 +638,86 @@ Enter this 6-digit code in the password reset form on our website.
 IMPORTANT: This verification code will expire in 30 minutes for security reasons.
 
 If you didn't request a password reset, please ignore this email. Your password will remain unchanged.
+
+Need help? Contact us at support@techprocessingllc.com
+
+---
+TechProcessing LLC
+This is an automated message. Please do not reply to this email.
+    `.trim();
+  }
+
+  private generateWelcomeHTML(context: any): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Welcome to TechProcessing LLC</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #10b981; color: white; padding: 30px; text-align: center; }
+          .content { background: white; padding: 30px; }
+          .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280; text-align: center; }
+          .button { display: inline-block; background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 20px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Welcome to TechProcessing LLC</h1>
+            <p>Your Account is Ready!</p>
+          </div>
+          <div class="content">
+            <h2>Hello ${context.name}!</h2>
+            <p>Welcome to TechProcessing LLC! Your account has been successfully created and is now active.</p>
+            
+            <p>You can now access all our services and features. Here's what you can do next:</p>
+            
+            <ul>
+              <li>Access your personalized dashboard</li>
+              <li>Explore our service offerings</li>
+              <li>Connect with our support team</li>
+              <li>Manage your account settings</li>
+            </ul>
+            
+            <div style="text-align: center;">
+              <a href="https://qamarshahid.github.io/dashboard" class="button">Go to Dashboard</a>
+            </div>
+            
+            <p>If you have any questions or need assistance, don't hesitate to contact our support team.</p>
+          </div>
+          <div class="footer">
+            <p><strong>${context.company}</strong></p>
+            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>Need help? Contact us at <a href="mailto:support@techprocessingllc.com">support@techprocessingllc.com</a></p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  private generateWelcomeText(context: any): string {
+    return `
+Welcome to TechProcessing LLC - Your Account is Ready!
+
+Hello ${context.name}!
+
+Welcome to TechProcessing LLC! Your account has been successfully created and is now active.
+
+You can now access all our services and features. Here's what you can do next:
+
+- Access your personalized dashboard
+- Explore our service offerings  
+- Connect with our support team
+- Manage your account settings
+
+Visit your dashboard: https://qamarshahid.github.io/dashboard
+
+If you have any questions or need assistance, don't hesitate to contact our support team.
 
 Need help? Contact us at support@techprocessingllc.com
 

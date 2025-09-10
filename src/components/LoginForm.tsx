@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { useNotifications } from './common/NotificationSystem';
+import { apiClient } from '../lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Eye,
@@ -107,8 +108,10 @@ export function LoginForm() {
         };
         
         const response = await signUp(registrationData);
+        console.log('Registration response:', response);
         setRegistrationEmail(email);
         setShowEmailVerification(true);
+        console.log('Email verification modal should show now');
         showSuccess('Registration Successful', 'Please check your email to verify your account.');
       } else {
         const response = await signIn(email, password);
@@ -128,7 +131,7 @@ export function LoginForm() {
         setError(err.message);
         
         // Handle specific error cases
-        if (err.message.includes('verify your email')) {
+        if (err.message.includes('verify your email') || err.message.includes('not verified')) {
           setShowEmailVerification(true);
           setRegistrationEmail(email);
         }
@@ -153,7 +156,8 @@ export function LoginForm() {
   const handleEmailVerified = () => {
     setShowEmailVerification(false);
     showSuccess('Email Verified', 'Your email has been verified successfully!');
-    navigate('/login');
+    // Navigate to dashboard after email verification
+    navigate('/dashboard');
   };
 
   const handlePasswordResetSuccess = () => {
@@ -788,6 +792,15 @@ export function LoginForm() {
           onResend={() => {}}
           onCancel={() => setShowEmailVerification(false)}
         />
+      )}
+      
+      {/* Debug info */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{ position: 'fixed', top: 0, right: 0, background: 'black', color: 'white', padding: '10px', zIndex: 9999 }}>
+          showEmailVerification: {showEmailVerification.toString()}
+          <br />
+          registrationEmail: {registrationEmail}
+        </div>
       )}
 
       {/* Password Reset Modal */}
