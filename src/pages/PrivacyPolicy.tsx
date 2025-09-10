@@ -1,45 +1,191 @@
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { 
+  ArrowLeft, 
+  Shield, 
+  Lock, 
+  Eye, 
+  Users,
+  Phone, 
+  Mail, 
+  MapPin,
+  CheckCircle,
+  Clock,
+  FileText,
+  Globe
+} from 'lucide-react';
+import { appConfig } from '../config/app.config';
 
 const PrivacyPolicy: React.FC = () => {
-  return (
-    <>
-      <Helmet>
-        <title>Privacy Policy - TechProcessing LLC</title>
-        <meta name="description" content="TechProcessing LLC Privacy Policy - Learn how we collect, use, and protect your personal information." />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://www.techprocessingllc.com/privacy-policy" />
-      </Helmet>
+  useEffect(() => {
+    document.title = 'Privacy Policy - TechProcessing LLC';
+    
+    // SEO Meta Tags
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'TechProcessing LLC Privacy Policy - Learn how we collect, use, and protect your personal information. Your privacy is our priority.');
+    }
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        {/* Header */}
-        <div className="bg-black/20 backdrop-blur-sm border-b border-white/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-emerald-400 to-blue-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">TP</span>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-white">TechProcessing LLC</h1>
-                  <p className="text-gray-300 text-sm">Privacy Policy</p>
-                </div>
-              </div>
-              <a
-                href="/"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
-              >
-                Back to Home
+    const metaKeywords = document.querySelector('meta[name="keywords"]');
+    if (metaKeywords) {
+      metaKeywords.setAttribute('content', 'privacy policy, TechProcessing, data protection, personal information, privacy rights, data security, GDPR compliance');
+    }
+
+    // Open Graph Meta Tags
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', 'Privacy Policy - TechProcessing LLC');
+    }
+
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogDescription) {
+      ogDescription.setAttribute('content', 'TechProcessing LLC Privacy Policy - Learn how we collect, use, and protect your personal information.');
+    }
+
+    // Twitter Card Meta Tags
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twitterTitle) {
+      twitterTitle.setAttribute('content', 'Privacy Policy - TechProcessing LLC');
+    }
+
+    const twitterDescription = document.querySelector('meta[name="twitter:description"]');
+    if (twitterDescription) {
+      twitterDescription.setAttribute('content', 'TechProcessing LLC Privacy Policy - Learn how we collect, use, and protect your personal information.');
+    }
+
+    // JSON-LD Structured Data
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Privacy Policy - TechProcessing LLC",
+      "description": "TechProcessing LLC Privacy Policy - Learn how we collect, use, and protect your personal information.",
+      "url": "https://www.techprocessingllc.com/privacy-policy",
+      "publisher": {
+        "@type": "Organization",
+        "name": "TechProcessing LLC",
+        "url": "https://www.techprocessingllc.com"
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(jsonLd);
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  const privacyFeatures = [
+    {
+      icon: Shield,
+      title: 'Data Protection',
+      description: 'Advanced security measures to protect your personal information'
+    },
+    {
+      icon: Lock,
+      title: 'Secure Storage',
+      description: 'Your data is stored using industry-standard encryption'
+    },
+    {
+      icon: Eye,
+      title: 'Transparency',
+      description: 'Clear policies on how we collect and use your information'
+    },
+    {
+      icon: Users,
+      title: 'User Control',
+      description: 'You have full control over your personal data and preferences'
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-white">
+      {/* Navigation Header */}
+      <nav className="bg-slate-900/95 backdrop-blur-xl shadow-sm border-b border-slate-800/50 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 transition-colors touch-manipulation">
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="font-semibold text-sm sm:text-base">Back to Home</span>
+            </Link>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-gray-300 hover:text-emerald-400 transition-colors p-2 touch-manipulation">
+                <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
+              </a>
+              <a href="#contact" className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base touch-manipulation">
+                Contact Us
               </a>
             </div>
           </div>
         </div>
+      </nav>
 
-        {/* Main Content */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-8 lg:p-12">
-            <div className="prose prose-invert max-w-none">
-              <h1 className="text-4xl font-bold text-white mb-8">Privacy Policy</h1>
+      {/* Hero Section */}
+      <section className="relative py-20 lg:py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-blue-500/10"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-600/20 rounded-2xl mb-6">
+              <Shield className="h-8 w-8 text-emerald-400" />
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+              Privacy <span className="text-emerald-400">Policy</span>
+            </h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+              Your privacy is our priority. Learn how TechProcessing LLC collects, uses, and protects your personal information.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex items-center text-gray-300">
+                <Clock className="h-4 w-4 mr-2 text-emerald-400" />
+                <span className="text-sm">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-16 lg:py-24 bg-slate-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            {privacyFeatures.map((feature, index) => (
+              <div key={index} className="text-center group">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-600/20 rounded-xl mb-4 group-hover:bg-emerald-600/30 transition-colors">
+                  <feature.icon className="h-6 w-6 text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
+                <p className="text-gray-400 text-sm">{feature.description}</p>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Privacy Policy Content */}
+      <section className="py-16 lg:py-24">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="prose prose-lg prose-invert max-w-none"
+          >
+            <h2 className="text-3xl font-bold text-white mb-8">Privacy Policy</h2>
               
               <p className="text-gray-300 text-lg leading-relaxed mb-8">
                 Tech Processing LLC is glad to have you here. At Tech Processing, we also commit ourselves to delivering innovative creative designs, digital marketing and technical solutions that will assist your company to succeed in the digital world. We value your privacy and are very serious about making sure you know how/why/what we do with your information as you use our Services provided through our online meeting and collaboration platforms (the Services).
@@ -170,20 +316,78 @@ const PrivacyPolicy: React.FC = () => {
                 Tech Processing is a creative and digital marketing as well as technical solutions provider. Your privacy is our concern, make Tech Processing your choice and have a unique digital experience.
               </p>
 
-              <div className="mt-12 pt-8 border-t border-white/10">
-                <p className="text-gray-400 text-sm">
-                  Last updated: {new Date().toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="py-16 lg:py-24 bg-slate-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <h2 className="text-3xl font-bold text-white mb-8">Questions About Our Privacy Policy?</h2>
+            <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
+              If you have any questions or concerns about this Privacy Policy or our data protection practices, please don't hesitate to contact us.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-600/20 rounded-xl mb-4">
+                  <Phone className="h-6 w-6 text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Call Us</h3>
+                <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-emerald-400 hover:text-emerald-300 transition-colors">
+                  {appConfig.contact.phone}
+                </a>
               </div>
+              
+              <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-600/20 rounded-xl mb-4">
+                  <Mail className="h-6 w-6 text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Email Us</h3>
+                <a href={`mailto:${appConfig.contact.email}`} className="text-emerald-400 hover:text-emerald-300 transition-colors">
+                  {appConfig.contact.email}
+                </a>
+              </div>
+              
+              <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-600/20 rounded-xl mb-4">
+                  <MapPin className="h-6 w-6 text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Visit Us</h3>
+                <p className="text-gray-300 text-sm">{appConfig.contact.address}</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-slate-950 border-t border-slate-800/50 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-3 mb-4 md:mb-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="text-white font-black text-lg">TP</div>
+              </div>
+              <div className="font-black text-xl">
+                <span className="tracking-wider">TECHPROCESSING</span>
+                <div className="text-xs text-emerald-400 font-bold tracking-[0.2em]">LLC</div>
+              </div>
+            </div>
+            <div className="text-gray-400 text-sm">
+              © 2024 TechProcessing LLC. All rights reserved.
             </div>
           </div>
         </div>
-      </div>
-    </>
+      </footer>
+    </div>
   );
 };
 
