@@ -32,6 +32,10 @@ export class ContactFormDto {
   @IsString()
   @MaxLength(1000)
   message?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  consent?: boolean;
 }
 
 export class AppointmentDto {
