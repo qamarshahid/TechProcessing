@@ -1337,7 +1337,7 @@ export function LandingPage() {
                 © 2024 TechProcessing LLC. All rights reserved.
               </div>
               <div className="flex space-x-6 mt-4 md:mt-0">
-                <a href="#" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Privacy Policy</a>
+                <Link to="/privacy-policy" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Privacy Policy</Link>
                 <a href="#" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Terms of Service</a>
                 <Link to="/login" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Client Login</Link>
               </div>

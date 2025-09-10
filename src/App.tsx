@@ -18,6 +18,7 @@ import { GraphicDesignPage } from './pages/services/GraphicDesign';
 import { LocalSearchPage } from './pages/services/LocalSearch';
 import { GoogleAdsPage } from './pages/services/GoogleAds';
 import FAQ from './pages/FAQ';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 function App() {
   // Determine base path for Router - use root path for custom domain
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/faq" element={<FAQ />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 
                 {/* Service Pages */}
                 <Route path="/services/seo" element={<SEOPage />} />
