@@ -1338,7 +1338,7 @@ export function LandingPage() {
               </div>
               <div className="flex space-x-6 mt-4 md:mt-0">
                 <Link to="/privacy-policy" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Privacy Policy</Link>
-                <a href="#" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Terms of Service</a>
+                <Link to="/terms-conditions" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Terms & Conditions</Link>
                 <Link to="/login" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Client Login</Link>
               </div>
             </div>
