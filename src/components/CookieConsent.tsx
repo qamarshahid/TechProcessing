@@ -79,7 +79,7 @@ export function CookieConsent({ onAccept, onDecline, onCustomize }: CookieConsen
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="fixed bottom-4 right-4 z-50 max-w-md w-full mx-4"
+        className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-md z-50"
       >
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
           {!showCustomize ? (
@@ -101,23 +101,24 @@ export function CookieConsent({ onAccept, onDecline, onCustomize }: CookieConsen
                 </div>
               </div>
               
-              <div className="flex gap-2">
+              {/* Mobile: Stack buttons vertically, Desktop: Keep horizontal */}
+              <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   onClick={handleDecline}
-                  className="flex-1 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="w-full sm:flex-1 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors touch-manipulation"
                 >
                   Decline
                 </button>
                 <button
                   onClick={handleCustomize}
-                  className="px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-1"
+                  className="w-full sm:w-auto px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center justify-center gap-1 touch-manipulation"
                 >
                   <Settings className="h-3 w-3" />
                   Customize
                 </button>
                 <button
                   onClick={handleAcceptAll}
-                  className="flex-1 px-3 py-2 text-xs font-medium text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg transition-colors"
+                  className="w-full sm:flex-1 px-3 py-2 text-xs font-medium text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg transition-colors touch-manipulation"
                 >
                   Accept All
                 </button>
@@ -215,16 +216,16 @@ export function CookieConsent({ onAccept, onDecline, onCustomize }: CookieConsen
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-700 mt-4">
+              <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-gray-200 dark:border-gray-700 mt-4">
                 <button
                   onClick={() => setShowCustomize(false)}
-                  className="flex-1 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="w-full sm:flex-1 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors touch-manipulation"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSavePreferences}
-                  className="flex-1 px-3 py-2 text-xs font-medium text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg transition-colors"
+                  className="w-full sm:flex-1 px-3 py-2 text-xs font-medium text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg transition-colors touch-manipulation"
                 >
                   Save
                 </button>
