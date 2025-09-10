@@ -4,7 +4,8 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
-  const base = isProduction ? '/TechProcessing/' : '/';
+  // Use root path for custom domain, /TechProcessing/ for GitHub Pages
+  const base = isProduction ? '/' : '/';
 
   return {
     plugins: [react()],
