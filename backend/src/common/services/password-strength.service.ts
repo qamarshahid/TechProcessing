@@ -13,6 +13,7 @@ export interface PasswordStrengthResult {
     notCommon: boolean;
     notSequential: boolean;
     notRepeated: boolean;
+    notUserInfo: boolean;
   };
 }
 
