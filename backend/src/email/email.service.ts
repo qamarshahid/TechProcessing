@@ -140,6 +140,30 @@ export class EmailService {
         const cleanApiKey = sendGridApiKey.trim();
         this.logger.log('Using SendGrid with API key length:', cleanApiKey.length);
         
+        // Determine categories and custom args based on email type
+        let categories = ['transactional'];
+        let customArgs = {};
+        
+        if (data.template === 'email-verification') {
+          categories = ['verification', 'transactional'];
+          customArgs = {
+            source: 'email-verification',
+            user_type: 'new_registration'
+          };
+        } else if (data.subject?.includes('Contact Form')) {
+          categories = ['contact-form', 'transactional'];
+          customArgs = {
+            source: 'contact-form',
+            user_type: 'lead'
+          };
+        } else if (data.subject?.includes('Appointment')) {
+          categories = ['appointment', 'transactional'];
+          customArgs = {
+            source: 'appointment-request',
+            user_type: 'lead'
+          };
+        }
+
         const msg = {
           to: data.to,
           from: {
@@ -161,11 +185,8 @@ export class EmailService {
             'List-Unsubscribe': '<mailto:unsubscribe@techprocessingllc.com>',
             'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click'
           },
-          categories: ['verification', 'transactional'],
-          customArgs: {
-            source: 'email-verification',
-            user_type: 'new_registration'
-          }
+          categories: categories,
+          customArgs: customArgs
         };
 
         try {
@@ -249,60 +270,80 @@ export class EmailService {
         <meta charset="utf-8">
         <title>New Contact Form Submission</title>
         <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
-          .content { background: #f9fafb; padding: 20px; border-radius: 0 0 8px 8px; }
-          .field { margin-bottom: 15px; }
-          .label { font-weight: bold; color: #374151; }
-          .value { margin-top: 5px; padding: 8px; background: white; border-radius: 4px; border-left: 4px solid #10b981; }
-          .footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280; }
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #2c3e50; margin: 0; padding: 0; background-color: #f8f9fa; }
+          .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
+          .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 30px 25px; text-align: center; }
+          .header h1 { margin: 0; font-size: 24px; font-weight: 600; }
+          .header p { margin: 8px 0 0 0; font-size: 14px; opacity: 0.9; }
+          .content { padding: 30px 25px; }
+          .field { margin-bottom: 20px; }
+          .label { font-weight: 600; color: #374151; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+          .value { padding: 12px 16px; background: #f8fafc; border-radius: 8px; border-left: 4px solid #3b82f6; font-size: 15px; color: #1f2937; }
+          .value a { color: #3b82f6; text-decoration: none; }
+          .value a:hover { text-decoration: underline; }
+          .footer { margin-top: 30px; padding-top: 25px; border-top: 2px solid #e5e7eb; }
+          .footer h3 { margin: 0 0 15px 0; color: #374151; font-size: 16px; }
+          .footer ul { margin: 0; padding-left: 20px; }
+          .footer li { margin-bottom: 8px; color: #6b7280; font-size: 14px; }
+          .timestamp { text-align: center; margin-top: 20px; padding: 15px; background: #f1f5f9; color: #64748b; font-size: 12px; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h1>🚀 New Contact Form Submission</h1>
+            <h1>New Contact Form Submission</h1>
             <p>TechProcessing LLC Website</p>
           </div>
           <div class="content">
             <div class="field">
-              <div class="label">👤 Name:</div>
+              <div class="label">Full Name</div>
               <div class="value">${data.name}</div>
             </div>
             <div class="field">
-              <div class="label">🏢 Business:</div>
+              <div class="label">Business Name</div>
               <div class="value">${data.business}</div>
             </div>
             <div class="field">
-              <div class="label">📧 Email:</div>
+              <div class="label">Email Address</div>
               <div class="value"><a href="mailto:${data.email}">${data.email}</a></div>
             </div>
             <div class="field">
-              <div class="label">📞 Phone:</div>
+              <div class="label">Phone Number</div>
               <div class="value"><a href="tel:${data.phone}">${data.phone}</a></div>
             </div>
             <div class="field">
-              <div class="label">🎯 Project Type:</div>
+              <div class="label">Project Type</div>
               <div class="value">${data.projectType}</div>
             </div>
             <div class="field">
-              <div class="label">⏰ Timeline:</div>
+              <div class="label">Timeline</div>
               <div class="value">${data.timeline}</div>
             </div>
             ${data.message ? `
             <div class="field">
-              <div class="label">💬 Message:</div>
+              <div class="label">Message</div>
               <div class="value">${data.message.replace(/\n/g, '<br>')}</div>
             </div>
             ` : ''}
             <div class="footer">
-              <p><strong>Next Steps:</strong></p>
+              <h3>Recommended Next Steps</h3>
               <ul>
                 <li>Reply directly to this email to respond to ${data.name}</li>
-                <li>Add to CRM system for follow-up</li>
-                <li>Schedule initial consultation if needed</li>
+                <li>Add lead to CRM system for proper follow-up</li>
+                <li>Schedule initial consultation call if appropriate</li>
+                <li>Send project proposal or quote if requested</li>
               </ul>
+            </div>
+            <div class="timestamp">
+              Received on ${new Date().toLocaleString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZoneName: 'short'
+              })}
             </div>
           </div>
         </div>
@@ -335,65 +376,86 @@ Reply to: ${data.email}
         <meta charset="utf-8">
         <title>New Appointment Request</title>
         <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
-          .content { background: #f9fafb; padding: 20px; border-radius: 0 0 8px 8px; }
-          .field { margin-bottom: 15px; }
-          .label { font-weight: bold; color: #374151; }
-          .value { margin-top: 5px; padding: 8px; background: white; border-radius: 4px; border-left: 4px solid #3b82f6; }
-          .footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 14px; color: #6b7280; }
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #2c3e50; margin: 0; padding: 0; background-color: #f8f9fa; }
+          .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
+          .header { background: linear-gradient(135deg, #059669, #10b981); color: white; padding: 30px 25px; text-align: center; }
+          .header h1 { margin: 0; font-size: 24px; font-weight: 600; }
+          .header p { margin: 8px 0 0 0; font-size: 14px; opacity: 0.9; }
+          .content { padding: 30px 25px; }
+          .field { margin-bottom: 20px; }
+          .label { font-weight: 600; color: #374151; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+          .value { padding: 12px 16px; background: #f8fafc; border-radius: 8px; border-left: 4px solid #10b981; font-size: 15px; color: #1f2937; }
+          .value a { color: #10b981; text-decoration: none; }
+          .value a:hover { text-decoration: underline; }
           .urgent { background: #fef3c7; border-left-color: #f59e0b; }
+          .urgent .label { color: #92400e; }
+          .footer { margin-top: 30px; padding-top: 25px; border-top: 2px solid #e5e7eb; }
+          .footer h3 { margin: 0 0 15px 0; color: #374151; font-size: 16px; }
+          .footer ul { margin: 0; padding-left: 20px; }
+          .footer li { margin-bottom: 8px; color: #6b7280; font-size: 14px; }
+          .timestamp { text-align: center; margin-top: 20px; padding: 15px; background: #f1f5f9; color: #64748b; font-size: 12px; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h1>📅 New Appointment Request</h1>
+            <h1>New Appointment Request</h1>
             <p>TechProcessing LLC Consultation</p>
           </div>
           <div class="content">
             <div class="field">
-              <div class="label">👤 Name:</div>
+              <div class="label">Full Name</div>
               <div class="value">${data.name}</div>
             </div>
             <div class="field">
-              <div class="label">🏢 Business:</div>
+              <div class="label">Business Name</div>
               <div class="value">${data.business}</div>
             </div>
             <div class="field">
-              <div class="label">📧 Email:</div>
+              <div class="label">Email Address</div>
               <div class="value"><a href="mailto:${data.email}">${data.email}</a></div>
             </div>
             <div class="field">
-              <div class="label">📞 Phone:</div>
+              <div class="label">Phone Number</div>
               <div class="value"><a href="tel:${data.phone}">${data.phone}</a></div>
             </div>
             <div class="field">
-              <div class="label">🎯 Service Type:</div>
+              <div class="label">Service Type</div>
               <div class="value">${data.serviceType}</div>
             </div>
             <div class="field urgent">
-              <div class="label">📅 Preferred Date:</div>
+              <div class="label">Preferred Date</div>
               <div class="value">${data.preferredDate}</div>
             </div>
             <div class="field urgent">
-              <div class="label">⏰ Preferred Time:</div>
+              <div class="label">Preferred Time</div>
               <div class="value">${data.preferredTime}</div>
             </div>
             ${data.message ? `
             <div class="field">
-              <div class="label">💬 Additional Notes:</div>
+              <div class="label">Additional Notes</div>
               <div class="value">${data.message.replace(/\n/g, '<br>')}</div>
             </div>
             ` : ''}
             <div class="footer">
-              <p><strong>Next Steps:</strong></p>
+              <h3>Recommended Next Steps</h3>
               <ul>
                 <li>Confirm availability for ${data.preferredDate} at ${data.preferredTime}</li>
                 <li>Send calendar invite with meeting link</li>
                 <li>Reply to confirm or suggest alternative times</li>
+                <li>Prepare consultation materials for ${data.serviceType}</li>
               </ul>
+            </div>
+            <div class="timestamp">
+              Received on ${new Date().toLocaleString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZoneName: 'short'
+              })}
             </div>
           </div>
         </div>
