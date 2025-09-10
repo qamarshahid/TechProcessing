@@ -590,7 +590,7 @@ This is an automated message. Please do not reply to this email.
             </div>
             
             <div class="warning">
-              <strong>⚠️ Security Notice:</strong> This password reset link will expire in 1 hour for security reasons.
+              <strong>Security Notice:</strong> This password reset link will expire in 1 hour for security reasons.
             </div>
             
             <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
@@ -656,7 +656,7 @@ This is an automated message. Please do not reply to this email.
       <body>
         <div class="container">
           <div class="header">
-            <h1>🔐 Password Reset Code</h1>
+            <h1>Password Reset Code</h1>
           </div>
           <div class="content">
             <h2>Hello ${context.name}!</h2>
@@ -665,11 +665,11 @@ This is an automated message. Please do not reply to this email.
             <div class="code">${context.resetCode}</div>
             
             <div class="instruction">
-              <strong>📝 Enter this 6-digit code in the password reset form on our website</strong>
+              <strong>Enter this 6-digit code in the password reset form on our website</strong>
             </div>
             
             <div class="warning">
-              <strong>⚠️ Important:</strong> This verification code will expire in 30 minutes for security reasons.
+              <strong>Important:</strong> This verification code will expire in 30 minutes for security reasons.
             </div>
             
             <p>If you didn't request a password reset, please ignore this email. Your password will remain unchanged.</p>
