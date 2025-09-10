@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NotificationProvider } from './components/common/NotificationSystem';
@@ -43,6 +43,55 @@ function RedirectHandler() {
 function App() {
   // Determine base path for Router - use root path for custom domain
   const basename = '';
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check if device is mobile
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+      setIsMobile(isMobileDevice);
+    };
+
+    checkMobile();
+
+    // Add mobile-specific optimizations
+    if (isMobile) {
+      // Prevent zoom on double tap
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', (event) => {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, false);
+
+      // Improve touch scrolling
+      document.body.style.webkitOverflowScrolling = 'touch';
+    }
+
+    // Simulate loading time for mobile optimization
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isMobile]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <div className="text-white font-black text-xl">TP</div>
+          </div>
+          <div className="text-white text-lg font-semibold">Loading...</div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <ErrorBoundary>
