@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NotificationProvider } from './components/common/NotificationSystem';
 import { ThemeProvider } from './components/ThemeProvider';
@@ -21,6 +22,24 @@ import FAQ from './pages/FAQ';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsConditions from './pages/TermsConditions';
 
+// Component to handle GitHub Pages 404 redirects
+function RedirectHandler() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  React.useEffect(() => {
+    // Check if we have a redirect stored in sessionStorage (from 404.html)
+    const redirect = sessionStorage.redirect;
+    if (redirect) {
+      sessionStorage.removeItem('redirect');
+      // Navigate to the original URL
+      navigate(redirect, { replace: true });
+    }
+  }, [navigate]);
+
+  return null;
+}
+
 function App() {
   // Determine base path for Router - use root path for custom domain
   const basename = '';
@@ -31,6 +50,7 @@ function App() {
         <NotificationProvider>
           <AuthProvider>
             <Router basename={basename}>
+              <RedirectHandler />
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<LandingPage />} />
