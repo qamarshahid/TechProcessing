@@ -286,9 +286,9 @@ export function LandingPage() {
     <MobileOptimized>
       {/* SEO Meta Tags */}
       <head>
-        <title>TechProcessing LLC - Digital Creative Agency & Transformation Partners</title>
-        <meta name="description" content="The Tech Processing LLC is a digital creative agency that provides creative design, digital marketing, and technical solutions which are innovative. Our brand-building solutions enable brands to develop online through a unique approach and effective digital experiences." />
-        <meta name="keywords" content="web development, SEO, digital marketing, Google Business Profile, St. Petersburg FL, website design" />
+        <title>TechProcessing LLC - Digital Marketing & IT Services | St Petersburg, FL</title>
+        <meta name="description" content="TechProcessing LLC - Leading digital marketing agency in St Petersburg, FL. Expert SEO, social media marketing, web design, and IT consulting services. Design. Develop. Dominate. Trusted by 500+ businesses." />
+        <meta name="keywords" content="techprocessing, tech processing, techprocessing llc, tech processing llc, digital marketing, SEO services, social media marketing, web design, IT consulting, St Petersburg Florida, business growth, online marketing, web development, graphic design, google ads, local SEO" />
         <meta name="author" content="TechProcessing LLC" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.techprocessingllc.com" />
@@ -317,8 +317,12 @@ export function LandingPage() {
                 "@type": "Organization",
                 "@id": "https://techprocessingllc.com/#organization",
                 "name": "TechProcessing LLC",
+                "alternateName": ["Tech Processing LLC", "TechProcessing", "Tech Processing"],
                 "url": "https://www.techprocessingllc.com",
                 "logo": "https://techprocessingllc.com/logo.png",
+                "description": "Leading digital marketing agency in St Petersburg, FL. Expert SEO, social media marketing, web design, and IT consulting services.",
+                "foundingDate": "2020",
+                "numberOfEmployees": "11-50",
                 "contactPoint": {
                   "@type": "ContactPoint",
                   "telephone": appConfig.contact.phone,
@@ -335,16 +339,17 @@ export function LandingPage() {
                   "addressCountry": "US"
                 },
                 "sameAs": [
+                  "https://www.linkedin.com/company/tech-processing-llc",
                   "https://facebook.com/techprocessingllc",
-                  "https://twitter.com/techprocessingllc",
-                  "https://linkedin.com/company/techprocessingllc"
+                  "https://twitter.com/techprocessingllc"
                 ]
               },
               {
                 "@type": "LocalBusiness",
                 "@id": "https://techprocessingllc.com/#localbusiness",
                 "name": "TechProcessing LLC",
-                "description": "Professional web development, SEO, and digital marketing services",
+                "alternateName": ["Tech Processing LLC", "TechProcessing", "Tech Processing"],
+                "description": "Leading digital marketing agency in St Petersburg, FL. Expert SEO, social media marketing, web design, and IT consulting services. Design. Develop. Dominate.",
                 "url": "https://www.techprocessingllc.com",
                 "telephone": appConfig.contact.phone,
                 "email": "support@techprocessingllc.com",
@@ -689,12 +694,12 @@ export function LandingPage() {
                   <span className="block">TRANSFORM YOUR</span>
                   <span className="block">BUSINESS WITH</span>
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
-                    DIGITAL EXCELLENCE.
+                    TECHPROCESSING LLC.
                   </span>
                 </h1>
                 
                 <p className="text-lg sm:text-xl lg:text-2xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
-                  We're your digital transformation partners, combining strategic expertise with cutting-edge technology to drive measurable results. From SEO and social media to business formation and design, we deliver solutions that grow your business.
+                  TechProcessing LLC is your digital transformation partner, combining strategic expertise with cutting-edge technology to drive measurable results. From SEO and social media to business formation and design, we deliver solutions that grow your business.
                 </p>
 
                 <div className="mb-8">
@@ -1430,6 +1435,19 @@ export function LandingPage() {
                     <div>
                       {appConfig.contact.address}
                     </div>
+                  </div>
+                  <div className="flex items-center">
+                    <a 
+                      href="https://www.linkedin.com/company/tech-processing-llc" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center text-emerald-400 hover:text-emerald-300 transition-colors"
+                    >
+                      <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                      </svg>
+                      Follow us on LinkedIn
+                    </a>
                   </div>
                 </div>
               </div>
