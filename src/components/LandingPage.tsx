@@ -388,21 +388,21 @@ export function LandingPage() {
       <div className="min-h-screen bg-slate-950 text-white">
         {/* Navigation */}
         <nav className="bg-slate-900/95 backdrop-blur-xl shadow-sm border-b border-slate-800/50 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-14 sm:h-16">
               <motion.div 
                 className="flex items-center space-x-2 sm:space-x-3"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
                   <div className="text-white font-black text-xs sm:text-sm">TP</div>
                 </div>
-                <div className="font-black text-base sm:text-lg md:text-xl text-white">
+                <div className="font-black text-sm sm:text-base md:text-lg lg:text-xl text-white">
                   <span className="tracking-wider hidden sm:inline">TECHPROCESSING</span>
                   <span className="tracking-wider sm:hidden">TECH</span>
-                  <div className="text-xs text-emerald-400 font-bold tracking-[0.2em]">LLC</div>
+                  <div className="text-xs text-emerald-400 font-bold tracking-[0.15em] sm:tracking-[0.2em]">LLC</div>
                 </div>
               </motion.div>
 
@@ -549,14 +549,14 @@ export function LandingPage() {
               >
                 <Link
                   to="/login"
-                  className="text-gray-300 hover:text-emerald-400 transition-colors font-medium"
+                  className="text-gray-300 hover:text-emerald-400 transition-colors font-medium touch-manipulation min-h-[44px] flex items-center px-3 rounded-lg hover:bg-slate-800/30"
                   onClick={() => handleCTAClick('Client Login')}
                 >
                   Client Login
                 </Link>
                 <a
                   href="#contact"
-                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 sm:px-6 py-2 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg touch-manipulation min-h-[44px] flex items-center"
                   onClick={() => handleCTAClick('Get Free Quote')}
                 >
                   Get Free Quote
@@ -565,35 +565,35 @@ export function LandingPage() {
               
               {/* Mobile Menu Button */}
               <button
-                className="md:hidden text-gray-300 p-2 touch-manipulation rounded-lg hover:bg-slate-800 transition-colors"
+                className="md:hidden text-gray-300 p-2 touch-manipulation rounded-lg hover:bg-slate-800 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Toggle mobile menu"
               >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
               </button>
             </div>
 
             {/* Mobile Navigation */}
             {isMenuOpen && (
               <motion.div
-                className="md:hidden py-6 border-t border-slate-800"
+                className="md:hidden py-4 sm:py-6 border-t border-slate-800"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
               >
-                <div className="flex flex-col space-y-6">
+                <div className="flex flex-col space-y-4 sm:space-y-6">
                   {/* Mobile CTA Buttons */}
                   <div className="flex flex-col space-y-3">
                     <Link
                       to="/login"
-                      className="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-3 rounded-lg font-medium transition-colors text-center touch-manipulation"
+                      className="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-3 rounded-lg font-medium transition-colors text-center touch-manipulation min-h-[48px] flex items-center justify-center"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Client Login
                     </Link>
                     <a
                       href="#contact"
-                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg text-center touch-manipulation"
+                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg text-center touch-manipulation min-h-[48px] flex items-center justify-center"
                       onClick={() => {
                         setIsMenuOpen(false);
                         handleCTAClick('Get Free Quote');
@@ -605,13 +605,13 @@ export function LandingPage() {
                   
                   {/* Services Section */}
                   <div className="space-y-3">
-                    <div className="text-gray-300 font-semibold text-sm uppercase tracking-wider px-2">Our Services</div>
+                    <div className="text-gray-300 font-semibold text-xs sm:text-sm uppercase tracking-wider px-2">Our Services</div>
                     <div className="grid grid-cols-1 gap-2">
                       {servicesDropdown.map((service) => (
                         <Link
                           key={service.title}
                           to={service.href}
-                          className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group touch-manipulation"
+                          className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group touch-manipulation min-h-[48px]"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
@@ -632,13 +632,13 @@ export function LandingPage() {
 
                   {/* Legal Section */}
                   <div className="space-y-3">
-                    <div className="text-gray-300 font-semibold text-sm uppercase tracking-wider px-2">Legal</div>
+                    <div className="text-gray-300 font-semibold text-xs sm:text-sm uppercase tracking-wider px-2">Legal</div>
                     <div className="grid grid-cols-1 gap-2">
                       {legalDropdown.map((legal) => (
                         <Link
                           key={legal.title}
                           to={legal.href}
-                          className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group touch-manipulation"
+                          className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group touch-manipulation min-h-[48px]"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
@@ -659,11 +659,11 @@ export function LandingPage() {
                   
                   {/* Navigation Links */}
                   <div className="border-t border-slate-700 pt-4 space-y-2">
-                    <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">Portfolio</a>
-                    <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">Process</a>
-                    <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">About</a>
-                    <Link to="/faq" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation" onClick={() => setIsMenuOpen(false)}>FAQ</Link>
-                    <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation">Contact</a>
+                    <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">Portfolio</a>
+                    <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">Process</a>
+                    <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">About</a>
+                    <Link to="/faq" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center" onClick={() => setIsMenuOpen(false)}>FAQ</Link>
+                    <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">Contact</a>
                   </div>
                 </div>
               </motion.div>
@@ -672,29 +672,29 @@ export function LandingPage() {
         </nav>
 
         {/* Hero Section */}
-        <section ref={heroRef} className="relative py-20 lg:py-32 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 overflow-hidden">
+        <section ref={heroRef} className="relative py-12 sm:py-16 md:py-20 lg:py-32 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 overflow-hidden">
           {/* Background Elements */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-20 left-20 w-32 h-32 border-4 border-emerald-400/20 transform rotate-45 hidden lg:block"></div>
             <div className="absolute bottom-20 right-20 w-24 h-24 border-4 border-teal-400/20 transform rotate-12 hidden lg:block"></div>
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:30px_30px] sm:bg-[size:50px_50px]"></div>
           </div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-center">
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 animate={isHeroInView ? { opacity: 1, x: 0 } : {}}
                 transition={{ duration: 1 }}
               >
-                <div className="mb-6">
-                  <span className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
-                    <Sparkles className="h-4 w-4 mr-2" />
+                <div className="mb-4 sm:mb-6">
+                  <span className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-xs sm:text-sm font-semibold">
+                    <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                     Trusted by 500+ Businesses
                   </span>
                 </div>
                 
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white mb-6 leading-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-white mb-4 sm:mb-6 leading-tight">
                   <span className="block">TRANSFORM YOUR</span>
                   <span className="block">BUSINESS WITH</span>
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
@@ -702,22 +702,22 @@ export function LandingPage() {
                   </span>
                 </h1>
                 
-                <p className="text-lg sm:text-xl lg:text-2xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-300 mb-6 sm:mb-8 max-w-2xl leading-relaxed">
                   TechProcessing LLC is your digital transformation partner, combining strategic expertise with cutting-edge technology to drive measurable results. From SEO and social media to business formation and design, we deliver solutions that grow your business.
                 </p>
 
-                <div className="mb-8">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center">
+                <div className="mb-6 sm:mb-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 text-center">
                     <div>
-                      <div className="text-xl sm:text-2xl font-bold text-emerald-400">300%</div>
+                      <div className="text-lg sm:text-xl md:text-2xl font-bold text-emerald-400">300%</div>
                       <div className="text-xs sm:text-sm text-gray-400">Avg Traffic Increase</div>
                     </div>
                     <div>
-                      <div className="text-xl sm:text-2xl font-bold text-teal-400">99%</div>
+                      <div className="text-lg sm:text-xl md:text-2xl font-bold text-teal-400">99%</div>
                       <div className="text-xs sm:text-sm text-gray-400">Client Satisfaction</div>
                     </div>
                     <div>
-                      <div className="text-xl sm:text-2xl font-bold text-cyan-400">24/7</div>
+                      <div className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400">24/7</div>
                       <div className="text-xs sm:text-sm text-gray-400">Support Available</div>
                     </div>
                   </div>
@@ -726,7 +726,7 @@ export function LandingPage() {
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <a
                     href="#contact"
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group touch-manipulation"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group touch-manipulation min-h-[48px] sm:min-h-[52px]"
                     onClick={() => handleCTAClick('Get My Free Quote')}
                   >
                     <Rocket className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
@@ -737,7 +737,7 @@ export function LandingPage() {
                   
                   <a
                     href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                    className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center touch-manipulation"
+                    className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base md:text-lg transition-all duration-300 flex items-center justify-center touch-manipulation min-h-[48px] sm:min-h-[52px]"
                     onClick={() => handleCTAClick('Contact Us')}
                   >
                     <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
@@ -746,7 +746,7 @@ export function LandingPage() {
                   </a>
                 </div>
 
-                <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-xs sm:text-sm text-gray-400">
+                <div className="mt-4 sm:mt-6 md:mt-8 flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 md:space-x-6 text-xs sm:text-sm text-gray-400">
                   <div className="flex items-center">
                     <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 mr-2 flex-shrink-0" />
                     <span>Free Consultation</span>

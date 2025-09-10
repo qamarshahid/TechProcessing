@@ -15,6 +15,17 @@
     overflow-x: hidden;
     /* Ensure proper background color */
     background-color: #0f172a;
+    /* Mobile optimizations */
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
   }
   
   body {
@@ -26,12 +37,17 @@
     background-color: #0f172a;
     /* Prevent flash of unstyled content */
     color: white;
+    /* Mobile optimizations */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   
   #root {
     /* Ensure proper background color */
     background-color: #0f172a;
     min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
   }
   
   /* Dark mode transitions */
@@ -42,6 +58,39 @@
   /* Ensure proper color scheme for dark mode only */
   :root {
     color-scheme: dark;
+  }
+
+  /* Ensure form elements are selectable */
+  input,
+  textarea,
+  select {
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  /* Better focus indicators for accessibility */
+  *:focus {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+  }
+
+  /* Remove default button styles */
+  button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  /* Better link styles */
+  a {
+    color: inherit;
+    text-decoration: none;
   }
   
   /* Mobile-specific optimizations */
@@ -60,6 +109,11 @@
     /* Improve scrolling performance */
     * {
       -webkit-overflow-scrolling: touch;
+    }
+
+    /* Hide scrollbars on mobile */
+    ::-webkit-scrollbar {
+      display: none;
     }
   }
 }
@@ -100,6 +154,146 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  /* Mobile-optimized spacing */
+  .mobile-padding {
+    @apply px-3 sm:px-4 md:px-6;
+  }
+  
+  .mobile-margin {
+    @apply mx-3 sm:mx-4 md:mx-6;
+  }
+
+  /* Mobile-optimized text sizes */
+  .mobile-text-xs {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .mobile-text-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .mobile-text-base {
+    @apply text-base sm:text-lg;
+  }
+  
+  .mobile-text-lg {
+    @apply text-lg sm:text-xl;
+  }
+  
+  .mobile-text-xl {
+    @apply text-xl sm:text-2xl;
+  }
+
+  /* Mobile-optimized containers */
+  .mobile-container {
+    @apply w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl;
+  }
+  
+  .mobile-card {
+    @apply rounded-lg sm:rounded-xl md:rounded-2xl;
+  }
+  
+  .mobile-button {
+    @apply min-h-[44px] sm:min-h-[48px] px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium touch-manipulation;
+  }
+
+  /* Mobile-optimized grids */
+  .mobile-grid-1 {
+    @apply grid grid-cols-1;
+  }
+  
+  .mobile-grid-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2;
+  }
+  
+  .mobile-grid-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  
+  .mobile-grid-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  /* Mobile-optimized flex */
+  .mobile-flex-col {
+    @apply flex flex-col sm:flex-row;
+  }
+  
+  .mobile-flex-row {
+    @apply flex flex-row sm:flex-col;
+  }
+
+  /* Mobile-optimized spacing */
+  .mobile-space-y {
+    @apply space-y-3 sm:space-y-4 md:space-y-6;
+  }
+  
+  .mobile-space-x {
+    @apply space-x-3 sm:space-x-4 md:space-x-6;
+  }
+  
+  .mobile-gap {
+    @apply gap-3 sm:gap-4 md:gap-6;
+  }
+
+  /* Mobile-optimized padding */
+  .mobile-p {
+    @apply p-3 sm:p-4 md:p-6;
+  }
+  
+  .mobile-px {
+    @apply px-3 sm:px-4 md:px-6;
+  }
+  
+  .mobile-py {
+    @apply py-3 sm:py-4 md:py-6;
+  }
+  
+  .mobile-pt {
+    @apply pt-3 sm:pt-4 md:pt-6;
+  }
+  
+  .mobile-pb {
+    @apply pb-3 sm:pb-4 md:pb-6;
+  }
+  
+  .mobile-pl {
+    @apply pl-3 sm:pl-4 md:pl-6;
+  }
+  
+  .mobile-pr {
+    @apply pr-3 sm:pr-4 md:pr-6;
+  }
+
+  /* Mobile-optimized margin */
+  .mobile-m {
+    @apply m-3 sm:m-4 md:m-6;
+  }
+  
+  .mobile-mx {
+    @apply mx-3 sm:mx-4 md:mx-6;
+  }
+  
+  .mobile-my {
+    @apply my-3 sm:my-4 md:my-6;
+  }
+  
+  .mobile-mt {
+    @apply mt-3 sm:mt-4 md:mt-6;
+  }
+  
+  .mobile-mb {
+    @apply mb-3 sm:mb-4 md:mb-6;
+  }
+  
+  .mobile-ml {
+    @apply ml-3 sm:ml-4 md:ml-6;
+  }
+  
+  .mobile-mr {
+    @apply mr-3 sm:mr-4 md:mr-6;
   }
 }
 
@@ -143,5 +337,139 @@
   
   .mobile-optimized .form-input {
     padding: 12px 16px;
+  }
+}
+
+/* Mobile-specific animations */
+@layer components {
+  .mobile-fade-in {
+    animation: mobileFadeIn 0.3s ease-out;
+  }
+  
+  .mobile-slide-up {
+    animation: mobileSlideUp 0.3s ease-out;
+  }
+  
+  .mobile-slide-down {
+    animation: mobileSlideDown 0.3s ease-out;
+  }
+  
+  .mobile-scale-in {
+    animation: mobileScaleIn 0.2s ease-out;
+  }
+}
+
+@keyframes mobileFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mobileSlideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes mobileSlideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes mobileScaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Mobile-specific media queries */
+@media (max-width: 640px) {
+  /* Better touch targets */
+  button,
+  a,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better form styling */
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 16px;
+  }
+  
+  /* Better spacing for mobile */
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+}
+
+@media (min-width: 641px) {
+  .mobile-only {
+    display: none;
+  }
+  
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    border-color: currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+/* Light mode optimizations */
+@media (prefers-color-scheme: light) {
+  html {
+    color-scheme: light;
   }
 }

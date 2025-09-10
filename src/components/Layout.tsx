@@ -159,25 +159,26 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Navigation Header */}
       <nav className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-2xl border-b border-gray-200/50 dark:border-slate-800/50 transition-colors sticky top-0 z-40">
-        <div className="max-w-full mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
+        <div className="max-w-full mx-auto px-3 sm:px-4 md:px-6">
+          <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo Section */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <div className="relative">
                 <motion.div 
-                  className="w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-2xl flex items-center justify-center shadow-2xl"
+                  className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center shadow-2xl"
                   whileHover={{ scale: 1.05, rotate: 5 }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <div className="text-white font-black text-lg">TP</div>
+                  <div className="text-white font-black text-sm sm:text-base md:text-lg">TP</div>
                 </motion.div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse"></div>
+                <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse"></div>
                 </div>
               <div className="flex flex-col">
-                <div className="font-black text-xl bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600 bg-clip-text text-transparent leading-tight">
-                  TECH PROCESSING
+                <div className="font-black text-sm sm:text-base md:text-lg lg:text-xl bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600 bg-clip-text text-transparent leading-tight">
+                  <span className="hidden sm:inline">TECH PROCESSING</span>
+                  <span className="sm:hidden">TECH</span>
                 </div>
-                <div className="text-xs text-emerald-400 font-bold tracking-[0.2em] leading-tight">
+                <div className="text-xs text-emerald-400 font-bold tracking-[0.15em] sm:tracking-[0.2em] leading-tight">
                   LLC
                 </div>
               </div>
@@ -276,43 +277,43 @@ export function Layout({ children }: LayoutProps) {
               )}
             </div>
 
-            {/* User Section */}
-            <div className="flex items-center space-x-3">
-              {/* User Info - Desktop */}
-              <div className="hidden lg:flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">
-                    {user?.fullName || 'User'}
-                  </p>
-                  <div className="flex items-center justify-end">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
-                      user?.role === 'ADMIN' 
-                        ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 text-emerald-400 border border-emerald-500/30' 
-                        : 'bg-gradient-to-r from-teal-500/20 to-cyan-600/20 text-teal-400 border border-teal-500/30'
-                    }`}>
-                      {user?.role}
-                    </span>
+              {/* User Section */}
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                {/* User Info - Desktop */}
+                <div className="hidden lg:flex items-center space-x-3">
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">
+                      {user?.fullName || 'User'}
+                    </p>
+                    <div className="flex items-center justify-end">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
+                        user?.role === 'ADMIN' 
+                          ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 text-emerald-400 border border-emerald-500/30' 
+                          : 'bg-gradient-to-r from-teal-500/20 to-cyan-600/20 text-teal-400 border border-teal-500/30'
+                      }`}>
+                        {user?.role}
+                      </span>
+                    </div>
                   </div>
+                  <motion.div 
+                    className="relative"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  >
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                      {user?.email?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-emerald-400 rounded-full border-2 border-slate-950 animate-pulse"></div>
+                  </motion.div>
                 </div>
-                <motion.div 
-                  className="relative"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-500 rounded-2xl flex items-center justify-center text-white text-sm font-bold shadow-lg">
-                    {user?.email?.charAt(0).toUpperCase() || 'U'}
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-slate-950 animate-pulse"></div>
-                </motion.div>
-              </div>
 
               {/* User Dropdown */}
               <div className="relative">
-                                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center space-x-2 px-4 py-3 bg-gray-100/50 dark:bg-slate-800/50 backdrop-blur-sm text-gray-700 dark:text-slate-300 rounded-xl hover:bg-gray-200/50 dark:hover:bg-slate-700/50 hover:text-emerald-400 transition-all duration-300 text-sm font-bold border border-emerald-400/30"
-                  >
-                  <User className="w-4 h-4" />
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center space-x-2 px-3 sm:px-4 py-2 sm:py-3 bg-gray-100/50 dark:bg-slate-800/50 backdrop-blur-sm text-gray-700 dark:text-slate-300 rounded-lg sm:rounded-xl hover:bg-gray-200/50 dark:hover:bg-slate-700/50 hover:text-emerald-400 transition-all duration-300 text-xs sm:text-sm font-bold border border-emerald-400/30 touch-manipulation min-h-[44px]"
+                >
+                  <User className="w-3 h-3 sm:w-4 sm:h-4" />
                   <ChevronDown className="w-3 h-3" />
                 </button>
 
@@ -375,11 +376,11 @@ export function Layout({ children }: LayoutProps) {
               </div>
 
               {/* Mobile menu button */}
-                              <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="lg:hidden relative w-12 h-12 bg-gray-100/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-gray-200/50 dark:hover:bg-slate-700/50 transition-all duration-300 shadow-lg border border-emerald-400/30"
-                >
-                  {mobileMenuOpen ? <X className="h-5 w-5 text-gray-700 dark:text-slate-300" /> : <Menu className="h-5 w-5 text-gray-700 dark:text-slate-300" />}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden relative w-10 h-10 sm:w-12 sm:h-12 bg-gray-100/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-gray-200/50 dark:hover:bg-slate-700/50 transition-all duration-300 shadow-lg border border-emerald-400/30 touch-manipulation"
+              >
+                {mobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700 dark:text-slate-300" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700 dark:text-slate-300" />}
               </button>
             </div>
           </div>
@@ -394,12 +395,12 @@ export function Layout({ children }: LayoutProps) {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
               >
-              <div className="px-4 py-3 space-y-1">
+              <div className="px-3 sm:px-4 py-3 space-y-1">
                 {/* Mobile Admin Navigation with Sections */}
                 {isAdmin && navSections ? (
                   navSections.map((section) => (
                     <div key={section.id} className="space-y-1">
-                        <div className="px-4 py-2 text-xs font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">
+                        <div className="px-3 sm:px-4 py-2 text-xs font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">
                         {section.label}
                       </div>
                       {section.items.map((item) => {
@@ -410,14 +411,14 @@ export function Layout({ children }: LayoutProps) {
                           <Link
                             key={item.path}
                             to={item.path}
-                            className={`flex items-center space-x-3 px-6 py-3 rounded-xl text-base font-bold transition-all duration-300 ${
+                            className={`flex items-center space-x-3 px-4 sm:px-6 py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-bold transition-all duration-300 touch-manipulation min-h-[48px] ${
                               isActive
                                 ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
                                 : 'text-gray-700 dark:text-slate-300 hover:text-emerald-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
                             }`}
                             onClick={() => setMobileMenuOpen(false)}
                           >
-                            <Icon className="h-5 w-5" />
+                            <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                             <span>{item.label}</span>
                           </Link>
                         );
@@ -434,14 +435,14 @@ export function Layout({ children }: LayoutProps) {
                       <Link
                         key={item.path}
                         to={item.path}
-                        className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-bold transition-all duration-300 ${
+                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-bold transition-all duration-300 touch-manipulation min-h-[48px] ${
                           isActive
                             ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
                             : 'text-gray-700 dark:text-slate-300 hover:text-emerald-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
                         }`}
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        <Icon className="h-5 w-5" />
+                        <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                         <span>{item.label}</span>
                       </Link>
                     );
@@ -450,8 +451,8 @@ export function Layout({ children }: LayoutProps) {
                 
                 {/* Mobile User Section */}
                 <div className="pt-4 mt-4 border-t border-gray-200/50 dark:border-slate-700/50">
-                  <div className="flex items-center space-x-3 px-4 py-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-500 rounded-2xl flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                  <div className="flex items-center space-x-3 px-3 sm:px-4 py-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-sm font-bold shadow-lg">
                       {user?.email?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <div className="flex-1">
@@ -462,7 +463,7 @@ export function Layout({ children }: LayoutProps) {
                     </div>
                   </div>
                   
-                  <div className="px-4 py-2">
+                  <div className="px-3 sm:px-4 py-2">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-bold text-gray-700 dark:text-slate-300">Theme</span>
                       <ThemeToggle />
@@ -470,7 +471,7 @@ export function Layout({ children }: LayoutProps) {
                     
                     <button
                       onClick={handleSignOut}
-                      className="w-full flex items-center space-x-3 px-4 py-3 text-left text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-xl transition-all duration-300 font-bold"
+                      className="w-full flex items-center space-x-3 px-4 py-3 text-left text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-lg sm:rounded-xl transition-all duration-300 font-bold touch-manipulation min-h-[48px]"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Sign Out</span>
@@ -485,10 +486,10 @@ export function Layout({ children }: LayoutProps) {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 relative">
+      <main className="flex-1 p-3 sm:p-4 md:p-6 relative">
         <div className="max-w-full mx-auto relative">
           {/* Content Background */}
-          <div className="absolute inset-0 bg-gray-100/20 dark:bg-slate-900/20 backdrop-blur-3xl rounded-3xl border border-gray-200/30 dark:border-slate-800/30 -z-10"></div>
+          <div className="absolute inset-0 bg-gray-100/20 dark:bg-slate-900/20 backdrop-blur-3xl rounded-2xl sm:rounded-3xl border border-gray-200/30 dark:border-slate-800/30 -z-10"></div>
           {children}
         </div>
       </main>
