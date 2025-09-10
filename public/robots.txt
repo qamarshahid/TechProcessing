@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.techprocessingllc.com/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /agent/
+Disallow: /client/
+Disallow: /dashboard/
+
+# Allow service pages
+Allow: /services/
+
+# Allow public pages
+Allow: /login
+Allow: /faq
+Allow: /privacy-policy
+Allow: /terms-conditions
+
+# Crawl delay (optional - helps prevent server overload)
+Crawl-delay: 1
