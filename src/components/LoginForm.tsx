@@ -215,7 +215,7 @@ export function LoginForm() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950"></div>
@@ -260,7 +260,7 @@ export function LoginForm() {
       </div>
 
       {/* Main Container */}
-      <div className="relative w-full max-w-md z-10">
+      <div className="relative w-full max-w-md sm:max-w-lg z-10">
         {/* Back to Home */}
         <motion.div
           className="mb-8"
@@ -279,7 +279,7 @@ export function LoginForm() {
 
         {/* Login Card */}
         <motion.div
-          className="bg-gray-900/50 backdrop-blur-2xl rounded-3xl shadow-2xl border border-gray-800/50 p-8 relative overflow-hidden"
+          className="bg-gray-900/50 backdrop-blur-2xl rounded-3xl shadow-2xl border border-gray-800/50 p-6 sm:p-8 relative overflow-hidden"
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.3 }}
@@ -308,18 +308,18 @@ export function LoginForm() {
               </motion.div>
               
               <div className="mb-6">
-                <div className="font-black text-3xl text-white mb-2">
+                <div className="font-black text-2xl sm:text-3xl text-white mb-2">
                   TECH PROCESSING LLC
                 </div>
-                <div className="text-sm text-emerald-400 font-bold tracking-[0.3em]">
+                <div className="text-xs sm:text-sm text-emerald-400 font-bold tracking-[0.2em] sm:tracking-[0.3em]">
                   DESIGN | DEVELOP | DOMINATE
                 </div>
               </div>
               
-              <h1 className="text-3xl font-bold text-white mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                 {showRegister ? 'Join the Future' : 'Welcome Back'}
               </h1>
-              <p className="text-slate-400">
+              <p className="text-sm sm:text-base text-slate-400">
                 {showRegister ? 'Create your account to access next-gen solutions' : 'Access your intelligent dashboard'}
               </p>
             </motion.div>
@@ -359,7 +359,7 @@ export function LoginForm() {
             {/* Form */}
             <motion.form
               onSubmit={handleSubmit}
-              className="space-y-6"
+              className="space-y-4 sm:space-y-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
@@ -375,7 +375,7 @@ export function LoginForm() {
                     transition={{ duration: 0.3 }}
                   >
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div>
                           <label htmlFor="firstName" className="block text-sm font-bold text-slate-300 mb-2">
                             First Name *
@@ -391,7 +391,7 @@ export function LoginForm() {
                               required={showRegister}
                               value={firstName}
                               onChange={(e) => setFirstName(e.target.value)}
-                              className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                              className="w-full pl-12 pr-4 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-base touch-manipulation"
                               placeholder="John"
                             />
                           </div>
@@ -412,7 +412,7 @@ export function LoginForm() {
                               required={showRegister}
                               value={lastName}
                               onChange={(e) => setLastName(e.target.value)}
-                              className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                              className="w-full pl-12 pr-4 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-base touch-manipulation"
                               placeholder="Doe"
                             />
                           </div>
@@ -433,7 +433,7 @@ export function LoginForm() {
                             type="text"
                             value={middleName}
                             onChange={(e) => setMiddleName(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                            className="w-full pl-12 pr-4 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-base touch-manipulation"
                             placeholder="M"
                           />
                         </div>
@@ -535,7 +535,7 @@ export function LoginForm() {
                           value={address.street}
                           onChange={(e) => handleAddressSearchChange(e.target.value)}
                           onFocus={() => setShowSuggestions(addressSuggestions.length > 0)}
-                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-base touch-manipulation"
                           placeholder="Start typing your address..."
                         />
                         
@@ -566,7 +566,7 @@ export function LoginForm() {
                     </div>
 
                     {/* City and State */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div className="space-y-2">
                         <label htmlFor="city" className="block text-sm font-bold text-slate-300">
                           City
@@ -598,7 +598,7 @@ export function LoginForm() {
                     </div>
 
                     {/* Postal Code and Country */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div className="space-y-2">
                         <label htmlFor="postalCode" className="block text-sm font-bold text-slate-300">
                           Postal Code
@@ -654,7 +654,7 @@ export function LoginForm() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                    className="w-full pl-12 pr-4 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-base touch-manipulation"
                     placeholder="Enter your email"
                   />
                 </div>
@@ -676,7 +676,7 @@ export function LoginForm() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-12 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
+                    className="w-full pl-12 pr-12 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-base touch-manipulation"
                     placeholder="Enter your password"
                   />
                   <button
@@ -694,13 +694,13 @@ export function LoginForm() {
               </div>
 
               {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center">
                   <input
                     id="remember-me"
                     name="remember-me"
                     type="checkbox"
-                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-600 rounded bg-gray-800/50"
+                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-600 rounded bg-gray-800/50 touch-manipulation"
                   />
                   <label htmlFor="remember-me" className="ml-3 text-sm font-medium text-slate-400">
                     Remember me
@@ -709,7 +709,7 @@ export function LoginForm() {
                 <button
                   type="button"
                   onClick={() => setShowPasswordReset(true)}
-                  className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors"
+                  className="text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors touch-manipulation text-left sm:text-right"
                 >
                   Forgot password?
                 </button>
@@ -719,7 +719,7 @@ export function LoginForm() {
               <motion.button
                 type="submit"
                 disabled={loading}
-                className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:via-teal-400 hover:to-cyan-400 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center border border-emerald-500/30 group"
+                className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:via-teal-400 hover:to-cyan-400 text-white py-3 sm:py-4 px-6 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center border border-emerald-500/30 group touch-manipulation min-h-[48px]"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
               >
