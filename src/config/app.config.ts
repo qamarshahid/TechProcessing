@@ -4,7 +4,7 @@
 export const appConfig = {
   // Contact Information - Configurable via environment variables
   contact: {
-    phone: import.meta.env.VITE_CONTACT_PHONE || '+1 (727) 201-2658',
+    phone: import.meta.env.VITE_CONTACT_PHONE || '+1 (813) 324-1862',
     email: import.meta.env.VITE_CONTACT_EMAIL || 'support@techprocessingllc.com',
     address: import.meta.env.VITE_CONTACT_ADDRESS || '7901 4th St N, St. Petersburg, FL 33702',
   },
