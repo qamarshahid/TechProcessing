@@ -275,14 +275,14 @@ export function LandingPage() {
         <meta name="keywords" content="web development, SEO, digital marketing, Google Business Profile, St. Petersburg FL, website design" />
         <meta name="author" content="TechProcessing LLC" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://techprocessingllc.com" />
+        <link rel="canonical" href="https://www.techprocessingllc.com" />
         
         {/* Open Graph */}
         <meta property="og:title" content="TechProcessing LLC - Web Development & Digital Marketing" />
         <meta property="og:description" content="Professional web development, SEO, and digital marketing services. Design. Develop. Dominate." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://techprocessingllc.com" />
-        <meta property="og:image" content="https://techprocessingllc.com/og-image.jpg" />
+        <meta property="og:url" content="https://www.techprocessingllc.com" />
+        <meta property="og:image" content="https://www.techprocessingllc.com/og-image.jpg" />
         <meta property="og:locale" content="en_US" />
         <meta property="og:site_name" content="TechProcessing LLC" />
         
@@ -290,7 +290,7 @@ export function LandingPage() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="TechProcessing LLC - Web Development & Digital Marketing" />
         <meta name="twitter:description" content="Professional web development, SEO, and digital marketing services. Design. Develop. Dominate." />
-        <meta name="twitter:image" content="https://techprocessingllc.com/twitter-image.jpg" />
+        <meta name="twitter:image" content="https://www.techprocessingllc.com/twitter-image.jpg" />
         
         {/* JSON-LD Structured Data */}
         <script type="application/ld+json">
@@ -301,7 +301,7 @@ export function LandingPage() {
                 "@type": "Organization",
                 "@id": "https://techprocessingllc.com/#organization",
                 "name": "TechProcessing LLC",
-                "url": "https://techprocessingllc.com",
+                "url": "https://www.techprocessingllc.com",
                 "logo": "https://techprocessingllc.com/logo.png",
                 "contactPoint": {
                   "@type": "ContactPoint",
@@ -329,7 +329,7 @@ export function LandingPage() {
                 "@id": "https://techprocessingllc.com/#localbusiness",
                 "name": "TechProcessing LLC",
                 "description": "Professional web development, SEO, and digital marketing services",
-                "url": "https://techprocessingllc.com",
+                "url": "https://www.techprocessingllc.com",
                 "telephone": appConfig.contact.phone,
                 "email": "support@techprocessingllc.com",
                 "address": {

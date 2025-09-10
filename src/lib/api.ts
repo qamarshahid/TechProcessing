@@ -5,7 +5,7 @@ class ApiClient {
   constructor() {
     // Use production API URL for GitHub Pages deployment
     this.baseURL = import.meta.env.VITE_API_URL || 
-      (window.location.hostname === 'qamarshahid.github.io' 
+      (window.location.hostname === 'qamarshahid.github.io' || window.location.hostname === 'www.techprocessingllc.com'
         ? 'https://techprocessing-backend-320817886283.northamerica-northeast2.run.app/api'
         : 'http://localhost:8081/api');
   }
