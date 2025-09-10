@@ -86,27 +86,27 @@ export class EmailService {
 
   async sendContactForm(data: ContactFormData): Promise<{ success: boolean; message: string }> {
     try {
-      const mailOptions = {
-        from: `"TechProcessing Contact Form" <${this.configService.get('EMAIL_USER')}>`,
+      const result = await this.sendEmail({
         to: this.configService.get<string>('EMAIL_RECIPIENT', 'support@techprocessingllc.com'),
-        replyTo: data.email,
         subject: `New Contact Form Submission from ${data.name}`,
         html: this.generateContactFormHTML(data),
         text: this.generateContactFormText(data),
-      };
+      });
 
-      const result = await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Contact form email sent successfully: ${result.messageId}`);
-      
-      return {
-        success: true,
-        message: 'Thank you for your message! We\'ll get back to you within 24 hours.'
-      };
+      if (result.success) {
+        this.logger.log(`Contact form email sent successfully`);
+        return {
+          success: true,
+          message: 'Thank you for your message! We\'ll get back to you within 24 hours.'
+        };
+      } else {
+        throw new Error(result.message);
+      }
     } catch (error) {
       this.logger.error('Failed to send contact form email:', error);
       return {
         success: false,
-        message: 'Sorry, there was an error sending your message. Please try again or call us directly at (727) 201-2658.'
+        message: 'Sorry, there was an error sending your message. Please try again or call us directly at (813) 324-1862.'
       };
     }
   }
@@ -216,27 +216,27 @@ export class EmailService {
 
   async sendAppointmentRequest(data: AppointmentData): Promise<{ success: boolean; message: string }> {
     try {
-      const mailOptions = {
-        from: `"TechProcessing Appointment Request" <${this.configService.get('EMAIL_USER')}>`,
+      const result = await this.sendEmail({
         to: this.configService.get<string>('EMAIL_RECIPIENT', 'support@techprocessingllc.com'),
-        replyTo: data.email,
         subject: `New Appointment Request from ${data.name}`,
         html: this.generateAppointmentHTML(data),
         text: this.generateAppointmentText(data),
-      };
+      });
 
-      const result = await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Appointment request email sent successfully: ${result.messageId}`);
-      
-      return {
-        success: true,
-        message: 'Appointment request sent! We\'ll contact you to confirm your preferred time.'
-      };
+      if (result.success) {
+        this.logger.log(`Appointment request email sent successfully`);
+        return {
+          success: true,
+          message: 'Appointment request sent! We\'ll contact you to confirm your preferred time.'
+        };
+      } else {
+        throw new Error(result.message);
+      }
     } catch (error) {
       this.logger.error('Failed to send appointment request email:', error);
       return {
         success: false,
-        message: 'Sorry, there was an error sending your appointment request. Please call us directly at (727) 201-2658.'
+        message: 'Sorry, there was an error sending your appointment request. Please call us directly at (813) 324-1862.'
       };
     }
   }
