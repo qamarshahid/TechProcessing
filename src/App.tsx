@@ -20,8 +20,8 @@ import { GoogleAdsPage } from './pages/services/GoogleAds';
 import FAQ from './pages/FAQ';
 
 function App() {
-  // Determine base path for Router - use /TechProcessing in production, / in development
-  const basename = import.meta.env.PROD ? '/TechProcessing' : '';
+  // Determine base path for Router - use root path for custom domain
+  const basename = '';
   
   return (
     <ErrorBoundary>
