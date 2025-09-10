@@ -5,6 +5,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../common/enums/user-role.enum';
 import { Public } from '../common/decorators/public.decorator';
+import { Throttle } from '@nestjs/throttler';
 import { SessionTrackingService } from '../common/services/session-tracking.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -25,8 +26,11 @@ export class SystemController {
     private closerRepository: Repository<Closer>,
   ) {}
   @Get('status')
-  @Public()
-  @ApiOperation({ summary: 'Get system status' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 requests per minute
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get system status (Admin only)' })
   @ApiResponse({ status: 200, description: 'System status retrieved successfully' })
   async getStatus() {
     const uptime = process.uptime();
@@ -194,7 +198,6 @@ export class SystemController {
         .getMany();
 
       return users.map(user => ({
-        email: user.email,
         fullName: user.fullName,
         lastActivity: user.lastLogin || user.createdAt,
         ipAddress: 'N/A', // Not stored in user table
@@ -216,7 +219,6 @@ export class SystemController {
         .getMany();
 
       return closers.map(closer => ({
-        email: closer.email || 'N/A',
         fullName: closer.closerName,
         lastActivity: closer.createdAt,
         ipAddress: 'N/A', // Not stored in closer table
@@ -236,6 +238,7 @@ export class SystemController {
   @Get('settings')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 requests per minute
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get system settings (Admin only)' })
   @ApiResponse({ status: 200, description: 'System settings retrieved successfully' })
