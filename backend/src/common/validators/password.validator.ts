@@ -71,7 +71,7 @@ const COMMON_PASSWORDS = [
 ];
 
 export function IsStrongPassword(options: PasswordStrengthOptions = {}, validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isStrongPassword',
       target: object.constructor,
@@ -189,7 +189,7 @@ export function IsStrongPassword(options: PasswordStrengthOptions = {}, validati
 }
 
 export function IsNotCommonPassword(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isNotCommonPassword',
       target: object.constructor,
@@ -213,7 +213,7 @@ export function IsNotCommonPassword(validationOptions?: ValidationOptions) {
 }
 
 export function IsNotUserInfo(userInfoFields: string[], validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isNotUserInfo',
       target: object.constructor,

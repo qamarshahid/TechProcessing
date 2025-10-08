@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../../users/entities/user.entity';
-import { ServicePackage } from '../../invoices/entities/service-package.entity';
+import { ServicePackage } from '../../common/entities';
 import { UserRole } from '../../common/enums/user-role.enum';
 import { seedAgents } from './agent-seed';
 import { seedClosers } from './closer-seed';

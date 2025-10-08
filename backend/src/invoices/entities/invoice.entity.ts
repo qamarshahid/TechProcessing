@@ -11,7 +11,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { User } from '../../users/entities/user.entity';
 import { Payment } from '../../payments/entities/payment.entity';
-import { ServicePackage } from './service-package.entity';
+import { ServicePackage } from '../../common/entities';
 import { InvoiceStatus } from '../../common/enums/invoice-status.enum';
 
 @Entity('invoices')

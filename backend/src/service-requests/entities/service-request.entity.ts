@@ -9,7 +9,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { ServicePackage } from '../../invoices/entities/service-package.entity';
+import { ServicePackage } from '../../common/entities';
 import { PriceAdjustment } from './price-adjustment.entity';
 import { FileAttachment } from './file-attachment.entity';
 

@@ -8,7 +8,7 @@ import { Closer } from '../users/entities/closer.entity';
 import { Invoice } from '../invoices/entities/invoice.entity';
 import { Payment } from '../payments/entities/payment.entity';
 import { AuditLog } from '../audit/entities/audit-log.entity';
-import { ServicePackage } from '../invoices/entities/service-package.entity';
+import { ServicePackage } from '../common/entities';
 import { Subscription } from '../subscriptions/entities/subscription.entity';
 import { PaymentLink } from '../payment-links/entities/payment-link.entity';
 import { ServiceRequest } from '../service-requests/entities/service-request.entity';

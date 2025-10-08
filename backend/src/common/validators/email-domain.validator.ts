@@ -76,7 +76,7 @@ const DISPOSABLE_EMAIL_DOMAINS = [
 ];
 
 export function IsNotDisposableEmail(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'isNotDisposableEmail',
       target: object.constructor,

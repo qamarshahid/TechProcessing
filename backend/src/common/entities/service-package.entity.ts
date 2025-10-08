@@ -7,12 +7,17 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
+/**
+ * ServicePackage Entity
+ * Represents available service packages that can be purchased by clients
+ * Used across: Invoices, Service Requests, and Subscriptions
+ */
 @Entity('service_packages')
 export class ServicePackage {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
   name: string;
 
   @Column({ type: 'text' })
@@ -23,7 +28,7 @@ export class ServicePackage {
 
   @Column({ type: 'json' })
   @Exclude()
-  features: string[];
+  features: any;
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
@@ -33,4 +38,8 @@ export class ServicePackage {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  // Note: Relationships are lazy-loaded to avoid circular dependencies
+  // They can be accessed via repository.find({ relations: ['...'] })
 }
+

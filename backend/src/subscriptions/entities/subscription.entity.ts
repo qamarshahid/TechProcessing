@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { User } from '../../users/entities/user.entity';
-import { ServicePackage } from '../../invoices/entities/service-package.entity';
+import { ServicePackage } from '../../common/entities';
 
 export enum SubscriptionFrequency {
   MONTHLY = 'MONTHLY',
