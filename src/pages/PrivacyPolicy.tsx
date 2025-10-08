@@ -10,10 +10,7 @@ import {
   Phone, 
   Mail, 
   MapPin,
-  CheckCircle,
-  Clock,
-  FileText,
-  Globe
+  Clock
 } from 'lucide-react';
 import { appConfig } from '../config/app.config';
 
@@ -210,6 +207,17 @@ const PrivacyPolicy: React.FC = () => {
                 Tech Processing can contact you to provide information on updates, news, promotions, and other relevant services of our Services using your contact information. We are transparent and will never interfere with the privacy practices you have.
               </p>
 
+              <h3 className="text-xl font-semibold text-emerald-400 mt-8 mb-4">SMS and Mobile Communications:</h3>
+              <p className="text-gray-300 text-lg leading-relaxed mb-4">
+                When you provide your mobile phone number to Tech Processing and opt-in to receive SMS communications, you expressly consent to receive text messages from us regarding appointment reminders, service updates, notifications, and other business-related communications. We obtain your explicit consent before sending any SMS messages to your mobile device.
+              </p>
+              <p className="text-gray-300 text-lg leading-relaxed mb-4">
+                <strong className="text-white">Important Privacy Guarantee:</strong> Tech Processing will NOT share, sell, rent, or otherwise disclose your mobile phone number or any mobile opt-in data to any third parties or affiliates for marketing or any other purposes. Your mobile opt-in information remains strictly confidential and is used solely by Tech Processing to communicate with you directly.
+              </p>
+              <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                You may opt-out of receiving SMS messages at any time by replying "STOP" to any text message you receive from us, or by contacting us directly at support@techprocessingllc.com. Message and data rates may apply based on your mobile carrier's plan. We comply with all applicable SMS carrier policies and regulations, including TCPA (Telephone Consumer Protection Act) requirements.
+              </p>
+
               <h3 className="text-xl font-semibold text-emerald-400 mt-8 mb-4">Usage Data and Analytics:</h3>
               <p className="text-gray-300 text-lg leading-relaxed mb-6">
                 Tech Processing is an SDK that has third-party analytical tools to understand the user behavior and pattern. This assists us in enhancing our creative design, electronic marketing, and technological solutions so as to ensure that Tech Processing offers to you the best digital experiences that your brand can offer.
@@ -237,9 +245,19 @@ const PrivacyPolicy: React.FC = () => {
                 Tech Processing cares about your confidentiality and exchange your data only under the following conditions:
               </p>
 
+              <div className="bg-emerald-600/20 border border-emerald-600/30 rounded-lg p-6 mb-8">
+                <p className="text-emerald-400 font-semibold text-lg mb-2">⚠️ Mobile Opt-In Data Protection:</p>
+                <p className="text-gray-300">
+                  We want to make it absolutely clear: <strong className="text-white">Your mobile phone number and any mobile opt-in data will NEVER be shared, sold, rented, or disclosed to any third parties or affiliates under any circumstances.</strong> This information is kept strictly confidential and used only by Tech Processing to communicate with you directly about our services.
+                </p>
+              </div>
+
               <h3 className="text-xl font-semibold text-emerald-400 mt-8 mb-4">Service Providers:</h3>
-              <p className="text-gray-300 text-lg leading-relaxed mb-6">
+              <p className="text-gray-300 text-lg leading-relaxed mb-4">
                 Tech Processing is likely to provide your personal data to trusted third party service providers who have been engaged by us to help us run our Services, run our business, or serve you. Those suppliers are bound to your privacy and they can use your data the only way they are contracted to utilise it on the instructions of Tech Processing.
+              </p>
+              <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                <strong className="text-white">Important Exception:</strong> Your mobile phone number and mobile opt-in data are specifically excluded from any data sharing with service providers, third parties, or affiliates. This information remains confidential within Tech Processing only.
               </p>
 
               <h3 className="text-xl font-semibold text-emerald-400 mt-8 mb-4">Legal Compliance:</h3>
