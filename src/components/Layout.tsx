@@ -123,12 +123,12 @@ export function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors relative overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-bg1 transition-colors relative overflow-hidden">
       {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950"></div>
         <motion.div
-          className="absolute w-96 h-96 bg-gradient-to-r from-cyan-500/5 to-blue-600/5 dark:from-cyan-500/10 dark:to-blue-600/10 rounded-full blur-3xl"
+          className="absolute w-96 h-96 bg-gradient-to-r from-accent500/5 to-blue-600/5 dark:from-accent500/10 dark:to-blue-600/10 rounded-full blur-3xl"
           animate={{
             x: [0, 100, 0],
             y: [0, -50, 0],
@@ -158,27 +158,27 @@ export function Layout({ children }: LayoutProps) {
       </div>
 
       {/* Navigation Header */}
-      <nav className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-2xl border-b border-gray-200/50 dark:border-slate-800/50 transition-colors sticky top-0 z-40">
+      <nav className="bg-white/80 dark:bg-bg2/80 backdrop-blur-xl shadow-2xl border-b border-gray-200/50 dark:border-outline/50 transition-colors sticky top-0 z-40">
         <div className="max-w-full mx-auto px-3 sm:px-4 md:px-6">
           <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo Section */}
             <div className="flex items-center space-x-2 sm:space-x-3">
               <div className="relative">
                 <motion.div 
-                  className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center shadow-2xl"
+                  className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gradient-to-br from-accent1 via-accent2 to-accent1 rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center shadow-2xl"
                   whileHover={{ scale: 1.05, rotate: 5 }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
-                  <div className="text-white font-black text-sm sm:text-base md:text-lg">TP</div>
+                  <div className="text-fg font-black text-sm sm:text-base md:text-lg">TP</div>
                 </motion.div>
-                <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse"></div>
+                <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-accent2 to-accent1 rounded-full animate-pulse"></div>
                 </div>
               <div className="flex flex-col">
-                <div className="font-black text-sm sm:text-base md:text-lg lg:text-xl bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600 bg-clip-text text-transparent leading-tight">
+                <div className="font-black text-sm sm:text-base md:text-lg lg:text-xl bg-gradient-to-r from-accent2 via-accent1 to-accent3 bg-clip-text text-transparent leading-tight">
                   <span className="hidden sm:inline">TECH PROCESSING</span>
                   <span className="sm:hidden">TECH</span>
                 </div>
-                <div className="text-xs text-emerald-400 font-bold tracking-[0.15em] sm:tracking-[0.2em] leading-tight">
+                <div className="text-xs text-accent2 font-bold tracking-[0.15em] sm:tracking-[0.2em] leading-tight">
                   LLC
                 </div>
               </div>
@@ -199,8 +199,8 @@ export function Layout({ children }: LayoutProps) {
                         onClick={() => toggleDropdown(section.id)}
                         className={`flex items-center space-x-2 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
                           isActive
-                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25'
-                            : 'text-gray-700 dark:text-slate-300 hover:text-emerald-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
+                            ? 'bg-gradient-to-r from-accent1 to-accent600 text-fg shadow-lg shadow-accent500/25'
+                            : 'text-gray-700 dark:text-slate-300 hover:text-accent2 hover:bg-gray-100/50 dark:hover:bg-surface/50'
                         }`}
                       >
                         <SectionIcon className="h-4 w-4" />
@@ -222,7 +222,7 @@ export function Layout({ children }: LayoutProps) {
                             className="fixed inset-0 z-10" 
                             onClick={() => setActiveDropdown(null)}
                           ></div>
-                            <div className="absolute top-full left-0 mt-2 w-64 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-slate-700/50 z-20">
+                            <div className="absolute top-full left-0 mt-2 w-64 bg-white/90 dark:bg-bg2/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-outline/50 z-20">
                             <div className="p-2">
                               {section.items.map((item) => {
                                 const ItemIcon = item.icon;
@@ -234,8 +234,8 @@ export function Layout({ children }: LayoutProps) {
                                     to={item.path}
                                     className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
                                       isItemActive
-                                        ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
-                                        : 'text-gray-700 dark:text-slate-300 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 hover:text-emerald-400'
+                                        ? 'bg-gradient-to-r from-accent1 to-accent600 text-fg shadow-lg'
+                                        : 'text-gray-700 dark:text-slate-300 hover:bg-gray-100/50 dark:hover:bg-surface/50 hover:text-accent2'
                                     }`}
                                     onClick={() => setActiveDropdown(null)}
                                   >
@@ -265,8 +265,8 @@ export function Layout({ children }: LayoutProps) {
                       to={item.path}
                       className={`flex items-center space-x-2 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
                         isActive
-                          ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/25'
-                          : 'text-gray-700 dark:text-slate-300 hover:text-emerald-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
+                          ? 'bg-gradient-to-r from-accent1 to-accent600 text-fg shadow-lg shadow-accent500/25'
+                          : 'text-gray-700 dark:text-slate-300 hover:text-accent2 hover:bg-gray-100/50 dark:hover:bg-surface/50'
                       }`}
                     >
                       <Icon className="h-4 w-4" />
@@ -282,14 +282,14 @@ export function Layout({ children }: LayoutProps) {
                 {/* User Info - Desktop */}
                 <div className="hidden lg:flex items-center space-x-3">
                   <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">
+                    <p className="text-sm font-bold text-gray-900 dark:text-fg">
                       {user?.fullName || 'User'}
                     </p>
                     <div className="flex items-center justify-end">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
                         user?.role === 'ADMIN' 
-                          ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 text-emerald-400 border border-emerald-500/30' 
-                          : 'bg-gradient-to-r from-teal-500/20 to-cyan-600/20 text-teal-400 border border-teal-500/30'
+                          ? 'bg-gradient-to-r from-accent1/20 to-accent600/20 text-accent2 border border-emerald-500/30' 
+                          : 'bg-gradient-to-r from-accent500/20 to-accent600/20 text-accent400 border border-accent500/30'
                       }`}>
                         {user?.role}
                       </span>
@@ -300,7 +300,7 @@ export function Layout({ children }: LayoutProps) {
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-accent1 via-accent2 to-accent500 rounded-xl sm:rounded-2xl flex items-center justify-center text-fg text-sm font-bold shadow-lg">
                       {user?.email?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <div className="absolute -bottom-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-emerald-400 rounded-full border-2 border-slate-950 animate-pulse"></div>
@@ -311,7 +311,7 @@ export function Layout({ children }: LayoutProps) {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center space-x-2 px-3 sm:px-4 py-2 sm:py-3 bg-gray-100/50 dark:bg-slate-800/50 backdrop-blur-sm text-gray-700 dark:text-slate-300 rounded-lg sm:rounded-xl hover:bg-gray-200/50 dark:hover:bg-slate-700/50 hover:text-emerald-400 transition-all duration-300 text-xs sm:text-sm font-bold border border-emerald-400/30 touch-manipulation min-h-[44px]"
+                  className="flex items-center space-x-2 px-3 sm:px-4 py-2 sm:py-3 bg-gray-100/50 dark:bg-surface/50 backdrop-blur-sm text-gray-700 dark:text-slate-300 rounded-lg sm:rounded-xl hover:bg-gray-200/50 dark:hover:bg-surface2/50 hover:text-accent2 transition-all duration-300 text-xs sm:text-sm font-bold border border-emerald-400/30 touch-manipulation min-h-[44px]"
                 >
                   <User className="w-3 h-3 sm:w-4 sm:h-4" />
                   <ChevronDown className="w-3 h-3" />
@@ -331,21 +331,21 @@ export function Layout({ children }: LayoutProps) {
                       className="fixed inset-0 z-10" 
                       onClick={() => setUserMenuOpen(false)}
                     ></div>
-                      <div className="absolute right-0 mt-2 w-72 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-slate-700/50 z-20">
-                        <div className="p-6 border-b border-gray-200/50 dark:border-slate-700/50">
+                      <div className="absolute right-0 mt-2 w-72 bg-white/90 dark:bg-bg2/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 dark:border-outline/50 z-20">
+                        <div className="p-6 border-b border-gray-200/50 dark:border-outline/50">
                         <div className="flex items-center space-x-3">
-                            <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-500 rounded-2xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                            <div className="w-14 h-14 bg-gradient-to-br from-accent1 via-accent2 to-accent500 rounded-2xl flex items-center justify-center text-fg text-lg font-bold shadow-lg">
                             {user?.email?.charAt(0).toUpperCase() || 'U'}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                            <p className="text-sm font-bold text-gray-900 dark:text-fg truncate">
                               {user?.fullName || 'User'}
                             </p>
                             <p className="text-xs text-gray-600 dark:text-slate-400 truncate">{user?.email}</p>
                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold mt-2 ${
                               user?.role === 'ADMIN' 
-                                ? 'bg-gradient-to-r from-emerald-500/20 to-teal-600/20 text-emerald-400 border border-emerald-500/30' 
-                                : 'bg-gradient-to-r from-teal-500/20 to-cyan-600/20 text-teal-400 border border-teal-500/30'
+                                ? 'bg-gradient-to-r from-accent1/20 to-accent600/20 text-accent2 border border-emerald-500/30' 
+                                : 'bg-gradient-to-r from-accent500/20 to-accent600/20 text-accent400 border border-accent500/30'
                             }`}>
                               {user?.role || 'USER'}
                             </span>
@@ -353,7 +353,7 @@ export function Layout({ children }: LayoutProps) {
                         </div>
                       </div>
                       <div className="p-2">
-                        <div className="px-4 py-3 border-b border-gray-200/50 dark:border-slate-700/50">
+                        <div className="px-4 py-3 border-b border-gray-200/50 dark:border-outline/50">
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-sm font-bold text-gray-700 dark:text-slate-300">Theme</span>
                             <ThemeToggle />
@@ -378,7 +378,7 @@ export function Layout({ children }: LayoutProps) {
               {/* Mobile menu button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden relative w-10 h-10 sm:w-12 sm:h-12 bg-gray-100/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-gray-200/50 dark:hover:bg-slate-700/50 transition-all duration-300 shadow-lg border border-emerald-400/30 touch-manipulation"
+                className="lg:hidden relative w-10 h-10 sm:w-12 sm:h-12 bg-gray-100/50 dark:bg-surface/50 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-gray-200/50 dark:hover:bg-surface2/50 transition-all duration-300 shadow-lg border border-emerald-400/30 touch-manipulation"
               >
                 {mobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700 dark:text-slate-300" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700 dark:text-slate-300" />}
               </button>
@@ -389,7 +389,7 @@ export function Layout({ children }: LayoutProps) {
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div
-                className="lg:hidden border-t border-gray-200/50 dark:border-slate-800/50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl"
+                className="lg:hidden border-t border-gray-200/50 dark:border-outline/50 bg-white/90 dark:bg-bg2/90 backdrop-blur-xl"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
@@ -413,8 +413,8 @@ export function Layout({ children }: LayoutProps) {
                             to={item.path}
                             className={`flex items-center space-x-3 px-4 sm:px-6 py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-bold transition-all duration-300 touch-manipulation min-h-[48px] ${
                               isActive
-                                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
-                                : 'text-gray-700 dark:text-slate-300 hover:text-emerald-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
+                                ? 'bg-gradient-to-r from-accent1 to-accent600 text-fg shadow-lg'
+                                : 'text-gray-700 dark:text-slate-300 hover:text-accent2 hover:bg-gray-100/50 dark:hover:bg-surface/50'
                             }`}
                             onClick={() => setMobileMenuOpen(false)}
                           >
@@ -437,8 +437,8 @@ export function Layout({ children }: LayoutProps) {
                         to={item.path}
                         className={`flex items-center space-x-3 px-4 py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-bold transition-all duration-300 touch-manipulation min-h-[48px] ${
                           isActive
-                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
-                            : 'text-gray-700 dark:text-slate-300 hover:text-emerald-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
+                            ? 'bg-gradient-to-r from-accent1 to-accent600 text-fg shadow-lg'
+                            : 'text-gray-700 dark:text-slate-300 hover:text-accent2 hover:bg-gray-100/50 dark:hover:bg-surface/50'
                         }`}
                         onClick={() => setMobileMenuOpen(false)}
                       >
@@ -450,13 +450,13 @@ export function Layout({ children }: LayoutProps) {
                 )}
                 
                 {/* Mobile User Section */}
-                <div className="pt-4 mt-4 border-t border-gray-200/50 dark:border-slate-700/50">
+                <div className="pt-4 mt-4 border-t border-gray-200/50 dark:border-outline/50">
                   <div className="flex items-center space-x-3 px-3 sm:px-4 py-3">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-accent1 via-accent2 to-accent500 rounded-xl sm:rounded-2xl flex items-center justify-center text-fg text-sm font-bold shadow-lg">
                       {user?.email?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">
+                      <p className="text-sm font-bold text-gray-900 dark:text-fg">
                         {user?.fullName || 'User'}
                       </p>
                       <p className="text-xs text-gray-600 dark:text-slate-400">{user?.email}</p>
@@ -489,7 +489,7 @@ export function Layout({ children }: LayoutProps) {
       <main className="flex-1 p-3 sm:p-4 md:p-6 relative">
         <div className="max-w-full mx-auto relative">
           {/* Content Background */}
-          <div className="absolute inset-0 bg-gray-100/20 dark:bg-slate-900/20 backdrop-blur-3xl rounded-2xl sm:rounded-3xl border border-gray-200/30 dark:border-slate-800/30 -z-10"></div>
+          <div className="absolute inset-0 bg-gray-100/20 dark:bg-bg2/20 backdrop-blur-3xl rounded-2xl sm:rounded-3xl border border-gray-200/30 dark:border-outline/30 -z-10"></div>
           {children}
         </div>
       </main>

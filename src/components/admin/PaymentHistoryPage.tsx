@@ -152,7 +152,7 @@ export function PaymentHistoryPage() {
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'completed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+        return 'bg-accent100 text-accent800 dark:bg-accent900/20 dark:text-accent400';
       case 'pending':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
       case 'failed':
@@ -160,7 +160,7 @@ export function PaymentHistoryPage() {
       case 'refunded':
         return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-muted';
     }
   };
 
@@ -186,11 +186,11 @@ export function PaymentHistoryPage() {
       case 'ZELLE':
         return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
       case 'CASHAPP':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+        return 'bg-accent100 text-accent800 dark:bg-accent900/20 dark:text-accent400';
       case 'BANK_TRANSFER':
         return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-muted';
     }
   };
 
@@ -225,13 +225,13 @@ Transaction ID: ${payment.transaction_id || 'N/A'}
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-1/4 mb-6"></div>
+          <div className="h-8 bg-gray-200 dark:bg-surface2 rounded w-1/4 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+              <div key={i} className="h-32 bg-gray-200 dark:bg-surface2 rounded-lg"></div>
             ))}
           </div>
-          <div className="h-96 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+          <div className="h-96 bg-gray-200 dark:bg-surface2 rounded-lg"></div>
         </div>
       </div>
     );
@@ -242,13 +242,13 @@ Transaction ID: ${payment.transaction_id || 'N/A'}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Payment History</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-300">View and manage all payment transactions</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-fg">Payment History</h1>
+          <p className="text-sm text-gray-600 dark:text-muted">View and manage all payment transactions</p>
         </div>
         <button
           onClick={fetchPayments}
           disabled={loading}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+          className="inline-flex items-center px-4 py-2 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -257,50 +257,50 @@ Transaction ID: ${payment.transaction_id || 'N/A'}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+        <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-6">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-              <BarChart3 className="h-6 w-6 text-white" />
+              <BarChart3 className="h-6 w-6 text-fg" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Payments</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalPayments}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Total Payments</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-fg">{stats.totalPayments}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+        <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-6">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-              <DollarSign className="h-6 w-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-accent500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+              <DollarSign className="h-6 w-6 text-fg" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Amount</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">${stats.totalAmount.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Total Amount</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-fg">${stats.totalAmount.toLocaleString()}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+        <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-6">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-              <CheckCircle className="h-6 w-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center shadow-lg">
+              <CheckCircle className="h-6 w-6 text-fg" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.completedPayments}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Completed</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-fg">{stats.completedPayments}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+        <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-6">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Clock className="h-6 w-6 text-white" />
+              <Clock className="h-6 w-6 text-fg" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.pendingPayments}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Pending</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-fg">{stats.pendingPayments}</p>
             </div>
           </div>
         </div>
@@ -320,9 +320,9 @@ Transaction ID: ${payment.transaction_id || 'N/A'}
       />
 
       {/* Payments Table */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700">
-        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-outline">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-fg">
             Payment Transactions ({filteredPayments.length})
           </h2>
         </div>
@@ -330,48 +330,48 @@ Transaction ID: ${payment.transaction_id || 'N/A'}
         {filteredPayments.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-600">
-              <thead className="bg-gray-50 dark:bg-slate-700">
+              <thead className="bg-gray-50 dark:bg-surface2">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Client
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Method
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Transaction ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-600">
+              <tbody className="bg-white dark:bg-surface divide-y divide-gray-200 dark:divide-slate-600">
                 {filteredPayments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
+                  <tr key={payment.id} className="hover:bg-gray-50 dark:hover:bg-surface2">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div className="text-sm font-medium text-gray-900 dark:text-fg">
                           {payment.client_name || payment.user?.fullName || 'Unknown Client'}
                         </div>
                         {payment.invoice?.description && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-gray-500 dark:text-muted">
                             {payment.invoice.description}
                           </div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-fg">
                         ${parseFloat(payment.amount).toLocaleString()}
                       </div>
                     </td>
@@ -388,7 +388,7 @@ Transaction ID: ${payment.transaction_id || 'N/A'}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                       <div>
                         <div>
                           {payment.created_at && !isNaN(new Date(payment.created_at).getTime()) 
@@ -397,14 +397,14 @@ Transaction ID: ${payment.transaction_id || 'N/A'}
                           }
                         </div>
                         {payment.processed_at && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-gray-500 dark:text-muted">
                             Processed: {new Date(payment.processed_at).toLocaleDateString()}
                           </div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-mono text-gray-900 dark:text-white">
+                      <div className="text-sm font-mono text-gray-900 dark:text-fg">
                         {payment.transaction_id || 'N/A'}
                       </div>
                     </td>
@@ -419,7 +419,7 @@ Transaction ID: ${payment.transaction_id || 'N/A'}
                         </button>
                         <button 
                           onClick={() => downloadReceipt(payment)}
-                          className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                          className="text-accent600 hover:text-accent900 dark:text-accent400 dark:hover:text-accent300"
                           title="Download Receipt"
                         >
                           <Download className="h-4 w-4" />
@@ -433,11 +433,11 @@ Transaction ID: ${payment.transaction_id || 'N/A'}
           </div>
         ) : (
           <div className="p-12 text-center">
-            <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CreditCard className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+            <div className="w-16 h-16 bg-gray-100 dark:bg-surface2 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CreditCard className="h-8 w-8 text-muted dark:text-gray-500" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Payments Found</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-fg mb-2">No Payments Found</h3>
+            <p className="text-gray-500 dark:text-muted mb-6">
               {searchTerm || Object.values(filters).some(f => f) 
                 ? 'Try adjusting your search or filter criteria.'
                 : 'Payment transactions will appear here when processed.'
@@ -448,24 +448,24 @@ Transaction ID: ${payment.transaction_id || 'N/A'}
       </div>
 
       {/* Payment Summary */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Payment Summary</h3>
+      <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-fg mb-4">Payment Summary</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.totalPayments}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Total Transactions</div>
+            <div className="text-sm text-gray-600 dark:text-muted">Total Transactions</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">${stats.totalAmount.toLocaleString()}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Total Revenue</div>
+            <div className="text-2xl font-bold text-accent600 dark:text-accent400">${stats.totalAmount.toLocaleString()}</div>
+            <div className="text-sm text-gray-600 dark:text-muted">Total Revenue</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{stats.completedPayments}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Successful Payments</div>
+            <div className="text-2xl font-bold text-accent1 dark:text-accent2">{stats.completedPayments}</div>
+            <div className="text-sm text-gray-600 dark:text-muted">Successful Payments</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{stats.pendingPayments}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Pending Payments</div>
+            <div className="text-sm text-gray-600 dark:text-muted">Pending Payments</div>
           </div>
         </div>
       </div>

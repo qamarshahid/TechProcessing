@@ -365,12 +365,12 @@ export function SystemSettingsPage() {
           <div className="animate-pulse space-y-8">
             {/* Header skeleton */}
             <div className="text-center">
-              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded-lg w-1/3 mx-auto mb-4"></div>
-              <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mx-auto"></div>
+              <div className="h-12 bg-slate-200 dark:bg-surface2 rounded-lg w-1/3 mx-auto mb-4"></div>
+              <div className="h-6 bg-slate-200 dark:bg-surface2 rounded w-1/2 mx-auto"></div>
             </div>
             
             {/* Content skeleton */}
-            <div className="h-96 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+            <div className="h-96 bg-slate-200 dark:bg-surface2 rounded-xl"></div>
           </div>
         </div>
       </div>
@@ -383,9 +383,9 @@ export function SystemSettingsPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl mb-6 shadow-xl">
-            <Settings className="h-10 w-10 text-white" />
+            <Settings className="h-10 w-10 text-fg" />
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-fg mb-4">
             System Settings Center ⚙️
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
@@ -395,23 +395,23 @@ export function SystemSettingsPage() {
 
         {/* System Status Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">System Uptime</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{systemStatus.uptime}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-fg">{systemStatus.uptime}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Clock className="h-7 w-7 text-white" />
+              <div className="w-14 h-14 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Clock className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <Activity className="h-4 w-4 mr-1 text-emerald-500" />
+              <Activity className="h-4 w-4 mr-1 text-accent1" />
               <span>Stable operation</span>
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Memory Usage</p>
@@ -421,7 +421,7 @@ export function SystemSettingsPage() {
                 </p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <HardDrive className="h-7 w-7 text-white" />
+                <HardDrive className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
@@ -435,7 +435,7 @@ export function SystemSettingsPage() {
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">CPU Usage</p>
@@ -445,7 +445,7 @@ export function SystemSettingsPage() {
                 </p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Zap className="h-7 w-7 text-white" />
+                <Zap className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
@@ -459,7 +459,7 @@ export function SystemSettingsPage() {
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Active Users</p>
@@ -474,7 +474,7 @@ export function SystemSettingsPage() {
                     <span>Agent: {systemStatus.activeUsersByRole?.byRole?.AGENT || 0}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span className="w-2 h-2 bg-accent500 rounded-full"></span>
                     <span>Client: {systemStatus.activeUsersByRole?.byRole?.CLIENT || 0}</span>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -484,7 +484,7 @@ export function SystemSettingsPage() {
                 </div>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Users className="h-7 w-7 text-white" />
+                <Users className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
@@ -498,7 +498,7 @@ export function SystemSettingsPage() {
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Disk Usage</p>
@@ -508,7 +508,7 @@ export function SystemSettingsPage() {
                 </p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Database className="h-7 w-7 text-white" />
+                <Database className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
@@ -524,9 +524,9 @@ export function SystemSettingsPage() {
         </div>
 
         {/* Settings Tabs */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline overflow-hidden">
           {/* Tab Navigation */}
-          <div className="border-b border-slate-200 dark:border-slate-700">
+          <div className="border-b border-slate-200 dark:border-outline">
             <nav className="flex space-x-8 px-6">
               {[
                 { id: 'general', label: 'General', icon: Settings },
@@ -568,7 +568,7 @@ export function SystemSettingsPage() {
                       type="text"
                       value={settings.general.siteName}
                       onChange={(e) => updateSetting('general', 'siteName', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   
@@ -579,7 +579,7 @@ export function SystemSettingsPage() {
                     <select
                       value={settings.general.timezone}
                       onChange={(e) => updateSetting('general', 'timezone', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="UTC">UTC</option>
                       <option value="America/New_York">Eastern Time</option>
@@ -601,13 +601,13 @@ export function SystemSettingsPage() {
                     value={settings.general.siteDescription}
                     onChange={(e) => updateSetting('general', 'siteDescription', e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                   <div>
-                    <h3 className="text-sm font-medium text-slate-900 dark:text-white">Maintenance Mode</h3>
+                    <h3 className="text-sm font-medium text-slate-900 dark:text-fg">Maintenance Mode</h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                       Enable to show maintenance page to users
                     </p>
@@ -642,7 +642,7 @@ export function SystemSettingsPage() {
                       max="1440"
                       value={settings.security.sessionTimeout}
                       onChange={(e) => updateSetting('security', 'sessionTimeout', parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   
@@ -656,14 +656,14 @@ export function SystemSettingsPage() {
                       max="10"
                       value={settings.security.maxLoginAttempts}
                       onChange={(e) => updateSetting('security', 'maxLoginAttempts', parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                   <div>
-                    <h3 className="text-sm font-medium text-slate-900 dark:text-white">Two-Factor Authentication</h3>
+                    <h3 className="text-sm font-medium text-slate-900 dark:text-fg">Two-Factor Authentication</h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                       Require 2FA for all users
                     </p>
@@ -697,7 +697,7 @@ export function SystemSettingsPage() {
                             newIPs[index] = e.target.value;
                             updateSetting('security', 'allowedIPs', newIPs);
                           }}
-                          className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                         <button
                           onClick={() => removeAllowedIP(index)}
@@ -723,9 +723,9 @@ export function SystemSettingsPage() {
             {activeTab === 'notifications' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                     <div>
-                      <h3 className="text-sm font-medium text-slate-900 dark:text-white">Email Notifications</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-fg">Email Notifications</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Send notifications via email</p>
                     </div>
                     <button
@@ -742,9 +742,9 @@ export function SystemSettingsPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                     <div>
-                      <h3 className="text-sm font-medium text-slate-900 dark:text-white">SMS Notifications</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-fg">SMS Notifications</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Send notifications via SMS</p>
                     </div>
                     <button
@@ -763,9 +763,9 @@ export function SystemSettingsPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                     <div>
-                      <h3 className="text-sm font-medium text-slate-900 dark:text-white">Admin Alerts</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-fg">Admin Alerts</h3>
                     </div>
                     <button
                       onClick={() => updateSetting('notifications', 'adminAlerts', !settings.notifications.adminAlerts)}
@@ -781,9 +781,9 @@ export function SystemSettingsPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                     <div>
-                      <h3 className="text-sm font-medium text-slate-900 dark:text-white">User Alerts</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-fg">User Alerts</h3>
                     </div>
                     <button
                       onClick={() => updateSetting('notifications', 'userAlerts', !settings.notifications.userAlerts)}
@@ -799,9 +799,9 @@ export function SystemSettingsPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                     <div>
-                      <h3 className="text-sm font-medium text-slate-900 dark:text-white">System Alerts</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-fg">System Alerts</h3>
                     </div>
                     <button
                       onClick={() => updateSetting('notifications', 'systemAlerts', !settings.notifications.systemAlerts)}
@@ -824,9 +824,9 @@ export function SystemSettingsPage() {
             {activeTab === 'performance' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                     <div>
-                      <h3 className="text-sm font-medium text-slate-900 dark:text-white">Enable Caching</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-fg">Enable Caching</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Improve performance with caching</p>
                     </div>
                     <button
@@ -843,9 +843,9 @@ export function SystemSettingsPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                     <div>
-                      <h3 className="text-sm font-medium text-slate-900 dark:text-white">Image Optimization</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-fg">Image Optimization</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Optimize images automatically</p>
                     </div>
                     <button
@@ -874,7 +874,7 @@ export function SystemSettingsPage() {
                       max="86400"
                       value={settings.performance.cacheTTL}
                       onChange={(e) => updateSetting('performance', 'cacheTTL', parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   
@@ -888,7 +888,7 @@ export function SystemSettingsPage() {
                       max="1000"
                       value={settings.performance.maxConnections}
                       onChange={(e) => updateSetting('performance', 'maxConnections', parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -909,9 +909,9 @@ export function SystemSettingsPage() {
             {activeTab === 'backup' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                     <div>
-                      <h3 className="text-sm font-medium text-slate-900 dark:text-white">Auto Backup</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-fg">Auto Backup</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Enable automatic backups</p>
                     </div>
                     <button
@@ -928,9 +928,9 @@ export function SystemSettingsPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-surface2/50 rounded-lg">
                     <div>
-                      <h3 className="text-sm font-medium text-slate-900 dark:text-white">Encryption</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-fg">Encryption</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400">Encrypt backup files</p>
                     </div>
                     <button
@@ -956,7 +956,7 @@ export function SystemSettingsPage() {
                     <select
                       value={settings.backup.backupFrequency}
                       onChange={(e) => updateSetting('backup', 'backupFrequency', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="hourly">Hourly</option>
                       <option value="daily">Daily</option>
@@ -975,7 +975,7 @@ export function SystemSettingsPage() {
                       max="365"
                       value={settings.backup.backupRetention}
                       onChange={(e) => updateSetting('backup', 'backupRetention', parseInt(e.target.value))}
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -983,7 +983,7 @@ export function SystemSettingsPage() {
                 <div className="flex gap-4">
                   <button
                     onClick={createBackup}
-                    className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-medium rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/30 transition-colors"
+                    className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-accent2 font-medium rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/30 transition-colors"
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Create Backup
@@ -995,8 +995,8 @@ export function SystemSettingsPage() {
         </div>
 
         {/* System Actions */}
-        <div className="mt-8 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">System Actions</h3>
+        <div className="mt-8 bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-fg mb-4">System Actions</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button
               onClick={clearCache}
@@ -1008,7 +1008,7 @@ export function SystemSettingsPage() {
             
             <button
               onClick={createBackup}
-              className="flex items-center justify-center px-4 py-3 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-medium rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/30 transition-colors"
+              className="flex items-center justify-center px-4 py-3 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-accent2 font-medium rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/30 transition-colors"
             >
               <Download className="h-4 w-4 mr-2" />
               Create Backup
@@ -1037,7 +1037,7 @@ export function SystemSettingsPage() {
           <button
             onClick={saveSettings}
             disabled={saving}
-            className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-xl hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-fg font-medium rounded-xl hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? (
               <>

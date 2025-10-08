@@ -151,12 +151,12 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
   };
 
   return (
-    <div className={`bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-6 md:p-8 ${className}`}>
+    <div className={`bg-white dark:bg-bg2 rounded-2xl shadow-xl border border-gray-200 dark:border-outline p-6 md:p-8 ${className}`}>
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-fg mb-2">
           Book Your Free Consultation
         </h3>
-        <p className="text-gray-600 dark:text-gray-300">
+        <p className="text-gray-600 dark:text-muted">
           Schedule a call with our experts to discuss your project
         </p>
       </div>
@@ -169,13 +169,13 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
             : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
         }`}>
           {submitStatus.type === 'success' ? (
-            <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-3 mt-0.5 flex-shrink-0" />
+            <CheckCircle className="h-5 w-5 text-accent1 dark:text-accent2 mr-3 mt-0.5 flex-shrink-0" />
           ) : (
             <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mr-3 mt-0.5 flex-shrink-0" />
           )}
           <p className={`text-sm ${
             submitStatus.type === 'success' 
-              ? 'text-emerald-800 dark:text-emerald-300' 
+              ? 'text-emerald-800 dark:text-accent3' 
               : 'text-red-800 dark:text-red-300'
           }`}>
             {submitStatus.message}
@@ -186,7 +186,7 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Service Type Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-3">
             Select Service Type *
           </label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -203,7 +203,7 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
                   className={`p-4 rounded-lg border-2 transition-all duration-200 text-left ${
                     selectedService === service.value
                       ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                      : 'border-gray-200 dark:border-slate-600 hover:border-emerald-300 dark:hover:border-emerald-600'
+                      : 'border-gray-200 dark:border-slate-600 hover:border-emerald-300 dark:hover:border-accent1'
                   }`}
                   disabled={isSubmitting}
                 >
@@ -211,24 +211,24 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
                     <div className="flex items-center">
                       <IconComponent className={`h-5 w-5 mr-3 ${
                         selectedService === service.value 
-                          ? 'text-emerald-600 dark:text-emerald-400' 
-                          : 'text-gray-400'
+                          ? 'text-accent1 dark:text-accent2' 
+                          : 'text-muted'
                       }`} />
                       <div>
                         <div className={`font-medium ${
                           selectedService === service.value 
-                            ? 'text-emerald-900 dark:text-emerald-300' 
-                            : 'text-gray-900 dark:text-white'
+                            ? 'text-emerald-900 dark:text-accent3' 
+                            : 'text-gray-900 dark:text-fg'
                         }`}>
                           {service.label}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-gray-500 dark:text-muted">
                           {service.duration}
                         </div>
                       </div>
                     </div>
                     {selectedService === service.value && (
-                      <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                      <CheckCircle className="h-5 w-5 text-accent1 dark:text-accent2" />
                     )}
                   </div>
                 </button>
@@ -246,22 +246,22 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
         {/* Personal Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Full Name *
             </label>
             <div className="relative">
               <User className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('name') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('name') ? 'text-accent1' : 'text-muted'
               }`} />
               <input
                 type="text"
                 id="name"
                 {...register('name')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-white dark:bg-surface text-gray-900 dark:text-fg transition-colors ${
                   errors.name 
                     ? 'border-red-300 dark:border-red-600' 
                     : isFieldValid('name')
-                    ? 'border-emerald-300 dark:border-emerald-600'
+                    ? 'border-emerald-300 dark:border-accent1'
                     : 'border-gray-300 dark:border-slate-600'
                 }`}
                 placeholder="Your full name"
@@ -277,22 +277,22 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
           </div>
 
           <div>
-            <label htmlFor="business" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="business" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Business Name *
             </label>
             <div className="relative">
               <Briefcase className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('business') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('business') ? 'text-accent1' : 'text-muted'
               }`} />
               <input
                 type="text"
                 id="business"
                 {...register('business')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-white dark:bg-surface text-gray-900 dark:text-fg transition-colors ${
                   errors.business 
                     ? 'border-red-300 dark:border-red-600' 
                     : isFieldValid('business')
-                    ? 'border-emerald-300 dark:border-emerald-600'
+                    ? 'border-emerald-300 dark:border-accent1'
                     : 'border-gray-300 dark:border-slate-600'
                 }`}
                 placeholder="Your business name"
@@ -311,22 +311,22 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
         {/* Contact Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Email Address *
             </label>
             <div className="relative">
               <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('email') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('email') ? 'text-accent1' : 'text-muted'
               }`} />
               <input
                 type="email"
                 id="email"
                 {...register('email')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-white dark:bg-surface text-gray-900 dark:text-fg transition-colors ${
                   errors.email 
                     ? 'border-red-300 dark:border-red-600' 
                     : isFieldValid('email')
-                    ? 'border-emerald-300 dark:border-emerald-600'
+                    ? 'border-emerald-300 dark:border-accent1'
                     : 'border-gray-300 dark:border-slate-600'
                 }`}
                 placeholder="your@email.com"
@@ -342,22 +342,22 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Phone Number *
             </label>
             <div className="relative">
               <Phone className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('phone') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('phone') ? 'text-accent1' : 'text-muted'
               }`} />
               <input
                 type="tel"
                 id="phone"
                 {...register('phone')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-white dark:bg-surface text-gray-900 dark:text-fg transition-colors ${
                   errors.phone 
                     ? 'border-red-300 dark:border-red-600' 
                     : isFieldValid('phone')
-                    ? 'border-emerald-300 dark:border-emerald-600'
+                    ? 'border-emerald-300 dark:border-accent1'
                     : 'border-gray-300 dark:border-slate-600'
                 }`}
                 placeholder="(727) 555-0123"
@@ -376,21 +376,21 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
         {/* Date and Time Selection */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="preferredDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="preferredDate" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Preferred Date *
             </label>
             <div className="relative">
               <Calendar className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('preferredDate') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('preferredDate') ? 'text-accent1' : 'text-muted'
               }`} />
               <select
                 id="preferredDate"
                 {...register('preferredDate')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-white dark:bg-surface text-gray-900 dark:text-fg transition-colors ${
                   errors.preferredDate 
                     ? 'border-red-300 dark:border-red-600' 
                     : isFieldValid('preferredDate')
-                    ? 'border-emerald-300 dark:border-emerald-600'
+                    ? 'border-emerald-300 dark:border-accent1'
                     : 'border-gray-300 dark:border-slate-600'
                 }`}
                 disabled={isSubmitting}
@@ -412,21 +412,21 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
           </div>
 
           <div>
-            <label htmlFor="preferredTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="preferredTime" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Preferred Time *
             </label>
             <div className="relative">
               <Clock className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('preferredTime') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('preferredTime') ? 'text-accent1' : 'text-muted'
               }`} />
               <select
                 id="preferredTime"
                 {...register('preferredTime')}
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-white dark:bg-surface text-gray-900 dark:text-fg transition-colors ${
                   errors.preferredTime 
                     ? 'border-red-300 dark:border-red-600' 
                     : isFieldValid('preferredTime')
-                    ? 'border-emerald-300 dark:border-emerald-600'
+                    ? 'border-emerald-300 dark:border-accent1'
                     : 'border-gray-300 dark:border-slate-600'
                 }`}
                 disabled={isSubmitting}
@@ -450,16 +450,16 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
 
         {/* Message */}
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
             Additional Notes (Optional)
           </label>
           <div className="relative">
-            <MessageCircle className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <MessageCircle className="absolute left-3 top-3 h-5 w-5 text-muted" />
             <textarea
               id="message"
               rows={3}
               {...register('message')}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-white resize-none transition-colors"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-white dark:bg-surface text-gray-900 dark:text-fg resize-none transition-colors"
               placeholder="Tell us about your project goals or any specific questions you'd like to discuss..."
               disabled={isSubmitting}
             />
@@ -492,7 +492,7 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
         <button
           type="submit"
           disabled={isSubmitting || !isValid}
-          className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center group"
+          className="w-full bg-gradient-to-r from-accent1 to-accent600 hover:from-emerald-600 hover:to-accent700 disabled:from-gray-400 disabled:to-gray-500 text-fg px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center group"
         >
           {isSubmitting ? (
             <>
@@ -510,13 +510,13 @@ export function AppointmentBooking({ onSuccess, className = '' }: AppointmentBoo
 
         {/* Form Progress Indicator */}
         <div className="mt-4">
-          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-muted mb-2">
             <span>Form Progress</span>
             <span>{Object.keys(watchedFields).filter(key => watchedFields[key as keyof AppointmentData]).length}/8</span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div 
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-accent1 to-accent600 h-2 rounded-full transition-all duration-300"
               style={{ 
                 width: `${(Object.keys(watchedFields).filter(key => watchedFields[key as keyof AppointmentData]).length / 8) * 100}%` 
               }}

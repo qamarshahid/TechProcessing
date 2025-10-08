@@ -110,12 +110,12 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
   };
 
   return (
-    <div className={`bg-slate-900 rounded-2xl shadow-xl border border-slate-700 p-4 sm:p-6 md:p-8 ${className}`}>
+    <div className={`bg-bg2 rounded-2xl shadow-xl border border-outline p-4 sm:p-6 md:p-8 ${className}`}>
       <div className="text-center mb-6">
-        <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+        <h3 className="text-xl sm:text-2xl font-bold text-fg mb-2">
           Get Your Free Quote
         </h3>
-        <p className="text-gray-300">
+        <p className="text-muted">
           Tell us about your project and we'll provide a custom solution
         </p>
       </div>
@@ -128,13 +128,13 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
             : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
         }`}>
           {submitStatus.type === 'success' ? (
-            <CheckCircle className="h-5 w-5 text-emerald-400 mr-3 mt-0.5 flex-shrink-0" />
+            <CheckCircle className="h-5 w-5 text-accent2 mr-3 mt-0.5 flex-shrink-0" />
           ) : (
             <AlertCircle className="h-5 w-5 text-red-400 mr-3 mt-0.5 flex-shrink-0" />
           )}
           <p className={`text-sm ${
             submitStatus.type === 'success' 
-              ? 'text-emerald-800 dark:text-emerald-300' 
+              ? 'text-emerald-800 dark:text-accent3' 
               : 'text-red-800 dark:text-red-300'
           }`}>
             {submitStatus.message}
@@ -146,22 +146,22 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
         {/* Name and Business */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="name" className="block text-sm font-medium text-muted mb-2">
               Full Name *
             </label>
             <div className="relative">
               <User className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('name') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('name') ? 'text-accent1' : 'text-muted'
               }`} />
               <input
                 type="text"
                 id="name"
                 {...register('name')}
-                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-surface text-fg transition-colors ${
                   errors.name 
                     ? 'border-red-600' 
                     : isFieldValid('name')
-                    ? 'border-emerald-600'
+                    ? 'border-accent1'
                     : 'border-slate-600'
                 }`}
                 placeholder="Your full name"
@@ -177,22 +177,22 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
           </div>
 
           <div>
-            <label htmlFor="business" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="business" className="block text-sm font-medium text-muted mb-2">
               Business Name *
             </label>
             <div className="relative">
               <Briefcase className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('business') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('business') ? 'text-accent1' : 'text-muted'
               }`} />
               <input
                 type="text"
                 id="business"
                 {...register('business')}
-                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-surface text-fg transition-colors ${
                   errors.business 
                     ? 'border-red-600' 
                     : isFieldValid('business')
-                    ? 'border-emerald-600'
+                    ? 'border-accent1'
                     : 'border-slate-600'
                 }`}
                 placeholder="Your business name"
@@ -211,22 +211,22 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
         {/* Email and Phone */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-muted mb-2">
               Email Address *
             </label>
             <div className="relative">
               <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('email') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('email') ? 'text-accent1' : 'text-muted'
               }`} />
               <input
                 type="email"
                 id="email"
                 {...register('email')}
-                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-surface text-fg transition-colors ${
                   errors.email 
                     ? 'border-red-600' 
                     : isFieldValid('email')
-                    ? 'border-emerald-600'
+                    ? 'border-accent1'
                     : 'border-slate-600'
                 }`}
                 placeholder="your@email.com"
@@ -242,22 +242,22 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="phone" className="block text-sm font-medium text-muted mb-2">
               Phone Number *
             </label>
             <div className="relative">
               <Phone className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('phone') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('phone') ? 'text-accent1' : 'text-muted'
               }`} />
               <input
                 type="tel"
                 id="phone"
                 {...register('phone')}
-                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-surface text-fg transition-colors ${
                   errors.phone 
                     ? 'border-red-600' 
                     : isFieldValid('phone')
-                    ? 'border-emerald-600'
+                    ? 'border-accent1'
                     : 'border-slate-600'
                 }`}
                 placeholder="(727) 555-0123"
@@ -276,21 +276,21 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
         {/* Project Type and Timeline */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
-            <label htmlFor="projectType" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="projectType" className="block text-sm font-medium text-muted mb-2">
               Project Type *
             </label>
             <div className="relative">
               <Briefcase className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('projectType') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('projectType') ? 'text-accent1' : 'text-muted'
               }`} />
               <select
                 id="projectType"
                 {...register('projectType')}
-                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-surface text-fg transition-colors ${
                   errors.projectType 
                     ? 'border-red-600' 
                     : isFieldValid('projectType')
-                    ? 'border-emerald-600'
+                    ? 'border-accent1'
                     : 'border-slate-600'
                 }`}
                 disabled={isSubmitting}
@@ -313,21 +313,21 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
           </div>
 
           <div>
-            <label htmlFor="timeline" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="timeline" className="block text-sm font-medium text-muted mb-2">
               Timeline *
             </label>
             <div className="relative">
               <Clock className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
-                isFieldValid('timeline') ? 'text-emerald-500' : 'text-gray-400'
+                isFieldValid('timeline') ? 'text-accent1' : 'text-muted'
               }`} />
               <select
                 id="timeline"
                 {...register('timeline')}
-                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white transition-colors ${
+                className={`w-full pl-10 pr-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-surface text-fg transition-colors ${
                   errors.timeline 
                     ? 'border-red-600' 
                     : isFieldValid('timeline')
-                    ? 'border-emerald-600'
+                    ? 'border-accent1'
                     : 'border-slate-600'
                 }`}
                 disabled={isSubmitting}
@@ -351,16 +351,16 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
 
         {/* Message */}
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="message" className="block text-sm font-medium text-muted mb-2">
             Project Details
           </label>
           <div className="relative">
-            <FileText className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <FileText className="absolute left-3 top-3 h-5 w-5 text-muted" />
             <textarea
               id="message"
               rows={4}
               {...register('message')}
-              className="w-full pl-10 pr-4 py-2 sm:py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-slate-800 text-white resize-none transition-colors"
+              className="w-full pl-10 pr-4 py-2 sm:py-3 border border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-surface text-fg resize-none transition-colors"
               placeholder="Tell us about your project goals, current challenges, and what success looks like for your business..."
               disabled={isSubmitting}
             />
@@ -380,12 +380,12 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
               id="consent"
               type="checkbox"
               {...register('consent')}
-              className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+              className="w-4 h-4 text-accent1 bg-gray-100 border-gray-300 rounded focus:ring-ring dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               disabled={isSubmitting}
             />
           </div>
           <div className="ml-3 text-sm">
-            <label htmlFor="consent" className="text-gray-300">
+            <label htmlFor="consent" className="text-muted">
               I agree to receive communications from TechProcessing LLC and understand that I can unsubscribe at any time. *
             </label>
             {errors.consent && (
@@ -401,7 +401,7 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
         <button
           type="submit"
           disabled={isSubmitting || !isValid}
-          className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center group"
+          className="w-full bg-gradient-to-r from-accent1 to-accent600 hover:from-emerald-600 hover:to-accent700 disabled:from-gray-400 disabled:to-gray-500 text-fg px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center group"
         >
           {isSubmitting ? (
             <>
@@ -419,13 +419,13 @@ export function ContactForm({ onSuccess, className = '' }: ContactFormProps) {
 
         {/* Form Progress Indicator */}
         <div className="mt-4">
-          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-muted mb-2">
             <span>Form Progress</span>
             <span>{Object.keys(watchedFields).filter(key => watchedFields[key as keyof ContactFormData]).length}/8</span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div 
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-300"
+              className="bg-gradient-to-r from-accent1 to-accent600 h-2 rounded-full transition-all duration-300"
               style={{ 
                 width: `${(Object.keys(watchedFields).filter(key => watchedFields[key as keyof ContactFormData]).length / 8) * 100}%` 
               }}

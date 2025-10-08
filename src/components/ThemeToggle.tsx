@@ -12,15 +12,15 @@ export function ThemeToggle() {
   ] as const;
 
   return (
-    <div className="flex items-center space-x-1 bg-gray-100/50 dark:bg-slate-800/50 rounded-lg p-1 backdrop-blur-sm border border-gray-200/30 dark:border-slate-700/30">
+    <div className="flex items-center space-x-1 bg-gray-100/50 dark:bg-surface/50 rounded-lg p-1 backdrop-blur-sm border border-gray-200/30 dark:border-outline/30">
       {themes.map(({ value, icon: Icon, label }) => (
         <button
           key={value}
           onClick={() => setTheme(value)}
           className={`p-2 rounded-md transition-all duration-200 ${
             theme === value
-              ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
-              : 'text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400'
+              ? 'bg-white dark:bg-surface2 text-accent1 dark:text-accent2 shadow-sm'
+              : 'text-gray-600 dark:text-muted hover:text-accent1 dark:hover:text-accent2'
           }`}
           title={label}
           aria-label={`Switch to ${label.toLowerCase()} theme`}

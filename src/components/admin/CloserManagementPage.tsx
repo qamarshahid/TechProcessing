@@ -155,16 +155,16 @@ export function CloserManagementPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-bg2 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-1/4 mb-6"></div>
+            <div className="h-8 bg-gray-200 dark:bg-surface2 rounded w-1/4 mb-6"></div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                <div key={i} className="h-32 bg-gray-200 dark:bg-surface2 rounded"></div>
               ))}
             </div>
-            <div className="h-96 bg-gray-200 dark:bg-slate-700 rounded"></div>
+            <div className="h-96 bg-gray-200 dark:bg-surface2 rounded"></div>
           </div>
         </div>
       </div>
@@ -173,13 +173,13 @@ export function CloserManagementPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-bg2 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center text-red-600 dark:text-red-400">
             <p className="text-lg mb-4">{error}</p>
             <button
               onClick={fetchClosers}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-blue-600 text-fg rounded hover:bg-blue-700 transition-colors"
             >
               Retry
             </button>
@@ -190,16 +190,16 @@ export function CloserManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-bg2 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-fg">
                 Closer Management
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-gray-600 dark:text-muted mt-1">
                 Manage closers and track their performance
               </p>
             </div>
@@ -209,7 +209,7 @@ export function CloserManagementPage() {
                   setSelectedCloser(null);
                   setShowAddModal(true);
                 }}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Closer
@@ -219,7 +219,7 @@ export function CloserManagementPage() {
                   fetchClosers();
                   fetchCloserStats();
                 }}
-                className="inline-flex items-center px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                className="inline-flex items-center px-3 py-2 text-gray-600 dark:text-muted hover:text-gray-900 dark:hover:text-fg transition-colors"
               >
                 <RefreshCw className="h-4 w-4" />
               </button>
@@ -229,56 +229,56 @@ export function CloserManagementPage() {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6">
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                 <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Closers</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-gray-600 dark:text-muted">Total Closers</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-fg">
                   {closers.length}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6">
             <div className="flex items-center">
-              <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
+              <div className="p-2 bg-accent100 dark:bg-accent900/20 rounded-lg">
+                <TrendingUp className="h-6 w-6 text-accent600 dark:text-accent400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Active Closers</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-gray-600 dark:text-muted">Active Closers</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-fg">
                   {closers.filter(c => c.status === 'ACTIVE').length}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
                 <DollarSign className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Commission</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-gray-600 dark:text-muted">Total Commission</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-fg">
                   ${(closerStats.reduce((sum, stats) => sum + (stats.totalCommission || 0), 0)).toLocaleString()}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6">
             <div className="flex items-center">
               <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
                 <Calendar className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending Commission</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-gray-600 dark:text-muted">Pending Commission</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-fg">
                   ${(closerStats.reduce((sum, stats) => sum + (stats.pendingCommission || 0), 0)).toLocaleString()}
                 </p>
               </div>
@@ -287,23 +287,23 @@ export function CloserManagementPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-4 mb-6">
+        <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-4 mb-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted" />
                 <input
                   type="text"
                   placeholder="Search closers..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                  className="pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                 />
               </div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
               >
                 <option value="ALL">All Status</option>
                 <option value="ACTIVE">Active</option>
@@ -311,56 +311,56 @@ export function CloserManagementPage() {
               </select>
               <button
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                className="px-4 py-2 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
               >
                 <Filter className="h-4 w-4" />
                 <span>Advanced Filters</span>
               </button>
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-600 dark:text-muted">
               {filteredClosers.length} of {closers.length} closers
             </div>
           </div>
 
           {/* Advanced Filters */}
           {showAdvancedFilters && (
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-slate-700">
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-outline">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                     Start Date
                   </label>
                   <input
                     type="date"
                     value={dateRange.startDate}
                     onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                     End Date
                   </label>
                   <input
                     type="date"
                     value={dateRange.endDate}
                     onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                     Month
                   </label>
                   <input
                     type="month"
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                     Commission Range
                   </label>
                   <div className="flex space-x-2">
@@ -369,14 +369,14 @@ export function CloserManagementPage() {
                       placeholder="Min"
                       value={commissionRange.min}
                       onChange={(e) => setCommissionRange(prev => ({ ...prev, min: e.target.value }))}
-                      className="w-1/2 px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                      className="w-1/2 px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                     />
                     <input
                       type="number"
                       placeholder="Max"
                       value={commissionRange.max}
                       onChange={(e) => setCommissionRange(prev => ({ ...prev, max: e.target.value }))}
-                      className="w-1/2 px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                      className="w-1/2 px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                     />
                   </div>
                 </div>
@@ -389,13 +389,13 @@ export function CloserManagementPage() {
                     setCommissionRange({ min: '', max: '' });
                     fetchCloserStats();
                   }}
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                  className="px-4 py-2 text-gray-700 dark:text-muted bg-gray-100 dark:bg-surface2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
                 >
                   Clear Filters
                 </button>
                 <button
                   onClick={fetchFilteredCloserStats}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+                  className="px-4 py-2 bg-accent600 text-fg rounded-lg hover:bg-accent700 transition-colors flex items-center space-x-2"
                 >
                   <RefreshCw className="h-4 w-4" />
                   <span>Apply Filters</span>
@@ -406,66 +406,66 @@ export function CloserManagementPage() {
         </div>
 
         {/* Closers Table */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
-              <thead className="bg-gray-50 dark:bg-slate-700">
+              <thead className="bg-gray-50 dark:bg-surface2">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Closer
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Commission Rate
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Performance
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Commission
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
+              <tbody className="bg-white dark:bg-surface divide-y divide-gray-200 dark:divide-slate-700">
                 {filteredClosers.map((closer) => {
                   const stats = getCloserStats(closer.id);
                   return (
-                    <tr key={closer.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
+                    <tr key={closer.id} className="hover:bg-gray-50 dark:hover:bg-surface2">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          <div className="text-sm font-medium text-gray-900 dark:text-fg">
                             {closer.closerName}
                           </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                          <div className="text-sm text-gray-500 dark:text-muted">
                             {closer.closerCode}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 dark:text-white">
+                        <div className="text-sm text-gray-900 dark:text-fg">
                           {closer.commissionRate}%
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                           closer.status === 'ACTIVE'
-                            ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
+                            ? 'bg-accent100 dark:bg-accent900/20 text-accent800 dark:text-accent200'
                             : 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200'
                         }`}>
                           {closer.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 dark:text-white">
+                        <div className="text-sm text-gray-900 dark:text-fg">
                           {stats ? (
                             <div>
                               <div>{stats.totalSales} total sales</div>
-                              <div className="text-gray-500 dark:text-gray-400">
+                              <div className="text-gray-500 dark:text-muted">
                                 ${(stats.totalSalesValue || 0).toLocaleString()}
                               </div>
                               {stats.approvedSales !== stats.totalSales && (
@@ -475,26 +475,26 @@ export function CloserManagementPage() {
                               )}
                             </div>
                           ) : (
-                            <span className="text-gray-400">No data</span>
+                            <span className="text-muted">No data</span>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 dark:text-white">
+                        <div className="text-sm text-gray-900 dark:text-fg">
                           {stats ? (
                             <div>
                               <div>${(stats.totalCommission || 0).toLocaleString()} total</div>
-                              <div className="text-gray-500 dark:text-gray-400">
+                              <div className="text-gray-500 dark:text-muted">
                                 ${(stats.pendingCommission || 0).toLocaleString()} pending
                               </div>
                               {stats.approvedCommission !== stats.totalCommission && (
-                                <div className="text-xs text-green-600 dark:text-green-400">
+                                <div className="text-xs text-accent600 dark:text-accent400">
                                   ${(stats.approvedCommission || 0).toLocaleString()} approved
                                 </div>
                               )}
                             </div>
                           ) : (
-                            <span className="text-gray-400">No data</span>
+                            <span className="text-muted">No data</span>
                           )}
                         </div>
                       </td>
@@ -515,7 +515,7 @@ export function CloserManagementPage() {
                               setSelectedCloser(closer);
                               setShowEditModal(true);
                             }}
-                            className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300"
+                            className="text-accent600 dark:text-accent400 hover:text-accent900 dark:hover:text-accent300"
                             title="Edit"
                           >
                             <Edit className="h-4 w-4" />

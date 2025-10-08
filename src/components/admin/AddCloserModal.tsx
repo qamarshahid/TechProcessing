@@ -59,14 +59,14 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+      <div className="bg-white dark:bg-surface rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-outline">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-fg">
             Add New Closer
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="text-muted hover:text-gray-600 dark:hover:text-muted transition-colors"
           >
             <X className="h-6 w-6" />
           </button>
@@ -80,7 +80,7 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               <User className="h-4 w-4 inline mr-2" />
               Closer Code *
             </label>
@@ -88,14 +88,14 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
               type="text"
               value={formData.closerCode}
               onChange={(e) => handleInputChange('closerCode', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
               placeholder="e.g., CL001"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               <User className="h-4 w-4 inline mr-2" />
               Closer Name *
             </label>
@@ -103,14 +103,14 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
               type="text"
               value={formData.closerName}
               onChange={(e) => handleInputChange('closerName', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
               placeholder="Enter closer name"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               <Percent className="h-4 w-4 inline mr-2" />
               Commission Rate (%) *
             </label>
@@ -121,20 +121,20 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
               step="0.01"
               value={formData.commissionRate}
               onChange={(e) => handleInputChange('commissionRate', parseFloat(e.target.value) || 0)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
               placeholder="10.00"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Status
             </label>
             <select
               value={formData.status}
               onChange={(e) => handleInputChange('status', e.target.value as 'ACTIVE' | 'INACTIVE')}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
             >
               <option value="ACTIVE">Active</option>
               <option value="INACTIVE">Inactive</option>
@@ -142,7 +142,7 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               <Mail className="h-4 w-4 inline mr-2" />
               Email
             </label>
@@ -150,13 +150,13 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
               type="email"
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
               placeholder="closer@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               <Phone className="h-4 w-4 inline mr-2" />
               Phone
             </label>
@@ -164,13 +164,13 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
               type="tel"
               value={formData.phone}
               onChange={(e) => handleInputChange('phone', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
               placeholder="+1 (555) 123-4567"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               <FileText className="h-4 w-4 inline mr-2" />
               Notes
             </label>
@@ -178,7 +178,7 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
               value={formData.notes}
               onChange={(e) => handleInputChange('notes', e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
               placeholder="Additional notes about the closer..."
             />
           </div>
@@ -187,7 +187,7 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+              className="px-4 py-2 text-gray-700 dark:text-muted bg-gray-100 dark:bg-surface2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
               disabled={loading}
             >
               Cancel
@@ -195,7 +195,7 @@ export function AddCloserModal({ onClose, onSuccess }: AddCloserModalProps) {
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating...' : 'Create Closer'}
             </button>

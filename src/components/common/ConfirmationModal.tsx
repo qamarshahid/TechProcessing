@@ -77,13 +77,13 @@ export function ConfirmationModal({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 {styles.icon}
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-fg">
                   {title}
                 </h3>
               </div>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                className="text-muted hover:text-gray-600 dark:hover:text-muted transition-colors"
                 disabled={isLoading}
               >
                 <X className="h-5 w-5" />
@@ -93,7 +93,7 @@ export function ConfirmationModal({
 
           {/* Content */}
           <div className="px-6 py-4">
-            <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+            <p className="text-sm text-gray-600 dark:text-muted leading-relaxed">
               {message}
             </p>
           </div>
@@ -103,14 +103,14 @@ export function ConfirmationModal({
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-muted bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {cancelText}
             </button>
             <button
               onClick={onConfirm}
               disabled={isLoading}
-              className={`px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${styles.confirmButton} disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2`}
+              className={`px-4 py-2 text-sm font-medium text-fg rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${styles.confirmButton} disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2`}
             >
               {isLoading ? (
                 <>

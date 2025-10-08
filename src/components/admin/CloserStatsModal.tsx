@@ -70,15 +70,15 @@ export function CloserStatsModal({ closer, onClose }: CloserStatsModalProps) {
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full p-6">
+        <div className="bg-white dark:bg-surface rounded-lg shadow-xl max-w-2xl w-full p-6">
           <div className="animate-pulse">
-            <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-1/3 mb-4"></div>
+            <div className="h-6 bg-gray-200 dark:bg-surface2 rounded w-1/3 mb-4"></div>
             <div className="grid grid-cols-2 gap-4 mb-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-20 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                <div key={i} className="h-20 bg-gray-200 dark:bg-surface2 rounded"></div>
               ))}
             </div>
-            <div className="h-64 bg-gray-200 dark:bg-slate-700 rounded"></div>
+            <div className="h-64 bg-gray-200 dark:bg-surface2 rounded"></div>
           </div>
         </div>
       </div>
@@ -87,19 +87,19 @@ export function CloserStatsModal({ closer, onClose }: CloserStatsModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+      <div className="bg-white dark:bg-surface rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-outline">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-fg">
               Closer Statistics
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 dark:text-muted mt-1">
               {closer.closerName} ({closer.closerCode})
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="text-muted hover:text-gray-600 dark:hover:text-muted transition-colors"
           >
             <X className="h-6 w-6" />
           </button>
@@ -111,7 +111,7 @@ export function CloserStatsModal({ closer, onClose }: CloserStatsModalProps) {
             <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
             <button
               onClick={fetchCloserStats}
-              className="mt-2 px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors"
+              className="mt-2 px-3 py-1 bg-red-600 text-fg text-xs rounded hover:bg-red-700 transition-colors"
             >
               Retry
             </button>
@@ -120,7 +120,7 @@ export function CloserStatsModal({ closer, onClose }: CloserStatsModalProps) {
 
           {!stats && !loading && (
             <div className="text-center py-8">
-              <p className="text-gray-600 dark:text-gray-400">No statistics available for this closer.</p>
+              <p className="text-gray-600 dark:text-muted">No statistics available for this closer.</p>
             </div>
           )}
           
@@ -142,14 +142,14 @@ export function CloserStatsModal({ closer, onClose }: CloserStatsModalProps) {
                   </div>
                 </div>
 
-                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                <div className="bg-accent50 dark:bg-accent900/20 rounded-lg p-4">
                   <div className="flex items-center">
-                    <div className="p-2 bg-green-100 dark:bg-green-900/40 rounded-lg">
-                      <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+                    <div className="p-2 bg-accent100 dark:bg-accent900/40 rounded-lg">
+                      <DollarSign className="h-6 w-6 text-accent600 dark:text-accent400" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-green-600 dark:text-green-400">Sales Value</p>
-                      <p className="text-2xl font-bold text-green-900 dark:text-green-100">
+                      <p className="text-sm font-medium text-accent600 dark:text-accent400">Sales Value</p>
+                      <p className="text-2xl font-bold text-accent900 dark:text-accent100">
                         ${(stats.totalSalesValue || 0).toLocaleString()}
                       </p>
                     </div>
@@ -186,40 +186,40 @@ export function CloserStatsModal({ closer, onClose }: CloserStatsModalProps) {
               </div>
 
               {/* Commission Breakdown */}
-              <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-6 mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              <div className="bg-gray-50 dark:bg-surface2 rounded-lg p-6 mb-8">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-fg mb-4">
                   Commission Breakdown
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                    <div className="text-3xl font-bold text-accent600 dark:text-accent400">
                       ${(stats.paidCommission || 0).toLocaleString()}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Paid Commission</div>
+                    <div className="text-sm text-gray-600 dark:text-muted">Paid Commission</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
                       ${(stats.pendingCommission || 0).toLocaleString()}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Pending Commission</div>
+                    <div className="text-sm text-gray-600 dark:text-muted">Pending Commission</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                       {stats.totalSales || 0}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Total Sales</div>
+                    <div className="text-sm text-gray-600 dark:text-muted">Total Sales</div>
                   </div>
                 </div>
               </div>
 
               {/* Sales Details */}
               {salesData.length > 0 && (
-                <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-6">
+                <div className="bg-gray-50 dark:bg-surface2 rounded-lg p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-fg">
                       Sales Details ({salesData.length} sales)
                     </h3>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-sm text-gray-600 dark:text-muted">
                       Total: ${salesData.reduce((sum, sale) => sum + Number(sale.saleAmount), 0).toLocaleString()}
                     </div>
                   </div>
@@ -227,57 +227,57 @@ export function CloserStatsModal({ closer, onClose }: CloserStatsModalProps) {
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-600">
                       <thead className="bg-gray-100 dark:bg-slate-600">
                         <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                             Date
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                             Agent
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                             Client
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                             Service
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                             Amount
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                             Commission
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                             Sale Status
                           </th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                             Commission Status
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white dark:bg-slate-700 divide-y divide-gray-200 dark:divide-slate-600">
+                      <tbody className="bg-white dark:bg-surface2 divide-y divide-gray-200 dark:divide-slate-600">
                         {salesData.map((sale) => (
                           <tr key={sale.id} className="hover:bg-gray-50 dark:hover:bg-slate-600">
-                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                               {new Date(sale.saleDate || sale.createdAt).toLocaleDateString()}
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                               {sale.agent?.salesPersonName || 'N/A'}
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                               {sale.clientName}
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                               {sale.serviceName}
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                               ${Number(sale.saleAmount).toLocaleString()}
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                               ${Number(sale.closerCommission).toLocaleString()}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap">
                               <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                                 sale.saleStatus === 'APPROVED'
-                                  ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
+                                  ? 'bg-accent100 dark:bg-accent900/20 text-accent800 dark:text-accent200'
                                   : sale.saleStatus === 'PENDING'
                                   ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200'
                                   : 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200'
@@ -288,7 +288,7 @@ export function CloserStatsModal({ closer, onClose }: CloserStatsModalProps) {
                             <td className="px-4 py-3 whitespace-nowrap">
                               <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                                 sale.commissionStatus === 'PAID'
-                                  ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
+                                  ? 'bg-accent100 dark:bg-accent900/20 text-accent800 dark:text-accent200'
                                   : sale.commissionStatus === 'APPROVED'
                                   ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
                                   : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200'
@@ -305,8 +305,8 @@ export function CloserStatsModal({ closer, onClose }: CloserStatsModalProps) {
               )}
 
               {salesData.length === 0 && (
-                <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-6 text-center">
-                  <p className="text-gray-600 dark:text-gray-400">No sales found for this closer.</p>
+                <div className="bg-gray-50 dark:bg-surface2 rounded-lg p-6 text-center">
+                  <p className="text-gray-600 dark:text-muted">No sales found for this closer.</p>
                 </div>
               )}
             </>

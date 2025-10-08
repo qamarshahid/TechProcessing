@@ -67,7 +67,7 @@ export function AgentDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'APPROVED':
-        return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/20';
+        return 'text-accent600 bg-accent100 dark:text-accent400 dark:bg-accent900/20';
       case 'PENDING':
         return 'text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/20';
       case 'REJECTED':
@@ -75,16 +75,16 @@ export function AgentDashboard() {
       case 'PAID':
         return 'text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/20';
       case 'CANCELLED':
-        return 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-900/20';
+        return 'text-gray-600 bg-gray-100 dark:text-muted dark:bg-gray-900/20';
       default:
-        return 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-900/20';
+        return 'text-gray-600 bg-gray-100 dark:text-muted dark:bg-gray-900/20';
     }
   };
 
   const getCommissionStatusColor = (status: string) => {
     switch (status) {
       case 'PAID':
-        return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/20';
+        return 'text-accent600 bg-accent100 dark:text-accent400 dark:bg-accent900/20';
       case 'APPROVED':
         return 'text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/20';
       case 'PENDING':
@@ -92,7 +92,7 @@ export function AgentDashboard() {
       case 'CANCELLED':
         return 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/20';
       default:
-        return 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-900/20';
+        return 'text-gray-600 bg-gray-100 dark:text-muted dark:bg-gray-900/20';
     }
   };
 
@@ -123,16 +123,16 @@ export function AgentDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-slate-900 p-6">
+      <div className="min-h-screen bg-gray-100 dark:bg-bg2 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-1/4 mb-6"></div>
+            <div className="h-8 bg-gray-200 dark:bg-surface2 rounded w-1/4 mb-6"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+                <div key={i} className="h-32 bg-gray-200 dark:bg-surface2 rounded-lg"></div>
               ))}
             </div>
-            <div className="h-96 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+            <div className="h-96 bg-gray-200 dark:bg-surface2 rounded-lg"></div>
           </div>
         </div>
       </div>
@@ -141,7 +141,7 @@ export function AgentDashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-slate-900 p-6">
+      <div className="min-h-screen bg-gray-100 dark:bg-bg2 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
             <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
@@ -149,7 +149,7 @@ export function AgentDashboard() {
             <p className="text-red-600 dark:text-red-300 mb-4">{error}</p>
             <button
               onClick={fetchAgentData}
-              className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-red-600 text-fg rounded-lg hover:bg-red-700 transition-colors"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Try Again
@@ -162,7 +162,7 @@ export function AgentDashboard() {
 
   if (!agent) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-slate-900 p-6">
+      <div className="min-h-screen bg-gray-100 dark:bg-bg2 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 text-center">
             <AlertCircle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
@@ -177,68 +177,68 @@ export function AgentDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-slate-900 p-3 sm:p-6">
+    <div className="min-h-screen bg-gray-100 dark:bg-bg2 p-3 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-fg mb-2">
             Agent Dashboard
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-muted">
             Welcome back, {agent.salesPersonName}! Here's your sales overview and recent activity.
           </p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                 <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Sales</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{agent.totalSales}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-muted">Total Sales</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-fg">{agent.totalSales}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center">
-              <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+              <div className="p-2 bg-accent100 dark:bg-accent900/20 rounded-lg">
+                <DollarSign className="h-6 w-6 text-accent600 dark:text-accent400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Sales Value</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-gray-600 dark:text-muted">Total Sales Value</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-fg">
                   ${(agent.totalSalesValue || 0).toLocaleString()}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
                 <User className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Earnings</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-gray-600 dark:text-muted">Total Earnings</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-fg">
                   ${(agent.totalEarnings || 0).toLocaleString()}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center">
               <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
                 <Clock className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending Commission</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-gray-600 dark:text-muted">Pending Commission</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-fg">
                   ${(agent.pendingCommission || 0).toLocaleString()}
                 </p>
               </div>
@@ -247,13 +247,13 @@ export function AgentDashboard() {
         </div>
 
         {/* Agent Profile */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6 mb-8">
+        <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Agent Profile</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-fg">Agent Profile</h2>
             <div className="flex items-center space-x-2">
               <span className={`px-3 py-1 text-sm font-medium rounded-full ${
                 agent.isActive 
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
+                  ? 'bg-accent100 text-accent800 dark:bg-accent900/20 dark:text-accent400' 
                   : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
               }`}>
                 {agent.isActive ? 'Active' : 'Inactive'}
@@ -262,16 +262,16 @@ export function AgentDashboard() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Agent Code</p>
-              <p className="text-lg text-gray-900 dark:text-white font-mono">{agent.agentCode}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Agent Code</p>
+              <p className="text-lg text-gray-900 dark:text-fg font-mono">{agent.agentCode}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Sales Person</p>
-              <p className="text-lg text-gray-900 dark:text-white">{agent.salesPersonName}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Sales Person</p>
+              <p className="text-lg text-gray-900 dark:text-fg">{agent.salesPersonName}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Commission Rate</p>
-              <p className="text-lg text-gray-900 dark:text-white">
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Commission Rate</p>
+              <p className="text-lg text-gray-900 dark:text-fg">
                 {agent.agentCommissionRate}%
               </p>
             </div>
@@ -281,22 +281,22 @@ export function AgentDashboard() {
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-slate-600">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                <div className="text-2xl font-bold text-accent1 dark:text-accent2">
                   {agent.totalSales > 0 ? ((agent.totalEarnings / agent.totalSalesValue) * 100).toFixed(1) : '0'}%
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Effective Commission Rate</div>
+                <div className="text-sm text-gray-600 dark:text-muted">Effective Commission Rate</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   ${agent.totalSales > 0 ? (agent.totalSalesValue / agent.totalSales).toFixed(0) : '0'}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Average Sale Value</div>
+                <div className="text-sm text-gray-600 dark:text-muted">Average Sale Value</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                   ${agent.totalSales > 0 ? (agent.totalEarnings / agent.totalSales).toFixed(0) : '0'}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Average Commission per Sale</div>
+                <div className="text-sm text-gray-600 dark:text-muted">Average Commission per Sale</div>
               </div>
             </div>
           </div>
@@ -305,28 +305,28 @@ export function AgentDashboard() {
 
 
         {/* Recent Sales */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-outline">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Recent Sales</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-fg">Recent Sales</h2>
               <div className="flex space-x-2">
                 <button
                   onClick={() => setShowAddSaleModal(true)}
-                  className="inline-flex items-center px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                  className="inline-flex items-center px-3 py-2 bg-accent1 text-fg rounded-lg hover:bg-accent1 transition-colors"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Sale
                 </button>
                 <button
                   onClick={() => setShowChargeCardModal(true)}
-                  className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center px-3 py-2 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <CreditCard className="h-4 w-4 mr-2" />
                   Charge Card
                 </button>
                 <button
                   onClick={fetchAgentData}
-                  className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center px-3 py-2 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh
@@ -337,16 +337,16 @@ export function AgentDashboard() {
 
           {sales.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="w-12 h-12 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Plus className="h-6 w-6 text-gray-500 dark:text-gray-400" />
+              <div className="w-12 h-12 bg-gray-100 dark:bg-surface2 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Plus className="h-6 w-6 text-gray-500 dark:text-muted" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No sales yet</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-fg mb-2">No sales yet</h3>
+              <p className="text-gray-600 dark:text-muted mb-4">
                 Start by adding your first sale to track your commissions.
               </p>
               <button
                 onClick={() => setShowAddSaleModal(true)}
-                className="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-accent1 text-fg rounded-lg hover:bg-accent1 transition-colors"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add First Sale
@@ -355,79 +355,79 @@ export function AgentDashboard() {
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-600">
-                <thead className="bg-gray-50 dark:bg-slate-700">
+                <thead className="bg-gray-50 dark:bg-surface2">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Sale Reference
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Client
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Service
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Amount
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Commission
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Commission Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-600">
+                <tbody className="bg-white dark:bg-surface divide-y divide-gray-200 dark:divide-slate-600">
                   {sales.slice(0, 10).map((sale) => (
-                    <tr key={sale.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
+                    <tr key={sale.id} className="hover:bg-gray-50 dark:hover:bg-surface2">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-mono text-gray-900 dark:text-white">
+                        <span className="text-sm font-mono text-gray-900 dark:text-fg">
                           {sale.saleReference}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          <div className="text-sm font-medium text-gray-900 dark:text-fg">
                             {sale.clientName}
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-gray-500 dark:text-muted">
                             Closer: {sale.closerName}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          <div className="text-sm font-medium text-gray-900 dark:text-fg">
                             {sale.serviceName}
                           </div>
                           {sale.serviceDescription && (
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-xs">
+                            <div className="text-xs text-gray-500 dark:text-muted truncate max-w-xs">
                               {sale.serviceDescription}
                             </div>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        <span className="text-sm font-medium text-gray-900 dark:text-fg">
                           ${(sale.saleAmount || 0).toLocaleString()}
                         </span>
                         {sale.saleDate && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-gray-500 dark:text-muted">
                             {new Date(sale.saleDate).toLocaleDateString()}
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        <span className="text-sm font-medium text-gray-900 dark:text-fg">
                           ${(sale.agentCommission || 0).toLocaleString()}
                         </span>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-gray-500 dark:text-muted">
                           {sale.agentCommissionRate}% rate
                         </div>
                       </td>
@@ -445,13 +445,13 @@ export function AgentDashboard() {
                         {sale.saleStatus === SaleStatus.REJECTED && !hasBeenResubmitted(sale) && (
                           <button
                             onClick={() => handleResubmitSale(sale)}
-                            className="inline-flex items-center px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                            className="inline-flex items-center px-2 py-1 text-xs bg-blue-600 text-fg rounded hover:bg-blue-700 transition-colors"
                           >
                             Resubmit
                           </button>
                         )}
                         {sale.saleStatus === SaleStatus.REJECTED && hasBeenResubmitted(sale) && (
-                          <span className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
+                          <span className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-muted rounded">
                             Already Resubmitted
                           </span>
                         )}

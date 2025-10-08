@@ -141,27 +141,27 @@ export function ServiceRequestModal({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden border border-gray-200 dark:border-slate-700">
+      <div className="bg-white dark:bg-surface rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden border border-gray-200 dark:border-outline">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 dark:from-blue-900/20 to-indigo-50 dark:to-indigo-900/20">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-outline bg-gradient-to-r from-blue-50 dark:from-blue-900/20 to-indigo-50 dark:to-indigo-900/20">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mr-4 shadow-xl">
-              {selectedService ? <Package className="h-6 w-6 text-white" /> : <Target className="h-6 w-6 text-white" />}
+            <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-2xl flex items-center justify-center mr-4 shadow-xl">
+              {selectedService ? <Package className="h-6 w-6 text-fg" /> : <Target className="h-6 w-6 text-fg" />}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-fg">
                 {selectedService ? 'Request Service' : 'Custom Quote Request'}
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-muted">
                 {selectedService ? selectedService.name : 'Tell us about your custom project'}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-10 h-10 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+            className="w-10 h-10 bg-gray-100 dark:bg-surface2 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
           >
-            <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            <X className="h-5 w-5 text-gray-600 dark:text-muted" />
           </button>
         </div>
 
@@ -185,10 +185,10 @@ export function ServiceRequestModal({
             {!selectedService && (
               <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
                 <div className="flex items-center">
-                  <Sparkles className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-2" />
+                  <Sparkles className="h-5 w-5 text-accent1 dark:text-accent2 mr-2" />
                   <div>
-                    <h3 className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Custom Quote Request</h3>
-                    <p className="text-sm text-emerald-700 dark:text-emerald-400">Describe your project and we'll provide a tailored solution</p>
+                    <h3 className="text-sm font-medium text-emerald-800 dark:text-accent3">Custom Quote Request</h3>
+                    <p className="text-sm text-emerald-700 dark:text-accent2">Describe your project and we'll provide a tailored solution</p>
                   </div>
                 </div>
               </div>
@@ -196,15 +196,15 @@ export function ServiceRequestModal({
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                 Project Description *
               </label>
               <div className="relative">
-                <FileText className="absolute left-3 top-3 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                <FileText className="absolute left-3 top-3 h-5 w-5 text-muted dark:text-gray-500" />
                 <textarea
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white resize-none ${
+                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:border-slate-600 dark:text-fg resize-none ${
                     errors.description ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-slate-600'
                   }`}
                   rows={4}
@@ -225,16 +225,16 @@ export function ServiceRequestModal({
             {/* Budget and Timeline */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   Budget (Optional)
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted dark:text-gray-500" />
                   <input
                     type="number"
                     value={formData.budget}
                     onChange={(e) => handleInputChange('budget', e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:border-slate-600 dark:text-white ${
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:border-slate-600 dark:text-fg ${
                       errors.budget ? 'border-red-500 dark:border-red-400' : 'border-gray-300 dark:border-slate-600'
                     }`}
                     placeholder="0.00"
@@ -251,16 +251,16 @@ export function ServiceRequestModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   Timeline (Optional)
                 </label>
                 <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted dark:text-gray-500" />
                   <input
                     type="text"
                     value={formData.timeline}
                     onChange={(e) => handleInputChange('timeline', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg"
                     placeholder="e.g., 2-3 weeks, ASAP, etc."
                   />
                 </div>
@@ -269,13 +269,13 @@ export function ServiceRequestModal({
 
             {/* Additional Requirements */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                 Additional Requirements (Optional)
               </label>
               <textarea
                 value={formData.additionalRequirements}
                 onChange={(e) => handleInputChange('additionalRequirements', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white resize-none"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg resize-none"
                 rows={3}
                 placeholder="Any specific requirements, preferences, or constraints..."
               />
@@ -300,19 +300,19 @@ export function ServiceRequestModal({
         </div>
 
         {/* Fixed Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-700/50">
+        <div className="px-6 py-4 border-t border-gray-200 dark:border-outline bg-gray-50 dark:bg-surface2/50">
           <div className="flex space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors font-medium"
+              className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-muted bg-white dark:bg-surface2 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors font-medium"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg hover:shadow-emerald-500/25"
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-accent1 to-accent600 hover:from-emerald-600 hover:to-accent700 text-fg rounded-xl transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg hover:shadow-accent500/25"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

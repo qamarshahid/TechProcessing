@@ -145,7 +145,7 @@ export function UserManagementPage() {
     switch (status?.toLowerCase()) {
       case 'active':
       case 'verified':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-accent2 dark:border-emerald-800';
       case 'inactive':
       case 'suspended':
         return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
@@ -155,7 +155,7 @@ export function UserManagementPage() {
       case 'pending':
         return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
       default:
-        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-bg2/20 dark:text-slate-400 dark:border-outline';
     }
   };
 
@@ -201,13 +201,13 @@ export function UserManagementPage() {
       case 'manager':
         return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
       case 'agent':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-accent2 dark:border-emerald-800';
       case 'client':
         return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
       case 'support':
         return 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-800';
       default:
-        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-bg2/20 dark:text-slate-400 dark:border-outline';
     }
   };
 
@@ -231,19 +231,19 @@ export function UserManagementPage() {
           <div className="animate-pulse space-y-8">
             {/* Header skeleton */}
             <div className="text-center">
-              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded-lg w-1/3 mx-auto mb-4"></div>
-              <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mx-auto"></div>
+              <div className="h-12 bg-slate-200 dark:bg-surface2 rounded-lg w-1/3 mx-auto mb-4"></div>
+              <div className="h-6 bg-slate-200 dark:bg-surface2 rounded w-1/2 mx-auto"></div>
             </div>
             
             {/* Stats grid skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+                <div key={i} className="h-32 bg-slate-200 dark:bg-surface2 rounded-xl"></div>
               ))}
             </div>
             
             {/* Table skeleton */}
-            <div className="h-96 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+            <div className="h-96 bg-slate-200 dark:bg-surface2 rounded-xl"></div>
           </div>
         </div>
       </div>
@@ -256,9 +256,9 @@ export function UserManagementPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-6 shadow-xl">
-            <Users className="h-10 w-10 text-white" />
+            <Users className="h-10 w-10 text-fg" />
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-fg mb-4">
             User Management Hub 👥
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
@@ -268,14 +268,14 @@ export function UserManagementPage() {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Users</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.total}</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-fg">{stats.total}</p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Users className="h-7 w-7 text-white" />
+                <Users className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
@@ -284,30 +284,30 @@ export function UserManagementPage() {
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Active Users</p>
-                <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{stats.active}</p>
+                <p className="text-3xl font-bold text-accent1 dark:text-accent2">{stats.active}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <UserCheck className="h-7 w-7 text-white" />
+              <div className="w-14 h-14 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <UserCheck className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <CheckCircle className="h-4 w-4 mr-1 text-emerald-500" />
+              <CheckCircle className="h-4 w-4 mr-1 text-accent1" />
               <span>Verified accounts</span>
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Administrators</p>
                 <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{stats.admins}</p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Crown className="h-7 w-7 text-white" />
+                <Crown className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
@@ -316,14 +316,14 @@ export function UserManagementPage() {
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Agents</p>
                 <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats.agents}</p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <User className="h-7 w-7 text-white" />
+                <User className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
@@ -334,7 +334,7 @@ export function UserManagementPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
+        <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
@@ -345,7 +345,7 @@ export function UserManagementPage() {
                   placeholder="Search users..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-surface2 text-slate-900 dark:text-fg placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
               </div>
               
@@ -353,7 +353,7 @@ export function UserManagementPage() {
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 >
                   <option value="all">All Roles</option>
                   <option value="admin">Admin</option>
@@ -366,7 +366,7 @@ export function UserManagementPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 >
                   <option value="all">All Status</option>
                   <option value="active">Active</option>
@@ -381,7 +381,7 @@ export function UserManagementPage() {
                   className={`px-4 py-2 rounded-xl border transition-all duration-200 flex items-center gap-2 ${
                     showFilters
                       ? 'bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400'
-                      : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
+                      : 'bg-white dark:bg-surface2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
                   }`}
                 >
                   <Filter className="h-4 w-4" />
@@ -395,7 +395,7 @@ export function UserManagementPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-accent1 to-accent600 text-fg font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add User
@@ -403,7 +403,7 @@ export function UserManagementPage() {
               
               <button
                 onClick={fetchUsers}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-fg font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
@@ -413,14 +413,14 @@ export function UserManagementPage() {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-outline">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sort By</label>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="date">Date</option>
                     <option value="name">Name</option>
@@ -434,7 +434,7 @@ export function UserManagementPage() {
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sort Order</label>
                   <button
                     onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
                   >
                     {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
                     <ArrowUpDown className="h-4 w-4" />
@@ -443,7 +443,7 @@ export function UserManagementPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Account Type</label>
-                  <select className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <select className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <option value="">All Types</option>
                     <option value="individual">Individual</option>
                     <option value="business">Business</option>
@@ -456,14 +456,14 @@ export function UserManagementPage() {
         </div>
 
         {/* Users Table */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
-          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">User Accounts</h2>
+        <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline overflow-hidden mb-8">
+          <div className="px-6 py-4 border-b border-slate-200 dark:border-outline">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-fg">User Accounts</h2>
           </div>
           
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-              <thead className="bg-slate-50 dark:bg-slate-700">
+              <thead className="bg-slate-50 dark:bg-surface2">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
                     User Details
@@ -485,10 +485,10 @@ export function UserManagementPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+              <tbody className="bg-white dark:bg-surface divide-y divide-slate-200 dark:divide-slate-700">
                 {filteredUsers.length > 0 ? (
                   filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-surface2 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
@@ -497,7 +497,7 @@ export function UserManagementPage() {
                             </div>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-slate-900 dark:text-white">
+                            <div className="text-sm font-medium text-slate-900 dark:text-fg">
                               {user.full_name || 'Unknown User'}
                             </div>
                             <div className="text-sm text-slate-500 dark:text-slate-400">
@@ -507,7 +507,7 @@ export function UserManagementPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-slate-900 dark:text-white">
+                        <div className="text-sm text-slate-900 dark:text-fg">
                           {user.email || 'No email'}
                         </div>
                         {user.phone && (
@@ -562,7 +562,7 @@ export function UserManagementPage() {
                           {user.status?.toLowerCase() === 'inactive' && (
                             <button
                               onClick={() => handleStatusChange(user.id, 'active')}
-                              className="text-emerald-600 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors"
+                              className="text-accent1 hover:text-emerald-900 dark:text-accent2 dark:hover:text-accent3 transition-colors"
                               title="Activate User"
                             >
                               <Play className="w-4 h-4" />
@@ -585,11 +585,11 @@ export function UserManagementPage() {
                     <td colSpan={6} className="px-6 py-12 text-center">
                       <div className="text-slate-500 dark:text-slate-400">
                         <Users className="mx-auto h-12 w-12 mb-4 text-slate-300 dark:text-slate-600" />
-                        <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No users found</h3>
+                        <h3 className="text-lg font-medium text-slate-900 dark:text-fg mb-2">No users found</h3>
                         <p className="text-sm mb-4">Try adjusting your search or filter criteria.</p>
                         <button
                           onClick={() => setShowAddModal(true)}
-                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200"
+                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-accent1 to-accent600 text-fg font-medium rounded-lg hover:shadow-lg transition-all duration-200"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Create First User
@@ -604,7 +604,7 @@ export function UserManagementPage() {
         </div>
 
         {/* Quick Actions Footer */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <Info className="h-5 w-5" />
@@ -614,12 +614,12 @@ export function UserManagementPage() {
             </div>
             
             <div className="flex gap-2">
-              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-surface2 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                 <HelpCircle className="h-4 w-4 mr-2" />
                 Help
               </button>
               
-              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-surface2 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </button>

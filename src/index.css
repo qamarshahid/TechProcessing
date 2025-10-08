@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Sapphire theme will be imported in main.tsx before this file */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,8 +15,8 @@
     font-feature-settings: 'cv02','cv03','cv04','cv11';
     /* Prevent horizontal scroll on mobile */
     overflow-x: hidden;
-    /* Ensure proper background color */
-    background-color: #0f172a;
+    /* Sapphire theme background */
+    background-color: var(--bg1);
     /* Mobile optimizations */
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
@@ -33,10 +35,9 @@
     overflow-x: hidden;
     /* Improve touch scrolling on iOS */
     -webkit-overflow-scrolling: touch;
-    /* Ensure proper background color */
-    background-color: #0f172a;
-    /* Prevent flash of unstyled content */
-    color: white;
+    /* Sapphire theme colors */
+    background-color: var(--bg1);
+    color: var(--fg);
     /* Mobile optimizations */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -44,8 +45,8 @@
   }
   
   #root {
-    /* Ensure proper background color */
-    background-color: #0f172a;
+    /* Sapphire theme background */
+    background-color: var(--bg1);
     min-height: 100vh;
     min-height: 100dvh; /* Dynamic viewport height for mobile */
   }
@@ -71,9 +72,9 @@
     user-select: text;
   }
 
-  /* Better focus indicators for accessibility */
+  /* Better focus indicators for accessibility - Sapphire theme */
   *:focus {
-    outline: 2px solid #10b981;
+    outline: 3px solid var(--ring);
     outline-offset: 2px;
   }
 

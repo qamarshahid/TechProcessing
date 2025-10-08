@@ -67,7 +67,7 @@ describe('ClientDashboard', () => {
     const paidStatus = await screen.findByText('PAID');
     const unpaidStatus = await screen.findByText('UNPAID');
     
-    expect(paidStatus.className).toMatch(/bg-green-100/);
+    expect(paidStatus.className).toMatch(/bg-accent100/);
     expect(unpaidStatus.className).toMatch(/bg-yellow-100/);
   });
 });

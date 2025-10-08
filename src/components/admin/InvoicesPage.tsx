@@ -235,7 +235,7 @@ export function InvoicesPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PAID':
-        return 'bg-green-100 text-green-800';
+        return 'bg-accent100 text-accent800';
       case 'UNPAID':
         return 'bg-yellow-100 text-yellow-800';
       case 'OVERDUE':
@@ -248,7 +248,7 @@ export function InvoicesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent1"></div>
       </div>
     );
   }
@@ -257,12 +257,12 @@ export function InvoicesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Invoice Management</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Manage client invoices and payments</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-fg">Invoice Management</h1>
+          <p className="text-sm text-gray-600 dark:text-muted">Manage client invoices and payments</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center px-4 py-2 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="h-4 w-4 mr-2" />
           Create Invoice
@@ -279,7 +279,7 @@ export function InvoicesPage() {
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
                 filter === status
                   ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-slate-500'
+                  : 'border-transparent text-gray-500 dark:text-muted hover:text-gray-700 dark:hover:text-muted hover:border-gray-300 dark:hover:border-slate-500'
               }`}
             >
               {status}
@@ -302,55 +302,55 @@ export function InvoicesPage() {
       />
 
       {/* Invoices Table */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700">
+      <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-600">
-            <thead className="bg-gray-50 dark:bg-slate-700">
+            <thead className="bg-gray-50 dark:bg-surface2">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                   Client
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                   Due Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-600">
+            <tbody className="bg-white dark:bg-surface divide-y divide-gray-200 dark:divide-slate-600">
               {filteredInvoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-surface2">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-fg">
                     <div>
                       <div className="font-medium">
                         {invoice.client_name || invoice.client?.full_name || invoice.client?.fullName || 'Unknown Client'}
                       </div>
                       {invoice.client?.company && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">{invoice.client.company}</div>
+                        <div className="text-xs text-gray-500 dark:text-muted">{invoice.client.company}</div>
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                     <div>
                       <div className="font-medium">{invoice.description}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">ID: {invoice.id}</div>
+                      <div className="text-xs text-gray-500 dark:text-muted">ID: {invoice.id}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                     <div>
                       <div className="font-semibold">${parseFloat(invoice.amount).toLocaleString()}</div>
                       {invoice.tax && parseFloat(invoice.tax) > 0 && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">Tax: ${parseFloat(invoice.tax).toFixed(2)}</div>
+                        <div className="text-xs text-gray-500 dark:text-muted">Tax: ${parseFloat(invoice.tax).toFixed(2)}</div>
                       )}
                     </div>
                   </td>
@@ -363,7 +363,7 @@ export function InvoicesPage() {
                       {invoiceStatuses[invoice.id] || invoice.status}
                     </button>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                     <div>
                       <div>
                         {invoice.due_date && !isNaN(new Date(invoice.due_date).getTime()) 
@@ -372,7 +372,7 @@ export function InvoicesPage() {
                         }
                       </div>
                       {invoice.created_at && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-gray-500 dark:text-muted">
                           Created: {new Date(invoice.created_at).toLocaleDateString()}
                         </div>
                       )}
@@ -389,7 +389,7 @@ export function InvoicesPage() {
                       </button>
                       <button 
                         onClick={() => viewInvoice(invoice)}
-                        className="text-green-600 hover:text-green-900"
+                        className="text-accent600 hover:text-accent900"
                         title="View Invoice"
                       >
                         <Eye className="h-4 w-4" />
@@ -474,13 +474,13 @@ export function InvoicesPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <Trash2 className="h-6 w-6 text-red-500" />
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-fg">
                       Delete Invoice
                     </h3>
                   </div>
                   <button
                     onClick={() => !isDeleting && setShowDeleteModal(false)}
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    className="text-muted hover:text-gray-600 dark:hover:text-muted transition-colors"
                     disabled={isDeleting}
                   >
                     <X className="h-5 w-5" />
@@ -490,8 +490,8 @@ export function InvoicesPage() {
 
               {/* Content */}
               <div className="px-6 py-4">
-                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-                  Are you sure you want to delete the invoice for <span className="font-semibold text-gray-900 dark:text-white">{invoiceToDelete.client_name}</span>? This action cannot be undone and will permanently remove the invoice from the system.
+                <p className="text-sm text-gray-600 dark:text-muted leading-relaxed mb-4">
+                  Are you sure you want to delete the invoice for <span className="font-semibold text-gray-900 dark:text-fg">{invoiceToDelete.client_name}</span>? This action cannot be undone and will permanently remove the invoice from the system.
                 </p>
                 
                 {/* Payment Deletion Option */}
@@ -531,14 +531,14 @@ export function InvoicesPage() {
                 <button
                   onClick={() => setShowDeleteModal(false)}
                   disabled={isDeleting}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-muted bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={deleteInvoice}
                   disabled={isDeleting}
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                  className="px-4 py-2 text-sm font-medium text-fg bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
                 >
                   {isDeleting ? (
                     <>
@@ -577,13 +577,13 @@ export function InvoicesPage() {
                     <div className="w-6 h-6 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center">
                       <span className="text-blue-600 dark:text-blue-400 text-sm font-semibold">!</span>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-fg">
                       Update Invoice Status
                     </h3>
                   </div>
                   <button
                     onClick={() => !isUpdatingStatus && setShowStatusModal(false)}
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    className="text-muted hover:text-gray-600 dark:hover:text-muted transition-colors"
                     disabled={isUpdatingStatus}
                   >
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -596,13 +596,13 @@ export function InvoicesPage() {
               {/* Content */}
               <div className="px-6 py-4">
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                    Update the status for invoice <span className="font-semibold text-gray-900 dark:text-white">#{invoiceToUpdate.id}</span> 
-                    for client <span className="font-semibold text-gray-900 dark:text-white">{invoiceToUpdate.client_name}</span>.
+                  <p className="text-sm text-gray-600 dark:text-muted mb-4">
+                    Update the status for invoice <span className="font-semibold text-gray-900 dark:text-fg">#{invoiceToUpdate.id}</span> 
+                    for client <span className="font-semibold text-gray-900 dark:text-fg">{invoiceToUpdate.client_name}</span>.
                   </p>
                   
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                       Current Status
                     </label>
                     <div className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(invoiceStatuses[invoiceToUpdate.id] || invoiceToUpdate.status)}`}>
@@ -611,14 +611,14 @@ export function InvoicesPage() {
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                       New Status *
                     </label>
                     <select
                       value={newStatus}
                       onChange={(e) => setNewStatus(e.target.value)}
                       disabled={isUpdatingStatus}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-fg disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="">Select a status...</option>
                       <option value="PAID">PAID</option>
@@ -635,14 +635,14 @@ export function InvoicesPage() {
                 <button
                   onClick={() => setShowStatusModal(false)}
                   disabled={isUpdatingStatus}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-muted bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={changeInvoiceStatus}
                   disabled={isUpdatingStatus || !newStatus}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                  className="px-4 py-2 text-sm font-medium text-fg bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
                 >
                   {isUpdatingStatus ? (
                     <>

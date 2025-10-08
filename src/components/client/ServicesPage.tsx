@@ -94,10 +94,10 @@ export function ServicesPage() {
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-1/4 mb-6"></div>
+          <div className="h-8 bg-gray-200 dark:bg-surface2 rounded w-1/4 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-80 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+              <div key={i} className="h-80 bg-gray-200 dark:bg-surface2 rounded-lg"></div>
             ))}
           </div>
         </div>
@@ -110,21 +110,21 @@ export function ServicesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Our Services</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Explore our service packages and request custom quotes</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-fg">Our Services</h1>
+          <p className="text-sm text-gray-600 dark:text-muted">Explore our service packages and request custom quotes</p>
         </div>
         <div className="flex space-x-3">
           <button
             onClick={fetchServices}
             disabled={loading}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
           <button
             onClick={requestCustomQuote}
-            className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-emerald-500/25"
+            className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-accent1 to-accent600 text-fg rounded-lg hover:from-emerald-600 hover:to-accent700 transition-all duration-300 shadow-lg hover:shadow-accent500/25"
           >
             <Sparkles className="h-4 w-4 mr-2" />
             Get Custom Quote
@@ -143,17 +143,17 @@ export function ServicesPage() {
       )}
 
       {/* Search and Filters */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+      <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted dark:text-gray-500" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search services..."
-                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -161,7 +161,7 @@ export function ServicesPage() {
             <select
               value={priceFilter}
               onChange={(e) => setPriceFilter(e.target.value)}
-              className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="ALL">All Prices</option>
               <option value="UNDER_1000">Under $1,000</option>
@@ -173,19 +173,19 @@ export function ServicesPage() {
       </div>
 
       {/* Custom Quote CTA */}
-      <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-8 border border-emerald-200 dark:border-emerald-800">
+      <div className="bg-gradient-to-r from-emerald-50 to-accent50 dark:from-emerald-900/20 dark:to-accent900/20 rounded-xl p-8 border border-emerald-200 dark:border-emerald-800">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
-            <Target className="h-8 w-8 text-white" />
+          <div className="w-16 h-16 bg-gradient-to-br from-accent1 to-accent600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+            <Target className="h-8 w-8 text-fg" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Need Something Custom?</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-fg mb-4">Need Something Custom?</h3>
+          <p className="text-gray-600 dark:text-muted mb-6 max-w-2xl mx-auto">
             Don't see exactly what you need? Our team specializes in custom solutions tailored to your specific requirements. 
             Get a personalized quote for your unique project.
           </p>
           <button
             onClick={requestCustomQuote}
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 font-bold text-lg"
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-accent1 to-accent600 text-fg rounded-xl hover:from-emerald-600 hover:to-accent700 transition-all duration-300 shadow-lg hover:shadow-accent500/25 font-bold text-lg"
           >
             <Zap className="h-5 w-5 mr-3" />
             Request Custom Quote
@@ -198,15 +198,15 @@ export function ServicesPage() {
       {filteredServices.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredServices.map((service) => (
-            <div key={service.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <div key={service.id} className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <Package className="h-6 w-6 text-white" />
+                    <Package className="h-6 w-6 text-fg" />
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">{service.name}</h3>
-                    <div className="flex items-center text-green-600 dark:text-green-400">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-fg">{service.name}</h3>
+                    <div className="flex items-center text-accent600 dark:text-accent400">
                       <DollarSign className="h-4 w-4" />
                       <span className="font-bold text-xl">{service.price?.toLocaleString() || '0'}</span>
                     </div>
@@ -214,20 +214,20 @@ export function ServicesPage() {
                 </div>
                 <div className="flex items-center">
                   <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                  <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">Popular</span>
+                  <span className="text-sm text-gray-600 dark:text-muted ml-1">Popular</span>
                 </div>
               </div>
               
-              <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">{service.description}</p>
+              <p className="text-gray-600 dark:text-muted mb-6 leading-relaxed">{service.description}</p>
               
               <div className="space-y-3 mb-6">
-                <h4 className="font-semibold text-gray-900 dark:text-white flex items-center">
-                  <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                <h4 className="font-semibold text-gray-900 dark:text-fg flex items-center">
+                  <CheckCircle className="h-4 w-4 text-accent500 mr-2" />
                   What's Included:
                 </h4>
                 <ul className="space-y-2">
                   {(service.features || []).map((feature: string, index: number) => (
-                    <li key={index} className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                    <li key={index} className="flex items-center text-sm text-gray-600 dark:text-muted">
                       <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 flex-shrink-0"></div>
                       {feature}
                     </li>
@@ -237,7 +237,7 @@ export function ServicesPage() {
               
               <button 
                 onClick={() => requestService(service)}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-6 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-blue-500/25 flex items-center justify-center"
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-fg py-3 px-6 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-blue-500/25 flex items-center justify-center"
               >
                 <Send className="h-4 w-4 mr-2" />
                 Request This Service
@@ -246,12 +246,12 @@ export function ServicesPage() {
           ))}
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-12 text-center">
-          <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Package className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+        <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-12 text-center">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-surface2 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Package className="h-8 w-8 text-muted dark:text-gray-500" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Services Found</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-fg mb-2">No Services Found</h3>
+          <p className="text-gray-500 dark:text-muted mb-6">
             {searchTerm || priceFilter !== 'ALL' 
               ? 'Try adjusting your search or filter criteria.'
               : 'No services are currently available. Please check back later.'
@@ -259,7 +259,7 @@ export function ServicesPage() {
           </p>
           <button
             onClick={requestCustomQuote}
-            className="inline-flex items-center px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 bg-accent1 text-fg rounded-lg hover:bg-accent1 transition-colors"
           >
             <Plus className="h-4 w-4 mr-2" />
             Request Custom Quote

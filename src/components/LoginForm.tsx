@@ -15,7 +15,23 @@ import {
   ArrowLeft,
   ShieldCheck,
   MapPin,
-  MessageSquare
+  MessageSquare,
+  Building2,
+  Phone,
+  Sparkles,
+  Star,
+  Bot,
+  Brain,
+  Database,
+  Cpu,
+  Network,
+  Zap,
+  CheckCircle,
+  Fingerprint,
+  KeyRound,
+  ChevronRight,
+  Layers3,
+  Code2
 } from 'lucide-react';
 import { MfaVerification } from './auth/MfaVerification';
 import { EmailVerification } from './auth/EmailVerification';
@@ -50,6 +66,7 @@ export function LoginForm() {
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [registrationEmail, setRegistrationEmail] = useState('');
+  const [isFocused, setIsFocused] = useState('');
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -107,7 +124,6 @@ export function LoginForm() {
       } else {
         const response = await signIn(email, password);
         
-        // Check if MFA is required
         if (response.requires_mfa) {
           setMfaData(response);
           setMfaRequired(true);
@@ -117,11 +133,9 @@ export function LoginForm() {
         }
       }
     } catch (err: any) {
-      // Enhanced error handling for login/register
       if (err instanceof Error && err.message) {
         setError(err.message);
         
-        // Handle specific error cases
         if (err.message.includes('verify your email') || err.message.includes('not verified')) {
           setShowEmailVerification(true);
           setRegistrationEmail(email);
@@ -147,7 +161,6 @@ export function LoginForm() {
   const handleEmailVerified = () => {
     setShowEmailVerification(false);
     showSuccess('Email Verified', 'Your email has been verified successfully!');
-    // Navigate to dashboard after email verification
     navigate('/dashboard');
   };
 
@@ -156,7 +169,6 @@ export function LoginForm() {
     showSuccess('Password Reset', 'Your password has been reset successfully!');
   };
 
-  // Address autocomplete functionality
   const searchAddress = async (query: string) => {
     if (query.length < 2) {
       setAddressSuggestions([]);
@@ -191,7 +203,6 @@ export function LoginForm() {
     searchAddress(value);
   };
 
-  // Handle click outside to close suggestions
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (addressSearchRef.current && !addressSearchRef.current.contains(event.target as Node)) {
@@ -205,131 +216,204 @@ export function LoginForm() {
     };
   }, []);
 
+
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-3 sm:p-4 md:p-6 relative overflow-hidden">
-      {/* Animated Background */}
+    <div className="min-h-screen bg-bg1 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Premium Animated Background */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-bg1 via-bg2 to-bg1"></div>
         
-        {/* Floating Orbs - Hidden on mobile for performance */}
+        {/* Subtle Grid with Glow */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.02)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+        
+        {/* Floating Orbs */}
         <motion.div
-          className="hidden sm:block absolute w-96 h-96 bg-gradient-to-r from-emerald-500/20 to-teal-600/20 rounded-full blur-3xl"
+          className="absolute w-96 h-96 rounded-full blur-3xl opacity-20 top-[10%] left-[10%]"
+          style={{
+            background: 'radial-gradient(circle, rgba(59,130,246,0.4) 0%, rgba(96,165,250,0.2) 50%, transparent 70%)',
+          }}
           animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
+            x: [0, 80, 0],
+            y: [0, -60, 0],
             scale: [1, 1.2, 1],
           }}
           transition={{
-            duration: 8,
+            duration: 20,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          style={{ top: '10%', left: '10%' }}
         />
         <motion.div
-          className="hidden sm:block absolute w-80 h-80 bg-gradient-to-r from-teal-500/20 to-cyan-600/20 rounded-full blur-3xl"
+          className="absolute w-80 h-80 rounded-full blur-3xl opacity-20 top-[60%] right-[10%]"
+          style={{
+            background: 'radial-gradient(circle, rgba(96,165,250,0.4) 0%, rgba(147,197,253,0.2) 50%, transparent 70%)',
+          }}
           animate={{
-            x: [0, -80, 0],
-            y: [0, 60, 0],
-            scale: [1, 0.8, 1],
+            x: [0, -60, 0],
+            y: [0, 80, 0],
+            scale: [1, 0.9, 1],
           }}
           transition={{
-            duration: 10,
+            duration: 25,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: 2
+            delay: 5
           }}
-          style={{ top: '60%', right: '10%' }}
         />
 
-        {/* Grid Pattern - Simplified on mobile */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:30px_30px] sm:bg-[size:50px_50px]"></div>
-        
-        {/* Decorative Elements - Hidden on mobile */}
-        <div className="hidden sm:block absolute top-20 left-20 w-32 h-32 border-4 border-emerald-400/20 transform rotate-45"></div>
-        <div className="hidden sm:block absolute bottom-20 right-20 w-24 h-24 border-4 border-teal-400/20 transform rotate-12"></div>
+        {/* Floating Particles */}
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: Math.random() * 3 + 1,
+              height: Math.random() * 3 + 1,
+              background: `rgba(96, 165, 250, ${Math.random() * 0.5 + 0.2})`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              x: [0, (Math.random() - 0.5) * 150],
+              y: [0, (Math.random() - 0.5) * 150],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: Math.random() * 12 + 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: Math.random() * 4
+            }}
+          />
+        ))}
       </div>
 
       {/* Main Container */}
-      <div className="relative w-full max-w-sm sm:max-w-md md:max-w-lg z-10">
+      <div className="relative w-full max-w-md z-10">
         {/* Back to Home */}
         <motion.div
-          className="mb-4 sm:mb-6 md:mb-8"
+          className="mb-8"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
         >
           <Link 
             to="/" 
-            className="inline-flex items-center text-slate-400 hover:text-emerald-400 transition-colors group touch-manipulation min-h-[44px] px-2 -ml-2 rounded-lg hover:bg-slate-800/30"
+            className="inline-flex items-center text-accent2 hover:text-accent3 transition-colors group font-medium"
           >
-            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm sm:text-base">Back to Home</span>
+            <motion.div
+              whileHover={{ x: -5 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+            </motion.div>
+            <span>Back to Home</span>
           </Link>
         </motion.div>
 
-        {/* Login Card */}
+        {/* Premium Login Card */}
         <motion.div
-          className="bg-gray-900/50 backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-800/50 p-4 sm:p-6 md:p-8 relative overflow-hidden"
-          initial={{ opacity: 0, y: 50, scale: 0.9 }}
+          className="bg-surface/70 backdrop-blur-3xl rounded-3xl shadow-[0_20px_80px_rgba(0,0,0,0.4)] border border-outline/50 p-8 relative overflow-hidden"
+          initial={{ opacity: 0, y: 60, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-teal-600/5 to-cyan-700/5 pointer-events-none"></div>
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-accent1/10 via-transparent to-accent2/10 pointer-events-none"></div>
+          
+          {/* Animated Border */}
+          <motion.div 
+            className="absolute inset-0 rounded-[2rem] opacity-50"
+            style={{
+              background: 'linear-gradient(90deg, transparent, rgba(59,130,246,0.3), transparent)',
+              backgroundSize: '200% 100%',
+            }}
+            animate={{
+              backgroundPosition: ['0% 0%', '200% 0%'],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
           
           <div className="relative">
             {/* Header with Logo */}
             <motion.div
-              className="text-center mb-6 sm:mb-8"
+              className="text-center mb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
               <motion.div
-                className="relative group inline-block mb-4 sm:mb-6"
+                className="relative group inline-block mb-6"
                 whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
               >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-2xl relative">
-                  <div className="text-slate-950 font-black text-xl sm:text-2xl">TP</div>
-                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse"></div>
-                  <div className="absolute -bottom-1 -left-1 sm:-bottom-2 sm:-left-2 w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+                <div className="w-16 h-16 bg-gradient-to-br from-accent1 to-accent2 rounded-2xl flex items-center justify-center shadow-2xl shadow-accent1/30 relative overflow-hidden">
+                  <div className="text-white font-black text-xl z-10">TP</div>
+                  <motion.div 
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    animate={{
+                      x: ['-100%', '200%'],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      repeatDelay: 1
+                    }}
+                  />
                 </div>
+                <motion.div 
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-accent3 rounded-full"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [1, 0.5, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
               </motion.div>
               
-              <div className="mb-4 sm:mb-6">
-                <div className="font-black text-lg sm:text-2xl md:text-3xl text-white mb-1 sm:mb-2 leading-tight">
+              <div className="mb-4">
+                <div className="font-black text-2xl text-fg mb-1 tracking-tight">
                   TECH PROCESSING LLC
                 </div>
-                <div className="text-xs sm:text-sm text-emerald-400 font-bold tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.3em]">
-                  DESIGN | DEVELOP | DOMINATE
+                <div className="text-xs text-accent2 font-bold tracking-[0.3em]">
+                  DESIGN • DEVELOP • DOMINATE
                 </div>
               </div>
               
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1 sm:mb-2 leading-tight">
+              <h1 className="text-2xl font-black text-fg mb-2 tracking-tight">
                 {showRegister ? 'Join the Future' : 'Welcome Back'}
               </h1>
-              <p className="text-xs sm:text-sm md:text-base text-slate-400 leading-relaxed px-2">
+              <p className="text-muted font-medium text-sm">
                 {showRegister ? 'Create your account to access next-gen solutions' : 'Access your intelligent dashboard'}
               </p>
             </motion.div>
 
             {/* Toggle Register/Login */}
             <motion.div
-              className="mb-4 sm:mb-6 text-center"
+              className="mb-6 text-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              <p className="text-xs sm:text-sm text-slate-400">
+              <p className="text-muted font-medium">
                 {showRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
-                <button
+                <motion.button
                   onClick={() => setShowRegister(!showRegister)}
-                  className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors underline touch-manipulation min-h-[44px] px-2 -mx-2 rounded-lg hover:bg-slate-800/30"
+                  className="font-bold text-accent2 hover:text-accent3 transition-colors"
+                  whileHover={{ x: 3 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
                 >
                   {showRegister ? 'Sign in here' : 'Register here'}
-                </button>
+                </motion.button>
               </p>
             </motion.div>
 
@@ -337,12 +421,13 @@ export function LoginForm() {
             <AnimatePresence>
               {error && (
                 <motion.div
-                  className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-500/20 backdrop-blur-sm border border-red-400/30 rounded-xl"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
+                  className="mb-6 p-4 bg-red-500/10 backdrop-blur-xl border border-red-500/30 rounded-xl shadow-lg"
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
-                  <p className="text-xs sm:text-sm text-red-300 font-medium leading-relaxed">{error}</p>
+                  <p className="text-sm text-red-300 font-medium text-center">{error}</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -350,155 +435,12 @@ export function LoginForm() {
             {/* Form */}
             <motion.form
               onSubmit={handleSubmit}
-              className="space-y-3 sm:space-y-4 md:space-y-6"
+              className="space-y-5"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
             >
-              {/* Full Name Field (only for registration) */}
-              <AnimatePresence>
-                {showRegister && (
-                  <motion.div
-                    className="space-y-2"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="space-y-3 sm:space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                        <div>
-                          <label htmlFor="firstName" className="block text-xs sm:text-sm font-bold text-slate-300 mb-1 sm:mb-2">
-                            First Name *
-                          </label>
-                          <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                              <User className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                            </div>
-                            <input
-                              id="firstName"
-                              name="firstName"
-                              type="text"
-                              required={showRegister}
-                              value={firstName}
-                              onChange={(e) => setFirstName(e.target.value)}
-                              className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-lg sm:rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-sm sm:text-base touch-manipulation min-h-[48px]"
-                              placeholder="John"
-                            />
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="lastName" className="block text-xs sm:text-sm font-bold text-slate-300 mb-1 sm:mb-2">
-                            Last Name *
-                          </label>
-                          <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                              <User className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                            </div>
-                            <input
-                              id="lastName"
-                              name="lastName"
-                              type="text"
-                              required={showRegister}
-                              value={lastName}
-                              onChange={(e) => setLastName(e.target.value)}
-                              className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-lg sm:rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-sm sm:text-base touch-manipulation min-h-[48px]"
-                              placeholder="Doe"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="middleName" className="block text-xs sm:text-sm font-bold text-slate-300 mb-1 sm:mb-2">
-                          Middle Name (Optional)
-                        </label>
-                        <div className="relative group">
-                          <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                            <User className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                          </div>
-                          <input
-                            id="middleName"
-                            name="middleName"
-                            type="text"
-                            value={middleName}
-                            onChange={(e) => setMiddleName(e.target.value)}
-                            className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-lg sm:rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-sm sm:text-base touch-manipulation min-h-[48px]"
-                            placeholder="M"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Company Name Field (only for registration) */}
-              <AnimatePresence>
-                {showRegister && (
-                  <motion.div
-                    className="space-y-2"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                  >
-                    <label htmlFor="companyName" className="block text-sm font-bold text-slate-300">
-                      Company Name *
-                    </label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <Globe className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                      </div>
-                      <input
-                        id="companyName"
-                        name="companyName"
-                        type="text"
-                        required={showRegister}
-                        value={companyName}
-                        onChange={(e) => setCompanyName(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
-                        placeholder="Enter your company name"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Phone Number Field (only for registration) */}
-              <AnimatePresence>
-                {showRegister && (
-                  <motion.div
-                    className="space-y-2"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, delay: 0.2 }}
-                  >
-                    <label htmlFor="phoneNumber" className="block text-sm font-bold text-slate-300">
-                      Phone Number *
-                    </label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <MessageSquare className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                      </div>
-                      <input
-                        id="phoneNumber"
-                        name="phoneNumber"
-                        type="tel"
-                        required={showRegister}
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
-                        placeholder="Enter your phone number"
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Address Fields (only for registration) */}
+              {/* Registration Fields */}
               <AnimatePresence>
                 {showRegister && (
                   <motion.div
@@ -506,123 +448,86 @@ export function LoginForm() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, delay: 0.3 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="h-5 w-5 text-emerald-400" />
-                      <h3 className="text-lg font-semibold text-white">Address Information</h3>
-                    </div>
-                    
-                    {/* Street Address with Autocomplete */}
-                    <div className="space-y-2">
-                      <label htmlFor="street" className="block text-sm font-bold text-slate-300">
-                        Street Address
-                      </label>
-                      <div className="relative" ref={addressSearchRef}>
-                        <input
-                          id="street"
-                          name="street"
-                          type="text"
-                          value={address.street}
-                          onChange={(e) => handleAddressSearchChange(e.target.value)}
-                          onFocus={() => setShowSuggestions(addressSuggestions.length > 0)}
-                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-base touch-manipulation"
-                          placeholder="Start typing your address..."
-                        />
-                        
-                        {/* Address Suggestions Dropdown */}
-                        {showSuggestions && addressSuggestions.length > 0 && (
-                          <div className="absolute z-10 w-full mt-1 bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-                            {addressSuggestions.map((suggestion, index) => (
-                              <button
-                                key={index}
-                                type="button"
-                                onClick={() => selectAddress(suggestion)}
-                                className="w-full px-4 py-3 text-left text-white hover:bg-slate-700 transition-colors border-b border-slate-700 last:border-b-0"
-                              >
-                                <div className="font-medium">{suggestion.formatted}</div>
-                                <div className="text-sm text-gray-400">
-                                  {suggestion.city}, {suggestion.state} {suggestion.postalCode}
-                                </div>
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                    {/* Name Fields */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="firstName" className="block text-xs font-bold text-muted-strong mb-2 tracking-wide uppercase">
+                          First Name *
+                        </label>
+                        <div className="relative group">
+                          <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted group-focus-within:text-accent2 transition-colors z-10" />
+                          <input
+                            id="firstName"
+                            name="firstName"
+                            type="text"
+                            required={showRegister}
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            className="w-full pl-11 pr-4 py-3 bg-surface/50 backdrop-blur-xl border-2 border-outline rounded-xl text-fg placeholder-muted focus:outline-none focus:ring-4 focus:ring-accent1/20 focus:border-accent1 transition-all duration-300 font-medium hover:border-accent1/50 shadow-lg"
+                            placeholder="John"
+                          />
+                        </div>
                       </div>
                       
-                      <div className="text-xs text-gray-400 flex items-center space-x-1">
-                        <MapPin className="h-3 w-3" />
-                        <span>Select from suggestions or continue typing manually</span>
+                      <div>
+                        <label htmlFor="lastName" className="block text-xs font-bold text-muted-strong mb-2 tracking-wide uppercase">
+                          Last Name *
+                        </label>
+                        <div className="relative group">
+                          <User className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted group-focus-within:text-accent2 transition-colors z-10" />
+                          <input
+                            id="lastName"
+                            name="lastName"
+                            type="text"
+                            required={showRegister}
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className="w-full pl-11 pr-4 py-3 bg-surface/50 backdrop-blur-xl border-2 border-outline rounded-xl text-fg placeholder-muted focus:outline-none focus:ring-4 focus:ring-accent1/20 focus:border-accent1 transition-all duration-300 font-medium hover:border-accent1/50 shadow-lg"
+                            placeholder="Doe"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Company Name */}
+                    <div>
+                      <label htmlFor="companyName" className="block text-xs font-bold text-muted-strong mb-2 tracking-wide uppercase">
+                        Company Name *
+                      </label>
+                      <div className="relative group">
+                        <Building2 className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted group-focus-within:text-accent2 transition-colors z-10" />
+                        <input
+                          id="companyName"
+                          name="companyName"
+                          type="text"
+                          required={showRegister}
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          className="w-full pl-11 pr-4 py-3 bg-surface/50 backdrop-blur-xl border-2 border-outline rounded-xl text-fg placeholder-muted focus:outline-none focus:ring-4 focus:ring-accent1/20 focus:border-accent1 transition-all duration-300 font-medium hover:border-accent1/50 shadow-lg"
+                          placeholder="Your Company"
+                        />
                       </div>
                     </div>
 
-                    {/* City and State */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                      <div className="space-y-2">
-                        <label htmlFor="city" className="block text-sm font-bold text-slate-300">
-                          City
-                        </label>
+                    {/* Phone Number */}
+                    <div>
+                      <label htmlFor="phoneNumber" className="block text-xs font-bold text-muted-strong mb-2 tracking-wide uppercase">
+                        Phone Number *
+                      </label>
+                      <div className="relative group">
+                        <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted group-focus-within:text-accent2 transition-colors z-10" />
                         <input
-                          id="city"
-                          name="city"
-                          type="text"
-                          value={address.city}
-                          onChange={(e) => setAddress({...address, city: e.target.value})}
-                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
-                          placeholder="Enter city"
+                          id="phoneNumber"
+                          name="phoneNumber"
+                          type="tel"
+                          required={showRegister}
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          className="w-full pl-11 pr-4 py-3 bg-surface/50 backdrop-blur-xl border-2 border-outline rounded-xl text-fg placeholder-muted focus:outline-none focus:ring-4 focus:ring-accent1/20 focus:border-accent1 transition-all duration-300 font-medium hover:border-accent1/50 shadow-lg"
+                          placeholder="+1 (555) 123-4567"
                         />
-                      </div>
-                      <div className="space-y-2">
-                        <label htmlFor="state" className="block text-sm font-bold text-slate-300">
-                          State
-                        </label>
-                        <input
-                          id="state"
-                          name="state"
-                          type="text"
-                          value={address.state}
-                          onChange={(e) => setAddress({...address, state: e.target.value})}
-                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
-                          placeholder="Enter state"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Postal Code and Country */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                      <div className="space-y-2">
-                        <label htmlFor="postalCode" className="block text-sm font-bold text-slate-300">
-                          Postal Code
-                        </label>
-                        <input
-                          id="postalCode"
-                          name="postalCode"
-                          type="text"
-                          value={address.postalCode}
-                          onChange={(e) => setAddress({...address, postalCode: e.target.value})}
-                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
-                          placeholder="Enter postal code"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label htmlFor="country" className="block text-sm font-bold text-slate-300">
-                          Country
-                        </label>
-                        <select
-                          id="country"
-                          name="country"
-                          value={address.country}
-                          onChange={(e) => setAddress({...address, country: e.target.value})}
-                          className="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium"
-                        >
-                          <option value="United States">United States</option>
-                          <option value="Canada">Canada</option>
-                          <option value="United Kingdom">United Kingdom</option>
-                          <option value="Australia">Australia</option>
-                          <option value="Germany">Germany</option>
-                          <option value="France">France</option>
-                          <option value="Other">Other</option>
-                        </select>
                       </div>
                     </div>
                   </motion.div>
@@ -630,135 +535,193 @@ export function LoginForm() {
               </AnimatePresence>
 
               {/* Email Field */}
-              <div className="space-y-1 sm:space-y-2">
-                <label htmlFor="email" className="block text-xs sm:text-sm font-bold text-slate-300">
+              <div>
+                <label htmlFor="email" className="block text-xs font-bold text-muted-strong mb-2 tracking-wide uppercase">
                   Email Address
                 </label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                    <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                  </div>
-                  <input
+                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted group-focus-within:text-accent2 transition-all duration-300 z-10" />
+                  <motion.input
                     id="email"
                     name="email"
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-lg sm:rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-sm sm:text-base touch-manipulation min-h-[48px]"
-                    placeholder="Enter your email"
+                    onFocus={() => setIsFocused('email')}
+                    onBlur={() => setIsFocused('')}
+                    className="w-full pl-12 pr-4 py-3.5 bg-surface/50 backdrop-blur-xl border-2 border-outline rounded-xl text-fg placeholder-muted focus:outline-none focus:ring-4 focus:ring-accent1/20 focus:border-accent1 transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:border-accent1/50"
+                    placeholder="your@company.com"
+                    whileFocus={{ scale: 1.01 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   />
+                  <AnimatePresence>
+                    {isFocused === 'email' && (
+                      <motion.div
+                        className="absolute inset-0 rounded-xl bg-gradient-to-r from-accent1/10 to-accent2/10 pointer-events-none"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      />
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
 
               {/* Password Field */}
-              <div className="space-y-1 sm:space-y-2">
-                <label htmlFor="password" className="block text-xs sm:text-sm font-bold text-slate-300">
+              <div>
+                <label htmlFor="password" className="block text-xs font-bold text-muted-strong mb-2 tracking-wide uppercase">
                   Password
                 </label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                    <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
-                  </div>
-                  <input
+                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted group-focus-within:text-accent2 transition-all duration-300 z-10" />
+                  <motion.input
                     id="password"
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-lg sm:rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 font-medium text-sm sm:text-base touch-manipulation min-h-[48px]"
+                    onFocus={() => setIsFocused('password')}
+                    onBlur={() => setIsFocused('')}
+                    className="w-full pl-12 pr-12 py-3.5 bg-surface/50 backdrop-blur-xl border-2 border-outline rounded-xl text-fg placeholder-muted focus:outline-none focus:ring-4 focus:ring-accent1/20 focus:border-accent1 transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:border-accent1/50"
                     placeholder="Enter your password"
+                    whileFocus={{ scale: 1.01 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   />
-                  <button
+                  <motion.button
                     type="button"
-                    className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center touch-manipulation min-h-[48px] min-w-[48px] justify-center"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted hover:text-fg transition-colors z-10"
                     onClick={() => setShowPassword(!showPassword)}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 hover:text-slate-300 transition-colors" />
-                    ) : (
-                      <Eye className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 hover:text-slate-300 transition-colors" />
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </motion.button>
+                  <AnimatePresence>
+                    {isFocused === 'password' && (
+                      <motion.div
+                        className="absolute inset-0 rounded-xl bg-gradient-to-r from-accent1/10 to-accent2/10 pointer-events-none"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      />
                     )}
-                  </button>
+                  </AnimatePresence>
                 </div>
               </div>
 
               {/* Remember Me & Forgot Password */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-600 rounded bg-gray-800/50 touch-manipulation"
-                  />
-                  <label htmlFor="remember-me" className="ml-3 text-xs sm:text-sm font-medium text-slate-400 touch-manipulation flex items-center">
-                    Remember me
-                  </label>
+              {!showRegister && (
+                <div className="flex items-center justify-between pt-2">
+                  <div className="flex items-center group cursor-pointer">
+                    <input
+                      id="remember-me"
+                      name="remember-me"
+                      type="checkbox"
+                      className="h-5 w-5 text-accent1 focus:ring-accent1 border-outline rounded-lg bg-surface cursor-pointer transition-all hover:scale-110"
+                    />
+                    <label htmlFor="remember-me" className="ml-3 text-sm text-muted group-hover:text-muted-strong transition-colors font-medium cursor-pointer">
+                      Remember me
+                    </label>
+                  </div>
+                  <motion.button
+                    type="button"
+                    onClick={() => setShowPasswordReset(true)}
+                    className="text-sm text-accent2 hover:text-accent3 transition-colors font-bold"
+                    whileHover={{ x: 3 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                  >
+                    Forgot password?
+                  </motion.button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowPasswordReset(true)}
-                  className="text-xs sm:text-sm font-bold text-emerald-400 hover:text-emerald-300 transition-colors touch-manipulation text-left sm:text-right flex items-center px-2 -mx-2 rounded-lg hover:bg-slate-800/30 py-2"
-                >
-                  Forgot password?
-                </button>
-              </div>
+              )}
 
-              {/* Sign In Button */}
+              {/* Submit Button */}
               <motion.button
                 type="submit"
                 disabled={loading}
-                className="w-full relative overflow-hidden bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:via-teal-400 hover:to-cyan-400 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center border border-emerald-500/30 group touch-manipulation min-h-[48px] sm:min-h-[52px]"
-                whileHover={{ scale: 1.02, y: -2 }}
+                className="w-full relative overflow-hidden bg-gradient-to-r from-accent1 via-accent2 to-accent1 bg-[length:200%_auto] hover:bg-[length:100%_auto] text-white py-4 px-6 rounded-xl font-black transition-all duration-500 shadow-2xl shadow-accent1/30 hover:shadow-accent1/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group mt-6"
+                whileHover={{ scale: 1.02, y: -3 }}
                 whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  animate={{
+                    x: loading ? ['-100%', '200%'] : '-100%',
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: loading ? Infinity : 0,
+                    ease: "easeInOut"
+                  }}
+                />
                 {loading ? (
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   <span className="relative flex items-center">
-                    <Shield className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                    <span className="hidden sm:inline">{showRegister ? 'Create Account' : 'Access Portal'}</span>
-                    <span className="sm:hidden">{showRegister ? 'Create' : 'Login'}</span>
-                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <Shield className="h-5 w-5 mr-2" />
+                    <span className="tracking-wide">{showRegister ? 'CREATE ACCOUNT' : 'ACCESS PORTAL'}</span>
+                    <motion.div
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <ChevronRight className="h-5 w-5 ml-2" />
+                    </motion.div>
                   </span>
                 )}
               </motion.button>
             </motion.form>
 
-            {/* Divider */}
 
-            {/* Footer */}
+            {/* Security Badge */}
             <motion.div
-              className="mt-6 sm:mt-8 text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
+              className="mt-6 text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 }}
             >
-              <p className="text-xs sm:text-sm text-slate-500">
-                Need assistance?{' '}
-                <a href="mailto:support@techprocessingllc.com" className="font-bold text-emerald-400 hover:text-emerald-300 transition-colors touch-manipulation min-h-[44px] inline-flex items-center px-2 -mx-2 rounded-lg hover:bg-slate-800/30">
-                  Contact Support
-                </a>
-              </p>
+              <div className="inline-flex items-center px-4 py-2 bg-surface/50 backdrop-blur-xl rounded-full border border-accent1/30 shadow-xl">
+                <ShieldCheck className="h-4 w-4 text-accent2 mr-2" />
+                <span className="text-xs font-bold text-muted">Quantum-Encrypted Security</span>
+                <motion.div 
+                  className="w-2 h-2 bg-accent2 rounded-full ml-3"
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [1, 0.5, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              </div>
             </motion.div>
           </div>
         </motion.div>
 
-        {/* Security Badge */}
+        {/* Contact Support */}
         <motion.div
-          className="mt-4 sm:mt-6 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
+          className="text-center mt-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.3 }}
         >
-          <div className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-gray-800/50 backdrop-blur-xl rounded-full border border-emerald-400/30 shadow-lg">
-            <ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-400 mr-2" />
-            <span className="text-xs sm:text-sm font-medium text-slate-300">Quantum-Encrypted Security</span>
-            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-emerald-400 rounded-full ml-2 sm:ml-3 animate-pulse"></div>
-          </div>
+          <p className="text-muted font-medium">
+            Need assistance?{' '}
+            <motion.a 
+              href="mailto:support@techprocessingllc.com" 
+              className="font-bold text-accent2 hover:text-accent3 transition-colors"
+              whileHover={{ x: 3 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            >
+              Contact Support →
+            </motion.a>
+          </p>
         </motion.div>
       </div>
 
@@ -785,7 +748,6 @@ export function LoginForm() {
           onCancel={() => setShowEmailVerification(false)}
         />
       )}
-      
 
       {/* Password Reset Modal */}
       {showPasswordReset && (

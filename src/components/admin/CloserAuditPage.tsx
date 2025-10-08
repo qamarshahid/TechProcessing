@@ -140,21 +140,21 @@ export function CloserAuditPage() {
   const stats = getTotalStats();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-bg2 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-fg mb-2">
             Closer & Agent Audit
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-600 dark:text-muted">
             Comprehensive audit and analysis of closer and agent activities
           </p>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6">
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
                 <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -168,21 +168,21 @@ export function CloserAuditPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6">
             <div className="flex items-center">
-              <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-                <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+              <div className="p-2 bg-accent100 dark:bg-accent900/20 rounded-lg">
+                <DollarSign className="h-6 w-6 text-accent600 dark:text-accent400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">Total Amount</p>
-                <p className="text-2xl font-bold text-green-900 dark:text-green-100">
+                <p className="text-sm font-medium text-accent600 dark:text-accent400">Total Amount</p>
+                <p className="text-2xl font-bold text-accent900 dark:text-accent100">
                   ${stats.totalAmount.toLocaleString()}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
                 <TrendingUp className="h-6 w-6 text-purple-600 dark:text-purple-400" />
@@ -196,7 +196,7 @@ export function CloserAuditPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6">
             <div className="flex items-center">
               <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
                 <BarChart3 className="h-6 w-6 text-orange-600 dark:text-orange-400" />
@@ -210,13 +210,13 @@ export function CloserAuditPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6">
             <div className="flex items-center">
               <div className="p-2 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg">
-                <FileText className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                <FileText className="h-6 w-6 text-accent1 dark:text-accent2" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Paid Commissions</p>
+                <p className="text-sm font-medium text-accent1 dark:text-accent2">Paid Commissions</p>
                 <p className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">
                   {stats.paidCommissions}
                 </p>
@@ -226,13 +226,13 @@ export function CloserAuditPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-6 mb-6">
+        <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Audit Filters</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-fg">Audit Filters</h2>
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                className="px-4 py-2 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
               >
                 <Filter className="h-4 w-4" />
                 <span>{showFilters ? 'Hide' : 'Show'} Filters</span>
@@ -240,7 +240,7 @@ export function CloserAuditPage() {
               <button
                 onClick={fetchAuditData}
                 disabled={loading}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
+                className="px-4 py-2 bg-accent600 text-fg rounded-lg hover:bg-accent700 transition-colors disabled:opacity-50 flex items-center space-x-2"
               >
                 <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
                 <span>Run Audit</span>
@@ -248,7 +248,7 @@ export function CloserAuditPage() {
               <button
                 onClick={exportAuditData}
                 disabled={auditData.length === 0}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
+                className="px-4 py-2 bg-purple-600 text-fg rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
               >
                 <Download className="h-4 w-4" />
                 <span>Export CSV</span>
@@ -259,13 +259,13 @@ export function CloserAuditPage() {
           {showFilters && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   Closer
                 </label>
                 <select
                   value={filters.closerId || ''}
                   onChange={(e) => handleFilterChange('closerId', e.target.value || undefined)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                 >
                   <option value="">All Closers</option>
                   {closers.map((closer) => (
@@ -277,37 +277,37 @@ export function CloserAuditPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   Start Date
                 </label>
                 <input
                   type="date"
                   value={filters.startDate}
                   onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   End Date
                 </label>
                 <input
                   type="date"
                   value={filters.endDate}
                   onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   Sale Status
                 </label>
                 <select
                   value={filters.saleStatus || ''}
                   onChange={(e) => handleFilterChange('saleStatus', e.target.value || undefined)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                 >
                   <option value="">All Statuses</option>
                   <option value="PENDING">Pending</option>
@@ -318,13 +318,13 @@ export function CloserAuditPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   Commission Status
                 </label>
                 <select
                   value={filters.commissionStatus || ''}
                   onChange={(e) => handleFilterChange('commissionStatus', e.target.value || undefined)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                 >
                   <option value="">All Statuses</option>
                   <option value="PENDING">Pending</option>
@@ -334,7 +334,7 @@ export function CloserAuditPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   Min Amount
                 </label>
                 <input
@@ -342,12 +342,12 @@ export function CloserAuditPage() {
                   placeholder="0"
                   value={filters.minAmount || ''}
                   onChange={(e) => handleFilterChange('minAmount', e.target.value ? Number(e.target.value) : undefined)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   Max Amount
                 </label>
                 <input
@@ -355,14 +355,14 @@ export function CloserAuditPage() {
                   placeholder="∞"
                   value={filters.maxAmount || ''}
                   onChange={(e) => handleFilterChange('maxAmount', e.target.value ? Number(e.target.value) : undefined)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-surface2 dark:text-fg"
                 />
               </div>
 
               <div className="flex items-end">
                 <button
                   onClick={clearFilters}
-                  className="w-full px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
+                  className="w-full px-4 py-2 text-gray-700 dark:text-muted bg-gray-100 dark:bg-surface2 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors"
                 >
                   Clear Filters
                 </button>
@@ -372,94 +372,94 @@ export function CloserAuditPage() {
         </div>
 
         {/* Audit Results */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-outline">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-fg">
               Audit Results ({auditData.length} records)
             </h3>
           </div>
 
           {loading ? (
             <div className="p-6 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">Loading audit data...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent1 mx-auto"></div>
+              <p className="mt-2 text-gray-600 dark:text-muted">Loading audit data...</p>
             </div>
           ) : error ? (
             <div className="p-6 text-center text-red-600 dark:text-red-400">
               <p>{error}</p>
             </div>
           ) : auditData.length === 0 ? (
-            <div className="p-6 text-center text-gray-600 dark:text-gray-400">
+            <div className="p-6 text-center text-gray-600 dark:text-muted">
               <p>No audit data found. Use the filters above and click "Run Audit" to get started.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
-                <thead className="bg-gray-50 dark:bg-slate-700">
+                <thead className="bg-gray-50 dark:bg-surface2">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Closer
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Agent
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Client
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Service
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Amount
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Closer Commission
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Agent Commission
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Sale Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                       Commission Status
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
+                <tbody className="bg-white dark:bg-surface divide-y divide-gray-200 dark:divide-slate-700">
                   {auditData.map((sale) => (
-                    <tr key={sale.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    <tr key={sale.id} className="hover:bg-gray-50 dark:hover:bg-surface2">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                         {new Date(sale.saleDate || sale.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                         {sale.closerName}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                         {sale.agent?.salesPersonName || 'N/A'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                         {sale.clientName}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                         {sale.serviceName}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                         ${Number(sale.saleAmount).toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                         ${Number(sale.closerCommission).toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                         ${Number(sale.agentCommission).toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                           sale.saleStatus === 'APPROVED'
-                            ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
+                            ? 'bg-accent100 dark:bg-accent900/20 text-accent800 dark:text-accent200'
                             : sale.saleStatus === 'PENDING'
                             ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200'
                             : 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200'
@@ -470,7 +470,7 @@ export function CloserAuditPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                           sale.commissionStatus === 'PAID'
-                            ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200'
+                            ? 'bg-accent100 dark:bg-accent900/20 text-accent800 dark:text-accent200'
                             : sale.commissionStatus === 'APPROVED'
                             ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
                             : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200'

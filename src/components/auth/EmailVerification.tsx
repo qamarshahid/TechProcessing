@@ -99,17 +99,17 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
       className="space-y-6"
     >
       <div className="text-center">
-        <Mail className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Verify Your Email</h2>
-        <p className="text-gray-300">
-          We've sent a verification code to <span className="font-medium text-emerald-400">{email}</span>
+        <Mail className="h-16 w-16 text-accent1 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-fg mb-2">Verify Your Email</h2>
+        <p className="text-muted">
+          We've sent a verification code to <span className="font-medium text-accent2">{email}</span>
         </p>
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-6">
+      <div className="bg-surface rounded-xl p-6">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               Verification Code
             </label>
             <input
@@ -117,7 +117,7 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="000000"
-              className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white text-center text-2xl font-mono tracking-widest"
+              className="w-full px-4 py-3 bg-surface2 border border-slate-600 rounded-lg text-fg text-center text-2xl font-mono tracking-widest"
               maxLength={6}
             />
           </div>
@@ -127,13 +127,13 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
               <button
                 onClick={resendVerification}
                 disabled={loading}
-                className="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors flex items-center justify-center space-x-2 mx-auto"
+                className="text-accent2 hover:text-accent3 text-sm font-medium transition-colors flex items-center justify-center space-x-2 mx-auto"
               >
                 {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
                 <span>Resend Code</span>
               </button>
             ) : (
-              <p className="text-gray-400 text-sm">
+              <p className="text-muted text-sm">
                 Resend code in {timeLeft}s
               </p>
             )}
@@ -158,14 +158,14 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
       <div className="flex space-x-4">
         <button
           onClick={() => setVerificationMethod('link')}
-          className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
+          className="flex-1 px-4 py-3 bg-surface2 hover:bg-slate-600 text-fg rounded-lg font-medium transition-colors"
         >
           Use Link Instead
         </button>
         <button
           onClick={verifyCode}
           disabled={verificationCode.length !== 6 || loading}
-          className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+          className="flex-1 px-4 py-3 bg-accent2 hover:bg-accent1 disabled:bg-slate-600 disabled:cursor-not-allowed text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
         >
           {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
           <span>Verify Email</span>
@@ -181,21 +181,21 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
       className="space-y-6"
     >
       <div className="text-center">
-        <CheckCircle className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Check Your Email</h2>
-        <p className="text-gray-300">
-          We've sent a verification link to <span className="font-medium text-emerald-400">{email}</span>
+        <CheckCircle className="h-16 w-16 text-accent1 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-fg mb-2">Check Your Email</h2>
+        <p className="text-muted">
+          We've sent a verification link to <span className="font-medium text-accent2">{email}</span>
         </p>
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-6">
+      <div className="bg-surface rounded-xl p-6">
         <div className="space-y-4">
           <div className="text-center">
-            <div className="p-4 bg-emerald-500/10 rounded-full inline-block mb-4">
-              <Mail className="h-8 w-8 text-emerald-400" />
+            <div className="p-4 bg-accent2/10 rounded-full inline-block mb-4">
+              <Mail className="h-8 w-8 text-accent2" />
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Email Sent Successfully</h3>
-            <p className="text-gray-300 text-sm">
+            <h3 className="text-lg font-semibold text-fg mb-2">Email Sent Successfully</h3>
+            <p className="text-muted text-sm">
               Click the verification link in your email to complete the verification process.
             </p>
           </div>
@@ -219,7 +219,7 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
             <button
               onClick={resendVerification}
               disabled={loading}
-              className="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors flex items-center justify-center space-x-2 mx-auto"
+              className="text-accent2 hover:text-accent3 text-sm font-medium transition-colors flex items-center justify-center space-x-2 mx-auto"
             >
               {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
               <span>Resend Verification Email</span>
@@ -231,13 +231,13 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
       <div className="flex space-x-4">
         <button
           onClick={() => setVerificationMethod('code')}
-          className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
+          className="flex-1 px-4 py-3 bg-surface2 hover:bg-slate-600 text-fg rounded-lg font-medium transition-colors"
         >
           Use Code Instead
         </button>
         <button
           onClick={() => window.location.reload()}
-          className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+          className="flex-1 px-4 py-3 bg-accent2 hover:bg-accent1 text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
         >
           <ExternalLink className="h-4 w-4" />
           <span>I've Verified</span>
@@ -252,14 +252,14 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-slate-900 rounded-2xl p-6 w-full max-w-md"
+        className="bg-bg2 rounded-2xl p-6 w-full max-w-md"
       >
         {verificationMethod === 'code' ? renderCodeVerification() : renderLinkVerification()}
         
         <div className="mt-6 text-center">
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-300 text-sm transition-colors"
+            className="text-muted hover:text-muted text-sm transition-colors"
           >
             Cancel registration
           </button>

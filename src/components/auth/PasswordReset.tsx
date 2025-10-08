@@ -73,7 +73,7 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
     if (passwordStrength <= 2) return 'bg-red-500';
     if (passwordStrength <= 3) return 'bg-yellow-500';
     if (passwordStrength <= 4) return 'bg-blue-500';
-    return 'bg-green-500';
+    return 'bg-accent500';
   };
 
   const getPasswordStrengthText = () => {
@@ -126,25 +126,25 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
       className="space-y-6"
     >
       <div className="text-center">
-        <CheckCircle className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Enter Reset Code</h2>
-        <p className="text-gray-300">We sent a 6-digit code to {email}</p>
+        <CheckCircle className="h-16 w-16 text-accent1 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-fg mb-2">Enter Reset Code</h2>
+        <p className="text-muted">We sent a 6-digit code to {email}</p>
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-6">
+      <div className="bg-surface rounded-xl p-6">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               Reset Code
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted" />
               <input
                 type="text"
                 value={resetCode}
                 onChange={(e) => setResetCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="Enter 6-digit code"
-                className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-center text-2xl tracking-widest"
+                className="w-full pl-10 pr-4 py-3 bg-surface2 border border-slate-600 rounded-lg text-fg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent text-center text-2xl tracking-widest"
                 maxLength={6}
               />
             </div>
@@ -169,7 +169,7 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
       <div className="flex space-x-4">
         <button
           onClick={() => setStep('request')}
-          className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+          className="flex-1 px-4 py-3 bg-surface2 hover:bg-slate-600 text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back</span>
@@ -177,7 +177,7 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
         <button
           onClick={() => setStep('reset')}
           disabled={!resetCode || resetCode.length !== 6}
-          className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+          className="flex-1 px-4 py-3 bg-accent2 hover:bg-accent1 disabled:bg-slate-600 disabled:cursor-not-allowed text-fg rounded-lg font-medium transition-colors"
         >
           Continue
         </button>
@@ -192,25 +192,25 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
       className="space-y-6"
     >
       <div className="text-center">
-        <Lock className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Reset Your Password</h2>
-        <p className="text-gray-300">Enter your email address and we'll send you a reset link</p>
+        <Lock className="h-16 w-16 text-accent1 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-fg mb-2">Reset Your Password</h2>
+        <p className="text-muted">Enter your email address and we'll send you a reset link</p>
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-6">
+      <div className="bg-surface rounded-xl p-6">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               Email Address
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"
-                className="w-full pl-10 pr-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 bg-surface2 border border-slate-600 rounded-lg text-fg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
           </div>
@@ -234,14 +234,14 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
       <div className="flex space-x-4">
         <button
           onClick={onCancel}
-          className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
+          className="flex-1 px-4 py-3 bg-surface2 hover:bg-slate-600 text-fg rounded-lg font-medium transition-colors"
         >
           Cancel
         </button>
         <button
           onClick={requestPasswordReset}
           disabled={!email || loading}
-          className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+          className="flex-1 px-4 py-3 bg-accent2 hover:bg-accent1 disabled:bg-slate-600 disabled:cursor-not-allowed text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
         >
           {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
           <span>Send Reset Link</span>
@@ -257,30 +257,30 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
       className="space-y-6"
     >
       <div className="text-center">
-        <CheckCircle className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Create New Password</h2>
-        <p className="text-gray-300">Enter your new password below</p>
+        <CheckCircle className="h-16 w-16 text-accent1 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-fg mb-2">Create New Password</h2>
+        <p className="text-muted">Enter your new password below</p>
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-6">
+      <div className="bg-surface rounded-xl p-6">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               New Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password"
-                className="w-full pl-10 pr-12 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full pl-10 pr-12 py-3 bg-surface2 border border-slate-600 rounded-lg text-fg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted hover:text-muted"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -289,16 +289,16 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
             {newPassword && (
               <div className="mt-2">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-gray-400">Password Strength</span>
+                  <span className="text-xs text-muted">Password Strength</span>
                   <span className={`text-xs font-medium ${
                     passwordStrength <= 2 ? 'text-red-400' :
                     passwordStrength <= 3 ? 'text-yellow-400' :
-                    passwordStrength <= 4 ? 'text-blue-400' : 'text-green-400'
+                    passwordStrength <= 4 ? 'text-blue-400' : 'text-accent400'
                   }`}>
                     {getPasswordStrengthText()}
                   </span>
                 </div>
-                <div className="w-full bg-slate-700 rounded-full h-2">
+                <div className="w-full bg-surface2 rounded-full h-2">
                   <div 
                     className={`h-2 rounded-full transition-all duration-300 ${getPasswordStrengthColor()}`}
                     style={{ width: `${(passwordStrength / 5) * 100}%` }}
@@ -309,22 +309,22 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               Confirm Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted" />
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="w-full pl-10 pr-12 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full pl-10 pr-12 py-3 bg-surface2 border border-slate-600 rounded-lg text-fg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted hover:text-muted"
               >
                 {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -338,23 +338,23 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
             <div className="text-sm text-blue-300">
               <p className="font-medium mb-2">Password Requirements:</p>
               <ul className="space-y-1 text-xs">
-                <li className={`flex items-center space-x-2 ${passwordRequirements.length ? 'text-green-400' : 'text-gray-400'}`}>
+                <li className={`flex items-center space-x-2 ${passwordRequirements.length ? 'text-accent400' : 'text-muted'}`}>
                   <CheckCircle className="h-3 w-3" />
                   <span>At least 8 characters long</span>
                 </li>
-                <li className={`flex items-center space-x-2 ${passwordRequirements.uppercase ? 'text-green-400' : 'text-gray-400'}`}>
+                <li className={`flex items-center space-x-2 ${passwordRequirements.uppercase ? 'text-accent400' : 'text-muted'}`}>
                   <CheckCircle className="h-3 w-3" />
                   <span>Contains uppercase letter</span>
                 </li>
-                <li className={`flex items-center space-x-2 ${passwordRequirements.lowercase ? 'text-green-400' : 'text-gray-400'}`}>
+                <li className={`flex items-center space-x-2 ${passwordRequirements.lowercase ? 'text-accent400' : 'text-muted'}`}>
                   <CheckCircle className="h-3 w-3" />
                   <span>Contains lowercase letter</span>
                 </li>
-                <li className={`flex items-center space-x-2 ${passwordRequirements.number ? 'text-green-400' : 'text-gray-400'}`}>
+                <li className={`flex items-center space-x-2 ${passwordRequirements.number ? 'text-accent400' : 'text-muted'}`}>
                   <CheckCircle className="h-3 w-3" />
                   <span>Contains number</span>
                 </li>
-                <li className={`flex items-center space-x-2 ${passwordRequirements.special ? 'text-green-400' : 'text-gray-400'}`}>
+                <li className={`flex items-center space-x-2 ${passwordRequirements.special ? 'text-accent400' : 'text-muted'}`}>
                   <CheckCircle className="h-3 w-3" />
                   <span>Contains special character</span>
                 </li>
@@ -367,7 +367,7 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
       <div className="flex space-x-4">
         <button
           onClick={() => setStep('code')}
-          className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+          className="flex-1 px-4 py-3 bg-surface2 hover:bg-slate-600 text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back</span>
@@ -375,7 +375,7 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
         <button
           onClick={resetPassword}
           disabled={!newPassword || !confirmPassword || newPassword !== confirmPassword || passwordStrength < 3 || loading}
-          className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+          className="flex-1 px-4 py-3 bg-accent2 hover:bg-accent1 disabled:bg-slate-600 disabled:cursor-not-allowed text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
         >
           {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
           <span>Reset Password</span>
@@ -390,7 +390,7 @@ export const PasswordReset: React.FC<PasswordResetProps> = ({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-slate-900 rounded-2xl p-6 w-full max-w-md"
+        className="bg-bg2 rounded-2xl p-6 w-full max-w-md"
       >
         {step === 'request' ? renderRequestStep() : step === 'code' ? renderCodeStep() : renderResetStep()}
       </motion.div>

@@ -208,20 +208,20 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-surface rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-600">
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-3">
-              <CreditCard className="h-5 w-5 text-green-600 dark:text-green-400" />
+            <div className="w-10 h-10 bg-accent100 dark:bg-accent900/30 rounded-lg flex items-center justify-center mr-3">
+              <CreditCard className="h-5 w-5 text-accent600 dark:text-accent400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Agent Card Charge</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Step {step} of 3</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-fg">Agent Card Charge</h2>
+              <p className="text-sm text-gray-600 dark:text-muted">Step {step} of 3</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="text-muted hover:text-gray-600 dark:hover:text-muted transition-colors"
           >
             <X className="h-6 w-6" />
           </button>
@@ -235,8 +235,8 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
           )}
 
           {success && (
-            <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-              <p className="text-sm text-green-600 dark:text-green-400">{success}</p>
+            <div className="p-3 bg-accent50 dark:bg-accent900/20 border border-accent200 dark:border-accent800 rounded-lg">
+              <p className="text-sm text-accent600 dark:text-accent400">{success}</p>
             </div>
           )}
 
@@ -259,47 +259,47 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                     Client Name *
                   </label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted dark:text-gray-500" />
                     <input
                       type="text"
                       name="clientName"
                       value={formData.clientName}
                       onChange={handleChange}
                       required
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400"
                       placeholder="Enter client name"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                     Client Email *
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted dark:text-gray-500" />
                     <input
                       type="email"
                       name="clientEmail"
                       value={formData.clientEmail}
                       onChange={handleChange}
                       required
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400"
                       placeholder="Enter client email"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                     Amount *
                   </label>
                   <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted dark:text-gray-500" />
                     <input
                       type="number"
                       name="amount"
@@ -308,14 +308,14 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                       required
                       min="0"
                       step="0.01"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400"
                       placeholder="0.00"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                     Description
                   </label>
                   <input
@@ -323,7 +323,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-surface2 text-gray-900 dark:text-fg rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="Payment description"
                   />
                 </div>
@@ -349,7 +349,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   Cardholder Name *
                 </label>
                 <input
@@ -358,17 +358,17 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                   value={formData.cardholderName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-surface2 text-gray-900 dark:text-fg rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
                   placeholder="Name on card"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                   Card Number *
                 </label>
                 <div className="relative">
-                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted dark:text-gray-500" />
                   <input
                     type="text"
                     name="cardNumber"
@@ -376,7 +376,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                     onChange={handleCardNumberChange}
                     required
                     maxLength={19}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-surface2 text-gray-900 dark:text-fg rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="1234 5678 9012 3456"
                   />
                 </div>
@@ -384,11 +384,11 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                     Expiry Date *
                   </label>
                   <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted dark:text-gray-500" />
                     <input
                       type="text"
                       name="expiryDate"
@@ -396,18 +396,18 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                       onChange={handleExpiryChange}
                       required
                       maxLength={5}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-surface2 text-gray-900 dark:text-fg rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
                       placeholder="MM/YY"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                     CVV *
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted dark:text-gray-500" />
                     <input
                       type="text"
                       name="cvv"
@@ -415,7 +415,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                       onChange={handleChange}
                       required
                       maxLength={4}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-slate-600 bg-white dark:bg-surface2 text-gray-900 dark:text-fg rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-colors placeholder-gray-500 dark:placeholder-gray-400"
                       placeholder="123"
                     />
                   </div>
@@ -424,14 +424,14 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
 
               {/* Billing Address */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Billing Address</h4>
+                <h4 className="text-sm font-medium text-gray-700 dark:text-muted mb-3">Billing Address</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
                     type="text"
                     name="billingAddress.firstName"
                     value={formData.billingAddress.firstName}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="First Name"
                   />
                   <input
@@ -439,7 +439,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                     name="billingAddress.lastName"
                     value={formData.billingAddress.lastName}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="Last Name"
                   />
                   <input
@@ -447,7 +447,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                     name="billingAddress.address"
                     value={formData.billingAddress.address}
                     onChange={handleChange}
-                    className="md:col-span-2 w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="md:col-span-2 w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="Street Address"
                   />
                   <input
@@ -455,7 +455,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                     name="billingAddress.city"
                     value={formData.billingAddress.city}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="City"
                   />
                   <input
@@ -463,7 +463,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                     name="billingAddress.state"
                     value={formData.billingAddress.state}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="State"
                   />
                   <input
@@ -471,14 +471,14 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                     name="billingAddress.zipCode"
                     value={formData.billingAddress.zipCode}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400"
                     placeholder="ZIP Code"
                   />
                   <select
                     name="billingAddress.country"
                     value={formData.billingAddress.country}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-surface2 text-gray-900 dark:text-fg"
                   >
                     <option value="US">United States</option>
                     <option value="CA">Canada</option>
@@ -496,7 +496,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                     onChange={handleChange}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Send receipt via email</span>
+                  <span className="ml-2 text-sm text-gray-700 dark:text-muted">Send receipt via email</span>
                 </label>
               </div>
             </div>
@@ -505,14 +505,14 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
           {/* Step 3: Confirmation */}
           {step === 3 && (
             <div className="space-y-6">
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+              <div className="bg-accent50 dark:bg-accent900/20 border border-accent200 dark:border-accent800 rounded-lg p-4">
                 <div className="flex items-center">
-                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mr-2" />
+                  <CheckCircle className="h-5 w-5 text-accent600 dark:text-accent400 mr-2" />
                   <div>
-                    <h3 className="text-sm font-medium text-green-800 dark:text-green-300">
+                    <h3 className="text-sm font-medium text-accent800 dark:text-accent300">
                       Ready to Process Payment
                     </h3>
-                    <p className="text-sm text-green-700 dark:text-green-400 mt-1">
+                    <p className="text-sm text-accent700 dark:text-accent400 mt-1">
                       Please review the details below before processing the payment
                     </p>
                   </div>
@@ -520,33 +520,33 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
               </div>
 
               {/* Payment Summary */}
-              <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Payment Summary</h4>
+              <div className="bg-gray-50 dark:bg-surface2 rounded-lg p-4">
+                <h4 className="text-sm font-medium text-gray-900 dark:text-fg mb-3">Payment Summary</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Client:</span>
-                    <span className="text-gray-900 dark:text-white">{formData.clientName}</span>
+                    <span className="text-gray-600 dark:text-muted">Client:</span>
+                    <span className="text-gray-900 dark:text-fg">{formData.clientName}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Email:</span>
-                    <span className="text-gray-900 dark:text-white">{formData.clientEmail}</span>
+                    <span className="text-gray-600 dark:text-muted">Email:</span>
+                    <span className="text-gray-900 dark:text-fg">{formData.clientEmail}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Amount:</span>
-                    <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                    <span className="text-gray-600 dark:text-muted">Amount:</span>
+                    <span className="text-xl font-bold text-accent600 dark:text-accent400">
                       ${parseFloat(formData.amount).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Card:</span>
-                    <span className="text-gray-900 dark:text-white">
+                    <span className="text-gray-600 dark:text-muted">Card:</span>
+                    <span className="text-gray-900 dark:text-fg">
                       **** **** **** {formData.cardNumber.slice(-4)}
                     </span>
                   </div>
                   {formData.description && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">Description:</span>
-                      <span className="text-gray-900 dark:text-white">{formData.description}</span>
+                      <span className="text-gray-600 dark:text-muted">Description:</span>
+                      <span className="text-gray-900 dark:text-fg">{formData.description}</span>
                     </div>
                   )}
                 </div>
@@ -577,7 +577,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                 <button
                   type="button"
                   onClick={prevStep}
-                  className="px-4 py-3 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors font-medium"
+                  className="px-4 py-3 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-muted bg-white dark:bg-surface2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors font-medium"
                 >
                   Previous
                 </button>
@@ -588,7 +588,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-3 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors font-medium"
+                className="px-4 py-3 border border-gray-200 dark:border-slate-600 text-gray-700 dark:text-muted bg-white dark:bg-surface2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -597,7 +597,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                 <button
                   type="button"
                   onClick={nextStep}
-                  className="px-4 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium"
+                  className="px-4 py-3 bg-blue-600 dark:bg-blue-500 text-fg rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-medium"
                 >
                   Next
                 </button>
@@ -605,7 +605,7 @@ export function AgentChargeCardModal({ isOpen, onClose, onPaymentProcessed }: Ag
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-3 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="px-4 py-3 bg-accent600 dark:bg-accent500 text-fg rounded-lg hover:bg-accent700 dark:hover:bg-accent600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

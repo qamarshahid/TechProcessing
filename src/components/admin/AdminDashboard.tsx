@@ -110,7 +110,7 @@ export function AdminDashboard() {
     switch (status?.toLowerCase()) {
       case 'paid':
       case 'completed':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-accent2 dark:border-emerald-800';
       case 'unpaid':
       case 'pending':
         return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
@@ -118,7 +118,7 @@ export function AdminDashboard() {
       case 'failed':
         return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
       default:
-        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-bg2/20 dark:text-slate-400 dark:border-outline';
     }
   };
 
@@ -157,21 +157,21 @@ export function AdminDashboard() {
           <div className="animate-pulse space-y-8">
             {/* Header skeleton */}
             <div className="text-center">
-              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded-lg w-1/3 mx-auto mb-4"></div>
-              <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mx-auto"></div>
+              <div className="h-12 bg-slate-200 dark:bg-surface2 rounded-lg w-1/3 mx-auto mb-4"></div>
+              <div className="h-6 bg-slate-200 dark:bg-surface2 rounded w-1/2 mx-auto"></div>
             </div>
             
             {/* Stats grid skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+                <div key={i} className="h-32 bg-slate-200 dark:bg-surface2 rounded-xl"></div>
               ))}
             </div>
             
             {/* Content grid skeleton */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {[...Array(2)].map((_, i) => (
-                <div key={i} className="h-96 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+                <div key={i} className="h-96 bg-slate-200 dark:bg-surface2 rounded-xl"></div>
               ))}
             </div>
           </div>
@@ -187,7 +187,7 @@ export function AdminDashboard() {
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-white mb-1">
+              <h1 className="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-fg mb-1">
                 Welcome back, {user?.fullName || 'Admin'}
               </h1>
               <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -195,7 +195,7 @@ export function AdminDashboard() {
               </p>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-accent500 rounded-full"></div>
               <span className="text-xs text-slate-500 dark:text-slate-400">System Online</span>
             </div>
           </div>
@@ -205,21 +205,21 @@ export function AdminDashboard() {
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6 sm:mb-8">
           <button
             onClick={() => setShowAddClientModal(true)}
-            className="inline-flex items-center justify-center px-4 py-3 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 touch-manipulation"
+            className="inline-flex items-center justify-center px-4 py-3 sm:py-2 bg-blue-600 hover:bg-blue-700 text-fg text-sm font-medium rounded-lg transition-colors duration-200 touch-manipulation"
           >
             <UserPlus className="h-4 w-4 mr-2" />
             Add Client
           </button>
           <button
             onClick={() => setShowAddInvoiceModal(true)}
-            className="inline-flex items-center justify-center px-4 py-3 sm:py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 touch-manipulation"
+            className="inline-flex items-center justify-center px-4 py-3 sm:py-2 bg-accent1 hover:bg-accent1 text-fg text-sm font-medium rounded-lg transition-colors duration-200 touch-manipulation"
           >
             <FileText className="h-4 w-4 mr-2" />
             Create Invoice
           </button>
           <button
             onClick={fetchDashboardData}
-            className="inline-flex items-center justify-center px-4 py-3 sm:py-2 bg-slate-600 hover:bg-slate-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 touch-manipulation"
+            className="inline-flex items-center justify-center px-4 py-3 sm:py-2 bg-slate-600 hover:bg-surface2 text-fg text-sm font-medium rounded-lg transition-colors duration-200 touch-manipulation"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
@@ -229,54 +229,54 @@ export function AdminDashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Total Users */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-slate-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center mb-1">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
                   <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Total Users</p>
                 </div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.totalUsers}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-fg">{dashboardData.stats.totalUsers}</p>
               </div>
               <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
                 <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
             <div className="mt-3 flex items-center text-xs text-slate-500 dark:text-slate-400">
-              <TrendingUp className="h-3 w-3 mr-1 text-emerald-500" />
+              <TrendingUp className="h-3 w-3 mr-1 text-accent1" />
               <span>Active platform users</span>
             </div>
           </div>
 
           {/* Total Revenue */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-slate-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center mb-1">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                  <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Total Revenue</p>
+                  <div className="w-2 h-2 bg-accent2 rounded-full mr-2"></div>
+                  <p className="text-sm font-semibold text-accent1 dark:text-accent2 uppercase tracking-wide">Total Revenue</p>
                 </div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">${dashboardData.stats.totalRevenue.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-fg">${dashboardData.stats.totalRevenue.toLocaleString()}</p>
               </div>
               <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
-                <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                <DollarSign className="h-5 w-5 text-accent1 dark:text-accent2" />
               </div>
             </div>
             <div className="mt-3 flex items-center text-xs text-slate-500 dark:text-slate-400">
-              <BarChart3 className="h-3 w-3 mr-1 text-emerald-500" />
+              <BarChart3 className="h-3 w-3 mr-1 text-accent1" />
               <span>Lifetime earnings</span>
             </div>
           </div>
 
           {/* Total Invoices */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-slate-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center mb-1">
                   <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
                   <p className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Total Invoices</p>
                 </div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.totalInvoices}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-fg">{dashboardData.stats.totalInvoices}</p>
               </div>
               <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
                 <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />
@@ -289,14 +289,14 @@ export function AdminDashboard() {
           </div>
 
           {/* Active Agents */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-slate-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center mb-1">
                   <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
                   <p className="text-sm font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wide">Active Agents</p>
                 </div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{dashboardData.stats.activeAgents}</p>
+                <p className="text-2xl font-bold text-slate-900 dark:text-fg">{dashboardData.stats.activeAgents}</p>
               </div>
               <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
                 <Briefcase className="h-5 w-5 text-orange-600 dark:text-orange-400" />
@@ -311,7 +311,7 @@ export function AdminDashboard() {
 
         {/* Detailed Stats Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-slate-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
@@ -322,7 +322,7 @@ export function AdminDashboard() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-slate-600 dark:text-slate-400">Total Users</span>
-                <span className="font-semibold text-slate-900 dark:text-white">{dashboardData.stats.totalUsers}</span>
+                <span className="font-semibold text-slate-900 dark:text-fg">{dashboardData.stats.totalUsers}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-600 dark:text-slate-400">Clients</span>
@@ -330,23 +330,23 @@ export function AdminDashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-600 dark:text-slate-400">Agents</span>
-                <span className="font-semibold text-emerald-600 dark:text-emerald-400">{dashboardData.stats.totalAgents}</span>
+                <span className="font-semibold text-accent1 dark:text-accent2">{dashboardData.stats.totalAgents}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-slate-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                <h3 className="text-base font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Financial Overview</h3>
+                <div className="w-2 h-2 bg-accent2 rounded-full mr-2"></div>
+                <h3 className="text-base font-semibold text-accent1 dark:text-accent2 uppercase tracking-wide">Financial Overview</h3>
               </div>
-              <DollarSign className="h-4 w-4 text-emerald-400" />
+              <DollarSign className="h-4 w-4 text-accent2" />
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-slate-600 dark:text-slate-400">Total Revenue</span>
-                <span className="font-semibold text-emerald-600 dark:text-emerald-400">${dashboardData.stats.totalRevenue.toLocaleString()}</span>
+                <span className="font-semibold text-accent1 dark:text-accent2">${dashboardData.stats.totalRevenue.toLocaleString()}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-600 dark:text-slate-400">Pending Payments</span>
@@ -359,7 +359,7 @@ export function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+          <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-slate-200 dark:border-outline p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
                 <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
@@ -390,10 +390,10 @@ export function AdminDashboard() {
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Invoices */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800">
+          <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-outline bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Recent Invoices</h3>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-fg">Recent Invoices</h3>
                 <Link to="/admin/invoices" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
                   View All <ArrowRight className="h-4 w-4 inline ml-1" />
                 </Link>
@@ -403,13 +403,13 @@ export function AdminDashboard() {
               {dashboardData.invoices.length > 0 ? (
                 <div className="space-y-3">
                   {dashboardData.invoices.slice(0, 5).map((invoice: any) => (
-                    <div key={invoice.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                    <div key={invoice.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-surface2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mr-3">
                           <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-slate-900 dark:text-white">
+                          <div className="text-sm font-medium text-slate-900 dark:text-fg">
                             {invoice.invoice_number || invoice.id}
                           </div>
                           <div className="text-xs text-slate-500 dark:text-slate-400">
@@ -431,7 +431,7 @@ export function AdminDashboard() {
               ) : (
                 <div className="text-center py-8">
                   <FileText className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" />
-                  <h3 className="mt-2 text-sm font-medium text-slate-900 dark:text-white">No invoices yet</h3>
+                  <h3 className="mt-2 text-sm font-medium text-slate-900 dark:text-fg">No invoices yet</h3>
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Create your first invoice to get started.</p>
                 </div>
               )}
@@ -439,10 +439,10 @@ export function AdminDashboard() {
           </div>
 
           {/* Recent Clients */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800">
+          <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-outline bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Recent Clients</h3>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-fg">Recent Clients</h3>
                 <Link to="/admin/users" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
                   View All <ArrowRight className="h-4 w-4 inline ml-1" />
                 </Link>
@@ -455,13 +455,13 @@ export function AdminDashboard() {
                     .filter(u => u.role === 'CLIENT')
                     .slice(0, 5)
                     .map((client: any) => (
-                      <div key={client.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
+                      <div key={client.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-surface2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">
                         <div className="flex items-center">
                           <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center mr-3">
-                            <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                            <Users className="w-5 h-5 text-accent1 dark:text-accent2" />
                           </div>
                           <div>
-                            <div className="text-sm font-medium text-slate-900 dark:text-white">
+                            <div className="text-sm font-medium text-slate-900 dark:text-fg">
                               {client.fullName || client.full_name}
                             </div>
                             <div className="text-xs text-slate-500 dark:text-slate-400">
@@ -472,7 +472,7 @@ export function AdminDashboard() {
                         <div className="flex items-center">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
                             client.isActive || client.is_active
-                              ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800'
+                              ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-accent2 dark:border-emerald-800'
                               : 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
                           }`}>
                             {(client.isActive || client.is_active) ? 'Active' : 'Inactive'}
@@ -484,7 +484,7 @@ export function AdminDashboard() {
               ) : (
                 <div className="text-center py-8">
                   <Users className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-500" />
-                  <h3 className="mt-2 text-sm font-medium text-slate-900 dark:text-white">No clients yet</h3>
+                  <h3 className="mt-2 text-sm font-medium text-slate-900 dark:text-fg">No clients yet</h3>
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Add your first client to get started.</p>
                 </div>
               )}
@@ -493,7 +493,7 @@ export function AdminDashboard() {
         </div>
 
         {/* Quick Stats Footer */}
-        <div className="mt-12 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <div className="mt-12 bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
@@ -502,7 +502,7 @@ export function AdminDashboard() {
               <div className="text-sm text-slate-600 dark:text-slate-400">Active Clients</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="text-3xl font-bold text-accent1 dark:text-accent2">
                 ${dashboardData.stats.totalRevenue.toLocaleString()}
               </div>
               <div className="text-sm text-slate-600 dark:text-slate-400">Total Revenue</div>

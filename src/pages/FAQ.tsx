@@ -183,20 +183,20 @@ const FAQ: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-bg1 text-fg">
       {/* Navigation Header */}
-      <nav className="bg-slate-900/95 backdrop-blur-xl shadow-sm border-b border-slate-800/50 sticky top-0 z-50">
+      <nav className="bg-bg2/95 backdrop-blur-xl shadow-sm border-b border-outline/50 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 transition-colors touch-manipulation">
+            <Link to="/" className="flex items-center space-x-2 text-accent2 hover:text-accent3 transition-colors touch-manipulation">
               <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="font-semibold text-sm sm:text-base">Back to Home</span>
             </Link>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-gray-300 hover:text-emerald-400 transition-colors p-2 touch-manipulation">
+              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-muted hover:text-accent2 transition-colors p-2 touch-manipulation">
                 <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
               </a>
-              <a href="#contact" className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base touch-manipulation">
+              <a href="#contact" className="bg-accent1 hover:bg-accent1 text-fg px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base touch-manipulation">
                 <span className="hidden sm:inline">Get Started</span>
                 <span className="sm:hidden">Start</span>
               </a>
@@ -215,24 +215,24 @@ const FAQ: React.FC = () => {
             transition={{ duration: 0.8 }}
           >
             <div className="mb-6">
-              <span className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
+              <span className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-accent3 rounded-full text-sm font-semibold">
                 <HelpCircle className="h-4 w-4 mr-2" />
                 Support Center
               </span>
             </div>
             
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-fg mb-6">
               Frequently Asked Questions
             </h1>
             
-            <p className="text-lg sm:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-muted mb-8 max-w-3xl mx-auto leading-relaxed">
               Get answers to common questions about our services, process, and support. Can't find what you're looking for? Contact us directly.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12">
               <a
                 href="#contact"
-                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
+                className="bg-gradient-to-r from-accent1 to-accent600 hover:from-emerald-600 hover:to-accent700 text-fg px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
               >
                 <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
                 Contact Support
@@ -240,7 +240,7 @@ const FAQ: React.FC = () => {
               
               <a
                 href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="border-2 border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center"
+                className="border-2 border-accent1 text-accent2 hover:bg-accent1 hover:text-fg px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center"
               >
                 <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 {appConfig.contact.phone}
@@ -251,7 +251,7 @@ const FAQ: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 sm:py-20 bg-slate-900">
+      <section className="py-16 sm:py-20 bg-bg2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center mb-12"
@@ -260,8 +260,8 @@ const FAQ: React.FC = () => {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">Why Choose TechProcessing?</h2>
-            <p className="text-gray-300 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-fg mb-4">Why Choose TechProcessing?</h2>
+            <p className="text-muted max-w-2xl mx-auto">
               We're committed to providing exceptional service and support to all our clients
             </p>
           </motion.div>
@@ -276,11 +276,11 @@ const FAQ: React.FC = () => {
                 transition={{ duration: 0.8, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <feature.icon className="h-8 w-8 text-white" />
+                <div className="w-16 h-16 bg-gradient-to-br from-accent1 to-accent600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <feature.icon className="h-8 w-8 text-fg" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-300 text-sm">{feature.description}</p>
+                <h3 className="text-lg font-semibold text-fg mb-2">{feature.title}</h3>
+                <p className="text-muted text-sm">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -297,10 +297,10 @@ const FAQ: React.FC = () => {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-fg mb-6">
               Common Questions
             </h2>
-            <p className="text-lg sm:text-xl text-gray-300">
+            <p className="text-lg sm:text-xl text-muted">
               Find answers to the most frequently asked questions about our services
             </p>
           </motion.div>
@@ -309,17 +309,17 @@ const FAQ: React.FC = () => {
             {faqs.map((faq, index) => (
               <motion.div
                 key={index}
-                className="bg-slate-800 rounded-xl p-6 sm:p-8 border border-slate-700 hover:border-emerald-500/50 transition-colors"
+                className="bg-surface rounded-xl p-6 sm:p-8 border border-outline hover:border-emerald-500/50 transition-colors"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-4 flex items-start">
-                  <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400 mr-3 mt-0.5 flex-shrink-0" />
+                <h3 className="text-lg sm:text-xl font-bold text-fg mb-4 flex items-start">
+                  <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-accent2 mr-3 mt-0.5 flex-shrink-0" />
                   {faq.question}
                 </h3>
-                <p className="text-gray-300 leading-relaxed ml-8">{faq.answer}</p>
+                <p className="text-muted leading-relaxed ml-8">{faq.answer}</p>
               </motion.div>
             ))}
           </div>
@@ -327,7 +327,7 @@ const FAQ: React.FC = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 sm:py-20 bg-gradient-to-br from-emerald-900/20 to-teal-900/20">
+      <section id="contact" className="py-16 sm:py-20 bg-gradient-to-br from-emerald-900/20 to-accent900/20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center"
@@ -336,17 +336,17 @@ const FAQ: React.FC = () => {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-fg mb-6">
               Still Have Questions?
             </h2>
-            <p className="text-lg sm:text-xl text-gray-300 mb-8">
+            <p className="text-lg sm:text-xl text-muted mb-8">
               Our team is here to help. Get in touch with us for personalized assistance.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
+                className="bg-gradient-to-r from-accent1 to-accent600 hover:from-emerald-600 hover:to-accent700 text-fg px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
               >
                 <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
                 Call Us Now
@@ -354,7 +354,7 @@ const FAQ: React.FC = () => {
               
               <a
                 href={`mailto:${appConfig.contact.email}`}
-                className="border-2 border-emerald-600 text-emerald-400 hover:bg-emerald-600 hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center"
+                className="border-2 border-accent1 text-accent2 hover:bg-accent1 hover:text-fg px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center"
               >
                 <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Email Us
@@ -363,31 +363,31 @@ const FAQ: React.FC = () => {
 
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
               <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Phone className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Phone className="h-6 w-6 text-fg" />
                 </div>
-                <div className="font-semibold text-white mb-2">Call Us</div>
-                <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-emerald-400 hover:underline">
+                <div className="font-semibold text-fg mb-2">Call Us</div>
+                <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-accent2 hover:underline">
                   {appConfig.contact.phone}
                 </a>
               </div>
 
               <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Mail className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Mail className="h-6 w-6 text-fg" />
                 </div>
-                <div className="font-semibold text-white mb-2">Email Us</div>
-                <a href={`mailto:${appConfig.contact.email}`} className="text-emerald-400 hover:underline">
+                <div className="font-semibold text-fg mb-2">Email Us</div>
+                <a href={`mailto:${appConfig.contact.email}`} className="text-accent2 hover:underline">
                   {appConfig.contact.email}
                 </a>
               </div>
 
               <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="h-6 w-6 text-fg" />
                 </div>
-                <div className="font-semibold text-white mb-2">Visit Us</div>
-                <div className="text-gray-300 text-sm">
+                <div className="font-semibold text-fg mb-2">Visit Us</div>
+                <div className="text-muted text-sm">
                   {appConfig.contact.address}
                 </div>
               </div>

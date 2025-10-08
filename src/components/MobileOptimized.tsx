@@ -97,7 +97,7 @@ export function MobileOptimized({ children }: MobileOptimizedProps) {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             onClick={scrollToTop}
-            className="fixed bottom-20 right-4 z-50 w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full shadow-lg flex items-center justify-center touch-manipulation"
+            className="fixed bottom-20 right-4 z-50 w-12 h-12 bg-gradient-to-r from-accent1 to-accent600 text-fg rounded-full shadow-lg flex items-center justify-center touch-manipulation"
             aria-label="Scroll to top"
           >
             <ChevronUp className="h-6 w-6" />
@@ -131,27 +131,27 @@ function MobileEnhancements() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-4 left-4 right-4 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-gray-200 dark:border-slate-700 p-4"
+            className="fixed bottom-4 left-4 right-4 z-50 bg-white dark:bg-surface rounded-lg shadow-xl border border-gray-200 dark:border-outline p-4"
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
-                <Hand className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mr-2" />
-                <h3 className="font-semibold text-gray-900 dark:text-white">Mobile Tips</h3>
+                <Hand className="h-5 w-5 text-accent1 dark:text-accent2 mr-2" />
+                <h3 className="font-semibold text-gray-900 dark:text-fg">Mobile Tips</h3>
               </div>
               <button
                 onClick={() => setShowTouchHints(false)}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="text-muted hover:text-gray-600 dark:hover:text-muted"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+            <div className="space-y-2 text-sm text-gray-600 dark:text-muted">
               <div className="flex items-center">
-                <ArrowUp className="h-4 w-4 mr-2 text-emerald-500" />
+                <ArrowUp className="h-4 w-4 mr-2 text-accent1" />
                 <span>Swipe up to scroll faster</span>
               </div>
               <div className="flex items-center">
-                <MousePointer className="h-4 w-4 mr-2 text-emerald-500" />
+                <MousePointer className="h-4 w-4 mr-2 text-accent1" />
                 <span>Tap buttons for quick actions</span>
               </div>
             </div>
@@ -163,7 +163,7 @@ function MobileEnhancements() {
       <div className="fixed bottom-4 left-4 z-40 flex flex-col space-y-2">
         <motion.a
           href={`tel:${import.meta.env.VITE_CONTACT_PHONE?.replace(/\D/g, '') || '+18133241862'}`}
-          className="w-12 h-12 bg-green-600 text-white rounded-full shadow-lg flex items-center justify-center touch-manipulation"
+          className="w-12 h-12 bg-accent600 text-fg rounded-full shadow-lg flex items-center justify-center touch-manipulation"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           aria-label="Call us"
@@ -173,7 +173,7 @@ function MobileEnhancements() {
         
         <motion.a
           href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'support@techprocessingllc.com'}`}
-          className="w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center touch-manipulation"
+          className="w-12 h-12 bg-blue-600 text-fg rounded-full shadow-lg flex items-center justify-center touch-manipulation"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           aria-label="Email us"

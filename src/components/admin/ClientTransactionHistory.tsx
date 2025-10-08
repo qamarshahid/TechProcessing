@@ -134,7 +134,7 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
     switch (status) {
       case 'paid':
       case 'completed':
-        return <ArrowUpCircle className="h-5 w-5 text-green-500" />;
+        return <ArrowUpCircle className="h-5 w-5 text-accent500" />;
       case 'pending':
         return <Clock className="h-5 w-5 text-yellow-500" />;
       case 'failed':
@@ -148,13 +148,13 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
     switch (status) {
       case 'paid':
       case 'completed':
-        return 'bg-gradient-to-r from-emerald-100 dark:from-emerald-900/30 to-green-100 dark:to-green-900/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700';
+        return 'bg-gradient-to-r from-emerald-100 dark:from-emerald-900/30 to-accent100 dark:to-accent900/30 text-emerald-800 dark:text-accent3 border border-emerald-200 dark:border-emerald-700';
       case 'pending':
         return 'bg-gradient-to-r from-amber-100 dark:from-amber-900/30 to-yellow-100 dark:to-yellow-900/30 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700';
       case 'failed':
         return 'bg-gradient-to-r from-red-100 dark:from-red-900/30 to-rose-100 dark:to-rose-900/30 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-700';
       default:
-        return 'bg-gradient-to-r from-gray-100 dark:from-slate-700 to-slate-100 dark:to-slate-600 text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-slate-600';
+        return 'bg-gradient-to-r from-gray-100 dark:from-slate-700 to-slate-100 dark:to-slate-600 text-gray-800 dark:text-muted border border-gray-200 dark:border-slate-600';
     }
   };
 
@@ -162,26 +162,26 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-gray-200 dark:border-slate-600">
+      <div className="bg-white dark:bg-surface rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-gray-200 dark:border-slate-600">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-600">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mr-4 shadow-xl relative">
-              <Activity className="h-5 w-5 text-white" />
+              <Activity className="h-5 w-5 text-fg" />
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-white animate-pulse"></div>
             </div>
             <div>
               <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 dark:from-white to-gray-700 dark:to-gray-300 bg-clip-text text-transparent">Transaction History</h2>
               <div className="flex items-center space-x-2">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{clientName}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-muted">{clientName}</p>
                 <Sparkles className="h-4 w-4 text-purple-500" />
               </div>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-10 h-10 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
+            className="w-10 h-10 bg-gray-100 dark:bg-surface2 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-105"
           >
-            <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            <X className="h-5 w-5 text-gray-600 dark:text-muted" />
           </button>
         </div>
 
@@ -191,7 +191,7 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
             <div className="bg-gradient-to-br from-blue-50 dark:from-blue-900/20 to-indigo-50 dark:to-indigo-900/20 rounded-xl p-5 border border-blue-100 dark:border-blue-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Receipt className="h-6 w-6 text-white" />
+                  <Receipt className="h-6 w-6 text-fg" />
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Total Invoices</p>
@@ -200,13 +200,13 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-emerald-50 dark:from-emerald-900/20 to-green-50 dark:to-green-900/20 rounded-xl p-5 border border-emerald-100 dark:border-emerald-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <div className="bg-gradient-to-br from-emerald-50 dark:from-emerald-900/20 to-accent50 dark:to-accent900/20 rounded-xl p-5 border border-emerald-100 dark:border-emerald-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <TrendingUp className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center shadow-lg">
+                  <TrendingUp className="h-6 w-6 text-fg" />
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Total Paid</p>
+                  <p className="text-sm font-semibold text-emerald-700 dark:text-accent3">Total Paid</p>
                   <p className="text-2xl font-black text-emerald-900 dark:text-emerald-100">${stats.totalPaid.toLocaleString()}</p>
                 </div>
               </div>
@@ -215,7 +215,7 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
             <div className="bg-gradient-to-br from-amber-50 dark:from-amber-900/20 to-orange-50 dark:to-orange-900/20 rounded-xl p-5 border border-amber-100 dark:border-amber-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Banknote className="h-6 w-6 text-white" />
+                  <Banknote className="h-6 w-6 text-fg" />
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">Outstanding</p>
@@ -227,7 +227,7 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
             <div className="bg-gradient-to-br from-violet-50 dark:from-violet-900/20 to-purple-50 dark:to-purple-900/20 rounded-xl p-5 border border-violet-100 dark:border-violet-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Calendar className="h-6 w-6 text-white" />
+                  <Calendar className="h-6 w-6 text-fg" />
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-semibold text-violet-700 dark:text-violet-300">Last Payment</p>
@@ -240,13 +240,13 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
           </div>
 
           {/* Transaction List */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-600 overflow-hidden shadow-lg">
+          <div className="bg-white dark:bg-surface rounded-2xl border border-gray-200 dark:border-slate-600 overflow-hidden shadow-lg">
             <div className="px-6 py-5 border-b border-gray-200 dark:border-slate-600 bg-gradient-to-r from-gray-50 dark:from-slate-700 to-gray-100 dark:to-slate-700">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg flex items-center justify-center">
-                  <Activity className="h-4 w-4 text-white" />
+                  <Activity className="h-4 w-4 text-fg" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Transaction History</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-fg">Transaction History</h3>
               </div>
             </div>
             
@@ -260,10 +260,10 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
             ) : transactions.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-32 bg-gradient-to-br from-gray-50 dark:from-slate-800 to-slate-50 dark:to-slate-700">
                 <div className="w-16 h-16 bg-gradient-to-br from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-                  <Receipt className="h-8 w-8 text-white" />
+                  <Receipt className="h-8 w-8 text-fg" />
                 </div>
-                <p className="text-gray-600 dark:text-gray-300 font-medium">No transactions found for this client</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Invoices and payments will appear here</p>
+                <p className="text-gray-600 dark:text-muted font-medium">No transactions found for this client</p>
+                <p className="text-sm text-gray-500 dark:text-muted mt-1">Invoices and payments will appear here</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-slate-600">
@@ -276,20 +276,20 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
                           <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20 animate-pulse"></div>
                         </div>
                         <div>
-                          <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                          <h4 className="text-sm font-semibold text-gray-900 dark:text-fg">
                             {transaction.description}
                           </h4>
                           <div className="flex items-center space-x-4 mt-1">
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                            <p className="text-sm font-medium text-gray-600 dark:text-muted">
                               {transaction.date && !isNaN(new Date(transaction.date).getTime()) 
                                 ? new Date(transaction.date).toLocaleDateString()
                                 : 'No date'
                               }
                             </p>
                             {transaction.payment_method && (
-                              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                              <div className="flex items-center text-sm text-gray-600 dark:text-muted">
                                 <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-md flex items-center justify-center mr-2">
-                                  <CreditCard className="h-3 w-3 text-white" />
+                                  <CreditCard className="h-3 w-3 text-fg" />
                                 </div>
                                 <span className="font-medium">{transaction.payment_method}</span>
                               </div>
@@ -325,11 +325,11 @@ export function ClientTransactionHistory({ isOpen, onClose, clientId, clientName
           <div className="flex justify-end space-x-3">
             <button
               onClick={onClose}
-              className="px-6 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 hover:shadow-md transition-all duration-200 font-semibold"
+              className="px-6 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-muted bg-white dark:bg-surface rounded-xl hover:bg-gray-50 dark:hover:bg-surface2 hover:shadow-md transition-all duration-200 font-semibold"
             >
               Close
             </button>
-            <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center">
+            <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-fg rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center">
               <Download className="h-4 w-4 mr-2" />
               Export History
             </button>

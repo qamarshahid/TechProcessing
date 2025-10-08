@@ -147,7 +147,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-surface rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-600">
           <div className="flex items-center">
@@ -155,13 +155,13 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
               <CreditCard className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Create Payment Link</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Generate secure payment link for anyone</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-fg">Create Payment Link</h2>
+              <p className="text-sm text-gray-600 dark:text-muted">Generate secure payment link for anyone</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="p-2 text-muted hover:text-gray-600 dark:hover:text-muted transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -177,7 +177,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
 
           {/* Client Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-3">
               Client Information
             </label>
             <div className="space-y-3">
@@ -189,7 +189,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
                     onChange={() => setIsNewClient(false)}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600"
                   />
-                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Existing Client</span>
+                  <span className="ml-2 text-sm text-gray-700 dark:text-muted">Existing Client</span>
                 </label>
                 <label className="flex items-center">
                   <input
@@ -198,18 +198,18 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
                     onChange={() => setIsNewClient(true)}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600"
                   />
-                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">New Client</span>
+                  <span className="ml-2 text-sm text-gray-700 dark:text-muted">New Client</span>
                 </label>
               </div>
 
               {!isNewClient ? (
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted dark:text-gray-500" />
                   <select
                     name="clientId"
                     value={formData.clientId}
                     onChange={handleChange}
-                    className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select existing client</option>
                     {clients.map(client => (
@@ -227,7 +227,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
                       name="clientName"
                       value={formData.clientName}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Client full name *"
                     />
                   </div>
@@ -237,7 +237,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
                       name="clientEmail"
                       value={formData.clientEmail}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Client email *"
                     />
                   </div>
@@ -247,7 +247,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
                       name="clientPhone"
                       value={formData.clientPhone}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Client phone (optional)"
                     />
                   </div>
@@ -258,18 +258,18 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
 
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Title *
             </label>
             <div className="relative">
-              <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted dark:text-gray-500" />
               <input
                 type="text"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter payment link title"
-                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
@@ -277,7 +277,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Description
             </label>
             <textarea
@@ -286,17 +286,17 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter payment link description (optional)"
               rows={3}
-              className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Amount */}
           <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Amount *
             </label>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted dark:text-gray-500" />
               <input
                 type="number"
                 id="amount"
@@ -305,7 +305,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
                 placeholder="0.00"
                 step="0.01"
                 min="0.01"
-                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
@@ -313,18 +313,18 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
 
           {/* Expiration Date */}
           <div>
-            <label htmlFor="expiresAt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="expiresAt" className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
               Expires At *
             </label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted dark:text-gray-500" />
               <input
                 type="date"
                 id="expiresAt"
                 value={expiresAt}
                 onChange={(e) => setExpiresAt(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
             </div>
@@ -332,7 +332,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
 
           {/* Payment Options */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Payment Options</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-muted">Payment Options</h3>
             
             <div className="space-y-3">
               <label className="flex items-center">
@@ -343,14 +343,14 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
                   onChange={handleChange}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600 rounded"
                 />
-                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Allow partial payments</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-muted">Allow partial payments</span>
               </label>
             </div>
           </div>
 
           {/* Notification Options */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Notification Options</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-muted">Notification Options</h3>
             
             <div className="space-y-3">
               <label className="flex items-center">
@@ -361,7 +361,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
                   onChange={handleChange}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600 rounded"
                 />
-                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Send email notification</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-muted">Send email notification</span>
               </label>
               
               <label className="flex items-center">
@@ -372,7 +372,7 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
                   onChange={handleChange}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-slate-600 rounded"
                 />
-                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">Send SMS notification</span>
+                <span className="ml-2 text-sm text-gray-700 dark:text-muted">Send SMS notification</span>
               </label>
             </div>
           </div>
@@ -397,14 +397,14 @@ export function CreatePaymentLinkModal({ onClose, onSuccess }: CreatePaymentLink
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 dark:border-slate-600 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+              className="px-4 py-2 border border-gray-300 dark:border-slate-600 text-sm font-medium rounded-lg text-gray-700 dark:text-muted bg-white dark:bg-surface2 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 bg-blue-600 text-fg text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Creating...' : 'Create Payment Link'}
             </button>

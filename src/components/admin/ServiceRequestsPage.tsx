@@ -321,20 +321,20 @@ export function ServiceRequestsPage() {
     switch (status?.toLowerCase()) {
       case 'approved':
       case 'in_progress':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-accent2 dark:border-emerald-800';
       case 'pending':
       case 'under_review':
         return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
       case 'rejected':
         return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
       case 'cancelled':
-        return 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-800';
+        return 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-muted dark:border-gray-800';
       case 'cancellation_requested':
         return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800';
       case 'completed':
         return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
       default:
-        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-bg2/20 dark:text-slate-400 dark:border-outline';
     }
   };
 
@@ -367,9 +367,9 @@ export function ServiceRequestsPage() {
       case 'medium':
         return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
       case 'low':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-accent2 dark:border-emerald-800';
       default:
-        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-bg2/20 dark:text-slate-400 dark:border-outline';
     }
   };
 
@@ -424,19 +424,19 @@ export function ServiceRequestsPage() {
           <div className="animate-pulse space-y-8">
             {/* Header skeleton */}
             <div className="text-center">
-              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded-lg w-1/3 mx-auto mb-4"></div>
-              <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mx-auto"></div>
+              <div className="h-12 bg-slate-200 dark:bg-surface2 rounded-lg w-1/3 mx-auto mb-4"></div>
+              <div className="h-6 bg-slate-200 dark:bg-surface2 rounded w-1/2 mx-auto"></div>
             </div>
             
             {/* Stats grid skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+                <div key={i} className="h-32 bg-slate-200 dark:bg-surface2 rounded-xl"></div>
               ))}
             </div>
             
             {/* Table skeleton */}
-            <div className="h-96 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+            <div className="h-96 bg-slate-200 dark:bg-surface2 rounded-xl"></div>
           </div>
         </div>
       </div>
@@ -449,9 +449,9 @@ export function ServiceRequestsPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl mb-6 shadow-xl">
-            <FileText className="h-10 w-10 text-white" />
+            <FileText className="h-10 w-10 text-fg" />
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-fg mb-4">
             Service Request Center 📋
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
@@ -461,14 +461,14 @@ export function ServiceRequestsPage() {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Requests</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.total}</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-fg">{stats.total}</p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <FileText className="h-7 w-7 text-white" />
+                <FileText className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
@@ -477,14 +477,14 @@ export function ServiceRequestsPage() {
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Pending</p>
                 <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">{stats.pending}</p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Clock className="h-7 w-7 text-white" />
+                <Clock className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
@@ -493,30 +493,30 @@ export function ServiceRequestsPage() {
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">In Progress</p>
-                <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{stats.inProgress}</p>
+                <p className="text-3xl font-bold text-accent1 dark:text-accent2">{stats.inProgress}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Zap className="h-7 w-7 text-white" />
+              <div className="w-14 h-14 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Zap className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <TrendingUp className="h-4 w-4 mr-1 text-emerald-500" />
+              <TrendingUp className="h-4 w-4 mr-1 text-accent1" />
               <span>Active work</span>
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Value</p>
                 <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">${stats.totalValue.toLocaleString()}</p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <DollarSign className="h-7 w-7 text-white" />
+                <DollarSign className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
@@ -527,7 +527,7 @@ export function ServiceRequestsPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
+        <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
@@ -538,7 +538,7 @@ export function ServiceRequestsPage() {
                   placeholder="Search requests..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-surface2 text-slate-900 dark:text-fg placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
               </div>
               
@@ -546,7 +546,7 @@ export function ServiceRequestsPage() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 >
                   <option value="all">All Status</option>
                   <option value="pending">Pending</option>
@@ -559,7 +559,7 @@ export function ServiceRequestsPage() {
                 <select
                   value={priorityFilter}
                   onChange={(e) => setPriorityFilter(e.target.value)}
-                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 >
                   <option value="all">All Priorities</option>
                   <option value="high">High</option>
@@ -573,7 +573,7 @@ export function ServiceRequestsPage() {
                   className={`px-4 py-2 rounded-xl border transition-all duration-200 flex items-center gap-2 ${
                     showFilters
                       ? 'bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400'
-                      : 'bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
+                      : 'bg-white dark:bg-surface2 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300'
                   }`}
                 >
                   <Filter className="h-4 w-4" />
@@ -587,7 +587,7 @@ export function ServiceRequestsPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-accent1 to-accent600 text-fg font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 New Request
@@ -595,7 +595,7 @@ export function ServiceRequestsPage() {
               
               <button
                 onClick={fetchRequests}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-fg font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
@@ -605,14 +605,14 @@ export function ServiceRequestsPage() {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-outline">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sort By</label>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="date">Date</option>
                     <option value="cost">Cost</option>
@@ -626,7 +626,7 @@ export function ServiceRequestsPage() {
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sort Order</label>
                   <button
                     onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-2"
                   >
                     {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
                     <ArrowUpDown className="h-4 w-4" />
@@ -635,7 +635,7 @@ export function ServiceRequestsPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Service Type</label>
-                  <select className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <select className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <option value="">All Types</option>
                     <option value="consulting">Consulting</option>
                     <option value="development">Development</option>
@@ -650,14 +650,14 @@ export function ServiceRequestsPage() {
         </div>
 
         {/* Requests Table */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden mb-8">
-          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Service Requests</h2>
+        <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline overflow-hidden mb-8">
+          <div className="px-6 py-4 border-b border-slate-200 dark:border-outline">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-fg">Service Requests</h2>
           </div>
           
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-              <thead className="bg-slate-50 dark:bg-slate-700">
+              <thead className="bg-slate-50 dark:bg-surface2">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-300 uppercase tracking-wider">
                     Request Details
@@ -679,10 +679,10 @@ export function ServiceRequestsPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+              <tbody className="bg-white dark:bg-surface divide-y divide-slate-200 dark:divide-slate-700">
                 {filteredRequests.length > 0 ? (
                   filteredRequests.map((request) => (
-                    <tr key={request.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <tr key={request.id} className="hover:bg-slate-50 dark:hover:bg-surface2 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
@@ -691,7 +691,7 @@ export function ServiceRequestsPage() {
                             </div>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-slate-900 dark:text-white">
+                            <div className="text-sm font-medium text-slate-900 dark:text-fg">
                               {request.service?.name || request.service_type || 'Unknown Service'}
                             </div>
                             <div className="text-sm text-slate-500 dark:text-slate-400">
@@ -710,7 +710,7 @@ export function ServiceRequestsPage() {
                             </div>
                           </div>
                           <div className="ml-3">
-                            <div className="text-sm font-medium text-slate-900 dark:text-white">
+                            <div className="text-sm font-medium text-slate-900 dark:text-fg">
                               {request.client?.fullName || request.client_name || 'Unknown Client'}
                             </div>
                             {(request.client?.email || request.contact_email) && (
@@ -754,7 +754,7 @@ export function ServiceRequestsPage() {
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => handleViewRequest(request)}
-                            className="text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            className="text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-surface2 transition-colors"
                             title="View Details"
                           >
                             <Eye className="h-4 w-4" />
@@ -762,7 +762,7 @@ export function ServiceRequestsPage() {
                           
                           <button
                             onClick={() => handleEditRequest(request)}
-                            className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            className="text-slate-600 hover:text-accent1 dark:text-slate-400 dark:hover:text-accent2 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-surface2 transition-colors"
                             title="Edit Request"
                           >
                             <Edit className="h-4 w-4" />
@@ -773,14 +773,14 @@ export function ServiceRequestsPage() {
                             <>
                               <button
                                 onClick={() => handleStatusChange(request.id, 'approved')}
-                                className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                className="text-slate-600 hover:text-accent1 dark:text-slate-400 dark:hover:text-accent2 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-surface2 transition-colors"
                                 title="Approve Request"
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </button>
                               <button
                                 onClick={() => handleStatusChange(request.id, 'rejected')}
-                                className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-surface2 transition-colors"
                                 title="Reject Request"
                               >
                                 <XCircle className="h-4 w-4" />
@@ -791,7 +791,7 @@ export function ServiceRequestsPage() {
                           {request.status?.toLowerCase() === 'approved' && (
                             <button
                               onClick={() => handleStatusChange(request.id, 'in_progress')}
-                              className="text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                              className="text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-surface2 transition-colors"
                               title="Start Work"
                             >
                               <Play className="h-4 w-4" />
@@ -801,7 +801,7 @@ export function ServiceRequestsPage() {
                           {request.status?.toLowerCase() === 'in_progress' && (
                             <button
                               onClick={() => handleStatusChange(request.id, 'completed')}
-                              className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                              className="text-slate-600 hover:text-accent1 dark:text-slate-400 dark:hover:text-accent2 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-surface2 transition-colors"
                               title="Mark Complete"
                             >
                               <CheckSquare className="h-4 w-4" />
@@ -813,14 +813,14 @@ export function ServiceRequestsPage() {
                             <>
                               <button
                                 onClick={() => handleApproveCancellation(request.id)}
-                                className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                className="text-slate-600 hover:text-accent1 dark:text-slate-400 dark:hover:text-accent2 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-surface2 transition-colors"
                                 title="Approve Cancellation"
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </button>
                               <button
                                 onClick={() => handleRejectCancellation(request.id)}
-                                className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                                className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-surface2 transition-colors"
                                 title="Reject Cancellation"
                               >
                                 <XCircle className="h-4 w-4" />
@@ -830,7 +830,7 @@ export function ServiceRequestsPage() {
 
                           <button
                             onClick={() => handleDeleteRequest(request)}
-                            className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                            className="text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-surface2 transition-colors"
                             title="Delete Request"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -844,11 +844,11 @@ export function ServiceRequestsPage() {
                     <td colSpan={6} className="px-6 py-12 text-center">
                       <div className="text-slate-500 dark:text-slate-400">
                         <FileText className="mx-auto h-12 w-12 mb-4 text-slate-300 dark:text-slate-600" />
-                        <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No requests found</h3>
+                        <h3 className="text-lg font-medium text-slate-900 dark:text-fg mb-2">No requests found</h3>
                         <p className="text-sm mb-4">Try adjusting your search or filter criteria.</p>
                         <button
                           onClick={() => setShowAddModal(true)}
-                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200"
+                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-accent1 to-accent600 text-fg font-medium rounded-lg hover:shadow-lg transition-all duration-200"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Create First Request
@@ -863,7 +863,7 @@ export function ServiceRequestsPage() {
         </div>
 
         {/* Quick Actions Footer */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <Info className="h-5 w-5" />
@@ -873,12 +873,12 @@ export function ServiceRequestsPage() {
             </div>
             
             <div className="flex gap-2">
-              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-surface2 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                 <HelpCircle className="h-4 w-4 mr-2" />
                 Help
               </button>
               
-              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-surface2 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </button>
@@ -890,20 +890,20 @@ export function ServiceRequestsPage() {
       {/* View Request Modal */}
       {showViewModal && viewingRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+          <div className="bg-white dark:bg-surface rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-outline">
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mr-3">
                   <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Service Request Details</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-fg">Service Request Details</h2>
               </div>
               <button
                 onClick={() => {
                   setShowViewModal(false);
                   setViewingRequest(null);
                 }}
-                className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+                className="text-muted hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -915,8 +915,8 @@ export function ServiceRequestsPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Service Type
                   </label>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                    <p className="text-gray-900 dark:text-white font-medium">{viewingRequest.service?.name || viewingRequest.service_type || 'Not specified'}</p>
+                  <div className="p-3 bg-gray-50 dark:bg-surface2 rounded-lg">
+                    <p className="text-gray-900 dark:text-fg font-medium">{viewingRequest.service?.name || viewingRequest.service_type || 'Not specified'}</p>
                   </div>
                 </div>
 
@@ -924,7 +924,7 @@ export function ServiceRequestsPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Status
                   </label>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                  <div className="p-3 bg-gray-50 dark:bg-surface2 rounded-lg">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(viewingRequest.status)}`}>
                       {getStatusIcon(viewingRequest.status)}
                       <span className="ml-1 capitalize">
@@ -938,7 +938,7 @@ export function ServiceRequestsPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Priority
                   </label>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                  <div className="p-3 bg-gray-50 dark:bg-surface2 rounded-lg">
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getPriorityColor(viewingRequest.priority || '')}`}>
                       {getPriorityIcon(viewingRequest.priority || '')}
                       <span className="ml-1 capitalize">
@@ -952,8 +952,8 @@ export function ServiceRequestsPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Estimated Cost
                   </label>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                    <p className="text-gray-900 dark:text-white font-semibold">
+                  <div className="p-3 bg-gray-50 dark:bg-surface2 rounded-lg">
+                    <p className="text-gray-900 dark:text-fg font-semibold">
                       {viewingRequest.estimated_cost ? `$${parseFloat(viewingRequest.estimated_cost).toFixed(2)}` : 'Not specified'}
                     </p>
                   </div>
@@ -964,8 +964,8 @@ export function ServiceRequestsPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                   Description
                 </label>
-                <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                  <p className="text-gray-900 dark:text-white">{viewingRequest.description || 'No description provided'}</p>
+                <div className="p-3 bg-gray-50 dark:bg-surface2 rounded-lg">
+                  <p className="text-gray-900 dark:text-fg">{viewingRequest.description || 'No description provided'}</p>
                 </div>
               </div>
 
@@ -974,21 +974,21 @@ export function ServiceRequestsPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Client Information
                   </label>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg space-y-2">
+                  <div className="p-3 bg-gray-50 dark:bg-surface2 rounded-lg space-y-2">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-blue-500" />
-                      <span className="text-gray-900 dark:text-white font-medium">{viewingRequest.client?.fullName || viewingRequest.client_name || 'Unknown Client'}</span>
+                      <span className="text-gray-900 dark:text-fg font-medium">{viewingRequest.client?.fullName || viewingRequest.client_name || 'Unknown Client'}</span>
                     </div>
                     {(viewingRequest.client?.email || viewingRequest.contact_email) && (
                       <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-blue-500" />
-                        <span className="text-gray-900 dark:text-white">{viewingRequest.client?.email || viewingRequest.contact_email}</span>
+                        <span className="text-gray-900 dark:text-fg">{viewingRequest.client?.email || viewingRequest.contact_email}</span>
                       </div>
                     )}
                     {(viewingRequest.client?.phone || viewingRequest.contact_phone) && (
                       <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-blue-500" />
-                        <span className="text-gray-900 dark:text-white">{viewingRequest.client?.phone || viewingRequest.contact_phone}</span>
+                        <span className="text-gray-900 dark:text-fg">{viewingRequest.client?.phone || viewingRequest.contact_phone}</span>
                       </div>
                     )}
                   </div>
@@ -998,16 +998,16 @@ export function ServiceRequestsPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Timeline
                   </label>
-                  <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg space-y-2">
+                  <div className="p-3 bg-gray-50 dark:bg-surface2 rounded-lg space-y-2">
                     <div className="flex items-center gap-2">
                       <CalendarDays className="h-4 w-4 text-blue-500" />
-                      <span className="text-gray-900 dark:text-white">
+                      <span className="text-gray-900 dark:text-fg">
                         Deadline: {viewingRequest.deadline ? new Date(viewingRequest.deadline).toLocaleDateString() : 'No deadline set'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-blue-500" />
-                      <span className="text-gray-900 dark:text-white">
+                      <span className="text-gray-900 dark:text-fg">
                         Created: {viewingRequest.created_at ? new Date(viewingRequest.created_at).toLocaleDateString() : 'Unknown'}
                       </span>
                     </div>
@@ -1021,7 +1021,7 @@ export function ServiceRequestsPage() {
                     setShowViewModal(false);
                     setViewingRequest(null);
                   }}
-                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium"
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-surface2 transition-colors font-medium"
                 >
                   Close
                 </button>
@@ -1031,7 +1031,7 @@ export function ServiceRequestsPage() {
                     setViewingRequest(null);
                     handleEditRequest(viewingRequest);
                   }}
-                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center"
+                  className="flex-1 px-4 py-3 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center"
                 >
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Request
@@ -1045,20 +1045,20 @@ export function ServiceRequestsPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && deletingRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+          <div className="bg-white dark:bg-surface rounded-xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-outline">
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center mr-3">
                   <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                 </div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Delete Request</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-fg">Delete Request</h2>
               </div>
               <button
                 onClick={() => {
                   setShowDeleteModal(false);
                   setDeletingRequest(null);
                 }}
-                className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+                className="text-muted hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -1069,8 +1069,8 @@ export function ServiceRequestsPage() {
                 <p className="text-gray-600 dark:text-slate-400 mb-2">
                   Are you sure you want to delete this service request?
                 </p>
-                <div className="p-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                  <p className="font-medium text-gray-900 dark:text-white">{deletingRequest.service?.name || deletingRequest.service_type || 'Service Request'}</p>
+                <div className="p-3 bg-gray-50 dark:bg-surface2 rounded-lg">
+                  <p className="font-medium text-gray-900 dark:text-fg">{deletingRequest.service?.name || deletingRequest.service_type || 'Service Request'}</p>
                   <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">
                     Client: {deletingRequest.client?.fullName || deletingRequest.client_name || 'Unknown Client'}
                   </p>
@@ -1097,13 +1097,13 @@ export function ServiceRequestsPage() {
                     setShowDeleteModal(false);
                     setDeletingRequest(null);
                   }}
-                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium"
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-surface2 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDeleteRequest}
-                  className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center justify-center"
+                  className="flex-1 px-4 py-3 bg-red-600 text-fg rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center justify-center"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete Request
@@ -1117,20 +1117,20 @@ export function ServiceRequestsPage() {
       {/* Add Service Request Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+          <div className="bg-white dark:bg-surface rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-outline">
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center mr-3">
-                  <Plus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  <Plus className="h-5 w-5 text-accent1 dark:text-accent2" />
                 </div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Create New Service Request</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-fg">Create New Service Request</h2>
               </div>
               <button
                 onClick={() => {
                   setShowAddModal(false);
                   resetNewRequestForm();
                 }}
-                className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+                className="text-muted hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
               >
                 <X className="h-6 w-6" />
               </button>
@@ -1165,7 +1165,7 @@ export function ServiceRequestsPage() {
                   <select
                     value={newRequestForm.client_id}
                     onChange={(e) => handleClientChange(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg"
                     required
                   >
                     <option value="">Select a client</option>
@@ -1185,7 +1185,7 @@ export function ServiceRequestsPage() {
                     type="text"
                     value={newRequestForm.service_type}
                     onChange={(e) => setNewRequestForm(prev => ({ ...prev, service_type: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg"
                     placeholder="e.g., Web Development, Consulting"
                     required
                   />
@@ -1198,7 +1198,7 @@ export function ServiceRequestsPage() {
                   <select
                     value={newRequestForm.status}
                     onChange={(e) => setNewRequestForm(prev => ({ ...prev, status: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg"
                     required
                   >
                     <option value="">Select Status</option>
@@ -1217,7 +1217,7 @@ export function ServiceRequestsPage() {
                   <select
                     value={newRequestForm.priority}
                     onChange={(e) => setNewRequestForm(prev => ({ ...prev, priority: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg"
                   >
                     <option value="">Select Priority</option>
                     <option value="LOW">Low</option>
@@ -1236,7 +1236,7 @@ export function ServiceRequestsPage() {
                     step="0.01"
                     value={newRequestForm.estimated_cost}
                     onChange={(e) => setNewRequestForm(prev => ({ ...prev, estimated_cost: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg"
                     placeholder="0.00"
                   />
                 </div>
@@ -1249,7 +1249,7 @@ export function ServiceRequestsPage() {
                     type="date"
                     value={newRequestForm.deadline}
                     onChange={(e) => setNewRequestForm(prev => ({ ...prev, deadline: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg"
                   />
                 </div>
 
@@ -1257,7 +1257,7 @@ export function ServiceRequestsPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Contact Email
                     {newRequestForm.client_id && (
-                      <span className="ml-2 text-xs text-emerald-600 dark:text-emerald-400">
+                      <span className="ml-2 text-xs text-accent1 dark:text-accent2">
                         (Auto-filled from client)
                       </span>
                     )}
@@ -1266,9 +1266,9 @@ export function ServiceRequestsPage() {
                     type="email"
                     value={newRequestForm.contact_email}
                     onChange={(e) => setNewRequestForm(prev => ({ ...prev, contact_email: e.target.value }))}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg ${
                       newRequestForm.client_id 
-                        ? 'border-emerald-300 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' 
+                        ? 'border-emerald-300 dark:border-accent1 bg-emerald-50 dark:bg-emerald-900/20' 
                         : 'border-gray-300 dark:border-slate-600'
                     }`}
                     placeholder="client@example.com"
@@ -1279,7 +1279,7 @@ export function ServiceRequestsPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                     Contact Phone
                     {newRequestForm.client_id && (
-                      <span className="ml-2 text-xs text-emerald-600 dark:text-emerald-400">
+                      <span className="ml-2 text-xs text-accent1 dark:text-accent2">
                         (Auto-filled from client)
                       </span>
                     )}
@@ -1288,9 +1288,9 @@ export function ServiceRequestsPage() {
                     type="tel"
                     value={newRequestForm.contact_phone}
                     onChange={(e) => setNewRequestForm(prev => ({ ...prev, contact_phone: e.target.value }))}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg ${
                       newRequestForm.client_id 
-                        ? 'border-emerald-300 dark:border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20' 
+                        ? 'border-emerald-300 dark:border-accent1 bg-emerald-50 dark:bg-emerald-900/20' 
                         : 'border-gray-300 dark:border-slate-600'
                     }`}
                     placeholder="+1 (555) 123-4567"
@@ -1306,7 +1306,7 @@ export function ServiceRequestsPage() {
                   value={newRequestForm.description}
                   onChange={(e) => setNewRequestForm(prev => ({ ...prev, description: e.target.value }))}
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg"
                   placeholder="Describe the service request in detail..."
                   required
                 />
@@ -1319,14 +1319,14 @@ export function ServiceRequestsPage() {
                     setShowAddModal(false);
                     resetNewRequestForm();
                   }}
-                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium"
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-surface2 transition-colors font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-3 bg-accent1 text-fg rounded-lg hover:bg-accent1 transition-colors font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <>

@@ -134,7 +134,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({ user, onClos
         return {
           name: 'Email Verification',
           icon: Mail,
-          color: 'from-green-500 to-green-600',
+          color: 'from-accent500 to-accent600',
           description: 'Verification codes via email'
         };
       case 'SMS':
@@ -162,34 +162,34 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({ user, onClos
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-slate-900 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-bg2 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
       >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-emerald-500/10 rounded-lg">
-              <Settings className="h-6 w-6 text-emerald-400" />
+            <div className="p-2 bg-accent2/10 rounded-lg">
+              <Settings className="h-6 w-6 text-accent2" />
             </div>
-            <h2 className="text-2xl font-bold text-white">Security Settings</h2>
+            <h2 className="text-2xl font-bold text-fg">Security Settings</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-surface rounded-lg transition-colors"
           >
-            <span className="text-gray-400 hover:text-white">✕</span>
+            <span className="text-muted hover:text-fg">✕</span>
           </button>
         </div>
 
         <div className="space-y-6">
           {/* MFA Status */}
-          <div className="bg-slate-800 rounded-xl p-6">
+          <div className="bg-surface rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
-                <Shield className="h-6 w-6 text-emerald-400" />
-                <h3 className="text-lg font-semibold text-white">Two-Factor Authentication</h3>
+                <Shield className="h-6 w-6 text-accent2" />
+                <h3 className="text-lg font-semibold text-fg">Two-Factor Authentication</h3>
               </div>
               <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                 mfaStatus.enabled 
-                  ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
+                  ? 'bg-accent500/10 text-accent400 border border-accent500/20' 
                   : 'bg-red-500/10 text-red-400 border border-red-500/20'
               }`}>
                 {mfaStatus.enabled ? 'Enabled' : 'Disabled'}
@@ -198,27 +198,27 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({ user, onClos
 
             {mfaStatus.enabled ? (
               <div className="space-y-4">
-                <div className="flex items-center space-x-3 p-4 bg-slate-700/50 rounded-lg">
+                <div className="flex items-center space-x-3 p-4 bg-surface2/50 rounded-lg">
                   <div className={`p-2 rounded-lg bg-gradient-to-r ${methodInfo.color}`}>
-                    <methodInfo.icon className="h-5 w-5 text-white" />
+                    <methodInfo.icon className="h-5 w-5 text-fg" />
                   </div>
                   <div>
-                    <p className="font-medium text-white">{methodInfo.name}</p>
-                    <p className="text-sm text-gray-400">{methodInfo.description}</p>
+                    <p className="font-medium text-fg">{methodInfo.name}</p>
+                    <p className="text-sm text-muted">{methodInfo.description}</p>
                   </div>
                 </div>
 
                 <div className="flex space-x-3">
                   <button
                     onClick={() => setShowMfaSetup(true)}
-                    className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                    className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
                   >
                     <Settings className="h-4 w-4" />
                     <span>Change Method</span>
                   </button>
                   <button
                     onClick={() => setCurrentPassword('')}
-                    className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+                    className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-fg rounded-lg font-medium transition-colors"
                   >
                     Disable MFA
                   </button>
@@ -238,7 +238,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({ user, onClos
 
                 <button
                   onClick={() => setShowMfaSetup(true)}
-                  className="w-full px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                  className="w-full px-4 py-3 bg-accent2 hover:bg-accent1 text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
                 >
                   <Shield className="h-5 w-5" />
                   <span>Enable Two-Factor Authentication</span>
@@ -249,16 +249,16 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({ user, onClos
 
           {/* Backup Codes */}
           {mfaStatus.enabled && (
-            <div className="bg-slate-800 rounded-xl p-6">
+            <div className="bg-surface rounded-xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <Key className="h-6 w-6 text-blue-400" />
-                  <h3 className="text-lg font-semibold text-white">Backup Codes</h3>
+                  <h3 className="text-lg font-semibold text-fg">Backup Codes</h3>
                 </div>
                 <button
                   onClick={generateNewBackupCodes}
                   disabled={loading}
-                  className="px-3 py-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                  className="px-3 py-1 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-600 text-fg rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
                 >
                   {loading && <RefreshCw className="h-3 w-3 animate-spin" />}
                   <span>Generate New</span>
@@ -279,11 +279,11 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({ user, onClos
 
           {/* Password Confirmation Modal */}
           {currentPassword !== '' && (
-            <div className="bg-slate-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Confirm Your Password</h3>
+            <div className="bg-surface rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-fg mb-4">Confirm Your Password</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-muted mb-2">
                     Current Password
                   </label>
                   <div className="relative">
@@ -292,12 +292,12 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({ user, onClos
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder="Enter your current password"
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent pr-12"
+                      className="w-full px-4 py-3 bg-surface2 border border-slate-600 rounded-lg text-fg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent pr-12"
                     />
                     <button
                       type="button"
                       onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted hover:text-muted"
                     >
                       {showCurrentPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
@@ -307,14 +307,14 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({ user, onClos
                 <div className="flex space-x-3">
                   <button
                     onClick={() => setCurrentPassword('')}
-                    className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
+                    className="flex-1 px-4 py-3 bg-surface2 hover:bg-slate-600 text-fg rounded-lg font-medium transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={disableMfa}
                     disabled={loading}
-                    className="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 disabled:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                    className="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 disabled:bg-slate-600 text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
                   >
                     {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
                     <span>Disable MFA</span>
@@ -326,21 +326,21 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({ user, onClos
 
           {/* Backup Codes Display */}
           {showBackupCodes && backupCodes.length > 0 && (
-            <div className="bg-slate-800 rounded-xl p-6">
+            <div className="bg-surface rounded-xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Your Backup Codes</h3>
+                <h3 className="text-lg font-semibold text-fg">Your Backup Codes</h3>
                 <div className="flex space-x-2">
                   <button
                     onClick={downloadBackupCodes}
                     className="p-2 bg-slate-600 hover:bg-slate-500 rounded-lg transition-colors"
                   >
-                    <Download className="h-4 w-4 text-white" />
+                    <Download className="h-4 w-4 text-fg" />
                   </button>
                   <button
                     onClick={() => setShowBackupCodes(false)}
                     className="p-2 bg-slate-600 hover:bg-slate-500 rounded-lg transition-colors"
                   >
-                    <span className="text-white">✕</span>
+                    <span className="text-fg">✕</span>
                   </button>
                 </div>
               </div>
@@ -349,7 +349,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({ user, onClos
                 {backupCodes.map((code, index) => (
                   <div
                     key={index}
-                    className="p-3 bg-slate-700 rounded-lg font-mono text-center text-white"
+                    className="p-3 bg-surface2 rounded-lg font-mono text-center text-fg"
                   >
                     {code}
                   </div>

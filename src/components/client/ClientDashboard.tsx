@@ -122,7 +122,7 @@ export function ClientDashboard() {
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'paid':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+        return 'bg-accent100 text-accent800 dark:bg-accent900/20 dark:text-accent400';
       case 'unpaid':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
       case 'overdue':
@@ -132,7 +132,7 @@ export function ClientDashboard() {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-muted';
     }
   };
 
@@ -161,15 +161,15 @@ export function ClientDashboard() {
     return (
       <div className="space-y-6" role="status" aria-label="Loading dashboard">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-1/3 mb-6"></div>
+          <div className="h-8 bg-gray-200 dark:bg-surface2 rounded w-1/3 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+              <div key={i} className="h-32 bg-gray-200 dark:bg-surface2 rounded-lg"></div>
             ))}
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {[...Array(2)].map((_, i) => (
-              <div key={i} className="h-64 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+              <div key={i} className="h-64 bg-gray-200 dark:bg-surface2 rounded-lg"></div>
             ))}
           </div>
         </div>
@@ -183,16 +183,16 @@ export function ClientDashboard() {
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 sm:p-6 lg:p-8 border border-blue-200 dark:border-blue-800">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-fg mb-2">
               Welcome, {user?.fullName || 'Valued Client'}! 👋
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 text-base sm:text-lg">
+            <p className="text-gray-600 dark:text-muted text-base sm:text-lg">
               Here's your account overview and recent activity
             </p>
           </div>
           <div className="hidden sm:block">
             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
-              <User className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+              <User className="h-8 w-8 sm:h-10 sm:w-10 text-fg" />
             </div>
           </div>
         </div>
@@ -206,7 +206,7 @@ export function ClientDashboard() {
             <p className="text-red-800 dark:text-red-200">{error}</p>
             <button
               onClick={fetchDashboardData}
-              className="ml-auto px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+              className="ml-auto px-3 py-1 bg-red-600 text-fg text-sm rounded hover:bg-red-700 transition-colors"
             >
               Retry
             </button>
@@ -216,65 +216,65 @@ export function ClientDashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+        <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-              <FileText className="h-6 w-6 text-white" />
+              <FileText className="h-6 w-6 text-fg" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Invoices</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{dashboardData.stats.totalInvoices}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Total Invoices</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-fg">{dashboardData.stats.totalInvoices}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+        <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-              <DollarSign className="h-6 w-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-accent500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+              <DollarSign className="h-6 w-6 text-fg" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Paid Amount</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">${dashboardData.stats.paidAmount.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Paid Amount</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-fg">${dashboardData.stats.paidAmount.toLocaleString()}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+        <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Clock className="h-6 w-6 text-white" />
+              <Clock className="h-6 w-6 text-fg" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Unpaid Invoices</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{dashboardData.stats.unpaidInvoices}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Unpaid Invoices</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-fg">{dashboardData.stats.unpaidInvoices}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+        <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-4 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
-              <TrendingUp className="h-6 w-6 text-white" />
+              <TrendingUp className="h-6 w-6 text-fg" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Active Services</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{dashboardData.stats.activeSubscriptions}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-muted">Active Services</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-fg">{dashboardData.stats.activeSubscriptions}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 sm:p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h2>
+      <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-4 sm:p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-fg mb-6">Quick Actions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <Link
             to="/client/invoices"
             className="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all duration-300 hover:-translate-y-1 border border-blue-200 dark:border-blue-800"
           >
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg mr-4">
-              <Receipt className="h-6 w-6 text-white" />
+              <Receipt className="h-6 w-6 text-fg" />
             </div>
             <div>
               <h3 className="font-semibold text-blue-900 dark:text-blue-100">View Invoices</h3>
@@ -287,14 +287,14 @@ export function ClientDashboard() {
             to="/client/services"
             className="flex items-center p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-all duration-300 hover:-translate-y-1 border border-emerald-200 dark:border-emerald-800"
           >
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg mr-4">
-              <ShoppingBag className="h-6 w-6 text-white" />
+            <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center shadow-lg mr-4">
+              <ShoppingBag className="h-6 w-6 text-fg" />
             </div>
             <div>
               <h3 className="font-semibold text-emerald-900 dark:text-emerald-100">Browse Services</h3>
-              <p className="text-sm text-emerald-700 dark:text-emerald-300">Explore our offerings</p>
+              <p className="text-sm text-emerald-700 dark:text-accent3">Explore our offerings</p>
             </div>
-            <ArrowRight className="h-5 w-5 text-emerald-600 dark:text-emerald-400 ml-auto" />
+            <ArrowRight className="h-5 w-5 text-accent1 dark:text-accent2 ml-auto" />
           </Link>
 
           <button
@@ -302,7 +302,7 @@ export function ClientDashboard() {
             className="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-all duration-300 hover:-translate-y-1 border border-purple-200 dark:border-purple-800"
           >
             <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg mr-4">
-              <Sparkles className="h-6 w-6 text-white" />
+              <Sparkles className="h-6 w-6 text-fg" />
             </div>
             <div>
               <h3 className="font-semibold text-purple-900 dark:text-purple-100">Request Service</h3>
@@ -316,10 +316,10 @@ export function ClientDashboard() {
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Invoices */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-outline">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Invoices</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-fg">Recent Invoices</h2>
               <Link
                 to="/client/invoices"
                 className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium flex items-center"
@@ -333,22 +333,22 @@ export function ClientDashboard() {
             {dashboardData.invoices.length > 0 ? (
               <div className="space-y-3">
                 {dashboardData.invoices.slice(0, 5).map((invoice: any) => (
-                  <div key={invoice.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors">
+                  <div key={invoice.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-surface2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mr-3">
                         <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div className="text-sm font-medium text-gray-900 dark:text-fg">
                           {invoice.description}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-gray-500 dark:text-muted">
                           Due: {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : 'No due date'}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-fg">
                         ${parseFloat(invoice.amount || invoice.total || '0').toLocaleString()}
                       </div>
                       <div className="flex items-center justify-end">
@@ -363,22 +363,22 @@ export function ClientDashboard() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <FileText className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No invoices yet</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500">Invoices will appear here when created</p>
+                <FileText className="h-12 w-12 text-muted dark:text-gray-500 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-muted">No invoices yet</p>
+                <p className="text-sm text-muted dark:text-gray-500">Invoices will appear here when created</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Service Requests */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-outline">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Service Requests</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-fg">Service Requests</h2>
               <button
                 onClick={() => setShowServiceModal(true)}
-                className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-sm font-medium flex items-center"
+                className="text-accent1 dark:text-accent2 hover:text-emerald-800 dark:hover:text-accent3 text-sm font-medium flex items-center"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 New Request
@@ -389,16 +389,16 @@ export function ClientDashboard() {
             {dashboardData.serviceRequests.length > 0 ? (
               <div className="space-y-3">
                 {dashboardData.serviceRequests.slice(0, 5).map((request: any) => (
-                  <div key={request.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors">
+                  <div key={request.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-surface2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center mr-3">
-                        <Package className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                        <Package className="h-5 w-5 text-accent1 dark:text-accent2" />
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div className="text-sm font-medium text-gray-900 dark:text-fg">
                           {request.description?.substring(0, 50)}...
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-gray-500 dark:text-muted">
                           {request.created_at ? new Date(request.created_at).toLocaleDateString() : 'Recent'}
                         </div>
                       </div>
@@ -414,11 +414,11 @@ export function ClientDashboard() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <Package className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No service requests yet</p>
+                <Package className="h-12 w-12 text-muted dark:text-gray-500 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-muted">No service requests yet</p>
                 <button
                   onClick={() => setShowServiceModal(true)}
-                  className="mt-3 inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm"
+                  className="mt-3 inline-flex items-center px-4 py-2 bg-accent1 text-fg rounded-lg hover:bg-accent1 transition-colors text-sm"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Request Service
@@ -430,26 +430,26 @@ export function ClientDashboard() {
       </div>
 
       {/* Account Summary */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 sm:p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Account Summary</h2>
+      <div className="bg-white dark:bg-surface rounded-xl shadow-sm border border-gray-200 dark:border-outline p-4 sm:p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-fg mb-6">Account Summary</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
             <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
               {dashboardData.stats.totalInvoices}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Total Invoices</div>
+            <div className="text-sm text-gray-600 dark:text-muted">Total Invoices</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+            <div className="text-3xl font-bold text-accent600 dark:text-accent400">
               ${dashboardData.stats.paidAmount.toLocaleString()}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Total Paid</div>
+            <div className="text-sm text-gray-600 dark:text-muted">Total Paid</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
               {dashboardData.stats.activeSubscriptions}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Active Services</div>
+            <div className="text-sm text-gray-600 dark:text-muted">Active Services</div>
           </div>
         </div>
       </div>

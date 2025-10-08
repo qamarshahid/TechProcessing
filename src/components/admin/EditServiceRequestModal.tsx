@@ -117,17 +117,17 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+      <div className="bg-white dark:bg-surface rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-outline">
           <div className="flex items-center">
             <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center mr-3">
-              <Save className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              <Save className="h-5 w-5 text-accent1 dark:text-accent2" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Edit Service Request</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-fg">Edit Service Request</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
+            className="text-muted hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 transition-colors"
           >
             <X className="h-6 w-6" />
           </button>
@@ -156,7 +156,7 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
                 name="service_type"
                 value={formData.service_type}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Enter service type"
               />
             </div>
@@ -169,7 +169,7 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-ring focus:border-transparent"
               >
                 <option value="pending">Pending</option>
                 <option value="reviewing">Reviewing</option>
@@ -190,7 +190,7 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
                 name="priority"
                 value={formData.priority}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-ring focus:border-transparent"
               >
                 <option value="">Select Priority</option>
                 <option value="low">Low</option>
@@ -211,7 +211,7 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
                 onChange={handleChange}
                 step="0.01"
                 min="0"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="0.00"
               />
             </div>
@@ -225,7 +225,7 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
                 name="deadline"
                 value={formData.deadline}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
 
@@ -238,7 +238,7 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
                 name="assigned_to"
                 value={formData.assigned_to}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Enter assignee name"
               />
             </div>
@@ -253,7 +253,7 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-ring focus:border-transparent"
               placeholder="Enter service request description"
             />
           </div>
@@ -268,7 +268,7 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
                 name="contact_email"
                 value={formData.contact_email}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="client@example.com"
               />
             </div>
@@ -282,7 +282,7 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
                 name="contact_phone"
                 value={formData.contact_phone}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="+1 (555) 123-4567"
               />
             </div>
@@ -292,14 +292,14 @@ export function EditServiceRequestModal({ isOpen, onClose, onRequestUpdated, req
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors font-medium"
+              className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-50 dark:hover:bg-surface2 transition-colors font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center"
+              className="flex-1 px-4 py-3 bg-accent1 text-fg rounded-lg hover:bg-accent1 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center"
             >
               {loading ? (
                 <>

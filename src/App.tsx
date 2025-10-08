@@ -82,12 +82,12 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-bg1 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center mx-auto mb-4 animate-pulse">
-            <div className="text-white font-black text-xl">TP</div>
+          <div className="w-16 h-16 bg-gradient-to-br from-accent1 via-accent2 to-accent1 rounded-xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <div className="text-fg font-black text-xl">TP</div>
           </div>
-          <div className="text-white text-lg font-semibold">Loading...</div>
+          <div className="text-fg text-lg font-semibold">Loading...</div>
         </div>
       </div>
     );

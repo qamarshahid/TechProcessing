@@ -83,15 +83,15 @@ export function InvoicesPage() {
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case 'paid':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+        return 'bg-accent100 text-accent800 dark:bg-accent900/20 dark:text-accent400';
       case 'unpaid':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
       case 'overdue':
         return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
       case 'draft':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-muted';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-muted';
     }
   };
 
@@ -118,10 +118,10 @@ export function InvoicesPage() {
     return (
       <div className="space-y-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-1/4 mb-6"></div>
+          <div className="h-8 bg-gray-200 dark:bg-surface2 rounded w-1/4 mb-6"></div>
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-20 bg-gray-200 dark:bg-slate-700 rounded-lg"></div>
+              <div key={i} className="h-20 bg-gray-200 dark:bg-surface2 rounded-lg"></div>
             ))}
           </div>
         </div>
@@ -134,13 +134,13 @@ export function InvoicesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Invoices</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-300">View and manage your invoices</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-fg">My Invoices</h1>
+          <p className="text-sm text-gray-600 dark:text-muted">View and manage your invoices</p>
         </div>
         <button
           onClick={fetchInvoices}
           disabled={loading}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+          className="inline-flex items-center px-4 py-2 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -158,17 +158,17 @@ export function InvoicesPage() {
       )}
 
       {/* Search and Filters */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+      <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-4">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted dark:text-gray-500" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search invoices..."
-                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -176,7 +176,7 @@ export function InvoicesPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-surface2 text-gray-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="ALL">All Status</option>
               <option value="PAID">Paid</option>
@@ -190,47 +190,47 @@ export function InvoicesPage() {
 
       {/* Invoices List */}
       {filteredInvoices.length > 0 ? (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-600">
-              <thead className="bg-gray-50 dark:bg-slate-700">
+              <thead className="bg-gray-50 dark:bg-surface2">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Invoice
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Amount
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Due Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-muted uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-600">
+              <tbody className="bg-white dark:bg-surface divide-y divide-gray-200 dark:divide-slate-600">
                 {filteredInvoices.map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-slate-700">
+                  <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-surface2">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div className="text-sm font-medium text-gray-900 dark:text-fg">
                           {invoice.description}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-gray-500 dark:text-muted">
                           ID: {invoice.id}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-fg">
                         ${parseFloat(invoice.amount || invoice.total || '0').toLocaleString()}
                       </div>
                       {invoice.tax && parseFloat(invoice.tax) > 0 && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-gray-500 dark:text-muted">
                           Tax: ${parseFloat(invoice.tax).toFixed(2)}
                         </div>
                       )}
@@ -243,7 +243,7 @@ export function InvoicesPage() {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-fg">
                       {invoice.due_date && !isNaN(new Date(invoice.due_date).getTime()) 
                         ? new Date(invoice.due_date).toLocaleDateString()
                         : 'No due date'
@@ -260,7 +260,7 @@ export function InvoicesPage() {
                         </button>
                         <button 
                           onClick={() => {/* Download PDF */}}
-                          className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                          className="text-accent600 hover:text-accent900 dark:text-accent400 dark:hover:text-accent300"
                           title="Download PDF"
                         >
                           <Download className="h-4 w-4" />
@@ -283,12 +283,12 @@ export function InvoicesPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700 p-12 text-center">
-          <div className="w-16 h-16 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FileText className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+        <div className="bg-white dark:bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-outline p-12 text-center">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-surface2 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FileText className="h-8 w-8 text-muted dark:text-gray-500" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Invoices Found</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-fg mb-2">No Invoices Found</h3>
+          <p className="text-gray-500 dark:text-muted mb-6">
             {searchTerm || statusFilter !== 'ALL' 
               ? 'Try adjusting your search or filter criteria.'
               : 'You don\'t have any invoices yet. They will appear here when created.'

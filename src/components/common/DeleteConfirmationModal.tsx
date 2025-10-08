@@ -105,13 +105,13 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-3">
               {getEntityIcon()}
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-fg">
                 {title}
               </h3>
             </div>
             <button
               onClick={handleClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              className="text-muted hover:text-gray-600 dark:hover:text-muted transition-colors"
               disabled={isLoading}
             >
               <X className="h-5 w-5" />
@@ -120,14 +120,14 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
 
           {/* Content */}
           <div className="p-6">
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
+            <p className="text-gray-600 dark:text-muted mb-4">
               {message}
             </p>
 
             {/* Entity Name */}
             <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Entity to delete:</p>
-              <p className="font-medium text-gray-900 dark:text-white">{entityName}</p>
+              <p className="text-sm text-gray-500 dark:text-muted">Entity to delete:</p>
+              <p className="font-medium text-gray-900 dark:text-fg">{entityName}</p>
             </div>
 
             {/* Delete Type Selection */}
@@ -141,10 +141,10 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                   disabled={isLoading}
                 />
                 <div className="flex-1">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  <span className="text-sm font-medium text-gray-900 dark:text-fg">
                     Permanently delete (Hard Delete)
                   </span>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-muted mt-1">
                     Check this box to permanently remove all data. Leave unchecked for soft delete (deactivation).
                   </p>
                 </div>
@@ -160,14 +160,14 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             <button
               onClick={handleClose}
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-muted bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
               disabled={isLoading}
-              className={`px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+              className={`px-4 py-2 text-sm font-medium text-fg rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
                 hardDelete
                   ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
                   : 'bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500'

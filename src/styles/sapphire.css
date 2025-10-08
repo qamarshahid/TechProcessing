@@ -1,0 +1,89 @@
+:root{
+  /* palette */
+  --bg1:#0A1020; --bg2:#0C1428;
+  --fg:#EAF2FF; --muted:#B8C4FF;
+  --accent1:#3B82F6; --accent2:#60A5FA; --accent3:#93C5FD;
+  --ring:#9CC7FF; --outline:rgba(255,255,255,.10);
+  --surface:#0E1628; --surface2:#121D38;
+  /* type and radius */
+  --font: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  --h1: clamp(38px,3.6vw,58px);
+  --h2: clamp(22px,2.2vw,28px);
+  --text: 18px;
+  --radius:18px; --radius-sm:12px;
+  --shadow:0 22px 60px rgba(0,0,0,.6);
+  
+  /* Enhanced contrast for better readability */
+  --fg-strong: #F7FAFF;
+  --muted-strong: #C4D2FF;
+}
+
+html,body{height:100%}
+body{
+  margin:0; font-family:var(--font); color:var(--fg);
+  background:
+    radial-gradient(1400px 820px at 12% -10%, rgba(255,255,255,.05), transparent 60%),
+    linear-gradient(180deg,var(--bg1),var(--bg2));
+  min-height:100%;
+  letter-spacing:.01em;
+}
+
+/* Links and text */
+a{color:var(--accent2); text-decoration:none}
+a:hover{color:var(--fg)}
+
+/* Cards and panels */
+.card, .panel{
+  border-radius:var(--radius);
+  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+  box-shadow:var(--shadow), inset 0 0 0 1px var(--outline);
+}
+
+/* Headings with gradient option */
+.h1, h1{font-size:var(--h1); line-height:1.14; letter-spacing:-.01em; margin:12px 0 8px}
+.h2, h2{font-size:var(--h2); line-height:1.2; margin:10px 0 6px}
+.grad{background:linear-gradient(90deg,var(--accent2),var(--accent1)); -webkit-background-clip:text; -webkit-text-fill-color:transparent}
+
+/* Paragraphs */
+.lead{color:var(--muted); font-size:var(--text); line-height:1.78; max-width:62ch}
+
+/* Buttons */
+.btn{appearance:none; border:0; border-radius:var(--radius-sm); padding:12px 18px; min-height:44px; display:inline-flex; align-items:center; gap:10px; font-weight:800; cursor:pointer; transition:transform .18s ease, box-shadow .18s ease}
+.btn.primary{color:#081222; background:linear-gradient(90deg,var(--accent1),var(--accent2)); box-shadow:0 0 28px color-mix(in oklab, var(--accent1) 30%, transparent)}
+.btn.secondary{color:var(--accent2); background:transparent; outline:2px solid var(--ring)}
+.btn:hover{transform:translateY(-2px)}
+.btn:focus-visible{outline:3px solid var(--ring); outline-offset:2px}
+
+/* Inputs */
+input, select, textarea{
+  background:var(--surface);
+  color:var(--fg);
+  border:1px solid var(--outline);
+  border-radius:12px; padding:10px 12px;
+}
+input:focus, select:focus, textarea:focus{outline:3px solid var(--ring); outline-offset:1px}
+
+/* Tables */
+table{width:100%; border-collapse:separate; border-spacing:0}
+th, td{padding:12px; border-bottom:1px solid var(--outline)}
+th{text-align:left; color:var(--muted)}
+tr:hover td{background:rgba(255,255,255,.03)}
+
+/* Utility surfaces */
+.surface{background:var(--surface); border:1px solid var(--outline); border-radius:14px}
+.surface2{background:var(--surface2); border:1px solid var(--outline); border-radius:14px}
+
+/* Accessible focus link helper */
+:focus-visible{outline:3px solid var(--ring); outline-offset:3px; border-radius:8px}
+
+/* High contrast bump */
+body.hc{ --fg:#F7FAFF; --muted:#D6E0FF; --outline:rgba(255,255,255,.14) }
+
+/* Ruby accent blend (optional) */
+body.ruby{
+  --accent1: color-mix(in oklab, #FB7185 0%, #3B82F6 100%);
+  --accent2: color-mix(in oklab, #FDA4AF 0%, #60A5FA 100%);
+  --accent3: color-mix(in oklab, #FECDD3 0%, #93C5FD 100%);
+  --ring:    color-mix(in oklab, #FFD5DE 0%, #9CC7FF 100%);
+}
+

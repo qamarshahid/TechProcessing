@@ -154,20 +154,20 @@ export function FileAttachmentModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-surface rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-slate-700">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-outline">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-fg">
               File Attachments
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-600 dark:text-muted mt-1">
               Manage files for this service request
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="text-muted hover:text-gray-600 dark:hover:text-muted transition-colors"
           >
             <X className="h-6 w-6" />
           </button>
@@ -176,11 +176,11 @@ export function FileAttachmentModal({
         <div className="p-6 space-y-6">
           {/* Upload Section */}
           <div className="border border-gray-200 dark:border-slate-600 rounded-lg p-4">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Upload New File</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-fg mb-4">Upload New File</h3>
             
             {/* File Selection */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                 Select File *
               </label>
               <div className="flex items-center space-x-3">
@@ -194,13 +194,13 @@ export function FileAttachmentModal({
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors"
+                  className="inline-flex items-center px-4 py-2 bg-accent1 hover:bg-accent1 dark:bg-accent2 dark:hover:bg-accent1 text-fg rounded-lg transition-colors"
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   Choose File
                 </button>
                 {selectedFile && (
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-muted">
                     {selectedFile.name} ({formatFileSize(selectedFile.size)})
                   </span>
                 )}
@@ -215,13 +215,13 @@ export function FileAttachmentModal({
 
             {/* Category Selection */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                 Category
               </label>
               <select
                 value={uploadForm.category}
                 onChange={(e) => setUploadForm(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg"
               >
                 {FILE_CATEGORIES.map(category => (
                   <option key={category.value} value={category.value}>
@@ -233,13 +233,13 @@ export function FileAttachmentModal({
 
             {/* Description */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-muted mb-2">
                 Description (Optional)
               </label>
               <textarea
                 value={uploadForm.description}
                 onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-emerald-500 dark:bg-surface2 dark:text-fg"
                 rows={2}
                 placeholder="Brief description of the file..."
               />
@@ -249,7 +249,7 @@ export function FileAttachmentModal({
             <button
               onClick={handleUpload}
               disabled={!selectedFile || uploading}
-              className="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-4 py-2 bg-accent1 hover:bg-accent1 dark:bg-accent2 dark:hover:bg-accent1 text-fg rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading ? (
                 <>
@@ -267,7 +267,7 @@ export function FileAttachmentModal({
 
           {/* Existing Files */}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-fg mb-4">
               Attached Files ({attachments.length})
             </h3>
             
@@ -278,18 +278,18 @@ export function FileAttachmentModal({
                   return (
                     <div key={attachment.id} className="flex items-center justify-between p-3 border border-gray-200 dark:border-slate-600 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-center justify-center">
-                          <FileIcon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                        <div className="w-10 h-10 bg-gray-100 dark:bg-surface2 rounded-lg flex items-center justify-center">
+                          <FileIcon className="h-5 w-5 text-gray-600 dark:text-muted" />
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          <div className="text-sm font-medium text-gray-900 dark:text-fg">
                             {attachment.fileName}
                           </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-gray-500 dark:text-muted">
                             {formatFileSize(attachment.fileSize)} • {attachment.category}
                           </div>
                           {attachment.description && (
-                            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                            <div className="text-xs text-gray-600 dark:text-muted mt-1">
                               {attachment.description}
                             </div>
                           )}
@@ -299,13 +299,13 @@ export function FileAttachmentModal({
                         <a
                           href={attachment.fileUrl}
                           download
-                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                          className="p-2 text-gray-600 dark:text-muted hover:text-accent1 dark:hover:text-accent2 transition-colors"
                         >
                           <Download className="h-4 w-4" />
                         </a>
                         <button
                           onClick={() => handleDeleteAttachment(attachment.id)}
-                          className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                          className="p-2 text-gray-600 dark:text-muted hover:text-red-600 dark:hover:text-red-400 transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -316,8 +316,8 @@ export function FileAttachmentModal({
               </div>
             ) : (
               <div className="text-center py-8">
-                <Paperclip className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No files attached yet</p>
+                <Paperclip className="h-12 w-12 text-muted dark:text-gray-500 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-muted">No files attached yet</p>
               </div>
             )}
           </div>

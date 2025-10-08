@@ -215,7 +215,7 @@ export function PaymentLinkPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-navy-950 via-navy-900 to-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent2"></div>
       </div>
     );
   }
@@ -225,11 +225,11 @@ export function PaymentLinkPage() {
       <div className="min-h-screen bg-gradient-to-br from-navy-950 via-navy-900 to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 text-center">
           <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-6" />
-          <h1 className="text-2xl font-bold text-white mb-4">Payment Link Error</h1>
-          <p className="text-white/80 mb-8">{error}</p>
+          <h1 className="text-2xl font-bold text-fg mb-4">Payment Link Error</h1>
+          <p className="text-fg/80 mb-8">{error}</p>
           <button
             onClick={() => navigate('/')}
-            className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white py-3 px-6 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
+            className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-fg py-3 px-6 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
           >
             Go to Homepage
           </button>
@@ -242,20 +242,20 @@ export function PaymentLinkPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-navy-950 via-navy-900 to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 text-center">
-          <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-6" />
-          <h1 className="text-2xl font-bold text-white mb-4">Payment Successful!</h1>
-          <p className="text-white/80 mb-8">
+          <CheckCircle className="h-16 w-16 text-accent400 mx-auto mb-6" />
+          <h1 className="text-2xl font-bold text-fg mb-4">Payment Successful!</h1>
+          <p className="text-fg/80 mb-8">
             Your payment of ${parseFloat(paymentLink?.amount || '0').toLocaleString()} has been processed successfully.
             A receipt has been sent to your email address.
           </p>
           <div className="space-y-3">
             <button
               onClick={() => navigate('/')}
-              className="w-full bg-gradient-to-r from-green-600 via-green-700 to-green-800 hover:from-green-500 hover:via-green-600 hover:to-green-700 text-white py-3 px-6 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
+              className="w-full bg-gradient-to-r from-accent600 via-accent700 to-accent800 hover:from-accent500 hover:via-accent600 hover:to-accent700 text-fg py-3 px-6 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
             >
               Continue
             </button>
-            <p className="text-sm text-white/60">
+            <p className="text-sm text-fg/60">
               Transaction ID: {Date.now().toString(36).toUpperCase()}
             </p>
           </div>
@@ -268,9 +268,9 @@ export function PaymentLinkPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-navy-950 via-navy-900 to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 text-center">
-          <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-6"></div>
-          <h1 className="text-2xl font-bold text-white mb-4">Processing Payment...</h1>
-          <p className="text-white/80 mb-8">
+          <div className="w-16 h-16 border-4 border-accent3 border-t-accent1 rounded-full animate-spin mx-auto mb-6"></div>
+          <h1 className="text-2xl font-bold text-fg mb-4">Processing Payment...</h1>
+          <p className="text-fg/80 mb-8">
             Please wait while we securely process your payment of ${parseFloat(paymentLink?.amount || '0').toLocaleString()}.
           </p>
           <div className="bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 rounded-lg p-4">
@@ -289,12 +289,12 @@ export function PaymentLinkPage() {
       <div className="max-w-2xl w-full">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-md text-white rounded-full text-sm font-semibold mb-6 border border-white/20 shadow-lg">
+          <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-md text-fg rounded-full text-sm font-semibold mb-6 border border-white/20 shadow-lg">
             <Shield className="h-4 w-4 mr-2" />
             Secure Payment Portal
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">Complete Your Payment</h1>
-          <p className="text-white/80">Secure payment processing via Tech Processing LLC</p>
+          <h1 className="text-4xl font-bold text-fg mb-2 drop-shadow-lg">Complete Your Payment</h1>
+          <p className="text-fg/80">Secure payment processing via Tech Processing LLC</p>
         </div>
 
         {/* Payment Details Card */}
@@ -303,11 +303,11 @@ export function PaymentLinkPage() {
             <>
               <div className="text-center mb-8">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <CreditCard className="h-8 w-8 text-white" />
+                  <CreditCard className="h-8 w-8 text-fg" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">{paymentLink.title}</h2>
+                <h2 className="text-2xl font-bold text-fg mb-2">{paymentLink.title}</h2>
                 {paymentLink.description && (
-                  <p className="text-white/80">{paymentLink.description}</p>
+                  <p className="text-fg/80">{paymentLink.description}</p>
                 )}
               </div>
 
@@ -315,26 +315,26 @@ export function PaymentLinkPage() {
               <div className="space-y-4 mb-8">
                 <div className="flex items-center justify-between p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/20">
                   <div className="flex items-center">
-                    <User className="h-5 w-5 text-white/60 mr-3" />
-                    <span className="text-white/80">Client</span>
+                    <User className="h-5 w-5 text-fg/60 mr-3" />
+                    <span className="text-fg/80">Client</span>
                   </div>
-                  <span className="font-semibold text-white">{paymentLink.client?.fullName || 'Guest'}</span>
+                  <span className="font-semibold text-fg">{paymentLink.client?.fullName || 'Guest'}</span>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/20">
                   <div className="flex items-center">
-                    <DollarSign className="h-5 w-5 text-white/60 mr-3" />
-                    <span className="text-white/80">Amount</span>
+                    <DollarSign className="h-5 w-5 text-fg/60 mr-3" />
+                    <span className="text-fg/80">Amount</span>
                   </div>
-                  <span className="font-bold text-2xl text-green-400">${parseFloat(paymentLink.amount).toLocaleString()}</span>
+                  <span className="font-bold text-2xl text-accent400">${parseFloat(paymentLink.amount).toLocaleString()}</span>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-white/5 backdrop-blur-sm rounded-xl border border-white/20">
                   <div className="flex items-center">
-                    <Calendar className="h-5 w-5 text-white/60 mr-3" />
-                    <span className="text-white/80">Expires</span>
+                    <Calendar className="h-5 w-5 text-fg/60 mr-3" />
+                    <span className="text-fg/80">Expires</span>
                   </div>
-                  <span className="font-semibold text-white">{new Date(paymentLink.expires_at).toLocaleDateString()}</span>
+                  <span className="font-semibold text-fg">{new Date(paymentLink.expires_at).toLocaleDateString()}</span>
                 </div>
               </div>
 
@@ -354,7 +354,7 @@ export function PaymentLinkPage() {
               {/* Continue Button */}
               <button
                 onClick={() => setStep(2)}
-                className="w-full relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 flex items-center justify-center border border-blue-500/30 group"
+                className="w-full relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 hover:from-blue-500 hover:via-blue-600 hover:to-blue-700 text-fg py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 flex items-center justify-center border border-blue-500/30 group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                 <span className="relative flex items-center">
@@ -370,8 +370,8 @@ export function PaymentLinkPage() {
           {step === 2 && (
             <form onSubmit={processPayment} className="space-y-6">
               <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-white mb-2">Payment Details</h2>
-                <p className="text-white/80">Amount: ${parseFloat(paymentLink.amount).toLocaleString()}</p>
+                <h2 className="text-2xl font-bold text-fg mb-2">Payment Details</h2>
+                <p className="text-fg/80">Amount: ${parseFloat(paymentLink.amount).toLocaleString()}</p>
               </div>
 
               {error && (
@@ -382,7 +382,7 @@ export function PaymentLinkPage() {
 
               {/* Contact Information */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white">Contact Information</h3>
+                <h3 className="text-lg font-semibold text-fg">Contact Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
                     type="email"
@@ -390,7 +390,7 @@ export function PaymentLinkPage() {
                     value={paymentForm.email}
                     onChange={handlePaymentFormChange}
                     required
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Email address *"
                   />
                   <input
@@ -398,7 +398,7 @@ export function PaymentLinkPage() {
                     name="phone"
                     value={paymentForm.phone}
                     onChange={handlePaymentFormChange}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Phone number"
                   />
                 </div>
@@ -406,7 +406,7 @@ export function PaymentLinkPage() {
 
               {/* Card Information */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white">Card Information</h3>
+                <h3 className="text-lg font-semibold text-fg">Card Information</h3>
                 
                 <input
                   type="text"
@@ -414,12 +414,12 @@ export function PaymentLinkPage() {
                   value={paymentForm.cardholderName}
                   onChange={handlePaymentFormChange}
                   required
-                  className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Cardholder name *"
                 />
 
                 <div className="relative">
-                  <CreditCard className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/60" />
+                  <CreditCard className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-fg/60" />
                   <input
                     type="text"
                     name="cardNumber"
@@ -427,14 +427,14 @@ export function PaymentLinkPage() {
                     onChange={handleCardNumberChange}
                     required
                     maxLength={19}
-                    className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="1234 5678 9012 3456"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="relative">
-                    <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/60" />
+                    <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-fg/60" />
                     <input
                       type="text"
                       name="expiryDate"
@@ -442,12 +442,12 @@ export function PaymentLinkPage() {
                       onChange={handleExpiryChange}
                       required
                       maxLength={5}
-                      className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="MM/YY"
                     />
                   </div>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/60" />
+                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-fg/60" />
                     <input
                       type={showCardDetails ? 'text' : 'password'}
                       name="cvv"
@@ -455,13 +455,13 @@ export function PaymentLinkPage() {
                       onChange={handlePaymentFormChange}
                       required
                       maxLength={4}
-                      className="w-full pl-12 pr-12 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-12 pr-12 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="CVV"
                     />
                     <button
                       type="button"
                       onClick={() => setShowCardDetails(!showCardDetails)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white/80"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-fg/60 hover:text-fg/80"
                     >
                       {showCardDetails ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -471,14 +471,14 @@ export function PaymentLinkPage() {
 
               {/* Billing Address */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white">Billing Address</h3>
+                <h3 className="text-lg font-semibold text-fg">Billing Address</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
                     type="text"
                     name="billingAddress.firstName"
                     value={paymentForm.billingAddress.firstName}
                     onChange={handlePaymentFormChange}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="First name"
                   />
                   <input
@@ -486,7 +486,7 @@ export function PaymentLinkPage() {
                     name="billingAddress.lastName"
                     value={paymentForm.billingAddress.lastName}
                     onChange={handlePaymentFormChange}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Last name"
                   />
                   <input
@@ -494,7 +494,7 @@ export function PaymentLinkPage() {
                     name="billingAddress.address"
                     value={paymentForm.billingAddress.address}
                     onChange={handlePaymentFormChange}
-                    className="md:col-span-2 w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="md:col-span-2 w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Street address"
                   />
                   <input
@@ -502,7 +502,7 @@ export function PaymentLinkPage() {
                     name="billingAddress.city"
                     value={paymentForm.billingAddress.city}
                     onChange={handlePaymentFormChange}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="City"
                   />
                   <input
@@ -510,7 +510,7 @@ export function PaymentLinkPage() {
                     name="billingAddress.state"
                     value={paymentForm.billingAddress.state}
                     onChange={handlePaymentFormChange}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="State"
                   />
                   <input
@@ -518,14 +518,14 @@ export function PaymentLinkPage() {
                     name="billingAddress.zipCode"
                     value={paymentForm.billingAddress.zipCode}
                     onChange={handlePaymentFormChange}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="ZIP code"
                   />
                   <select
                     name="billingAddress.country"
                     value={paymentForm.billingAddress.country}
                     onChange={handlePaymentFormChange}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-fg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="US" className="bg-gray-800">United States</option>
                     <option value="CA" className="bg-gray-800">Canada</option>
@@ -536,7 +536,7 @@ export function PaymentLinkPage() {
 
               {/* Payment Options */}
               <div className="space-y-3">
-                <label className="flex items-center text-white">
+                <label className="flex items-center text-fg">
                   <input
                     type="checkbox"
                     name="saveCard"
@@ -553,13 +553,13 @@ export function PaymentLinkPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 bg-white/10 backdrop-blur-sm text-white py-3 px-6 rounded-xl font-bold transition-all duration-300 border border-white/20 hover:bg-white/20"
+                  className="flex-1 bg-white/10 backdrop-blur-sm text-fg py-3 px-6 rounded-xl font-bold transition-all duration-300 border border-white/20 hover:bg-white/20"
                 >
                   Back
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 relative overflow-hidden bg-gradient-to-r from-green-600 via-green-700 to-green-800 hover:from-green-500 hover:via-green-600 hover:to-green-700 text-white py-3 px-6 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 border border-green-500/30 group"
+                  className="flex-1 relative overflow-hidden bg-gradient-to-r from-accent600 via-accent700 to-accent800 hover:from-accent500 hover:via-accent600 hover:to-accent700 text-fg py-3 px-6 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 border border-accent500/30 group"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                   <span className="relative flex items-center justify-center">
@@ -573,10 +573,10 @@ export function PaymentLinkPage() {
 
           {/* Payment Methods */}
           <div className="text-center mt-8">
-            <p className="text-sm text-white/70 mb-3">We accept:</p>
+            <p className="text-sm text-fg/70 mb-3">We accept:</p>
             <div className="flex justify-center space-x-4">
               {['Visa', 'Mastercard', 'American Express', 'Discover'].map((card) => (
-                <div key={card} className="bg-white/10 backdrop-blur-sm px-3 py-2 rounded text-xs font-medium text-white/80 border border-white/20">
+                <div key={card} className="bg-white/10 backdrop-blur-sm px-3 py-2 rounded text-xs font-medium text-fg/80 border border-white/20">
                   {card}
                 </div>
               ))}
@@ -586,9 +586,9 @@ export function PaymentLinkPage() {
 
         {/* Footer */}
         <div className="text-center">
-          <p className="text-sm text-white/70">
+          <p className="text-sm text-fg/70">
             Powered by{' '}
-            <span className="font-bold text-white">Tech Processing LLC</span>
+            <span className="font-bold text-fg">Tech Processing LLC</span>
             {' • '}
             <a href="mailto:support@techprocessingllc.com" className="text-blue-400 hover:text-blue-300 transition-colors">
               Need help?

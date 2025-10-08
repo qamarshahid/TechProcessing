@@ -112,7 +112,7 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
           description: 'Enter the 6-digit code sent to your email',
           placeholder: '000000',
           maxLength: 6,
-          color: 'from-green-500 to-green-600'
+          color: 'from-accent500 to-accent600'
         };
       case 'SMS':
         return {
@@ -130,7 +130,7 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
           description: 'Enter your verification code',
           placeholder: '000000',
           maxLength: 6,
-          color: 'from-emerald-500 to-emerald-600'
+          color: 'from-accent1 to-emerald-600'
         };
     }
   };
@@ -146,16 +146,16 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
     >
       <div className="text-center">
         <div className={`p-4 rounded-full bg-gradient-to-r ${methodInfo.color} inline-block mb-4`}>
-          <IconComponent className="h-8 w-8 text-white" />
+          <IconComponent className="h-8 w-8 text-fg" />
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">{methodInfo.title}</h2>
-        <p className="text-gray-300">{methodInfo.description}</p>
+        <h2 className="text-2xl font-bold text-fg mb-2">{methodInfo.title}</h2>
+        <p className="text-muted">{methodInfo.description}</p>
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-6">
+      <div className="bg-surface rounded-xl p-6">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               Verification Code
             </label>
             <input
@@ -163,7 +163,7 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, methodInfo.maxLength))}
               placeholder={methodInfo.placeholder}
-              className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white text-center text-2xl font-mono tracking-widest"
+              className="w-full px-4 py-3 bg-surface2 border border-slate-600 rounded-lg text-fg text-center text-2xl font-mono tracking-widest"
               maxLength={methodInfo.maxLength}
             />
           </div>
@@ -174,12 +174,12 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
                 <button
                   onClick={resendCode}
                   disabled={loading}
-                  className="text-emerald-400 hover:text-emerald-300 text-sm font-medium transition-colors"
+                  className="text-accent2 hover:text-accent3 text-sm font-medium transition-colors"
                 >
                   Resend Code
                 </button>
               ) : (
-                <p className="text-gray-400 text-sm">
+                <p className="text-muted text-sm">
                   Resend code in {timeLeft}s
                 </p>
               )}
@@ -206,7 +206,7 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
       <div className="flex space-x-4">
         <button
           onClick={onBack}
-          className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+          className="flex-1 px-4 py-3 bg-surface2 hover:bg-slate-600 text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back</span>
@@ -214,7 +214,7 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
         <button
           onClick={verifyCode}
           disabled={verificationCode.length !== methodInfo.maxLength || loading}
-          className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+          className="flex-1 px-4 py-3 bg-accent2 hover:bg-accent1 disabled:bg-slate-600 disabled:cursor-not-allowed text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
         >
           {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
           <span>Verify</span>
@@ -224,7 +224,7 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
       <div className="text-center">
         <button
           onClick={() => setUseBackupCode(true)}
-          className="text-gray-400 hover:text-gray-300 text-sm transition-colors"
+          className="text-muted hover:text-muted text-sm transition-colors"
         >
           Use backup code instead
         </button>
@@ -240,14 +240,14 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
     >
       <div className="text-center">
         <Shield className="h-16 w-16 text-amber-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Backup Code</h2>
-        <p className="text-gray-300">Enter one of your backup codes to sign in</p>
+        <h2 className="text-2xl font-bold text-fg mb-2">Backup Code</h2>
+        <p className="text-muted">Enter one of your backup codes to sign in</p>
       </div>
 
-      <div className="bg-slate-800 rounded-xl p-6">
+      <div className="bg-surface rounded-xl p-6">
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-muted mb-2">
               Backup Code
             </label>
             <input
@@ -255,7 +255,7 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
               value={backupCode}
               onChange={(e) => setBackupCode(e.target.value.toUpperCase().slice(0, 6))}
               placeholder="ABCDEF"
-              className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white text-center text-lg font-mono tracking-wider"
+              className="w-full px-4 py-3 bg-surface2 border border-slate-600 rounded-lg text-fg text-center text-lg font-mono tracking-wider"
               maxLength={6}
             />
           </div>
@@ -275,14 +275,14 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
       <div className="flex space-x-4">
         <button
           onClick={() => setUseBackupCode(false)}
-          className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-colors"
+          className="flex-1 px-4 py-3 bg-surface2 hover:bg-slate-600 text-fg rounded-lg font-medium transition-colors"
         >
           Back to {methodInfo.title}
         </button>
         <button
           onClick={verifyCode}
           disabled={backupCode.length !== 6 || loading}
-          className="flex-1 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+          className="flex-1 px-4 py-3 bg-accent2 hover:bg-accent1 disabled:bg-slate-600 disabled:cursor-not-allowed text-fg rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
         >
           {loading && <RefreshCw className="h-4 w-4 animate-spin" />}
           <span>Verify</span>
@@ -297,14 +297,14 @@ export const MfaVerification: React.FC<MfaVerificationProps> = ({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-slate-900 rounded-2xl p-6 w-full max-w-md"
+        className="bg-bg2 rounded-2xl p-6 w-full max-w-md"
       >
         {useBackupCode ? renderBackupCode() : renderMainVerification()}
         
         <div className="mt-6 text-center">
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-300 text-sm transition-colors"
+            className="text-muted hover:text-muted text-sm transition-colors"
           >
             Cancel and sign out
           </button>

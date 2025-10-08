@@ -47,14 +47,14 @@ export class ErrorBoundary extends Component<Props, State> {
               Something went wrong
             </h1>
             
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
+            <p className="text-gray-600 dark:text-muted mb-8">
               We're sorry, but something unexpected happened. Please try refreshing the page or contact support if the problem persists.
             </p>
             
             <div className="space-y-3">
               <button
                 onClick={this.handleReload}
-                className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-fg rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Reload Page
@@ -62,7 +62,7 @@ export class ErrorBoundary extends Component<Props, State> {
               
               <button
                 onClick={this.handleGoHome}
-                className="w-full flex items-center justify-center px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
+                className="w-full flex items-center justify-center px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-muted rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
               >
                 <Home className="h-4 w-4 mr-2" />
                 Go Home
@@ -71,7 +71,7 @@ export class ErrorBoundary extends Component<Props, State> {
             
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="mt-8 text-left">
-                <summary className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                <summary className="text-sm font-medium text-gray-700 dark:text-muted cursor-pointer">
                   Error Details (Development)
                 </summary>
                 <pre className="mt-2 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 p-3 rounded overflow-auto">

@@ -389,9 +389,9 @@ export function AuditLogsPage() {
       case 'information':
         return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800';
       case 'debug':
-        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-bg2/20 dark:text-slate-400 dark:border-outline';
       default:
-        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/20 dark:text-slate-400 dark:border-slate-800';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-bg2/20 dark:text-slate-400 dark:border-outline';
     }
   };
 
@@ -456,7 +456,7 @@ export function AuditLogsPage() {
         }
         return <Users className="h-4 w-4 text-blue-500" title="Agent" />;
       case 'CLIENT':
-        return <User className="h-4 w-4 text-green-500" title="Client" />;
+        return <User className="h-4 w-4 text-accent500" title="Client" />;
       default:
         return <User className="h-4 w-4 text-slate-500" title="Client" />;
     }
@@ -471,7 +471,7 @@ export function AuditLogsPage() {
       case 'AGENT':
         return 'text-blue-500';
       case 'CLIENT':
-        return 'text-green-500';
+        return 'text-accent500';
       default:
         return 'text-slate-500';
     }
@@ -603,19 +603,19 @@ export function AuditLogsPage() {
           <div className="animate-pulse space-y-8">
             {/* Header skeleton */}
             <div className="text-center">
-              <div className="h-12 bg-slate-200 dark:bg-slate-700 rounded-lg w-1/3 mx-auto mb-4"></div>
-              <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mx-auto"></div>
+              <div className="h-12 bg-slate-200 dark:bg-surface2 rounded-lg w-1/3 mx-auto mb-4"></div>
+              <div className="h-6 bg-slate-200 dark:bg-surface2 rounded w-1/2 mx-auto"></div>
             </div>
             
             {/* Stats grid skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+                <div key={i} className="h-32 bg-slate-200 dark:bg-surface2 rounded-xl"></div>
               ))}
             </div>
             
             {/* Table skeleton */}
-            <div className="h-96 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+            <div className="h-96 bg-slate-200 dark:bg-surface2 rounded-xl"></div>
           </div>
         </div>
       </div>
@@ -628,9 +628,9 @@ export function AuditLogsPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-6 shadow-xl">
-            <Shield className="h-10 w-10 text-white" />
+            <Shield className="h-10 w-10 text-fg" />
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-fg mb-4">
             Audit Logs Center 🛡️
           </h1>
           <p className="text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
@@ -640,14 +640,14 @@ export function AuditLogsPage() {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Total Logs</p>
-                <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.totalLogs}</p>
+                <p className="text-3xl font-bold text-slate-900 dark:text-fg">{stats.totalLogs}</p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <FileText className="h-7 w-7 text-white" />
+                <FileText className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
@@ -656,30 +656,30 @@ export function AuditLogsPage() {
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Today's Logs</p>
-                <p className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{stats.todayLogs}</p>
+                <p className="text-3xl font-bold text-accent1 dark:text-accent2">{stats.todayLogs}</p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Calendar className="h-7 w-7 text-white" />
+              <div className="w-14 h-14 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
+                <Calendar className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
-              <Clock className="h-4 w-4 mr-1 text-emerald-500" />
+              <Clock className="h-4 w-4 mr-1 text-accent1" />
               <span>Last 24 hours</span>
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Critical Events</p>
                 <p className="text-3xl font-bold text-red-600 dark:text-red-400">{stats.criticalLogs}</p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <AlertTriangle className="h-7 w-7 text-white" />
+                <AlertTriangle className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
@@ -688,14 +688,14 @@ export function AuditLogsPage() {
             </div>
           </div>
 
-          <div className="group bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+          <div className="group bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Security Events</p>
                 <p className="text-3xl font-bold text-amber-600 dark:text-amber-400">{stats.securityEvents}</p>
               </div>
               <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200">
-                <Lock className="h-7 w-7 text-white" />
+                <Lock className="h-7 w-7 text-fg" />
               </div>
             </div>
             <div className="mt-4 flex items-center text-sm text-slate-500 dark:text-slate-400">
@@ -706,7 +706,7 @@ export function AuditLogsPage() {
         </div>
 
         {/* Controls */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
+        <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6 mb-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             {/* Search and Filters */}
             <div className="flex flex-col sm:flex-row items-center gap-4 flex-1">
@@ -717,7 +717,7 @@ export function AuditLogsPage() {
                   placeholder="Search logs..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               
@@ -726,7 +726,7 @@ export function AuditLogsPage() {
                 className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
                   showFilters 
                     ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400' 
-                    : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
+                    : 'bg-slate-100 text-slate-700 dark:bg-surface2 dark:text-slate-300'
                 }`}
               >
                 <Filter className="h-4 w-4 mr-2" />
@@ -738,7 +738,7 @@ export function AuditLogsPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={fetchAuditLogs}
-                className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-surface2 text-slate-700 dark:text-slate-300 font-medium rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
@@ -746,7 +746,7 @@ export function AuditLogsPage() {
               
               <button
                 onClick={exportLogs}
-                className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 font-medium rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/30 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-accent2 font-medium rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-900/30 transition-colors"
               >
                 <Download className="h-4 w-4 mr-2" />
                 Export
@@ -764,7 +764,7 @@ export function AuditLogsPage() {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-outline">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Action Type</label>
@@ -773,7 +773,7 @@ export function AuditLogsPage() {
                     placeholder="Filter by action..."
                     value={filters.action}
                     onChange={(e) => setFilters(prev => ({ ...prev, action: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 
@@ -784,7 +784,7 @@ export function AuditLogsPage() {
                     placeholder="Filter by user..."
                     value={filters.user}
                     onChange={(e) => setFilters(prev => ({ ...prev, user: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 
@@ -793,7 +793,7 @@ export function AuditLogsPage() {
                   <select
                     value={filters.severity}
                     onChange={(e) => setFilters(prev => ({ ...prev, severity: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">All Severities</option>
                     <option value="critical">Critical</option>
@@ -809,7 +809,7 @@ export function AuditLogsPage() {
                   <select
                     value={filters.dateRange}
                     onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-surface2 text-slate-900 dark:text-fg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">All Time</option>
                     <option value="today">Today</option>
@@ -824,10 +824,10 @@ export function AuditLogsPage() {
         </div>
 
         {/* Logs Table */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700 table-fixed">
-              <thead className="bg-slate-50 dark:bg-slate-700/50">
+              <thead className="bg-slate-50 dark:bg-surface2/50">
                 <tr>
                   <th className="w-40 px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <button
@@ -892,10 +892,10 @@ export function AuditLogsPage() {
                   <th className="w-20 px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+              <tbody className="bg-white dark:bg-surface divide-y divide-slate-200 dark:divide-slate-700">
                 {filteredLogs.length > 0 ? (
                   filteredLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-surface2/50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-2 text-slate-400" />
@@ -908,7 +908,7 @@ export function AuditLogsPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           {getActionIcon(log.action)}
-                          <span className="ml-2 text-sm font-medium text-slate-900 dark:text-white">
+                          <span className="ml-2 text-sm font-medium text-slate-900 dark:text-fg">
                             {log.action || 'Unknown'}
                           </span>
                         </div>
@@ -918,7 +918,7 @@ export function AuditLogsPage() {
                           <div className="flex items-center space-x-2">
                             {getUserRoleIcon(log.user, log)}
                             <div className="flex flex-col">
-                              <span className="text-sm text-slate-900 dark:text-white font-medium">
+                              <span className="text-sm text-slate-900 dark:text-fg font-medium">
                                 {log.user_name || log.userName || 'System'}
                               </span>
                               <div className="flex items-center space-x-1">
@@ -965,7 +965,7 @@ export function AuditLogsPage() {
                           log.category === 'security' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400' :
                           log.category === 'user' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400' :
                           log.category === 'system' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400' :
-                          'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                          'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-muted'
                         }`}>
                           {log.category === 'security' ? <Shield className="h-3 w-3 mr-1" /> :
                            log.category === 'user' ? <User className="h-3 w-3 mr-1" /> :
@@ -978,8 +978,8 @@ export function AuditLogsPage() {
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           log.riskLevel === 'High' ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400' :
                           log.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' :
-                          log.riskLevel === 'Low' ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' :
-                          'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                          log.riskLevel === 'Low' ? 'bg-accent100 text-accent800 dark:bg-accent900/20 dark:text-accent400' :
+                          'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-muted'
                         }`}>
                           {log.riskLevel === 'High' ? <AlertTriangle className="h-3 w-3 mr-1" /> :
                            log.riskLevel === 'Medium' ? <AlertCircle className="h-3 w-3 mr-1" /> :
@@ -988,7 +988,7 @@ export function AuditLogsPage() {
                           <span>{log.riskLevel || 'Medium'}</span>
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-slate-900 dark:text-white">
+                      <td className="px-6 py-4 text-sm text-slate-900 dark:text-fg">
                         <div className="max-w-xs">
                           <div className="truncate" title={log.description || 'No description'}>
                             {log.description || 'No description available'}
@@ -1027,11 +1027,11 @@ export function AuditLogsPage() {
                     <td colSpan={9} className="px-6 py-12 text-center">
                       <div className="text-slate-500 dark:text-slate-400">
                         <FileText className="mx-auto h-12 w-12 mb-4 text-slate-300 dark:text-slate-600" />
-                        <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No audit logs found</h3>
+                        <h3 className="text-lg font-medium text-slate-900 dark:text-fg mb-2">No audit logs found</h3>
                         <p className="text-sm mb-4">Try adjusting your search or filter criteria.</p>
                         <button
                           onClick={fetchAuditLogs}
-                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200"
+                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-fg font-medium rounded-lg hover:shadow-lg transition-all duration-200"
                         >
                           <RefreshCw className="h-4 w-4 mr-2" />
                           Refresh Logs
@@ -1046,7 +1046,7 @@ export function AuditLogsPage() {
         </div>
 
         {/* Quick Actions Footer */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+        <div className="bg-white dark:bg-surface rounded-2xl shadow-sm border border-slate-200 dark:border-outline p-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
               <Info className="h-5 w-5" />
@@ -1056,12 +1056,12 @@ export function AuditLogsPage() {
             </div>
             
             <div className="flex gap-2">
-              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-surface2 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </button>
               
-              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+              <button className="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-surface2 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                 <HelpCircle className="h-4 w-4 mr-2" />
                 Help
               </button>

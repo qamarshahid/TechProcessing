@@ -72,7 +72,7 @@ export function PaymentPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent1"></div>
       </div>
     );
   }
@@ -83,10 +83,10 @@ export function PaymentPage() {
         <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Error</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
+          <p className="text-gray-600 dark:text-muted mb-6">{error}</p>
           <button
             onClick={() => navigate('/client/invoices')}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full bg-blue-600 text-fg py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Back to Invoices
           </button>
@@ -99,21 +99,21 @@ export function PaymentPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
-          <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-6" />
+          <CheckCircle className="h-16 w-16 text-accent500 mx-auto mb-6" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Payment Successful!</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="text-gray-600 dark:text-muted mb-6">
             Your payment of ${parseFloat(invoice?.amount || '0').toLocaleString()} has been processed successfully.
           </p>
           <div className="space-y-3">
             <button
               onClick={() => navigate('/client/invoices')}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="w-full bg-blue-600 text-fg py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
               View All Invoices
             </button>
             <button
               onClick={() => navigate('/client')}
-              className="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
+              className="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-muted py-3 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
             >
               Back to Dashboard
             </button>
@@ -136,7 +136,7 @@ export function PaymentPage() {
             Back to Invoices
           </button>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Pay Invoice</h1>
-          <p className="text-gray-600 dark:text-gray-400">Secure payment processing via Authorize.Net</p>
+          <p className="text-gray-600 dark:text-muted">Secure payment processing via Authorize.Net</p>
         </div>
 
         {/* Invoice Details */}
@@ -144,15 +144,15 @@ export function PaymentPage() {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Invoice Details</h2>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Invoice #:</span>
+              <span className="text-gray-600 dark:text-muted">Invoice #:</span>
               <span className="font-medium text-gray-900 dark:text-gray-100">{invoice?.id}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Description:</span>
+              <span className="text-gray-600 dark:text-muted">Description:</span>
               <span className="font-medium text-gray-900 dark:text-gray-100">{invoice?.description}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Due Date:</span>
+              <span className="text-gray-600 dark:text-muted">Due Date:</span>
               <span className="font-medium text-gray-900 dark:text-gray-100">
                 {new Date(invoice?.due_date).toLocaleDateString()}
               </span>
@@ -160,7 +160,7 @@ export function PaymentPage() {
             <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
               <div className="flex justify-between text-lg">
                 <span className="font-semibold text-gray-900 dark:text-gray-100">Total Amount:</span>
-                <span className="font-bold text-green-600 dark:text-green-400">
+                <span className="font-bold text-accent600 dark:text-accent400">
                   ${parseFloat(invoice?.amount || '0').toLocaleString()}
                 </span>
               </div>
@@ -201,7 +201,7 @@ export function PaymentPage() {
             <button
               onClick={initiateHostedPayment}
               disabled={paymentLoading || !invoice}
-              className="w-full bg-green-600 text-white py-4 px-6 rounded-lg hover:bg-green-700 transition-colors font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full bg-accent600 text-fg py-4 px-6 rounded-lg hover:bg-accent700 transition-colors font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               {paymentLoading ? (
                 <>
@@ -218,10 +218,10 @@ export function PaymentPage() {
 
             {/* Payment Methods */}
             <div className="text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">We accept:</p>
+              <p className="text-sm text-gray-600 dark:text-muted mb-3">We accept:</p>
               <div className="flex justify-center space-x-4">
                 {['Visa', 'Mastercard', 'American Express', 'Discover'].map((card) => (
-                  <div key={card} className="bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded text-xs font-medium text-gray-700 dark:text-gray-300">
+                  <div key={card} className="bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded text-xs font-medium text-gray-700 dark:text-muted">
                     {card}
                   </div>
                 ))}
@@ -232,7 +232,7 @@ export function PaymentPage() {
 
         {/* Support */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-muted">
             Need help? Contact us at{' '}
             <a href="mailto:support@techprocessingllc.com" className="text-blue-600 dark:text-blue-400 hover:underline">
               support@techprocessingllc.com

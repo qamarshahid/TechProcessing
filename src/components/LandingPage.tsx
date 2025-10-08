@@ -385,9 +385,9 @@ export function LandingPage() {
         </script>
       </head>
 
-      <div className="min-h-screen bg-slate-950 text-white">
+      <div className="min-h-screen bg-bg1 text-fg">
         {/* Navigation */}
-        <nav className="bg-slate-900/95 backdrop-blur-xl shadow-sm border-b border-slate-800/50 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
+        <nav className="bg-bg2/95 backdrop-blur-xl shadow-sm border-b border-outline/50 sticky top-0 z-50" role="navigation" aria-label="Main navigation">
           <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
               <motion.div 
@@ -396,13 +396,13 @@ export function LandingPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-                  <div className="text-white font-black text-xs sm:text-sm">TP</div>
+                <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-gradient-to-br from-accent1 via-accent2 to-accent1 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                  <div className="text-fg font-black text-xs sm:text-sm">TP</div>
                 </div>
-                <div className="font-black text-sm sm:text-base md:text-lg lg:text-xl text-white">
+                <div className="font-black text-sm sm:text-base md:text-lg lg:text-xl text-fg">
                   <span className="tracking-wider hidden sm:inline">TECHPROCESSING</span>
                   <span className="tracking-wider sm:hidden">TECH</span>
-                  <div className="text-xs text-emerald-400 font-bold tracking-[0.15em] sm:tracking-[0.2em]">LLC</div>
+                  <div className="text-xs text-accent2 font-bold tracking-[0.15em] sm:tracking-[0.2em]">LLC</div>
                 </div>
               </motion.div>
 
@@ -420,7 +420,7 @@ export function LandingPage() {
                   onMouseLeave={() => setIsServicesDropdownOpen(false)}
                 >
                   <button 
-                    className="text-gray-300 hover:text-emerald-400 transition-colors font-medium flex items-center py-2"
+                    className="text-muted hover:text-accent2 transition-colors font-medium flex items-center py-2"
                     onClick={() => setIsServicesDropdownOpen(!isServicesDropdownOpen)}
                   >
                     Services
@@ -434,7 +434,7 @@ export function LandingPage() {
                   
                   {/* Dropdown Menu */}
                   <motion.div
-                    className="absolute top-full left-0 w-80 bg-slate-800 rounded-xl shadow-xl border border-slate-700 z-50"
+                    className="absolute top-full left-0 w-80 bg-surface rounded-xl shadow-xl border border-outline z-50"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ 
                       opacity: isServicesDropdownOpen ? 1 : 0, 
@@ -452,17 +452,17 @@ export function LandingPage() {
                           <Link
                             key={service.title}
                             to={service.href}
-                            className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group"
+                            className="flex items-center p-3 rounded-lg hover:bg-surface2 transition-colors group"
                             onClick={() => setIsServicesDropdownOpen(false)}
                           >
-                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
-                              <service.icon className="h-5 w-5 text-white" />
+                            <div className="w-10 h-10 bg-gradient-to-br from-accent1 to-accent600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
+                              <service.icon className="h-5 w-5 text-fg" />
                             </div>
                             <div>
-                              <div className="font-semibold text-white group-hover:text-emerald-400 transition-colors">
+                              <div className="font-semibold text-fg group-hover:text-accent2 transition-colors">
                                 {service.title}
                               </div>
-                              <div className="text-sm text-gray-400">
+                              <div className="text-sm text-muted">
                                 {service.description}
                               </div>
                             </div>
@@ -480,7 +480,7 @@ export function LandingPage() {
                   onMouseLeave={() => setIsLegalDropdownOpen(false)}
                 >
                   <button 
-                    className="text-gray-300 hover:text-emerald-400 transition-colors font-medium flex items-center py-2"
+                    className="text-muted hover:text-accent2 transition-colors font-medium flex items-center py-2"
                     onClick={() => setIsLegalDropdownOpen(!isLegalDropdownOpen)}
                   >
                     Legal
@@ -494,7 +494,7 @@ export function LandingPage() {
                   
                   {/* Dropdown Menu */}
                   <motion.div
-                    className="absolute top-full left-0 w-64 bg-slate-800 rounded-xl shadow-xl border border-slate-700 z-50"
+                    className="absolute top-full left-0 w-64 bg-surface rounded-xl shadow-xl border border-outline z-50"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ 
                       opacity: isLegalDropdownOpen ? 1 : 0, 
@@ -512,17 +512,17 @@ export function LandingPage() {
                           <Link
                             key={legal.title}
                             to={legal.href}
-                            className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group"
+                            className="flex items-center p-3 rounded-lg hover:bg-surface2 transition-colors group"
                             onClick={() => setIsLegalDropdownOpen(false)}
                           >
-                            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
-                              <legal.icon className="h-5 w-5 text-white" />
+                            <div className="w-10 h-10 bg-gradient-to-br from-accent1 to-accent600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
+                              <legal.icon className="h-5 w-5 text-fg" />
                             </div>
                             <div>
-                              <div className="font-semibold text-white group-hover:text-emerald-400 transition-colors">
+                              <div className="font-semibold text-fg group-hover:text-accent2 transition-colors">
                                 {legal.title}
                               </div>
-                              <div className="text-sm text-gray-400">
+                              <div className="text-sm text-muted">
                                 {legal.description}
                               </div>
                             </div>
@@ -533,11 +533,11 @@ export function LandingPage() {
                   </motion.div>
                 </div>
                 
-                <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Portfolio</a>
-                <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Process</a>
-                <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">About</a>
-                <Link to="/faq" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">FAQ</Link>
-                <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium">Contact</a>
+                <a href="#portfolio" className="text-muted hover:text-accent2 transition-colors font-medium">Portfolio</a>
+                <a href="#process" className="text-muted hover:text-accent2 transition-colors font-medium">Process</a>
+                <a href="#about" className="text-muted hover:text-accent2 transition-colors font-medium">About</a>
+                <Link to="/faq" className="text-muted hover:text-accent2 transition-colors font-medium">FAQ</Link>
+                <a href="#contact" className="text-muted hover:text-accent2 transition-colors font-medium">Contact</a>
               </motion.div>
 
               {/* Desktop CTA Buttons */}
@@ -549,14 +549,14 @@ export function LandingPage() {
               >
                 <Link
                   to="/login"
-                  className="text-gray-300 hover:text-emerald-400 transition-colors font-medium touch-manipulation min-h-[44px] flex items-center px-3 rounded-lg hover:bg-slate-800/30"
+                  className="text-muted hover:text-accent2 transition-colors font-medium touch-manipulation min-h-[44px] flex items-center px-3 rounded-lg hover:bg-surface/30"
                   onClick={() => handleCTAClick('Client Login')}
                 >
                   Client Login
                 </Link>
                 <a
                   href="#contact"
-                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 sm:px-6 py-2 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg touch-manipulation min-h-[44px] flex items-center"
+                  className="bg-gradient-to-r from-accent1 to-accent600 hover:from-emerald-600 hover:to-accent700 text-fg px-4 sm:px-6 py-2 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg touch-manipulation min-h-[44px] flex items-center"
                   onClick={() => handleCTAClick('Get Free Quote')}
                 >
                   Get Free Quote
@@ -565,7 +565,7 @@ export function LandingPage() {
               
               {/* Mobile Menu Button */}
               <button
-                className="md:hidden text-gray-300 p-2 touch-manipulation rounded-lg hover:bg-slate-800 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                className="md:hidden text-muted p-2 touch-manipulation rounded-lg hover:bg-surface transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Toggle mobile menu"
               >
@@ -576,7 +576,7 @@ export function LandingPage() {
             {/* Mobile Navigation */}
             {isMenuOpen && (
               <motion.div
-                className="md:hidden py-4 sm:py-6 border-t border-slate-800"
+                className="md:hidden py-4 sm:py-6 border-t border-outline"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
@@ -586,14 +586,14 @@ export function LandingPage() {
                   <div className="flex flex-col space-y-3">
                     <Link
                       to="/login"
-                      className="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-3 rounded-lg font-medium transition-colors text-center touch-manipulation min-h-[48px] flex items-center justify-center"
+                      className="w-full bg-surface hover:bg-surface2 text-fg px-4 py-3 rounded-lg font-medium transition-colors text-center touch-manipulation min-h-[48px] flex items-center justify-center"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Client Login
                     </Link>
                     <a
                       href="#contact"
-                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg text-center touch-manipulation min-h-[48px] flex items-center justify-center"
+                      className="w-full bg-gradient-to-r from-accent1 to-accent600 hover:from-emerald-600 hover:to-accent700 text-fg px-4 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg text-center touch-manipulation min-h-[48px] flex items-center justify-center"
                       onClick={() => {
                         setIsMenuOpen(false);
                         handleCTAClick('Get Free Quote');
@@ -605,23 +605,23 @@ export function LandingPage() {
                   
                   {/* Services Section */}
                   <div className="space-y-3">
-                    <div className="text-gray-300 font-semibold text-xs sm:text-sm uppercase tracking-wider px-2">Our Services</div>
+                    <div className="text-muted font-semibold text-xs sm:text-sm uppercase tracking-wider px-2">Our Services</div>
                     <div className="grid grid-cols-1 gap-2">
                       {servicesDropdown.map((service) => (
                         <Link
                           key={service.title}
                           to={service.href}
-                          className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group touch-manipulation min-h-[48px]"
+                          className="flex items-center p-3 rounded-lg hover:bg-surface2 transition-colors group touch-manipulation min-h-[48px]"
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
-                            <service.icon className="h-4 w-4 text-white" />
+                          <div className="w-8 h-8 bg-gradient-to-br from-accent1 to-accent600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                            <service.icon className="h-4 w-4 text-fg" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium text-white group-hover:text-emerald-400 transition-colors text-sm">
+                            <div className="font-medium text-fg group-hover:text-accent2 transition-colors text-sm">
                               {service.title}
                             </div>
-                            <div className="text-xs text-gray-400 truncate">
+                            <div className="text-xs text-muted truncate">
                               {service.description}
                             </div>
                           </div>
@@ -632,23 +632,23 @@ export function LandingPage() {
 
                   {/* Legal Section */}
                   <div className="space-y-3">
-                    <div className="text-gray-300 font-semibold text-xs sm:text-sm uppercase tracking-wider px-2">Legal</div>
+                    <div className="text-muted font-semibold text-xs sm:text-sm uppercase tracking-wider px-2">Legal</div>
                     <div className="grid grid-cols-1 gap-2">
                       {legalDropdown.map((legal) => (
                         <Link
                           key={legal.title}
                           to={legal.href}
-                          className="flex items-center p-3 rounded-lg hover:bg-slate-700 transition-colors group touch-manipulation min-h-[48px]"
+                          className="flex items-center p-3 rounded-lg hover:bg-surface2 transition-colors group touch-manipulation min-h-[48px]"
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
-                            <legal.icon className="h-4 w-4 text-white" />
+                          <div className="w-8 h-8 bg-gradient-to-br from-accent1 to-accent600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
+                            <legal.icon className="h-4 w-4 text-fg" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium text-white group-hover:text-emerald-400 transition-colors text-sm">
+                            <div className="font-medium text-fg group-hover:text-accent2 transition-colors text-sm">
                               {legal.title}
                             </div>
-                            <div className="text-xs text-gray-400 truncate">
+                            <div className="text-xs text-muted truncate">
                               {legal.description}
                             </div>
                           </div>
@@ -658,12 +658,12 @@ export function LandingPage() {
                   </div>
                   
                   {/* Navigation Links */}
-                  <div className="border-t border-slate-700 pt-4 space-y-2">
-                    <a href="#portfolio" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">Portfolio</a>
-                    <a href="#process" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">Process</a>
-                    <a href="#about" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">About</a>
-                    <Link to="/faq" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center" onClick={() => setIsMenuOpen(false)}>FAQ</Link>
-                    <a href="#contact" className="text-gray-300 hover:text-emerald-400 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">Contact</a>
+                  <div className="border-t border-outline pt-4 space-y-2">
+                    <a href="#portfolio" className="text-muted hover:text-accent2 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">Portfolio</a>
+                    <a href="#process" className="text-muted hover:text-accent2 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">Process</a>
+                    <a href="#about" className="text-muted hover:text-accent2 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">About</a>
+                    <Link to="/faq" className="text-muted hover:text-accent2 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center" onClick={() => setIsMenuOpen(false)}>FAQ</Link>
+                    <a href="#contact" className="text-muted hover:text-accent2 transition-colors font-medium block py-3 px-2 touch-manipulation min-h-[48px] flex items-center">Contact</a>
                   </div>
                 </div>
               </motion.div>
@@ -672,12 +672,10 @@ export function LandingPage() {
         </nav>
 
         {/* Hero Section */}
-        <section ref={heroRef} className="relative py-12 sm:py-16 md:py-20 lg:py-32 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 overflow-hidden">
+        <section ref={heroRef} className="relative py-12 sm:py-16 md:py-20 lg:py-32 bg-bg1 overflow-hidden">
           {/* Background Elements */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-20 left-20 w-32 h-32 border-4 border-emerald-400/20 transform rotate-45 hidden lg:block"></div>
-            <div className="absolute bottom-20 right-20 w-24 h-24 border-4 border-teal-400/20 transform rotate-12 hidden lg:block"></div>
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.02)_1px,transparent_1px)] bg-[size:30px_30px] sm:bg-[size:50px_50px]"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:30px_30px] sm:bg-[size:50px_50px]"></div>
           </div>
 
           <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative">
@@ -688,37 +686,37 @@ export function LandingPage() {
                 transition={{ duration: 1 }}
               >
                 <div className="mb-4 sm:mb-6">
-                  <span className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-xs sm:text-sm font-semibold">
+                  <span className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-surface text-accent3 rounded-full text-xs sm:text-sm font-semibold">
                     <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                     Trusted by 500+ Businesses
                   </span>
                 </div>
                 
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-white mb-4 sm:mb-6 leading-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-black text-fg mb-4 sm:mb-6 leading-tight">
                   <span className="block">TRANSFORM YOUR</span>
                   <span className="block">BUSINESS WITH</span>
-                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-accent2 to-accent1">
                     TECHPROCESSING LLC.
                   </span>
                 </h1>
                 
-                <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-300 mb-6 sm:mb-8 max-w-2xl leading-relaxed">
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-muted mb-6 sm:mb-8 max-w-2xl leading-relaxed">
                   TechProcessing LLC is your digital transformation partner, combining strategic expertise with cutting-edge technology to drive measurable results. From SEO and social media to business formation and design, we deliver solutions that grow your business.
                 </p>
 
                 <div className="mb-6 sm:mb-8">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 text-center">
                     <div>
-                      <div className="text-lg sm:text-xl md:text-2xl font-bold text-emerald-400">300%</div>
-                      <div className="text-xs sm:text-sm text-gray-400">Avg Traffic Increase</div>
+                      <div className="text-lg sm:text-xl md:text-2xl font-bold text-accent2">300%</div>
+                      <div className="text-xs sm:text-sm text-muted">Avg Traffic Increase</div>
                     </div>
                     <div>
-                      <div className="text-lg sm:text-xl md:text-2xl font-bold text-teal-400">99%</div>
-                      <div className="text-xs sm:text-sm text-gray-400">Client Satisfaction</div>
+                      <div className="text-lg sm:text-xl md:text-2xl font-bold text-accent2">99%</div>
+                      <div className="text-xs sm:text-sm text-muted">Client Satisfaction</div>
                     </div>
                     <div>
-                      <div className="text-lg sm:text-xl md:text-2xl font-bold text-cyan-400">24/7</div>
-                      <div className="text-xs sm:text-sm text-gray-400">Support Available</div>
+                      <div className="text-lg sm:text-xl md:text-2xl font-bold text-accent400">24/7</div>
+                      <div className="text-xs sm:text-sm text-muted">Support Available</div>
                     </div>
                   </div>
                 </div>
@@ -726,7 +724,7 @@ export function LandingPage() {
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <a
                     href="#contact"
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group touch-manipulation min-h-[48px] sm:min-h-[52px]"
+                    className="bg-gradient-to-r from-accent1 to-accent600 hover:from-emerald-600 hover:to-accent700 text-fg px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group touch-manipulation min-h-[48px] sm:min-h-[52px]"
                     onClick={() => handleCTAClick('Get My Free Quote')}
                   >
                     <Rocket className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
@@ -737,7 +735,7 @@ export function LandingPage() {
                   
                   <a
                     href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                    className="border-2 border-emerald-400 text-emerald-400 hover:bg-emerald-400 hover:text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base md:text-lg transition-all duration-300 flex items-center justify-center touch-manipulation min-h-[48px] sm:min-h-[52px]"
+                    className="border-2 border-emerald-400 text-accent2 hover:bg-emerald-400 hover:text-fg px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base md:text-lg transition-all duration-300 flex items-center justify-center touch-manipulation min-h-[48px] sm:min-h-[52px]"
                     onClick={() => handleCTAClick('Contact Us')}
                   >
                     <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
@@ -746,17 +744,17 @@ export function LandingPage() {
                   </a>
                 </div>
 
-                <div className="mt-4 sm:mt-6 md:mt-8 flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 md:space-x-6 text-xs sm:text-sm text-gray-400">
+                <div className="mt-4 sm:mt-6 md:mt-8 flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 md:space-x-6 text-xs sm:text-sm text-muted">
                   <div className="flex items-center">
-                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 mr-2 flex-shrink-0" />
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-accent1 mr-2 flex-shrink-0" />
                     <span>Free Consultation</span>
                   </div>
                   <div className="flex items-center">
-                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 mr-2 flex-shrink-0" />
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-accent1 mr-2 flex-shrink-0" />
                     <span>No Long-term Contracts</span>
                   </div>
                   <div className="flex items-center">
-                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 mr-2 flex-shrink-0" />
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-accent1 mr-2 flex-shrink-0" />
                     <span>Results Guaranteed</span>
                   </div>
                 </div>
@@ -770,23 +768,23 @@ export function LandingPage() {
               >
                 <div className="relative">
                   {/* Simplified Dashboard Mockup */}
-                  <div className="w-full h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl border border-slate-700">
+                  <div className="w-full h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl border border-outline">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex space-x-2">
                         <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                         <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-accent500 rounded-full"></div>
                       </div>
-                      <div className="text-emerald-400 text-xs sm:text-sm font-mono">Business Dashboard</div>
+                      <div className="text-accent2 text-xs sm:text-sm font-mono">Business Dashboard</div>
                     </div>
                     
                     {/* Chart Area */}
-                    <div className="h-20 sm:h-24 lg:h-32 bg-slate-800 rounded-lg mb-3 sm:mb-4 relative overflow-hidden">
+                    <div className="h-20 sm:h-24 lg:h-32 bg-surface rounded-lg mb-3 sm:mb-4 relative overflow-hidden">
                       <div className="absolute inset-0 flex items-end justify-between px-4 pb-2">
                         {[40, 65, 45, 80, 60, 90, 75, 95].map((height, i) => (
                           <motion.div
                             key={i}
-                            className="bg-gradient-to-t from-emerald-500 to-teal-400 rounded-t"
+                            className="bg-gradient-to-t from-accent1 to-accent400 rounded-t"
                             style={{ width: '10px', height: `${height}%` }}
                             initial={{ height: 0 }}
                             animate={{ height: `${height}%` }}
@@ -799,16 +797,16 @@ export function LandingPage() {
                     {/* Stats */}
                     <div className="grid grid-cols-3 gap-2 sm:gap-4">
                       <div className="text-center">
-                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-emerald-400">300%</div>
-                        <div className="text-xs text-gray-400">Growth</div>
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-accent2">300%</div>
+                        <div className="text-xs text-muted">Growth</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-teal-400">99%</div>
-                        <div className="text-xs text-gray-400">Satisfaction</div>
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-accent400">99%</div>
+                        <div className="text-xs text-muted">Satisfaction</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-cyan-400">24/7</div>
-                        <div className="text-xs text-gray-400">Support</div>
+                        <div className="text-lg sm:text-xl lg:text-2xl font-bold text-accent400">24/7</div>
+                        <div className="text-xs text-muted">Support</div>
                       </div>
                     </div>
                   </div>
@@ -819,7 +817,7 @@ export function LandingPage() {
         </section>
 
         {/* Services Section */}
-        <section id="services" className="py-20 bg-slate-900">
+        <section id="services" className="py-20 bg-bg2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -828,10 +826,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-fg mb-6">
                 Our Services
               </h2>
-              <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-lg sm:text-xl text-muted max-w-3xl mx-auto">
                 From social media marketing to LLC formation, we provide comprehensive digital solutions that transform your business
               </p>
             </motion.div>
@@ -840,48 +838,48 @@ export function LandingPage() {
               {services.map((service, index) => (
                 <motion.div
                   key={service.title}
-                  className="bg-slate-800 rounded-2xl shadow-lg border border-slate-700 p-6 sm:p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                  className="bg-surface rounded-2xl shadow-lg border border-outline p-6 sm:p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg">
-                    <service.icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-accent1 to-accent600 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg">
+                    <service.icon className="h-6 w-6 sm:h-8 sm:w-8 text-fg" />
                   </div>
                   
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
+                  <h3 className="text-xl sm:text-2xl font-bold text-fg mb-3 sm:mb-4">
                     {service.title === 'SEO (Search Engine Optimization)' ? (
-                      <Link to="/services/seo" className="hover:text-emerald-400 transition-colors">
+                      <Link to="/services/seo" className="hover:text-accent2 transition-colors">
                         {service.title}
                       </Link>
                     ) : service.title === 'Google My Business (GMB)' ? (
-                      <Link to="/services/google-my-business" className="hover:text-emerald-400 transition-colors">
+                      <Link to="/services/google-my-business" className="hover:text-accent2 transition-colors">
                         {service.title}
                       </Link>
                     ) : service.title === 'Social Media Marketing' ? (
-                      <Link to="/services/social-media-marketing" className="hover:text-emerald-400 transition-colors">
+                      <Link to="/services/social-media-marketing" className="hover:text-accent2 transition-colors">
                         {service.title}
                       </Link>
                     ) : (
                       service.title
                     )}
                   </h3>
-                  <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6 leading-relaxed">{service.description}</p>
+                  <p className="text-sm sm:text-base text-muted mb-4 sm:mb-6 leading-relaxed">{service.description}</p>
                   
                   <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                     {service.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-center">
-                        <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500 mr-2 sm:mr-3 flex-shrink-0" />
-                        <span className="text-xs sm:text-sm text-gray-300">{feature}</span>
+                        <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-accent1 mr-2 sm:mr-3 flex-shrink-0" />
+                        <span className="text-xs sm:text-sm text-muted">{feature}</span>
                       </div>
                     ))}
                   </div>
                   
                   <div className="bg-emerald-900/20 rounded-lg p-3 sm:p-4 border border-emerald-800">
                     <div className="flex items-center">
-                      <Target className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-400 mr-2 flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-emerald-300 font-semibold">{service.outcome}</span>
+                      <Target className="h-4 w-4 sm:h-5 sm:w-5 text-accent2 mr-2 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm text-accent3 font-semibold">{service.outcome}</span>
                     </div>
                   </div>
                 </motion.div>
@@ -891,7 +889,7 @@ export function LandingPage() {
         </section>
 
         {/* Marketing Services Section */}
-        <section className="py-20 bg-slate-800">
+        <section className="py-20 bg-surface">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -900,10 +898,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-fg mb-6">
                 Our Marketing Services
               </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-muted max-w-3xl mx-auto">
                 Comprehensive digital marketing solutions to boost your online presence and drive results
               </p>
             </motion.div>
@@ -911,37 +909,37 @@ export function LandingPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Search Engine Optimization */}
               <motion.div
-                className="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 p-8"
+                className="bg-bg2 rounded-2xl shadow-lg border border-outline p-8"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
                 viewport={{ once: true }}
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                  <Search className="h-8 w-8 text-white" />
+                <div className="w-16 h-16 bg-gradient-to-br from-accent1 to-accent600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <Search className="h-8 w-8 text-fg" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">
-                  <Link to="/services/seo" className="hover:text-emerald-400 transition-colors">
+                <h3 className="text-2xl font-bold text-fg mb-4">
+                  <Link to="/services/seo" className="hover:text-accent2 transition-colors">
                     Search Engine Optimization
                   </Link>
                 </h3>
-                <p className="text-gray-300 mb-6">Boost Your Visibility with Expert SEO</p>
+                <p className="text-muted mb-6">Boost Your Visibility with Expert SEO</p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Optimize your website for higher search engine rankings</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Optimize your website for higher search engine rankings</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Develop targeted content strategies to attract and engage your audience</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Develop targeted content strategies to attract and engage your audience</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Implement technical SEO improvements to enhance site performance</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Implement technical SEO improvements to enhance site performance</span>
                   </li>
                 </ul>
                 <div className="bg-emerald-900/20 rounded-lg p-4 border border-emerald-800">
-                  <p className="text-emerald-300 text-sm">
+                  <p className="text-accent3 text-sm">
                     Our Search Engine Optimization (SEO) services are aimed at ensuring that your business has found its way up the staging posts, more quality traffic is drawn to the business and that the business converts the visitors into customers.
                   </p>
                 </div>
@@ -949,33 +947,33 @@ export function LandingPage() {
 
               {/* Local Search */}
               <motion.div
-                className="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 p-8"
+                className="bg-bg2 rounded-2xl shadow-lg border border-outline p-8"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
                 viewport={{ once: true }}
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                  <MapPin className="h-8 w-8 text-white" />
+                <div className="w-16 h-16 bg-gradient-to-br from-accent1 to-accent600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <MapPin className="h-8 w-8 text-fg" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Local Search</h3>
-                <p className="text-gray-300 mb-6">Increase Your Online Presence in your area</p>
+                <h3 className="text-2xl font-bold text-fg mb-4">Local Search</h3>
+                <p className="text-muted mb-6">Increase Your Online Presence in your area</p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Please draw Nearby, Ready-to-Buy Customers</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Please draw Nearby, Ready-to-Buy Customers</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Be More Prominent in Google Maps</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Be More Prominent in Google Maps</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Generate More Calls and store visits</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Generate More Calls and store visits</span>
                   </li>
                 </ul>
                 <div className="bg-emerald-900/20 rounded-lg p-4 border border-emerald-800">
-                  <p className="text-emerald-300 text-sm">
+                  <p className="text-accent3 text-sm">
                     Our Local Search services at Tech Processing LLC are aimed at ensuring that your business is put in the frontline, whenever your products or services are being sought locally.
                   </p>
                 </div>
@@ -983,37 +981,37 @@ export function LandingPage() {
 
               {/* Social Media */}
               <motion.div
-                className="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 p-8"
+                className="bg-bg2 rounded-2xl shadow-lg border border-outline p-8"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
                 viewport={{ once: true }}
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                  <Facebook className="h-8 w-8 text-white" />
+                <div className="w-16 h-16 bg-gradient-to-br from-accent1 to-accent600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <Facebook className="h-8 w-8 text-fg" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">
-                  <Link to="/services/social-media-marketing" className="hover:text-emerald-400 transition-colors">
+                <h3 className="text-2xl font-bold text-fg mb-4">
+                  <Link to="/services/social-media-marketing" className="hover:text-accent2 transition-colors">
                     Social Media
                   </Link>
                 </h3>
-                <p className="text-gray-300 mb-6">Build genuine relationships with the customers</p>
+                <p className="text-muted mb-6">Build genuine relationships with the customers</p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Increase brand recognition and brand loyalty</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Increase brand recognition and brand loyalty</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Promote interaction with innovative contents</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Promote interaction with innovative contents</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Monitor success in real-time analytics</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Monitor success in real-time analytics</span>
                   </li>
                 </ul>
                 <div className="bg-emerald-900/20 rounded-lg p-4 border border-emerald-800">
-                  <p className="text-emerald-300 text-sm">
+                  <p className="text-accent3 text-sm">
                     Our social media specialists develop custom-made plans in social platforms such as Facebook, Instagram, LinkedIn, Twitter, among others.
                   </p>
                 </div>
@@ -1021,33 +1019,33 @@ export function LandingPage() {
 
               {/* Google Ads */}
               <motion.div
-                className="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 p-8"
+                className="bg-bg2 rounded-2xl shadow-lg border border-outline p-8"
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
                 viewport={{ once: true }}
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                  <Target className="h-8 w-8 text-white" />
+                <div className="w-16 h-16 bg-gradient-to-br from-accent1 to-accent600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                  <Target className="h-8 w-8 text-fg" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Google ADS</h3>
-                <p className="text-gray-300 mb-6">Go straight to your customers directly</p>
+                <h3 className="text-2xl font-bold text-fg mb-4">Google ADS</h3>
+                <p className="text-muted mb-6">Go straight to your customers directly</p>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Max ROI-wise advertising maximization</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Max ROI-wise advertising maximization</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Be the first result in the search outcomes</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Be the first result in the search outcomes</span>
                   </li>
                   <li className="flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 mr-3 flex-shrink-0" />
-                    <span className="text-gray-300">Monitor, measure and tune performance</span>
+                    <CheckCircle2 className="h-4 w-4 text-accent1 mr-3 flex-shrink-0" />
+                    <span className="text-muted">Monitor, measure and tune performance</span>
                   </li>
                 </ul>
                 <div className="bg-emerald-900/20 rounded-lg p-4 border border-emerald-800">
-                  <p className="text-emerald-300 text-sm">
+                  <p className="text-accent3 text-sm">
                     In Tech Processing LLC, we excel in the development and management of Google Ads campaigns that provide quantifiable results and actual business development.
                   </p>
                 </div>
@@ -1057,7 +1055,7 @@ export function LandingPage() {
         </section>
 
         {/* Portfolio/Case Studies Section */}
-        <section id="portfolio" className="py-20 bg-slate-800">
+        <section id="portfolio" className="py-20 bg-surface">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -1066,10 +1064,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-fg mb-6">
                 We have worked with some of the biggest names in USA
               </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-muted max-w-3xl mx-auto">
                 See how we've helped businesses like SAPPHIRE OCEAN LLC, Softowel Inc, and Almas achieve extraordinary growth
               </p>
             </motion.div>
@@ -1078,13 +1076,13 @@ export function LandingPage() {
               {caseStudies.map((study, index) => (
                 <motion.div
                   key={study.client}
-                  className="bg-slate-900 rounded-2xl shadow-lg border border-slate-700 overflow-hidden hover:shadow-xl transition-all duration-300"
+                  className="bg-bg2 rounded-2xl shadow-lg border border-outline overflow-hidden hover:shadow-xl transition-all duration-300"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.2 }}
                   viewport={{ once: true }}
                 >
-                  <div className="aspect-video bg-gradient-to-br from-emerald-500 to-teal-600 relative overflow-hidden">
+                  <div className="aspect-video bg-gradient-to-br from-accent1 to-accent600 relative overflow-hidden">
                     <img 
                       src={study.image} 
                       alt={`${study.client} case study`}
@@ -1092,24 +1090,24 @@ export function LandingPage() {
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 text-white">
+                    <div className="absolute bottom-4 left-4 text-fg">
                       <div className="text-lg font-bold">{study.client}</div>
                       <div className="text-sm opacity-90">{study.industry}</div>
                     </div>
                   </div>
                   
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-white mb-3">The Challenge</h3>
-                    <p className="text-gray-300 mb-4">{study.challenge}</p>
+                    <h3 className="text-xl font-bold text-fg mb-3">The Challenge</h3>
+                    <p className="text-muted mb-4">{study.challenge}</p>
                     
-                    <h4 className="text-lg font-semibold text-white mb-3">Our Solution</h4>
-                    <p className="text-gray-300 mb-6">{study.solution}</p>
+                    <h4 className="text-lg font-semibold text-fg mb-3">Our Solution</h4>
+                    <p className="text-muted mb-6">{study.solution}</p>
                     
                     <div className="grid grid-cols-2 gap-4">
                       {Object.entries(study.results).map(([key, value]) => (
-                        <div key={key} className="text-center p-3 bg-slate-800 rounded-lg">
-                          <div className="text-lg font-bold text-emerald-400">{value}</div>
-                          <div className="text-xs text-gray-400 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                        <div key={key} className="text-center p-3 bg-surface rounded-lg">
+                          <div className="text-lg font-bold text-accent2">{value}</div>
+                          <div className="text-xs text-muted capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
                         </div>
                       ))}
                     </div>
@@ -1121,7 +1119,7 @@ export function LandingPage() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="py-20 bg-slate-900">
+        <section className="py-20 bg-bg2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -1130,10 +1128,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-fg mb-6">
                 What Our Clients Say
               </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-muted max-w-3xl mx-auto">
                 Don't just take our word for it—hear from businesses we've helped succeed
               </p>
             </motion.div>
@@ -1146,7 +1144,7 @@ export function LandingPage() {
                 >
                   {testimonials.map((testimonial, index) => (
                     <div key={index} className="w-full flex-shrink-0 px-4">
-                      <div className="bg-slate-800 rounded-2xl p-8 max-w-4xl mx-auto">
+                      <div className="bg-surface rounded-2xl p-8 max-w-4xl mx-auto">
                         <div className="flex flex-col md:flex-row items-center gap-8">
                           <div className="flex-shrink-0">
                             <img
@@ -1162,16 +1160,16 @@ export function LandingPage() {
                                 <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                               ))}
                             </div>
-                            <blockquote className="text-lg lg:text-xl text-gray-300 italic mb-6 leading-relaxed">
+                            <blockquote className="text-lg lg:text-xl text-muted italic mb-6 leading-relaxed">
                               "{testimonial.content}"
                             </blockquote>
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                               <div>
-                                <div className="font-bold text-white">{testimonial.name}</div>
-                                <div className="text-gray-400">{testimonial.role}, {testimonial.company}</div>
+                                <div className="font-bold text-fg">{testimonial.name}</div>
+                                <div className="text-muted">{testimonial.role}, {testimonial.company}</div>
                               </div>
                               <div className="mt-4 md:mt-0">
-                                <div className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-semibold">
+                                <div className="inline-flex items-center px-4 py-2 bg-emerald-900/20 text-accent3 rounded-full text-sm font-semibold">
                                   <TrendingUp className="h-4 w-4 mr-2" />
                                   {testimonial.results}
                                 </div>
@@ -1192,7 +1190,7 @@ export function LandingPage() {
                     key={index}
                     onClick={() => setActiveTestimonial(index)}
                     className={`w-3 h-3 rounded-full transition-colors ${
-                      index === activeTestimonial ? 'bg-emerald-600' : 'bg-gray-600'
+                      index === activeTestimonial ? 'bg-accent1' : 'bg-gray-600'
                     }`}
                     aria-label={`View testimonial ${index + 1}`}
                   />
@@ -1203,7 +1201,7 @@ export function LandingPage() {
         </section>
 
         {/* Process Section */}
-        <section id="process" className="py-20 bg-slate-800">
+        <section id="process" className="py-20 bg-surface">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               className="text-center mb-16"
@@ -1212,10 +1210,10 @@ export function LandingPage() {
               transition={{ duration: 1 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+              <h2 className="text-4xl lg:text-5xl font-bold text-fg mb-6">
                 Our Proven Process
               </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-muted max-w-3xl mx-auto">
                 A streamlined approach that delivers exceptional results every time
               </p>
             </motion.div>
@@ -1230,21 +1228,21 @@ export function LandingPage() {
                   transition={{ duration: 0.8, delay: index * 0.2 }}
                   viewport={{ once: true }}
                 >
-                  <div className="bg-slate-900 rounded-2xl p-6 shadow-lg border border-slate-700 text-center relative">
+                  <div className="bg-bg2 rounded-2xl p-6 shadow-lg border border-outline text-center relative">
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                      <div className="w-8 h-8 bg-gradient-to-r from-accent1 to-accent600 rounded-full flex items-center justify-center text-fg font-bold text-sm">
                         {step.step}
                       </div>
                     </div>
                     
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 mt-4">
-                      <step.icon className="h-8 w-8 text-white" />
+                    <div className="w-16 h-16 bg-gradient-to-br from-accent1 to-accent600 rounded-2xl flex items-center justify-center mx-auto mb-6 mt-4">
+                      <step.icon className="h-8 w-8 text-fg" />
                     </div>
                     
-                    <h3 className="text-xl font-bold text-white mb-4">{step.title}</h3>
-                    <p className="text-gray-300 mb-4">{step.description}</p>
+                    <h3 className="text-xl font-bold text-fg mb-4">{step.title}</h3>
+                    <p className="text-muted mb-4">{step.description}</p>
                     
-                    <div className="inline-flex items-center px-3 py-1 bg-emerald-900/20 text-emerald-300 rounded-full text-sm font-medium">
+                    <div className="inline-flex items-center px-3 py-1 bg-emerald-900/20 text-accent3 rounded-full text-sm font-medium">
                       <Clock className="h-4 w-4 mr-2" />
                       {step.duration}
                     </div>
@@ -1252,7 +1250,7 @@ export function LandingPage() {
                   
                   {/* Connector Line */}
                   {index < processSteps.length - 1 && (
-                    <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-600 transform -translate-y-1/2"></div>
+                    <div className="hidden lg:block absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-accent1 to-accent600 transform -translate-y-1/2"></div>
                   )}
                 </motion.div>
               ))}
@@ -1262,7 +1260,7 @@ export function LandingPage() {
 
 
         {/* Contact/Lead Form Section */}
-        <section id="contact" className="py-20 bg-gradient-to-br from-emerald-900/20 to-teal-900/20">
+        <section id="contact" className="py-20 bg-gradient-to-br from-emerald-900/20 to-accent900/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               {/* Contact Information */}
@@ -1272,45 +1270,45 @@ export function LandingPage() {
                 transition={{ duration: 1 }}
                 viewport={{ once: true }}
               >
-                <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+                <h2 className="text-4xl lg:text-5xl font-bold text-fg mb-6">
                   Ready to Transform Your Business?
                 </h2>
-                <p className="text-xl text-gray-300 mb-8">
+                <p className="text-xl text-muted mb-8">
                   Let's work together to take your business to the next level with our proven digital solutions and expert team.
                 </p>
 
                 <div className="space-y-6 mb-8">
                   <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mr-4">
-                      <Phone className="h-6 w-6 text-white" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center mr-4">
+                      <Phone className="h-6 w-6 text-fg" />
                     </div>
                     <div>
-                      <div className="font-semibold text-white">Call Us</div>
-                      <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-emerald-400 hover:underline">
+                      <div className="font-semibold text-fg">Call Us</div>
+                      <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-accent2 hover:underline">
                         {appConfig.contact.phone}
                       </a>
                     </div>
                   </div>
 
                   <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mr-4">
-                      <Mail className="h-6 w-6 text-white" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center mr-4">
+                      <Mail className="h-6 w-6 text-fg" />
                     </div>
                     <div>
-                      <div className="font-semibold text-white">Email Us</div>
-                      <a href={`mailto:${appConfig.contact.email}`} className="text-emerald-400 hover:underline">
+                      <div className="font-semibold text-fg">Email Us</div>
+                      <a href={`mailto:${appConfig.contact.email}`} className="text-accent2 hover:underline">
                         {appConfig.contact.email}
                       </a>
                     </div>
                   </div>
 
                   <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mr-4">
-                      <MapPin className="h-6 w-6 text-white" />
+                    <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center mr-4">
+                      <MapPin className="h-6 w-6 text-fg" />
                     </div>
                     <div>
-                      <div className="font-semibold text-white">Visit Us</div>
-                      <div className="text-gray-300">
+                      <div className="font-semibold text-fg">Visit Us</div>
+                      <div className="text-muted">
                         {appConfig.contact.address}
                       </div>
                     </div>
@@ -1318,16 +1316,16 @@ export function LandingPage() {
                 </div>
 
                 <div className="flex space-x-4">
-                  <a href="#" className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Facebook">
+                  <a href="#" className="w-10 h-10 bg-surface2 rounded-lg flex items-center justify-center hover:bg-accent1 hover:text-fg transition-colors" aria-label="Facebook">
                     <Facebook className="h-5 w-5" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Twitter">
+                  <a href="#" className="w-10 h-10 bg-surface2 rounded-lg flex items-center justify-center hover:bg-accent1 hover:text-fg transition-colors" aria-label="Twitter">
                     <Twitter className="h-5 w-5" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="LinkedIn">
+                  <a href="#" className="w-10 h-10 bg-surface2 rounded-lg flex items-center justify-center hover:bg-accent1 hover:text-fg transition-colors" aria-label="LinkedIn">
                     <LinkedIn className="h-5 w-5" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-colors" aria-label="Instagram">
+                  <a href="#" className="w-10 h-10 bg-surface2 rounded-lg flex items-center justify-center hover:bg-accent1 hover:text-fg transition-colors" aria-label="Instagram">
                     <Instagram className="h-5 w-5" />
                   </a>
                 </div>
@@ -1341,13 +1339,13 @@ export function LandingPage() {
                 viewport={{ once: true }}
               >
                 {/* Tab Navigation */}
-                <div className="flex mb-6 bg-slate-800 rounded-lg p-1">
+                <div className="flex mb-6 bg-surface rounded-lg p-1">
                   <button
                     onClick={() => setActiveTab('contact')}
                     className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
                       activeTab === 'contact'
-                        ? 'bg-slate-700 text-emerald-400 shadow-sm'
-                        : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                        ? 'bg-surface2 text-accent2 shadow-sm'
+                        : 'text-muted hover:text-gray-900 dark:hover:text-fg'
                     }`}
                   >
                     Get Quote
@@ -1356,8 +1354,8 @@ export function LandingPage() {
                     onClick={() => setActiveTab('appointment')}
                     className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 ${
                       activeTab === 'appointment'
-                        ? 'bg-slate-700 text-emerald-400 shadow-sm'
-                        : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                        ? 'bg-surface2 text-accent2 shadow-sm'
+                        : 'text-muted hover:text-gray-900 dark:hover:text-fg'
                     }`}
                   >
                     Book Call
@@ -1376,36 +1374,36 @@ export function LandingPage() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-slate-950 text-white py-16">
+        <footer className="bg-bg1 text-fg py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div className="col-span-1 md:col-span-2">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 rounded-xl flex items-center justify-center shadow-lg">
-                    <div className="text-white font-black text-lg">TP</div>
+                  <div className="w-12 h-12 bg-gradient-to-br from-accent1 via-accent2 to-accent1 rounded-xl flex items-center justify-center shadow-lg">
+                    <div className="text-fg font-black text-lg">TP</div>
                   </div>
                   <div className="font-black text-2xl">
                     <span className="tracking-wider">TECHPROCESSING</span>
-                    <div className="text-xs text-emerald-400 font-bold tracking-[0.2em]">LLC</div>
+                    <div className="text-xs text-accent2 font-bold tracking-[0.2em]">LLC</div>
                   </div>
                 </div>
-                <p className="text-gray-300 mb-6 max-w-md">
+                <p className="text-muted mb-6 max-w-md">
                   Your digital transformation partners, delivering innovative solutions in design, marketing, and technology to help your business grow and succeed online.
                 </p>
                 <div className="flex space-x-4">
-                  <a href="https://facebook.com/techprocessingllc" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="Facebook">
+                  <a href="https://facebook.com/techprocessingllc" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-accent1 transition-colors" aria-label="Facebook">
                     <Facebook className="h-5 w-5" />
                   </a>
-                  <a href="https://twitter.com/techprocessingllc" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="Twitter">
+                  <a href="https://twitter.com/techprocessingllc" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-accent1 transition-colors" aria-label="Twitter">
                     <Twitter className="h-5 w-5" />
                   </a>
-                  <a href="https://www.linkedin.com/company/tech-processing-llc" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="LinkedIn">
+                  <a href="https://www.linkedin.com/company/tech-processing-llc" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-accent1 transition-colors" aria-label="LinkedIn">
                     <LinkedIn className="h-5 w-5" />
                   </a>
-                  <a href="https://www.instagram.com/techprocessingllc/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="Instagram">
+                  <a href="https://www.instagram.com/techprocessingllc/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-accent1 transition-colors" aria-label="Instagram">
                     <Instagram className="h-5 w-5" />
                   </a>
-                  <a href="https://share.google/bEohIPgtPb8ijMWwi" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-emerald-600 transition-colors" aria-label="Google Business">
+                  <a href="https://share.google/bEohIPgtPb8ijMWwi" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-accent1 transition-colors" aria-label="Google Business">
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                       <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -1418,32 +1416,32 @@ export function LandingPage() {
 
               <div>
                 <h3 className="text-lg font-bold mb-4">Services</h3>
-                <ul className="space-y-2 text-gray-300">
-                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Social Media Marketing</a></li>
-                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Social Media Management</a></li>
-                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">LLC Formation</a></li>
-                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">Graphic Designing</a></li>
-                  <li><a href="#services" className="hover:text-emerald-400 transition-colors">SEO & GMB</a></li>
+                <ul className="space-y-2 text-muted">
+                  <li><a href="#services" className="hover:text-accent2 transition-colors">Social Media Marketing</a></li>
+                  <li><a href="#services" className="hover:text-accent2 transition-colors">Social Media Management</a></li>
+                  <li><a href="#services" className="hover:text-accent2 transition-colors">LLC Formation</a></li>
+                  <li><a href="#services" className="hover:text-accent2 transition-colors">Graphic Designing</a></li>
+                  <li><a href="#services" className="hover:text-accent2 transition-colors">SEO & GMB</a></li>
                 </ul>
               </div>
 
               <div>
                 <h3 className="text-lg font-bold mb-4">Contact Info</h3>
-                <div className="space-y-3 text-gray-300">
+                <div className="space-y-3 text-muted">
                   <div className="flex items-center">
-                    <Phone className="h-4 w-4 mr-2 text-emerald-400" />
-                    <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="hover:text-emerald-400 transition-colors">
+                    <Phone className="h-4 w-4 mr-2 text-accent2" />
+                    <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="hover:text-accent2 transition-colors">
                       {appConfig.contact.phone}
                     </a>
                   </div>
                   <div className="flex items-center">
-                    <Mail className="h-4 w-4 mr-2 text-emerald-400" />
-                    <a href={`mailto:${appConfig.contact.email}`} className="hover:text-emerald-400 transition-colors">
+                    <Mail className="h-4 w-4 mr-2 text-accent2" />
+                    <a href={`mailto:${appConfig.contact.email}`} className="hover:text-accent2 transition-colors">
                       {appConfig.contact.email}
                     </a>
                   </div>
                   <div className="flex items-start">
-                    <MapPin className="h-4 w-4 mr-2 text-emerald-400 mt-1" />
+                    <MapPin className="h-4 w-4 mr-2 text-accent2 mt-1" />
                     <div>
                       {appConfig.contact.address}
                     </div>
@@ -1453,7 +1451,7 @@ export function LandingPage() {
                       href="https://www.linkedin.com/company/tech-processing-llc" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center text-emerald-400 hover:text-emerald-300 transition-colors"
+                      className="flex items-center text-accent2 hover:text-accent3 transition-colors"
                     >
                       <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
@@ -1466,7 +1464,7 @@ export function LandingPage() {
                       href="https://www.instagram.com/techprocessingllc/" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center text-emerald-400 hover:text-emerald-300 transition-colors"
+                      className="flex items-center text-accent2 hover:text-accent3 transition-colors"
                     >
                       <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
@@ -1479,7 +1477,7 @@ export function LandingPage() {
                       href="https://share.google/bEohIPgtPb8ijMWwi" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center text-emerald-400 hover:text-emerald-300 transition-colors"
+                      className="flex items-center text-accent2 hover:text-accent3 transition-colors"
                     >
                       <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -1495,13 +1493,13 @@ export function LandingPage() {
             </div>
 
             <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-              <div className="text-gray-400 text-sm">
+              <div className="text-muted text-sm">
                 © 2024 TechProcessing LLC. All rights reserved.
               </div>
               <div className="flex space-x-6 mt-4 md:mt-0">
-                <Link to="/privacy-policy" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Privacy Policy</Link>
-                <Link to="/terms-conditions" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Terms & Conditions</Link>
-                <Link to="/login" className="text-gray-400 hover:text-emerald-400 text-sm transition-colors">Client Login</Link>
+                <Link to="/privacy-policy" className="text-muted hover:text-accent2 text-sm transition-colors">Privacy Policy</Link>
+                <Link to="/terms-conditions" className="text-muted hover:text-accent2 text-sm transition-colors">Terms & Conditions</Link>
+                <Link to="/login" className="text-muted hover:text-accent2 text-sm transition-colors">Client Login</Link>
               </div>
             </div>
           </div>
