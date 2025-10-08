@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ServiceRequest, ServiceRequestStatus, RequestType } from './entities/service-request.entity';
@@ -11,9 +11,13 @@ import { UpdatePriceAdjustmentStatusDto } from './dto/update-price-adjustment-st
 import { CreateFileAttachmentDto } from './dto/create-file-attachment.dto';
 import { InvoicesService } from '../invoices/invoices.service';
 import { InvoiceStatus } from '../common/enums/invoice-status.enum';
+import { ErrorFactory } from '../common/errors/error-factory';
+import { BILLING_CONSTANTS } from '../common/constants/app.constants';
 
 @Injectable()
 export class ServiceRequestsService {
+  private readonly logger = new Logger(ServiceRequestsService.name);
+
   constructor(
     @InjectRepository(ServiceRequest)
     private serviceRequestRepository: Repository<ServiceRequest>,
@@ -71,9 +75,6 @@ export class ServiceRequestsService {
   }
 
   async create(createServiceRequestDto: CreateServiceRequestDto, clientId: string): Promise<ServiceRequest> {
-    // Skip session assumption since RLS is disabled
-    // await this.assumeClientSession(clientId);
-    
     // Generate sequential request number
     const requestNumber = await this.generateRequestNumber();
     
@@ -98,11 +99,11 @@ export class ServiceRequestsService {
       
       // If metadata issue, fallback to raw SQL
       if (message.includes('No metadata') || message.includes('ServiceRequest')) {
-        console.log('Using raw SQL fallback due to metadata issue');
+        this.logger.warn('Using raw SQL fallback due to metadata issue');
         return await this.createWithRawSQL(createServiceRequestDto, clientId, requestNumber);
       }
       
-      throw new BadRequestException(`Service request creation failed: ${message}`);
+      throw ErrorFactory.badRequest(`Service request creation failed: ${message}`);
     }
   }
 
@@ -134,9 +135,6 @@ export class ServiceRequestsService {
   }
 
   async findAll(): Promise<ServiceRequest[]> {
-    // Skip session assumption since RLS is disabled
-    // await this.assumeAdminSession();
-    
     try {
       const relations = await this.getRelations();
       return this.serviceRequestRepository.find({
@@ -148,7 +146,7 @@ export class ServiceRequestsService {
       
       // If metadata issue, fallback to raw SQL
       if (message.includes('No metadata') || message.includes('ServiceRequest') || message.includes('EntityMetadataNotFoundError')) {
-        console.log('Using raw SQL fallback for findAll due to metadata issue');
+        this.logger.warn('Using raw SQL fallback for findAll due to metadata issue');
         return await this.findAllWithRawSQL();
       }
       
@@ -157,9 +155,6 @@ export class ServiceRequestsService {
   }
 
   async findByClient(clientId: string): Promise<ServiceRequest[]> {
-    // Skip session assumption since RLS is disabled
-    // await this.assumeClientSession(clientId);
-    
     try {
       const relations = await this.getRelations();
       // client relation is redundant here; service + optional children are useful
@@ -174,7 +169,7 @@ export class ServiceRequestsService {
       
       // If metadata issue, fallback to raw SQL
       if (message.includes('No metadata') || message.includes('ServiceRequest')) {
-        console.log('Using raw SQL fallback for findByClient due to metadata issue');
+        this.logger.warn('Using raw SQL fallback for findByClient due to metadata issue');
         return await this.findByClientWithRawSQL(clientId);
       }
       
@@ -193,7 +188,7 @@ export class ServiceRequestsService {
       });
 
       if (!serviceRequest) {
-        throw new NotFoundException(`Service request with ID ${id} not found`);
+        throw ErrorFactory.notFound('Service request', id);
       }
 
       return serviceRequest;
@@ -202,7 +197,7 @@ export class ServiceRequestsService {
       
       // If metadata issue, fallback to raw SQL
       if (message.includes('No metadata') || message.includes('ServiceRequest') || message.includes('EntityMetadataNotFoundError')) {
-        console.log('Using raw SQL fallback for findOne due to metadata issue');
+        this.logger.warn('Using raw SQL fallback for findOne due to metadata issue');
         return await this.findOneWithRawSQL(id);
       }
       
@@ -227,8 +222,8 @@ export class ServiceRequestsService {
       );
 
       if (serviceRequestInvoice && serviceRequestInvoice.status !== InvoiceStatus.PAID) {
-        throw new BadRequestException(
-          'Cannot start work until the invoice is paid. Please ensure the invoice is paid before marking as IN_PROGRESS.'
+        throw ErrorFactory.businessRule(
+          'Cannot start work until the invoice is paid. Please ensure the invoice is paid before marking as IN_PROGRESS'
         );
       }
     }
@@ -257,22 +252,22 @@ export class ServiceRequestsService {
 
   async remove(id: string): Promise<void> {
     try {
-      console.log('Attempting to delete service request:', id);
+      this.logger.log(`Attempting to delete service request: ${id}`);
       
       // First, try to delete using the repository's delete method (simpler approach)
       const deleteResult = await this.serviceRequestRepository.delete(id);
       
       if (deleteResult.affected === 0) {
-        throw new NotFoundException(`Service request with ID ${id} not found`);
+        throw ErrorFactory.notFound('Service request', id);
       }
       
-      console.log('Service request deleted successfully:', id);
+      this.logger.log(`Service request deleted successfully: ${id}`);
     } catch (error) {
-      console.error('Error removing service request:', error);
+      this.logger.error(`Error removing service request: ${error.message}`, error.stack);
       
       // If direct delete fails, try to find and remove with relations
       try {
-        console.log('Direct delete failed, trying with relations...');
+        this.logger.log('Direct delete failed, trying with relations...');
         
         // Try to find the service request with relations
         const serviceRequest = await this.serviceRequestRepository.findOne({
@@ -281,14 +276,14 @@ export class ServiceRequestsService {
         });
         
         if (!serviceRequest) {
-          throw new NotFoundException(`Service request with ID ${id} not found`);
+          throw ErrorFactory.notFound('Service request', id);
         }
         
         // Remove the service request (cascade should handle related records)
         await this.serviceRequestRepository.remove(serviceRequest);
-        console.log('Service request deleted with relations:', id);
+        this.logger.log(`Service request deleted with relations: ${id}`);
       } catch (fallbackError) {
-        console.error('Fallback delete also failed:', fallbackError);
+        this.logger.error(`Fallback delete also failed: ${fallbackError.message}`, fallbackError.stack);
         throw fallbackError;
       }
     }
@@ -300,12 +295,12 @@ export class ServiceRequestsService {
     
     // Verify ownership
     if (serviceRequest.clientId !== clientId) {
-      throw new BadRequestException('You can only submit your own service requests');
+      throw ErrorFactory.forbidden('submit', 'this service request');
     }
     
     // Check if already submitted
     if (serviceRequest.submitted) {
-      throw new BadRequestException('Service request is already submitted');
+      throw ErrorFactory.businessRule('Service request is already submitted');
     }
     
     // Submit the request
@@ -320,12 +315,12 @@ export class ServiceRequestsService {
     
     // Verify ownership
     if (serviceRequest.clientId !== clientId) {
-      throw new BadRequestException('You can only cancel your own service requests');
+      throw ErrorFactory.forbidden('cancel', 'this service request');
     }
     
     // Check if already submitted - if so, client cannot cancel directly
     if (serviceRequest.submitted) {
-      throw new BadRequestException('Cannot cancel submitted request. Please request cancellation from admin.');
+      throw ErrorFactory.businessRule('Cannot cancel submitted request. Please request cancellation from admin');
     }
     
     // Cancel the request (delete it since it's not submitted)
@@ -338,17 +333,17 @@ export class ServiceRequestsService {
     
     // Verify ownership
     if (serviceRequest.clientId !== clientId) {
-      throw new BadRequestException('You can only request cancellation for your own service requests');
+      throw ErrorFactory.forbidden('request cancellation for', 'this service request');
     }
     
     // Check if already submitted
     if (!serviceRequest.submitted) {
-      throw new BadRequestException('Cannot request cancellation for unsubmitted request. You can cancel it directly.');
+      throw ErrorFactory.businessRule('Cannot request cancellation for unsubmitted request. You can cancel it directly');
     }
     
     // Check if already in cancellation requested status
     if (serviceRequest.status === ServiceRequestStatus.CANCELLATION_REQUESTED) {
-      throw new BadRequestException('Cancellation already requested');
+      throw ErrorFactory.businessRule('Cancellation already requested');
     }
     
     // Request cancellation
@@ -363,7 +358,7 @@ export class ServiceRequestsService {
     
     // Check if cancellation was requested
     if (serviceRequest.status !== ServiceRequestStatus.CANCELLATION_REQUESTED) {
-      throw new BadRequestException('No cancellation request found for this service request');
+      throw ErrorFactory.businessRule('No cancellation request found for this service request');
     }
     
     // Approve cancellation
@@ -377,7 +372,7 @@ export class ServiceRequestsService {
     
     // Check if cancellation was requested
     if (serviceRequest.status !== ServiceRequestStatus.CANCELLATION_REQUESTED) {
-      throw new BadRequestException('No cancellation request found for this service request');
+      throw ErrorFactory.businessRule('No cancellation request found for this service request');
     }
     
     // Reject cancellation - revert to previous status
@@ -413,7 +408,7 @@ export class ServiceRequestsService {
     });
 
     if (!priceAdjustment) {
-      throw new NotFoundException(`Price adjustment with ID ${adjustmentId} not found`);
+      throw ErrorFactory.notFound('Price adjustment', adjustmentId);
     }
 
     priceAdjustment.status = updateStatusDto.status;
@@ -479,7 +474,7 @@ export class ServiceRequestsService {
     });
 
     if (!attachment) {
-      throw new NotFoundException(`File attachment with ID ${attachmentId} not found`);
+      throw ErrorFactory.notFound('File attachment', attachmentId);
     }
 
     await this.fileAttachmentRepository.remove(attachment);
@@ -488,16 +483,16 @@ export class ServiceRequestsService {
   // Generate invoice for service request when approved
   private async generateInvoiceForServiceRequest(serviceRequest: ServiceRequest): Promise<void> {
     try {
-      // Calculate due date (30 days from now)
+      // Calculate due date
       const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + 30);
+      dueDate.setDate(dueDate.getDate() + BILLING_CONSTANTS.DEFAULT_INVOICE_DUE_DAYS);
 
       // Create invoice DTO
       const invoiceData = {
         clientId: serviceRequest.clientId,
         servicePackageId: serviceRequest.serviceId,
         amount: serviceRequest.quoteAmount,
-        tax: 0, // No tax for now, can be configured later
+        tax: BILLING_CONSTANTS.DEFAULT_TAX_RATE,
         description: `Service Request: ${serviceRequest.description.substring(0, 100)}${serviceRequest.description.length > 100 ? '...' : ''}`,
         lineItems: [
           {
@@ -514,10 +509,10 @@ export class ServiceRequestsService {
       // Create the invoice
       await this.invoicesService.create(invoiceData, { id: 'system', role: 'ADMIN' } as any);
       
-      // Invoice generation logging removed for security
+      this.logger.log(`Invoice generated for service request: ${serviceRequest.id}`);
     } catch (error) {
-      console.error('Error generating invoice for service request:', error);
-      throw new BadRequestException('Failed to generate invoice for service request');
+      this.logger.error(`Error generating invoice for service request: ${error.message}`, error.stack);
+      throw ErrorFactory.internalError('generate invoice for service request', error);
     }
   }
 
@@ -562,8 +557,6 @@ export class ServiceRequestsService {
 
   async findAllRaw(): Promise<ServiceRequest[]> {
     // Public method for controller to use as direct fallback
-    // Skip session assumption since RLS is disabled
-    // await this.assumeAdminSession();
     return await this.findAllWithRawSQL();
   }
 
@@ -603,7 +596,7 @@ export class ServiceRequestsService {
     );
     
     if (!result || result.length === 0) {
-      throw new NotFoundException(`Service request with ID ${id} not found`);
+      throw ErrorFactory.notFound('Service request', id);
     }
     
     return result[0] as ServiceRequest;

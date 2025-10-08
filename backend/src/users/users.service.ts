@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -8,9 +8,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRole } from '../common/enums/user-role.enum';
 import { AuditService } from '../audit/audit.service';
+import { ErrorFactory } from '../common/errors/error-factory';
+import { COMMISSION_CONSTANTS } from '../common/constants/app.constants';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -28,9 +32,9 @@ export class UsersService {
 
     if (existingUser) {
       if (!existingUser.isEmailVerified) {
-        throw new ConflictException('User with this email already exists but is not verified. Please check your email for the verification code or request a new one.');
+        throw ErrorFactory.conflict('User', 'email', createUserDto.email + ' (unverified account exists. Please check your email for verification code)');
       } else {
-        throw new ConflictException('User with this email already exists');
+        throw ErrorFactory.conflict('User', 'email', createUserDto.email);
       }
     }
 
@@ -93,7 +97,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw ErrorFactory.notFound('User', id);
     }
 
     return user;
@@ -105,7 +109,7 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw ErrorFactory.notFound('User');
     }
 
     return user;
@@ -120,7 +124,7 @@ export class UsersService {
       });
       
       if (existingUser) {
-        throw new ConflictException('User with this email already exists');
+        throw ErrorFactory.conflict('User', 'email', updateUserDto.email);
       }
     }
 
@@ -222,7 +226,7 @@ export class UsersService {
       });
       
       if (existingUser) {
-        throw new ConflictException('User with this email already exists');
+        throw ErrorFactory.conflict('User', 'email', credentialsData.email);
       }
       user.email = credentialsData.email;
     }
@@ -279,8 +283,8 @@ export class UsersService {
       agentCode: agentData.agentCode,
       salesPersonName: agentData.salesPersonName,
       closerName: agentData.closerName,
-      agentCommissionRate: agentData.agentCommissionRate || 6.00,
-      closerCommissionRate: agentData.closerCommissionRate || 10.00,
+      agentCommissionRate: agentData.agentCommissionRate || COMMISSION_CONSTANTS.DEFAULT_AGENT_COMMISSION_RATE,
+      closerCommissionRate: agentData.closerCommissionRate || COMMISSION_CONSTANTS.DEFAULT_CLOSER_COMMISSION_RATE,
       isActive: agentData.isActive ?? true,
     });
 

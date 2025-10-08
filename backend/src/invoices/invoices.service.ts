@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Invoice } from './entities/invoice.entity';
@@ -8,9 +8,13 @@ import { InvoiceStatus } from '../common/enums/invoice-status.enum';
 import { UserRole } from '../common/enums/user-role.enum';
 import { User } from '../users/entities/user.entity';
 import { AuditService } from '../audit/audit.service';
+import { ErrorFactory } from '../common/errors/error-factory';
+import { BILLING_CONSTANTS, NUMBER_GENERATION } from '../common/constants/app.constants';
 
 @Injectable()
 export class InvoicesService {
+  private readonly logger = new Logger(InvoicesService.name);
+
   constructor(
     @InjectRepository(Invoice)
     private invoicesRepository: Repository<Invoice>,
@@ -18,14 +22,11 @@ export class InvoicesService {
   ) {}
 
   async create(createInvoiceDto: CreateInvoiceDto, createdBy: User): Promise<Invoice> {
-    // Debug log for clientId
-    // Invoice creation logging removed for security
-
     // Generate invoice number
     const invoiceNumber = await this.generateInvoiceNumber();
     
     // Calculate total
-    const total = createInvoiceDto.amount + (createInvoiceDto.tax || 0);
+    const total = createInvoiceDto.amount + (createInvoiceDto.tax || BILLING_CONSTANTS.DEFAULT_TAX_RATE);
 
     const invoice = this.invoicesRepository.create({
       ...createInvoiceDto,
@@ -87,7 +88,7 @@ export class InvoicesService {
     const invoice = await query.getOne();
 
     if (!invoice) {
-      throw new NotFoundException('Invoice not found');
+      throw ErrorFactory.notFound('Invoice', id);
     }
 
     return invoice;
@@ -153,12 +154,12 @@ export class InvoicesService {
     const invoice = await this.findOne(id);
     
     if (invoice.status === InvoiceStatus.PAID) {
-      throw new BadRequestException('Cannot delete a paid invoice');
+      throw ErrorFactory.businessRule('Cannot delete a paid invoice');
     }
 
     // Check if invoice has associated payments
     if (invoice.payments && invoice.payments.length > 0) {
-      throw new BadRequestException('Cannot delete invoice with associated payments. Please delete the payments first.');
+      throw ErrorFactory.businessRule('Cannot delete invoice with associated payments. Please delete the payments first');
     }
 
     await this.invoicesRepository.remove(invoice);
@@ -202,6 +203,6 @@ export class InvoicesService {
   private async generateInvoiceNumber(): Promise<string> {
     const year = new Date().getFullYear();
     const count = await this.invoicesRepository.count();
-    return `INV-${year}-${String(count + 1).padStart(4, '0')}`;
+    return `${NUMBER_GENERATION.INVOICE_PREFIX}-${year}-${String(count + 1).padStart(NUMBER_GENERATION.INVOICE_NUMBER_PADDING, '0')}`;
   }
 }

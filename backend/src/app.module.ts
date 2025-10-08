@@ -14,6 +14,7 @@ import { HealthModule } from './health/health.module';
 import { SystemModule } from './system/system.module';
 import { DatabaseModule } from './database/database.module';
 import { EmailModule } from './email/email.module';
+import { SmsModule } from './sms/sms.module';
 import { AddressModule } from './address/address.module';
 
 // Determine whether to skip database initialization (useful for tests)
@@ -79,6 +80,7 @@ if (skipDb) {
     DatabaseModule,
     ...baseImports,
     EmailModule,
+    SmsModule,
     AddressModule,
     AuthModule,
     UsersModule,

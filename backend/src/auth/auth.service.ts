@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
@@ -15,9 +15,13 @@ import { SessionTrackingService } from '../common/services/session-tracking.serv
 import { MfaService } from './mfa.service';
 import { EmailService } from '../email/email.service';
 import { SmsService } from '../sms/sms.service';
+import { ErrorFactory } from '../common/errors/error-factory';
+import { AUTH_CONSTANTS } from '../common/constants/app.constants';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -34,11 +38,11 @@ export class AuthService {
       const user = await this.usersService.findByEmail(email);
       
       if (!user.isActive) {
-        throw new UnauthorizedException('Account is deactivated');
+        throw ErrorFactory.accountStatus('deactivated');
       }
 
       if (user.isAccountLocked()) {
-        throw new UnauthorizedException('Account is temporarily locked due to too many failed login attempts');
+        throw ErrorFactory.accountStatus('locked', 'too many failed login attempts');
       }
 
       if (await user.validatePassword(password)) {
@@ -54,7 +58,7 @@ export class AuthService {
         await this.usersService.save(user);
       }
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
+      if (error.name === 'UnauthorizedException') {
         throw error;
       }
       return null;
@@ -66,17 +70,17 @@ export class AuthService {
     const user = await this.validateUser(loginDto.email, loginDto.password);
     
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw ErrorFactory.unauthorized('Invalid credentials');
     }
 
     // Check if email is verified
     if (!user.isEmailVerified) {
-      throw new UnauthorizedException('Please verify your email address before logging in');
+      throw ErrorFactory.unauthorized('Please verify your email address before logging in');
     }
 
     // Check if account is active
     if (user.accountStatus !== 'ACTIVE') {
-      throw new UnauthorizedException('Your account is not active. Please verify your email address.');
+      throw ErrorFactory.accountStatus('not active', 'Please verify your email address');
     }
 
     // Update last login
@@ -108,7 +112,7 @@ export class AuthService {
         temp: true
       };
       
-      const tempToken = this.jwtService.sign(tempPayload, { expiresIn: '5m' });
+      const tempToken = this.jwtService.sign(tempPayload, { expiresIn: AUTH_CONSTANTS.MFA_TEMP_TOKEN_EXPIRY });
       
       return {
         requires_mfa: true,
@@ -203,7 +207,7 @@ export class AuthService {
       };
     } catch (error) {
       if (error.message.includes('already exists')) {
-        throw new ConflictException('User with this email already exists');
+        throw ErrorFactory.conflict('User', 'email');
       }
       throw error;
     }
@@ -220,11 +224,11 @@ export class AuthService {
     const user = await this.usersService.findByEmailVerificationToken(verifyEmailDto.token);
     
     if (!user) {
-      throw new BadRequestException('Invalid or expired verification token');
+      throw ErrorFactory.invalid('verification token');
     }
 
     if (user.emailVerificationExpires < new Date()) {
-      throw new BadRequestException('Verification token has expired');
+      throw ErrorFactory.expired('Verification token');
     }
 
     user.isEmailVerified = true;
@@ -249,15 +253,15 @@ export class AuthService {
     const user = await this.usersService.findByEmail(verifyEmailCodeDto.email);
     
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw ErrorFactory.notFound('User');
     }
 
     if (!user.emailVerificationCode || user.emailVerificationCode !== verifyEmailCodeDto.code) {
-      throw new BadRequestException('Invalid verification code');
+      throw ErrorFactory.invalid('verification code');
     }
 
     if (!user.emailVerificationCodeExpires || user.emailVerificationCodeExpires < new Date()) {
-      throw new BadRequestException('Verification code has expired');
+      throw ErrorFactory.expired('Verification code');
     }
 
     user.isEmailVerified = true;
@@ -306,11 +310,11 @@ export class AuthService {
     const user = await this.usersService.findByEmail(resendDto.email);
     
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw ErrorFactory.notFound('User');
     }
 
     if (user.isEmailVerified) {
-      throw new BadRequestException('Email is already verified');
+      throw ErrorFactory.businessRule('Email is already verified');
     }
 
     const verificationCode = user.generateEmailVerificationCode();
@@ -368,11 +372,11 @@ export class AuthService {
     const user = await this.usersService.findByPasswordResetToken(resetPasswordDto.token);
     
     if (!user) {
-      throw new BadRequestException('Invalid or expired reset token');
+      throw ErrorFactory.invalid('reset token');
     }
 
     if (user.passwordResetExpires < new Date()) {
-      throw new BadRequestException('Reset token has expired');
+      throw ErrorFactory.expired('Reset token');
     }
 
     user.password = resetPasswordDto.newPassword;
@@ -431,15 +435,15 @@ export class AuthService {
     const user = await this.usersService.findByEmail(resetPasswordCodeDto.email);
     
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw ErrorFactory.notFound('User');
     }
 
     if (!user.passwordResetCode || user.passwordResetCode !== resetPasswordCodeDto.code) {
-      throw new BadRequestException('Invalid reset code');
+      throw ErrorFactory.invalid('reset code');
     }
 
     if (!user.passwordResetCodeExpires || user.passwordResetCodeExpires < new Date()) {
-      throw new BadRequestException('Reset code has expired');
+      throw ErrorFactory.expired('Reset code');
     }
 
     user.password = resetPasswordCodeDto.newPassword;
@@ -477,7 +481,8 @@ export class AuthService {
     const smsResult = await this.smsService.sendVerificationCode(user.phoneNumber, verificationCode);
     
     if (!smsResult.success) {
-      throw new BadRequestException('Failed to send verification code');
+      this.logger.error(`Failed to send SMS verification code: ${smsResult.error}`);
+      throw ErrorFactory.internalError('send verification code');
     }
 
     await this.auditService.log({
@@ -495,16 +500,16 @@ export class AuthService {
     const user = await this.usersService.findByPhoneNumber(verifyPhoneCodeDto.phoneNumber);
     
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw ErrorFactory.notFound('User');
     }
 
     // Validate the verification code
     if (!user.phoneVerificationCode || user.phoneVerificationCode !== verifyPhoneCodeDto.code) {
-      throw new BadRequestException('Invalid verification code');
+      throw ErrorFactory.invalid('verification code');
     }
 
     if (!user.phoneVerificationCodeExpires || user.phoneVerificationCodeExpires < new Date()) {
-      throw new BadRequestException('Verification code has expired');
+      throw ErrorFactory.expired('Verification code');
     }
 
     user.isPhoneVerified = true;
@@ -538,7 +543,8 @@ export class AuthService {
     const smsResult = await this.smsService.sendPasswordResetCode(user.phoneNumber, resetCode);
     
     if (!smsResult.success) {
-      throw new BadRequestException('Failed to send password reset code');
+      this.logger.error(`Failed to send SMS password reset code: ${smsResult.error}`);
+      throw ErrorFactory.internalError('send password reset code');
     }
 
     await this.auditService.log({
@@ -556,15 +562,15 @@ export class AuthService {
     const user = await this.usersService.findByPhoneNumber(resetPasswordWithPhoneDto.phoneNumber);
     
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw ErrorFactory.notFound('User');
     }
 
     if (!user.phonePasswordResetCode || user.phonePasswordResetCode !== resetPasswordWithPhoneDto.code) {
-      throw new BadRequestException('Invalid reset code');
+      throw ErrorFactory.invalid('reset code');
     }
 
     if (!user.phonePasswordResetCodeExpires || user.phonePasswordResetCodeExpires < new Date()) {
-      throw new BadRequestException('Reset code has expired');
+      throw ErrorFactory.expired('Reset code');
     }
 
     user.password = resetPasswordWithPhoneDto.newPassword;
@@ -591,20 +597,20 @@ export class AuthService {
       const payload = this.jwtService.verify(tempToken);
       
       if (!payload.temp || !payload.mfaRequired) {
-        throw new UnauthorizedException('Invalid temporary token');
+        throw ErrorFactory.unauthorized('Invalid temporary token');
       }
 
       const user = await this.usersService.findOne(payload.sub);
       
       if (!user) {
-        throw new UnauthorizedException('User not found');
+        throw ErrorFactory.notFound('User');
       }
 
       // Verify MFA token
       const isValid = await this.mfaService.verifyMfaToken(user.id, verifyMfaDto.token);
       
       if (!isValid) {
-        throw new UnauthorizedException('Invalid MFA token');
+        throw ErrorFactory.unauthorized('Invalid MFA token');
       }
 
       // Generate full JWT token
@@ -652,10 +658,10 @@ export class AuthService {
         },
       };
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
+      if (error.name === 'UnauthorizedException') {
         throw error;
       }
-      throw new UnauthorizedException('Invalid MFA verification');
+      throw ErrorFactory.unauthorized('Invalid MFA verification');
     }
   }
 }

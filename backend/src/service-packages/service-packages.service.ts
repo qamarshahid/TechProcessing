@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ServicePackage } from '../common/entities';
@@ -6,9 +6,12 @@ import { CreateServicePackageDto } from './dto/create-service-package.dto';
 import { UpdateServicePackageDto } from './dto/update-service-package.dto';
 import { User } from '../users/entities/user.entity';
 import { AuditService } from '../audit/audit.service';
+import { ErrorFactory } from '../common/errors/error-factory';
 
 @Injectable()
 export class ServicePackagesService {
+  private readonly logger = new Logger(ServicePackagesService.name);
+
   constructor(
     @InjectRepository(ServicePackage)
     private servicePackagesRepository: Repository<ServicePackage>,
@@ -49,7 +52,7 @@ export class ServicePackagesService {
     });
 
     if (!servicePackage) {
-      throw new NotFoundException('Service package not found');
+      throw ErrorFactory.notFound('Service package', id);
     }
 
     return servicePackage;

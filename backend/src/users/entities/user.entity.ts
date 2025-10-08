@@ -15,6 +15,7 @@ import { Invoice } from '../../invoices/entities/invoice.entity';
 import { Payment } from '../../payments/entities/payment.entity';
 import { AuditLog } from '../../audit/entities/audit-log.entity';
 import { Agent } from './agent.entity';
+import { AUTH_CONSTANTS, BILLING_CONSTANTS } from '../../common/constants/app.constants';
 
 @Entity('users')
 export class User {
@@ -172,7 +173,7 @@ export class User {
   @BeforeUpdate()
   async hashPassword() {
     if (this.password && !this.isPasswordHashed()) {
-      this.password = await bcrypt.hash(this.password, 12);
+      this.password = await bcrypt.hash(this.password, BILLING_CONSTANTS.BCRYPT_SALT_ROUNDS);
     }
     // Construct fullName from separate fields
     this.fullName = this.constructFullName();
@@ -204,9 +205,11 @@ export class User {
 
   incrementFailedLoginAttempts(): void {
     this.failedLoginAttempts += 1;
-    if (this.failedLoginAttempts >= 5) {
-      // Lock account for 30 minutes after 5 failed attempts
-      this.accountLockedUntil = new Date(Date.now() + 30 * 60 * 1000);
+    if (this.failedLoginAttempts >= AUTH_CONSTANTS.MAX_LOGIN_ATTEMPTS) {
+      // Lock account after max failed attempts
+      this.accountLockedUntil = new Date(
+        Date.now() + AUTH_CONSTANTS.ACCOUNT_LOCK_DURATION_MINUTES * 60 * 1000
+      );
     }
   }
 
@@ -218,49 +221,61 @@ export class User {
   generateEmailVerificationToken(): string {
     const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     this.emailVerificationToken = token;
-    this.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    this.emailVerificationExpires = new Date(
+      Date.now() + AUTH_CONSTANTS.EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS * 60 * 60 * 1000
+    );
     return token;
   }
 
   generateEmailVerificationCode(): string {
-    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     this.emailVerificationCode = code;
-    this.emailVerificationCodeExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    this.emailVerificationCodeExpires = new Date(
+      Date.now() + AUTH_CONSTANTS.EMAIL_VERIFICATION_CODE_EXPIRY_MINUTES * 60 * 1000
+    );
     return code;
   }
 
   generatePasswordResetToken(): string {
     const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     this.passwordResetToken = token;
-    this.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    this.passwordResetExpires = new Date(
+      Date.now() + AUTH_CONSTANTS.PASSWORD_RESET_TOKEN_EXPIRY_HOURS * 60 * 60 * 1000
+    );
     return token;
   }
 
   generatePasswordResetCode(): string {
-    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     this.passwordResetCode = code;
-    this.passwordResetCodeExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    this.passwordResetCodeExpires = new Date(
+      Date.now() + AUTH_CONSTANTS.PASSWORD_RESET_CODE_EXPIRY_MINUTES * 60 * 1000
+    );
     return code;
   }
 
   generatePhoneVerificationCode(): string {
-    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     this.phoneVerificationCode = code;
-    this.phoneVerificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    this.phoneVerificationCodeExpires = new Date(
+      Date.now() + AUTH_CONSTANTS.PHONE_VERIFICATION_CODE_EXPIRY_MINUTES * 60 * 1000
+    );
     return code;
   }
 
   generatePhonePasswordResetCode(): string {
-    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     this.phonePasswordResetCode = code;
-    this.phonePasswordResetCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    this.phonePasswordResetCodeExpires = new Date(
+      Date.now() + AUTH_CONSTANTS.PHONE_PASSWORD_RESET_CODE_EXPIRY_MINUTES * 60 * 1000
+    );
     return code;
   }
 
   generateMfaBackupCodes(): string[] {
     const codes = [];
-    for (let i = 0; i < 10; i++) {
-      codes.push(Math.random().toString(36).substring(2, 8).toUpperCase());
+    for (let i = 0; i < AUTH_CONSTANTS.MFA_BACKUP_CODES_COUNT; i++) {
+      codes.push(Math.random().toString(36).substring(2, 2 + AUTH_CONSTANTS.MFA_BACKUP_CODE_LENGTH).toUpperCase());
     }
     this.mfaBackupCodes = codes;
     return codes;
