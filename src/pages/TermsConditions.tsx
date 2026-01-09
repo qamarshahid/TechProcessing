@@ -112,9 +112,6 @@ const TermsConditions: React.FC = () => {
               <span className="font-semibold text-sm sm:text-base">Back to Home</span>
             </Link>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-muted hover:text-accent2 transition-colors p-2 touch-manipulation">
-                <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
-              </a>
               <a href="#contact" className="bg-accent1 hover:bg-accent1 text-fg px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base touch-manipulation">
                 Contact Us
               </a>
@@ -353,16 +350,6 @@ const TermsConditions: React.FC = () => {
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="bg-surface/50 rounded-2xl p-6 border border-outline/50">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-accent1/20 rounded-xl mb-4">
-                  <Phone className="h-6 w-6 text-accent2" />
-                </div>
-                <h3 className="text-lg font-semibold text-fg mb-2">Call Us</h3>
-                <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-accent2 hover:text-accent3 transition-colors">
-                  {appConfig.contact.phone}
-                </a>
-              </div>
-              
               <div className="bg-surface/50 rounded-2xl p-6 border border-outline/50">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-accent1/20 rounded-xl mb-4">
                   <Mail className="h-6 w-6 text-accent2" />

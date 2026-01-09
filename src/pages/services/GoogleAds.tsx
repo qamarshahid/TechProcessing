@@ -110,9 +110,6 @@ export function GoogleAdsPage() {
               <span className="font-semibold">Back to Home</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-muted hover:text-accent2 transition-colors touch-manipulation">
-                <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
-              </a>
               <a href="#contact" className="bg-accent1 hover:bg-accent1 text-fg px-4 py-2 rounded-lg font-medium transition-colors touch-manipulation">
                 Get Started
               </a>
@@ -152,14 +149,6 @@ export function GoogleAdsPage() {
                 <Target className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
                 Get Free Google Ads Consultation
                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </a>
-              
-              <a
-                href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="border-2 border-accent1 text-accent2 hover:bg-accent1 hover:text-fg px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center"
-              >
-                <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                {appConfig.contact.phone}
               </a>
             </div>
 
@@ -387,14 +376,6 @@ export function GoogleAdsPage() {
                 <Target className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
                 Get Free Google Ads Consultation
                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </a>
-              
-              <a
-                href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="border-2 border-accent1 text-accent2 hover:bg-accent1 hover:text-fg px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center"
-              >
-                <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                {appConfig.contact.phone}
               </a>
             </div>
           </motion.div>

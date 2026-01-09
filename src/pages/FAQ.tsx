@@ -193,9 +193,6 @@ const FAQ: React.FC = () => {
               <span className="font-semibold text-sm sm:text-base">Back to Home</span>
             </Link>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-muted hover:text-accent2 transition-colors p-2 touch-manipulation">
-                <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
-              </a>
               <a href="#contact" className="bg-accent1 hover:bg-accent1 text-fg px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base touch-manipulation">
                 <span className="hidden sm:inline">Get Started</span>
                 <span className="sm:hidden">Start</span>
@@ -236,14 +233,6 @@ const FAQ: React.FC = () => {
               >
                 <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
                 Contact Support
-              </a>
-              
-              <a
-                href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="border-2 border-accent1 text-accent2 hover:bg-accent1 hover:text-fg px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center"
-              >
-                <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                {appConfig.contact.phone}
               </a>
             </div>
           </motion.div>
@@ -344,13 +333,6 @@ const FAQ: React.FC = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                className="bg-gradient-to-r from-accent1 to-accent600 hover:from-emerald-600 hover:to-accent700 text-fg px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center group"
-              >
-                <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2 group-hover:animate-pulse" />
-                Call Us Now
-              </a>
               
               <a
                 href={`mailto:${appConfig.contact.email}`}
@@ -361,17 +343,7 @@ const FAQ: React.FC = () => {
               </a>
             </div>
 
-            <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Phone className="h-6 w-6 text-fg" />
-                </div>
-                <div className="font-semibold text-fg mb-2">Call Us</div>
-                <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-accent2 hover:underline">
-                  {appConfig.contact.phone}
-                </a>
-              </div>
-
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Mail className="h-6 w-6 text-fg" />

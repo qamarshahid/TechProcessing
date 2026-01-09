@@ -325,9 +325,8 @@ export function LandingPage() {
                 "numberOfEmployees": "11-50",
                 "contactPoint": {
                   "@type": "ContactPoint",
-                  "telephone": appConfig.contact.phone,
                   "contactType": "customer service",
-                  "email": "support@techprocessingllc.com",
+                  "email": "admini@techprocessingllc.com",
                   "availableLanguage": "English"
                 },
                 "address": {
@@ -353,8 +352,7 @@ export function LandingPage() {
                 "alternateName": ["Tech Processing LLC", "TechProcessing", "Tech Processing"],
                 "description": "Leading digital marketing agency in St Petersburg, FL. Expert SEO, social media marketing, web design, and IT consulting services. Design. Develop. Dominate.",
                 "url": "https://www.techprocessingllc.com",
-                "telephone": appConfig.contact.phone,
-                "email": "support@techprocessingllc.com",
+                "email": "admini@techprocessingllc.com",
                 "priceRange": "$$",
                 "openingHours": "Mo-Fr 09:00-18:00",
                 "paymentAccepted": ["Cash", "Credit Card", "Check"],
@@ -731,16 +729,6 @@ export function LandingPage() {
                     <span className="hidden sm:inline">Get My Free Quote</span>
                     <span className="sm:hidden">Free Quote</span>
                     <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </a>
-                  
-                  <a
-                    href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`}
-                    className="border-2 border-emerald-400 text-accent2 hover:bg-emerald-400 hover:text-fg px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base md:text-lg transition-all duration-300 flex items-center justify-center touch-manipulation min-h-[48px] sm:min-h-[52px]"
-                    onClick={() => handleCTAClick('Contact Us')}
-                  >
-                    <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                    <span className="hidden sm:inline">{appConfig.contact.phone}</span>
-                    <span className="sm:hidden">Call Now</span>
                   </a>
                 </div>
 
@@ -1280,18 +1268,6 @@ export function LandingPage() {
                 <div className="space-y-6 mb-8">
                   <div className="flex items-center">
                     <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center mr-4">
-                      <Phone className="h-6 w-6 text-fg" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-fg">Call Us</div>
-                      <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="text-accent2 hover:underline">
-                        {appConfig.contact.phone}
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-accent1 to-accent600 rounded-xl flex items-center justify-center mr-4">
                       <Mail className="h-6 w-6 text-fg" />
                     </div>
                     <div>
@@ -1428,12 +1404,6 @@ export function LandingPage() {
               <div>
                 <h3 className="text-lg font-bold mb-4">Contact Info</h3>
                 <div className="space-y-3 text-muted">
-                  <div className="flex items-center">
-                    <Phone className="h-4 w-4 mr-2 text-accent2" />
-                    <a href={`tel:${appConfig.contact.phone.replace(/\D/g, '')}`} className="hover:text-accent2 transition-colors">
-                      {appConfig.contact.phone}
-                    </a>
-                  </div>
                   <div className="flex items-center">
                     <Mail className="h-4 w-4 mr-2 text-accent2" />
                     <a href={`mailto:${appConfig.contact.email}`} className="hover:text-accent2 transition-colors">

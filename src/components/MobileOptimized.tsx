@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
-  Phone, 
   Mail, 
   ChevronUp,
   Hand,
@@ -162,17 +161,7 @@ function MobileEnhancements() {
       {/* Mobile contact shortcuts */}
       <div className="fixed bottom-4 left-4 z-40 flex flex-col space-y-2">
         <motion.a
-          href={`tel:${import.meta.env.VITE_CONTACT_PHONE?.replace(/\D/g, '') || '+15122229451'}`}
-          className="w-12 h-12 bg-accent600 text-fg rounded-full shadow-lg flex items-center justify-center touch-manipulation"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          aria-label="Call us"
-        >
-          <Phone className="h-6 w-6" />
-        </motion.a>
-        
-        <motion.a
-          href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'support@techprocessingllc.com'}`}
+          href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'admini@techprocessingllc.com'}`}
           className="w-12 h-12 bg-blue-600 text-fg rounded-full shadow-lg flex items-center justify-center touch-manipulation"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
